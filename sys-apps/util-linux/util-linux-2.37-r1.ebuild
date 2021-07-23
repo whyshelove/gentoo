@@ -6,19 +6,18 @@ EAPI=7
 PYTHON_COMPAT=( python3_{7..9} )
 
 inherit toolchain-funcs libtool flag-o-matic bash-completion-r1 usr-ldscript \
-	pam python-r1 multilib-minimal multiprocessing systemd
+	pam python-r1 multilib-minimal multiprocessing systemd rhel
 
 MY_PV="${PV/_/-}"
 MY_P="${PN}-${MY_PV}"
 
 if [[ ${PV} == 9999 ]] ; then
-	inherit git-r3 autotools
-	EGIT_REPO_URI="https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git"
+	inherit autotools
+	EGIT_REPO_URI+="https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git"
 else
-	[[ "${PV}" = *_rc* ]] || \
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux"
-	SRC_URI="https://www.kernel.org/pub/linux/utils/util-linux/v${PV:0:4}/${MY_P}.tar.xz
-		https://dev.gentoo.org/~polynomial-c/${MY_P}-manpages.tar.xz"
+	KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux"
+	SRC_URI+="https://dev.gentoo.org/~polynomial-c/${MY_P}-manpages.tar.xz"
+	S="${WORKDIR}/${MY_P}"
 fi
 
 DESCRIPTION="Various useful Linux utilities"
@@ -90,10 +89,6 @@ S="${WORKDIR}/${MY_P}"
 PATCHES=(
 	# https://github.com/karelzak/util-linux/pull/1329
 	"${FILESDIR}/${P}-ppc-nortas.patch"
-
-	"${FILESDIR}/${P}-lcrypt_link_fix.patch" # 801403
-	"${FILESDIR}/${P}-lcrypt_use_LIBS.patch" # 801403
-	"${FILESDIR}/${P}-avoid_autoreconf.patch" # 801403
 )
 
 rm_man() {
@@ -171,6 +166,12 @@ python_configure() {
 }
 
 multilib_src_configure() {
+	unset LINGUAS
+	export CFLAGS="-D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 $CFLAGS"
+	export SUID_CFLAGS="-fpie"
+	export SUID_LDFLAGS="-pie -Wl,-z,relro -Wl,-z,now"
+	export DAEMON_CFLAGS="$SUID_CFLAGS"
+	export DAEMON_LDFLAGS="$SUID_LDFLAGS"
 	lfs_fallocate_test
 	# The scanf test in a run-time test which fails while cross-compiling.
 	# Blindly assume a POSIX setup since we require libmount, and libmount
@@ -190,6 +191,13 @@ multilib_src_configure() {
 
 	local myeconfargs=(
 		"${commonargs[@]}"
+		--disable-silent-rules
+		--disable-bfs
+		--disable-pg
+		--with-utempter
+		--enable-write
+		--enable-chfn-chsh
+		--enable-usrdir-path
 		--with-bashcompletiondir="$(get_bashcompdir)"
 		--without-python
 		$(multilib_native_use_enable suid makeinstall-chown)
@@ -318,6 +326,11 @@ multilib_src_install() {
 		# need the libs in /
 		gen_usr_ldscript -a blkid fdisk mount smartcols uuid
 	fi
+
+	insinto ${_sysconfdir}/
+	doins "${WORKDIR}"/adjtime
+
+	dosym  ${D}/etc/mtab ../proc/self/mounts
 }
 
 multilib_src_install_all() {
@@ -337,8 +350,22 @@ multilib_src_install_all() {
 	fi
 
 	if use pam ; then
-		newpamd "${FILESDIR}/runuser.pamd" runuser
-		newpamd "${FILESDIR}/runuser-l.pamd" runuser-l
+		S1="${WORKDIR}"/util-linux-login.pamd
+		S2="${WORKDIR}"/util-linux-remote.pamd
+		S3="${WORKDIR}"/util-linux-chsh-chfn.pamd
+		S12="${WORKDIR}"/util-linux-su.pamd
+		S13="${WORKDIR}"/util-linux-su-l.pamd
+		S14="${WORKDIR}"/util-linux-runuser.pamd
+		S15="${WORKDIR}"/util-linux-runuser-l.pamd
+
+		newpamd ${S1} login
+		newpamd ${S2} remote
+		newpamd ${S3} chsh
+		newpamd ${S3} chfn
+		newpamd ${S12} su
+		newpamd ${S13} su-l
+		newpamd ${S14} runuser
+		newpamd ${S15} runuser-l
 	fi
 
 	# Note:
@@ -360,3 +387,4 @@ pkg_postinst() {
 		elog "might want to add --noclear to your /etc/inittab lines."
 	fi
 }
+

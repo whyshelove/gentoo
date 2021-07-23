@@ -3,15 +3,15 @@
 
 EAPI=7
 
-inherit flag-o-matic gnome2-utils meson-multilib toolchain-funcs xdg
+inherit flag-o-matic gnome2-utils meson-multilib toolchain-funcs xdg rhel-a
 
 DESCRIPTION="Internationalized text layout and rendering library"
 HOMEPAGE="https://www.pango.org/ https://gitlab.gnome.org/GNOME/pango"
-SRC_URI="http://ftp.gnome.org/pub/GNOME/sources/pango/$(ver_cut 1-2)/${P}.tar.xz"
+#SRC_URI="http://ftp.gnome.org/pub/GNOME/sources/pango/$(ver_cut 1-2)/${P}.tar.xz"
 
 LICENSE="LGPL-2+"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~ppc ~ppc64 ~riscv ~sparc ~x86"
+KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ~ppc ~ppc64 ~riscv ~sparc ~x86"
 
 IUSE="debug +introspection sysprof X"
 

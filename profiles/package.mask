@@ -591,7 +591,7 @@ dev-java/werken-xpath
 
 # Lars Wendler <polynomial-c@gentoo.org> (2021-04-08)
 # Masked for testing
->=app-crypt/gnupg-2.3.0
+>=app-crypt/gnupg-2.4.0
 
 # Sam James <sam@gentoo.org> (2021-03-30)
 # Seems to break dev-tex/culmus-latex
@@ -701,7 +701,7 @@ app-office/texmacs
 # Robin H. Johnson <robbat2@gentoo.org> (2019-07-08)
 # Needs LOTS of testing, broke boot on my laptop in early attempts, maybe needs
 # matching genkernel work?
->=sys-fs/lvm2-2.03
+>=sys-fs/lvm2-2.04
 
 # Andreas Sturmlechner <asturm@gentoo.org> (2018-11-25)
 # Masked per security vulnerability CVE-2018-14345, bug #661510

@@ -10,7 +10,7 @@ PATCHSET_VERSION="2.9.12-r3-patchset"
 PYTHON_COMPAT=( python3_{7,8,9} )
 PYTHON_REQ_USE="xml"
 VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/danielveillard.asc
-inherit autotools flag-o-matic prefix python-r1 multilib-minimal verify-sig
+inherit autotools flag-o-matic prefix python-r1 multilib-minimal verify-sig rhel
 
 XSTS_HOME="http://www.w3.org/XML/2004/xml-schema-test-suite"
 XSTS_NAME_1="xmlschema2002-01-16"
@@ -20,16 +20,17 @@ XSTS_TARBALL_2="xsts-2004-01-14.tar.gz"
 XMLCONF_TARBALL="xmlts20130923.tar.gz"
 DESCRIPTION="XML C parser and toolkit"
 HOMEPAGE="http://www.xmlsoft.org/ https://gitlab.gnome.org/GNOME/libxml2"
-SRC_URI="
-	ftp://xmlsoft.org/${PN}/${PN}-${PV/_rc/-rc}.tar.gz
+if [[ ${PV} != *8888 ]]; then
+	SRC_URI="${SRC_URI}
 	https://dev.gentoo.org/~sam/distfiles/${CATEGORY}/${PN}/${PN}-${PATCHSET_VERSION}.tar.bz2
 	test? (
 		${XSTS_HOME}/${XSTS_NAME_1}/${XSTS_TARBALL_1}
 		${XSTS_HOME}/${XSTS_NAME_2}/${XSTS_TARBALL_2}
 		https://www.w3.org/XML/Test/${XMLCONF_TARBALL}
 	)
-	verify-sig? ( ftp://xmlsoft.org/${PN}/${PN}-${PV/_rc/-rc}.tar.gz.asc )
 "
+fi
+
 S="${WORKDIR}/${PN}-${PV%_rc*}"
 
 LICENSE="MIT"
@@ -71,29 +72,16 @@ PATCHES=(
 	# Fix python tests when building out of tree #565576
 	"${WORKDIR}"/${PN}-2.9.8-out-of-tree-test.patch
 
-	# bug #745162
-	"${WORKDIR}"/${PN}-2.9.8-python3-unicode-errors.patch
-
 	# Avoid failure on missing fuzz.h when running tests
 	"${WORKDIR}"/${PN}-2.9.11-disable-fuzz-tests.patch
 
-	## Upstream
-	# Fix lxml compatibility (bug #790737)
-	"${WORKDIR}"/${PN}-2.9.12-fix-lxml-compatibility.patch
-	# Fix serialising empty HTML documents (bug #794733)
-	"${WORKDIR}"/${PN}-2.9.12-Fix-whitespace-when-serializing-empty-HTML-documents.patch
 )
 
 src_unpack() {
-	local tarname=${P/_rc/-rc}.tar.gz
-
-	if use verify-sig ; then
-		verify-sig_verify_detached "${DISTDIR}"/${tarname}{,.asc}
-	fi
-
+	rhel_src_unpack ${A}
 	# ${A} isn't used to avoid unpacking of test tarballs into ${WORKDIR},
 	# as they are needed as tarballs in ${S}/xstc instead and not unpacked
-	unpack ${tarname} ${PN}-${PATCHSET_VERSION}.tar.bz2
+	unpack ${PN}-${PATCHSET_VERSION}.tar.bz2
 
 	cd "${S}" || die
 

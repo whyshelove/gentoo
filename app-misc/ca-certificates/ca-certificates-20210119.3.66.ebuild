@@ -168,7 +168,8 @@ src_install() {
 		doman sbin/*.8
 		dodoc debian/README.* examples/ca-certificates-local/README
 	fi
-
+	dodir /etc/pki/tls/certs
+	dosym /etc/ssl/certs/ca-certificates.crt /etc/pki/tls/certs/ca-bundle.crt
 	echo 'CONFIG_PROTECT_MASK="/etc/ca-certificates.conf"' > 98ca-certificates
 	doenvd 98ca-certificates
 }
