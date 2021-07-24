@@ -3,22 +3,21 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7..9} )
+PYTHON_COMPAT=( python3_{6..9} )
 DISTUTILS_OPTIONAL=1
 DISTUTILS_USE_SETUPTOOLS=no
 
-inherit distutils-r1 multilib-minimal
+inherit distutils-r1 multilib-minimal rhel
 
 DESCRIPTION="high level interface to Linux seccomp filter"
 HOMEPAGE="https://github.com/seccomp/libseccomp"
 
-if [[ ${PV} == *9999 ]] ; then
-	EGIT_REPO_URI="https://github.com/seccomp/libseccomp.git"
+if [[ ${PV} == *8888 ]] ; then
+	EGIT_REPO_URI="$EGIT_REPO_URI https://github.com/seccomp/libseccomp.git"
 	PRERELEASE="2.6.0"
-	inherit autotools git-r3
+	inherit autotools
 else
-	SRC_URI="https://github.com/seccomp/libseccomp/releases/download/v${PV}/${P}.tar.gz"
-	KEYWORDS="-* ~amd64 ~arm ~arm64 ~hppa ~mips ~ppc ~ppc64 ~riscv ~s390 ~x86 ~amd64-linux ~x86-linux"
+	KEYWORDS="-* amd64 ~arm ~arm64 ~hppa ~mips ~ppc ~ppc64 ~riscv ~s390 ~x86 ~amd64-linux ~x86-linux"
 fi
 
 LICENSE="LGPL-2.1"

@@ -3,7 +3,7 @@
 
 EAPI="7"
 
-inherit flag-o-matic toolchain-funcs multilib-minimal
+inherit flag-o-matic toolchain-funcs multilib-minimal rhel
 
 MY_P=${P/_/-}
 
@@ -18,7 +18,7 @@ BINDIST_PATCH_SET="openssl-1.1.1i-bindist-1.0.tar.xz"
 
 DESCRIPTION="full-strength general purpose cryptography library (including SSL and TLS)"
 HOMEPAGE="https://www.openssl.org/"
-SRC_URI="mirror://openssl/source/${MY_P}.tar.gz
+SRC_URI+="
 	bindist? (
 		mirror://gentoo/${BINDIST_PATCH_SET}
 		https://dev.gentoo.org/~whissi/dist/openssl/${BINDIST_PATCH_SET}
@@ -168,6 +168,7 @@ multilib_src_configure() {
 	unset CROSS_COMPILE #311473
 
 	tc-export CC AR RANLIB RC
+	append-flags -Wa,--noexecstack -Wa,--generate-missing-build-notes=yes -DPURIFY
 
 	# Clean out patent-or-otherwise-encumbered code
 	# Camellia: Royalty Free            https://en.wikipedia.org/wiki/Camellia_(cipher)
@@ -185,12 +186,12 @@ multilib_src_configure() {
 	# friendly and can use the nicely optimized code paths. #460790
 	local ec_nistp_64_gcc_128
 	# Disable it for now though #469976
-	#if ! use bindist ; then
-	#	echo "__uint128_t i;" > "${T}"/128.c
-	#	if ${CC} ${CFLAGS} -c "${T}"/128.c -o /dev/null >&/dev/null ; then
-	#		ec_nistp_64_gcc_128="enable-ec_nistp_64_gcc_128"
-	#	fi
-	#fi
+	if ! use bindist ; then
+		echo "__uint128_t i;" > "${T}"/128.c
+		if ${CC} ${CFLAGS} -c "${T}"/128.c -o /dev/null >&/dev/null ; then
+			ec_nistp_64_gcc_128="enable-ec_nistp_64_gcc_128"
+		fi
+	fi
 
 	local sslout=$(./gentoo.config)
 	einfo "Use configuration ${sslout:-(openssl knows best)}"
@@ -209,14 +210,15 @@ multilib_src_configure() {
 		$(use cpu_flags_x86_sse2 || echo "no-sse2") \
 		enable-camellia \
 		enable-ec \
-		$(use_ssl !bindist ec2m) \
-		$(use_ssl !bindist sm2) \
+		no-mdc2 no-ec2m no-sm2 no-sm4 \
 		enable-srp \
 		$(use elibc_musl && echo "no-async") \
 		${ec_nistp_64_gcc_128} \
 		enable-idea \
-		enable-mdc2 \
 		enable-rc5 \
+		enable-seed \
+		enable-cms \
+		enable-weak-ssl-ciphers \
 		$(use_ssl sslv3 ssl3) \
 		$(use_ssl sslv3 ssl3-method) \
 		$(use_ssl asm) \
@@ -226,6 +228,7 @@ multilib_src_configure() {
 		$(use_ssl tls-heartbeat heartbeats) \
 		--prefix="${EPREFIX}"/usr \
 		--openssldir="${EPREFIX}"${SSL_CNF_DIR} \
+		--system-ciphers-file=${EPREFIX}${_sysconfdir}/crypto-policies/back-ends/openssl.config \
 		--libdir=$(get_libdir) \
 		shared threads \
 		|| die
@@ -256,6 +259,13 @@ multilib_src_compile() {
 	# that it's -j1 as the code itself serializes subdirs
 	emake -j1 depend
 	emake all
+
+	cp -f README.FIPS .
+
+	# Clean up the .pc files
+	for i in libcrypto.pc libssl.pc openssl.pc ; do
+	  sed -i '/^Libs.private:/{s/-L[^ ]* //;s/-Wl[^ ]* //}' $i
+	done
 }
 
 multilib_src_test() {
@@ -279,6 +289,23 @@ multilib_src_install() {
 	if ! use static-libs; then
 		rm "${ED}"/usr/$(get_libdir)/lib{crypto,ssl}.a || die
 	fi
+
+	dodir ${_sysconfdir}/pki/tls/certs
+	insinto ${_pkgdocdir}/
+	doins "${WORKDIR}"/Makefile.certificate
+
+	dobin "${WORKDIR}"/{"make-dummy-cert","renew-dummy-cert"}
+
+	# Drop the SSLv3 methods from includes
+	sed -i '/ifndef OPENSSL_NO_SSL3_METHOD/,+4d' ${ED}${_includedir}/openssl/ssl.h
+
+	# Ensure the config file timestamps are identical across builds to avoid
+	# mulitlib conflicts and unnecessary renames on upgrade
+	touch -r "${WORKDIR}"/Makefile.certificate ${ED}${_sysconfdir}/pki/tls/openssl.cnf
+	touch -r "${WORKDIR}"/Makefile.certificate ${ED}${_sysconfdir}/pki/tls/ct_log_list.cnf
+
+	rm -f ${ED}${_sysconfdir}/pki/tls/openssl.cnf.dist
+	rm -f ${ED}${_sysconfdir}/pki/tls/ct_log_list.cnf.dist
 }
 
 multilib_src_install_all() {

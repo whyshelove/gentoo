@@ -45,6 +45,10 @@ DOCS="ChangeLog README*"
 FONT_S="${S}"
 FONT_SUFFIX="afm pfb pfm"
 
+src_unpack() {
+	rpm_unpack ${A} && unpack ./*.tar.*
+}
+
 pkg_postinst() {
 	font_pkg_postinst
 

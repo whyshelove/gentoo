@@ -1,0 +1,95 @@
+From 9f261121abac849dcdc923d4d391b5ec83ca2652 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Andreas=20K=2E=20H=C3=BCttel?= <dilfridge@gentoo.org>
+Date: Sun, 24 Mar 2019 17:00:05 +0100
+Subject: [PATCH 93/94] Gentoo: Adapt nss/tst-nss-files-alias-leak to Gentoo
+ aliases file location
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Bug: https://bugs.gentoo.org/680230
+Bug: https://bugs.gentoo.org/496510
+Signed-off-by: Andreas K. Hüttel <dilfridge@gentoo.org>
+---
+ nss/tst-nss-files-alias-leak.c | 20 ++++++++++----------
+ support/support_chroot.c       |  6 ++++++
+ 2 files changed, 16 insertions(+), 10 deletions(-)
+
+diff --git a/nss/tst-nss-files-alias-leak.c b/nss/tst-nss-files-alias-leak.c
+index 26d38e2dba..210cb94ad5 100644
+--- a/nss/tst-nss-files-alias-leak.c
++++ b/nss/tst-nss-files-alias-leak.c
+@@ -45,37 +45,37 @@ prepare (int argc, char **argv)
+   chroot_env = support_chroot_create
+     ((struct support_chroot_configuration) { } );
+ 
+-  char *path = xasprintf ("%s/etc/aliases", chroot_env->path_chroot);
++  char *path = xasprintf ("%s/etc/mail/aliases", chroot_env->path_chroot);
+   add_temp_file (path);
+   support_write_file_string
+     (path,
+-     "user1: :include:/etc/aliases.user1\n"
+-     "user2: :include:/etc/aliases.user2\n"
+-     "comment: comment1, :include:/etc/aliases.comment\n"
+-     "many: :include:/etc/aliases.many\n");
++     "user1: :include:/etc/mail/aliases.user1\n"
++     "user2: :include:/etc/mail/aliases.user2\n"
++     "comment: comment1, :include:/etc/mail/aliases.comment\n"
++     "many: :include:/etc/mail/aliases.many\n");
+   free (path);
+ 
+-  path = xasprintf ("%s/etc/aliases.user1", chroot_env->path_chroot);
++  path = xasprintf ("%s/etc/mail/aliases.user1", chroot_env->path_chroot);
+   add_temp_file (path);
+   support_write_file_string (path, "alias1\n");
+   free (path);
+ 
+-  path = xasprintf ("%s/etc/aliases.user2", chroot_env->path_chroot);
++  path = xasprintf ("%s/etc/mail/aliases.user2", chroot_env->path_chroot);
+   add_temp_file (path);
+   support_write_file_string (path, "alias1a, alias2\n");
+   free (path);
+ 
+-  path = xasprintf ("%s/etc/aliases.comment", chroot_env->path_chroot);
++  path = xasprintf ("%s/etc/mail/aliases.comment", chroot_env->path_chroot);
+   add_temp_file (path);
+   support_write_file_string
+     (path,
+      /* The line must be longer than the line with the :include:
+-        directive in /etc/aliases.  */
++        directive in /etc/mail/aliases.  */
+      "# Long line.  ##############################################\n"
+      "comment2\n");
+   free (path);
+ 
+-  path = xasprintf ("%s/etc/aliases.many", chroot_env->path_chroot);
++  path = xasprintf ("%s/etc/mail/aliases.many", chroot_env->path_chroot);
+   add_temp_file (path);
+   FILE *fp = xfopen (path, "w");
+   for (int i = 0; i < many_aliases; ++i)
+diff --git a/support/support_chroot.c b/support/support_chroot.c
+index 6356b1af6c..c62167371a 100644
+--- a/support/support_chroot.c
++++ b/support/support_chroot.c
+@@ -52,12 +52,18 @@ support_chroot_create (struct support_chroot_configuration conf)
+   xmkdir (path_etc, 0777);
+   add_temp_file (path_etc);
+ 
++  /* Create the /etc/mail directory in the chroot environment.  */
++  char *path_etc_mail = xasprintf ("%s/etc/mail", chroot->path_chroot);
++  xmkdir (path_etc_mail, 0777);
++  add_temp_file (path_etc_mail);
++
+   write_file (path_etc, "resolv.conf", conf.resolv_conf,
+               &chroot->path_resolv_conf);
+   write_file (path_etc, "hosts", conf.hosts, &chroot->path_hosts);
+   write_file (path_etc, "host.conf", conf.host_conf, &chroot->path_host_conf);
+ 
+   free (path_etc);
++  free (path_etc_mail);
+ 
+   /* valgrind needs a temporary directory in the chroot.  */
+   {
+-- 
+2.21.0
+

@@ -33,7 +33,7 @@ REQUIRED_USE="
 	pam_krb5? ( !homed )
 "
 
-MIN_PAM_REQ=1.4.0
+MIN_PAM_REQ=1.3.0
 
 RDEPEND="
 	>=sys-libs/pam-${MIN_PAM_REQ}
