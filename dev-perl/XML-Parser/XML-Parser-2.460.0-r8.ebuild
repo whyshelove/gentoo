@@ -20,6 +20,10 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 BDEPEND="${RDEPEND}"
 
+src_unpack() {
+	rpm_src_unpack ${A}
+}
+
 src_configure() {
 	myconf="EXPATLIBPATH=${EPREFIX}/usr/$(get_libdir) EXPATINCPATH=${EPREFIX}/usr/include"
 	perl-module_src_configure

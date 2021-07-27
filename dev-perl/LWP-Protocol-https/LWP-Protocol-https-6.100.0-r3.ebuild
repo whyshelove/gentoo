@@ -28,7 +28,6 @@ DEPEND="${RDEPEND}
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-6.70.0-etcsslcerts.patch
-	"${FILESDIR}"/${PN}-6.70.0-CVE-2014-3230.patch # note: breaks a test, still needed?
 )
 
 PERL_RM_FILES=(
