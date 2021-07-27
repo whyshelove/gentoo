@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib-minimal rhel
+inherit multilib-minimal systemd rhel
 
 DESCRIPTION="Provides a standard configuration setup for installing PKCS#11"
 HOMEPAGE="https://p11-glue.github.io/p11-glue/p11-kit.html"
@@ -18,7 +18,8 @@ RDEPEND="asn1? ( >=dev-libs/libtasn1-3.4:=[${MULTILIB_USEDEP}] )
 	libffi? ( dev-libs/libffi:=[${MULTILIB_USEDEP}] )
 	systemd? ( sys-apps/systemd:= )
 	trust? ( app-misc/ca-certificates )"
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+		dev-python/six"
 BDEPEND="virtual/pkgconfig"
 
 pkg_setup() {
@@ -56,11 +57,13 @@ multilib_src_configure() {
 }
 
 multilib_src_install_all() {
-	mkdir -p ${ED}/etc/pkcs11/modules
-	install -p -m 755 ${FILESDIR}trust-extract-compat ${ED}/usr/libexec/p11-kit/
+	dodir /etc/pkcs11/modules ${_userunitdir}
+	
+	insinto ${_libexecdir}/p11-kit/
+	insopts -m0755
+	doins "${WORKDIR}"/trust-extract-compat
 
-	mkdir -p ${ED}/usr/lib/systemd/user
-	install -p -m 644 ${FILESDIR}p11-kit-client.service ${ED}/usr/lib/systemd/user
+	systemd_douserunit "${WORKDIR}"/p11-kit-client.service
 
 	einstalldocs
 	find "${D}" -name '*.la' -delete || die

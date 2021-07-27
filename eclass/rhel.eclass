@@ -21,7 +21,7 @@ if [[ ${PV} == *8888 ]]; then
 	S="${WORKDIR}/${PN}"
 else
 	inherit rpm
-	MIRROR="https://vault.centos.org"
+	MIRROR="https://mirrors.tuna.tsinghua.edu.cn/centos-vault"
 	DIST=".el8"
 	RELEASE="8-stream"
 	REPO_URI="${MIRROR}/${RELEASE}/${REPO:-BaseOS}/Source/SPackages"
@@ -30,12 +30,21 @@ else
 		MY_PR=${PVR##*r}
 
 		if [ ${CATEGORY} == "dev-python" ] ; then
+			[[ ${PN} == lxml ]] ||  inherit rhel-9
 			case ${PN} in
-				Babel | pytz) MY_PF=${P,,}-${MY_PR} ;;
+				Babel | pytz ) MY_PF=${P,,}-${MY_PR} ;;
+				pyyaml ) MY_PF=${P/pyyaml/PyYAML}-${MY_PR} ;;
+				cython ) MY_PF=${P/c/C}-${MY_PR} ;;
+				jinja ) MY_P=${P/-/2-}; MY_PF=python-${MY_P}-${MY_PR}; S="${WORKDIR}/${MY_P/j/J}" ;;
+				publicsuffix ) MY_P=${P/-2./-list-}; MY_PF=${MY_P}-${MY_PR}; S="${WORKDIR}/${MY_P}" ;;
 				*) MY_PF=python-${P,,}-${MY_PR} ;;
 			esac
-		elif [ ${CATEGORY} == "dev-perl" ] ; then
-			MY_PF=perl-${P}-${MY_PR}
+		elif [ ${CATEGORY} == "dev-perl" ] || [ ${CATEGORY} == "perl-core" ] ; then
+			inherit rhel-9
+			[[ -n "${DIST_VERSION}" ]] && MY_PV=${DIST_VERSION}
+			[[ -n "${MODULE_VERSION}" ]] && MY_PV=${MODULE_VERSION}
+			MY_PF=perl-${PN}-${MY_PV}-${MY_PR}
+			[[ ${PN} == Locale-gettext ]] && MY_PF=perl-${PN/Locale-}-${DIST_VERSION}-${MY_PR}
 		else
 			case ${PN} in
 				xz-utils ) MY_P="${PN/-utils}-${PV/_}"; MY_PF=${MY_P}-${MY_PR} ;;
@@ -48,10 +57,15 @@ else
 				ninja) MY_PF=${P/-/-build-}-${MY_PR} ;;
 				procps ) MY_P=${P/-/-ng-}; MY_PF=${MY_P}-${MY_PR} ;;
 				openssh ) PARCH=${P/_}; MY_PF=${PARCH}-${MY_PR} ;;
-				lcms | gnupg | grub ) MY_P=${P/-/2-}; MY_PF=${MY_P}-${MY_PR} ;;
+				lcms | gnupg | grub | libnsl ) MY_P=${P/-/2-}; MY_PF=${MY_P}-${MY_PR} ;;
 				procps ) MY_P=${P/-/-x11-}; MY_PF=${MY_P}-${MY_PR} ;;
 				xorg-server ) MY_P=${P/-/2-}; MY_PF=${MY_P}-${MY_PR} ;;
 				mpc ) MY_PF=lib${P}-${MY_PR}.1 ;;
+				docbook-xsl-stylesheets ) MY_PF=docbook-style-xsl-${PV}-${MY_PR} ;;
+				gtk-doc-am ) MY_PF=${P/-am}-${MY_PR} ;;
+				e2fsprogs-libs ) MY_PF=${P/-libs}-${MY_PR} ;;
+				mit-krb5 ) MY_PF=${P/mit-}-${MY_PR} ;;
+				perl ) inherit rhel-9 ; MY_PF=${P}-${MY_PR} ;;
 				*) MY_PF=${P}-${MY_PR} ;;
 			esac
 		fi
@@ -110,12 +124,10 @@ srcrhel_unpack() {
 	eshopts_push -s nullglob
 
 	sed -i "/#!%{__python3}/d" ${WORKDIR}/*.spec
-	sed -i "/%{?__isa_bits}/d" ${WORKDIR}/*.spec
 	sed -i "/@exec_prefix@/d" ${WORKDIR}/*.spec
-
+	sed -i "/py_provides/d" ${WORKDIR}/*.spec
+ 
 	rpmbuild -bp $WORKDIR/*.spec --nodeps
-
-	rpm_clean
 
 	eshopts_pop
 
@@ -137,6 +149,15 @@ rhel_src_unpack() {
 		*)     unpack "${a}" ;;
 		esac
 	done
+}
+
+# @FUNCTION: rhel_src_install
+# @DESCRIPTION:
+
+rhel_src_install() {
+	sed -i '/rm -rf $RPM_BUILD_ROOT/d' ${WORKDIR}/*.spec
+
+	rpmbuild --short-circuit -bi $WORKDIR/*.spec --nodeps --rmsource --nocheck --nodebuginfo --buildroot=$D
 }
 
 fi

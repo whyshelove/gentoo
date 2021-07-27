@@ -5,11 +5,12 @@ EAPI=7
 
 inherit toolchain-funcs multilib-minimal usr-ldscript rhel
 
+MY_PN=${PN%-libs}
+MY_P="${MY_PN}-${PV}"
+
 DESCRIPTION="e2fsprogs libraries (common error and subsystem)"
 HOMEPAGE="http://e2fsprogs.sourceforge.net/"
-if [[ ${PV} != *8888 ]]; then
-	S="${WORKDIR}/${MY_P}"
-fi
+
 
 LICENSE="GPL-2"
 SLOT="0"
@@ -20,6 +21,8 @@ RDEPEND="!sys-libs/com_err
 	!sys-libs/ss
 	!<sys-fs/e2fsprogs-1.41.8"
 BDEPEND="virtual/pkgconfig"
+
+S="${WORKDIR}/${MY_P}"
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-1.42.13-fix-build-cflags.patch #516854

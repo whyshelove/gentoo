@@ -5,17 +5,10 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{6..9} )
 
-inherit autotools bash-completion-r1 multilib python-r1
+inherit autotools bash-completion-r1 multilib python-r1 rhel
 
-if [[ ${PV} == *8888 ]]; then
-	inherit git-r3
-	EGIT_REPO_URI="https://gitlab.com/redhat/centos-stream/src/${PN}.git"
-	S="${WORKDIR}/${PN}"
-else
-	inherit rpm libtool
-	MY_PR=${PVR##*r}
-	MY_PF=${P}-${MY_PR}
-	SRC_URI="${BASEOS}/${MY_PF}${DIST}.src.rpm"
+if [[ ${PV} != *8888 ]]; then
+	inherit libtool
 	KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
 fi
 

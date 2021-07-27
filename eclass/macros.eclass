@@ -3,6 +3,8 @@
 
 # @ECLASS: macros.eclass
 
+_fixperms="/bin/chmod -Rf a+rX,u+w,g-w,o-w"
+
 _rpmconfigdir=/usr/lib/rpm
 rpmmacrodir=${_rpmconfigdir}/macros.d
 rpmluadir=${_rpmconfigdir}/lua

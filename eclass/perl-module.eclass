@@ -376,6 +376,7 @@ perl-module_src_configure() {
 			INSTALLDIRS=vendor \
 			INSTALLMAN3DIR='none' \
 			DESTDIR="${D}" \
+			NO_PACKLIST=1 NO_PERLLOCAL=1 \
 			"${myconf_local[@]}"
 		einfo "perl Makefile.PL" "$@"
 		perl Makefile.PL "$@" <<< "${pm_echovar}" \

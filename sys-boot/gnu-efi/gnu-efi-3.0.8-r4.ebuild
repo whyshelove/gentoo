@@ -26,10 +26,7 @@ RESTRICT="strip"
 
 PATCHES=( "${FILESDIR}"/${PN}-3.0.9-fix-clang-build.patch )
 
-src_unpack() {
-	rhel_src_unpack ${A}
-	mv ${PN}-* ${P}
-}
+S="${WORKDIR}/${P/.8/.6}"
 
 src_prepare() {
 	default

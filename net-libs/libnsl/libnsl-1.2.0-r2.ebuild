@@ -3,18 +3,11 @@
 
 EAPI=7
 
-inherit multilib-minimal
+inherit multilib-minimal rhel
 
 DESCRIPTION="Public client interface for NIS(YP) and NIS+ in a IPv6 ready version"
 HOMEPAGE="https://github.com/thkukuk/libnsl"
-if [[ ${PV} == *8888 ]]; then
-	inherit git-r3
-	EGIT_REPO_URI="${CENTOS_GIT_REPO_URI}/${PN}.git"
-	S="${WORKDIR}/${PN}"
-else
-	inherit rpm
-	MY_PR=${PVR##*r}
-	MY_PF=${PN}2-${PV}-${MY_PR}
+if [[ ${PV} != *8888 ]]; then
 	SRC_URI="${BASEOS}/${MY_PF}.20180605git4a062cf${DIST}.src.rpm"
 fi
 
