@@ -31,11 +31,19 @@ else
 
 		if [ ${CATEGORY} == "dev-python" ] ; then
 			case ${PN} in
-				Babel | pytz) MY_PF=${P,,}-${MY_PR} ;;
+				Babel | pytz | numpy | pyparsing | pyxdg | dbus-python | pycairo) MY_PF=${P,,}-${MY_PR} ;;
+				pyyaml ) MY_PF=${P/pyyaml/PyYAML}-${MY_PR} ;;
+				cython ) MY_PF=${P/c/C}-${MY_PR} ;;
+				jinja ) MY_P=${P/-/2-}; MY_PF=python-${MY_P}-${MY_PR}; S="${WORKDIR}/${MY_P/j/J}" ;;
+				pygobject ) MY_P=${P/-/3-}; MY_PF=${MY_P}-${MY_PR} ;;
+				publicsuffix ) MY_P=${P/-2./-list-}; MY_PF=${MY_P}-${MY_PR}; S="${WORKDIR}/${MY_P}" ;;
 				*) MY_PF=python-${P,,}-${MY_PR} ;;
 			esac
-		elif [ ${CATEGORY} == "dev-perl" ] ; then
-			MY_PF=perl-${P}-${MY_PR}
+		elif [ ${CATEGORY} == "dev-perl" ] || [ ${CATEGORY} == "perl-core" ] ; then
+			[[ -n "${DIST_VERSION}" ]] && MY_PV=${DIST_VERSION}
+			[[ -n "${MODULE_VERSION}" ]] && MY_PV=${MODULE_VERSION}
+			MY_PF=perl-${PN}-${MY_PV}-${MY_PR}
+			[[ ${PN} == Locale-gettext ]] && MY_PF=perl-${PN/Locale-}-${DIST_VERSION}-${MY_PR}
 		else
 			case ${PN} in
 				xz-utils ) MY_P="${PN/-utils}-${PV/_}"; MY_PF=${MY_P}-${MY_PR} ;;
