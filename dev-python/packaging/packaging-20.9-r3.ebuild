@@ -29,6 +29,10 @@ DEPEND="
 
 distutils_enable_tests pytest
 
+src_unpack() {
+	rpm_src_unpack ${A}
+}
+
 python_test() {
 	pytest --capture=no --strict -vv || die
 }

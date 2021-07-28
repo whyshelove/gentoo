@@ -20,3 +20,7 @@ DEPEND="${RDEPEND}
 "
 PATCHES=("${FILESDIR}/${P}-no-dot-inc.patch")
 S="${WORKDIR}/${PN}-${DIST_VERSION}"
+
+src_unpack() {
+	rpm_src_unpack ${A}
+}
