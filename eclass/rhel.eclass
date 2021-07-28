@@ -21,7 +21,7 @@ if [[ ${PV} == *8888 ]]; then
 	S="${WORKDIR}/${PN}"
 else
 	inherit rpm
-	MIRROR="https://mirrors.tuna.tsinghua.edu.cn/centos-vault"
+	if [ -z ${MIRROR} ] ; then MIRROR="https://vault.centos.org"; fi
 	DIST=".el8"
 	RELEASE="8-stream"
 	REPO_URI="${MIRROR}/${RELEASE}/${REPO:-BaseOS}/Source/SPackages"
@@ -32,10 +32,11 @@ else
 		if [ ${CATEGORY} == "dev-python" ] ; then
 			[[ ${PN} == lxml ]] ||  inherit rhel-9
 			case ${PN} in
-				Babel | pytz ) MY_PF=${P,,}-${MY_PR} ;;
+				Babel | pytz | numpy | pyparsing | pyxdg ) MY_PF=${P,,}-${MY_PR} ;;
 				pyyaml ) MY_PF=${P/pyyaml/PyYAML}-${MY_PR} ;;
 				cython ) MY_PF=${P/c/C}-${MY_PR} ;;
 				jinja ) MY_P=${P/-/2-}; MY_PF=python-${MY_P}-${MY_PR}; S="${WORKDIR}/${MY_P/j/J}" ;;
+				pygobject ) MY_P=${P/-/3-}; MY_PF=${MY_P}-${MY_PR} ;;
 				publicsuffix ) MY_P=${P/-2./-list-}; MY_PF=${MY_P}-${MY_PR}; S="${WORKDIR}/${MY_P}" ;;
 				*) MY_PF=python-${P,,}-${MY_PR} ;;
 			esac
