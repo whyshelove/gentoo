@@ -67,6 +67,7 @@ else
 				e2fsprogs-libs ) MY_PF=${P/-libs}-${MY_PR} ;;
 				mit-krb5 ) MY_PF=${P/mit-}-${MY_PR} ;;
 				perl | dbus | gpgme) inherit rhel-9 ; MY_PF=${P}-${MY_PR} ;;
+				go ) MY_PF=${P/-/lang-}-${MY_PR} ;;
 				*) MY_PF=${P}-${MY_PR} ;;
 			esac
 		fi
