@@ -3,7 +3,7 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{6,8,9} )
+PYTHON_COMPAT=( python3_{7,8,9} )
 inherit autotools flag-o-matic linux-info python-any-r1 readme.gentoo-r1 systemd virtualx multilib-minimal rhel
 
 DESCRIPTION="A message bus system, a simple way for applications to talk to each other"
@@ -12,7 +12,7 @@ HOMEPAGE="https://dbus.freedesktop.org/"
 LICENSE="|| ( AFL-2.1 GPL-2 )"
 SLOT="0"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-IUSE="debug doc elogind kernel_linux +selinux static-libs systemd test +user-session X"
+IUSE="debug doc elogind kernel_linux selinux static-libs systemd test user-session X"
 RESTRICT="!test? ( test )"
 
 REQUIRED_USE="?? ( elogind systemd )"
@@ -86,6 +86,9 @@ src_prepare() {
 	fi
 
 	# required for bug 263909, cross-compile so don't remove eautoreconf
+	eautoreconf
+
+	# Avoid rpath.
 	if test -f autogen.sh; then env NOCONFIGURE=1 ./autogen.sh; else autoreconf --verbose --force --install; fi
 }
 
@@ -113,7 +116,7 @@ multilib_src_configure() {
 	# not on an SELinux profile.
 	myconf=(
 		--localstatedir="${EPREFIX}/var"
-		--libexecdir=/usr/libexec/dbus-1
+		--libexecdir=${EPREFIX}/usr/libexec/dbus-1
 		--enable-installed-tests
 		$(use_enable static-libs static)
 		$(use_enable debug verbose-mode)
@@ -133,7 +136,7 @@ multilib_src_configure() {
 		--with-session-socket-dir="${EPREFIX}"/tmp
 		--with-system-pid-file="${EPREFIX}${rundir}"/dbus.pid
 		--with-system-socket="${EPREFIX}${rundir}"/dbus/system_bus_socket
-		--with-systemdsystemunitdir="$(systemd_get_systemunitdir)"
+		--with-systemdsystemunitdir="/usr/$(systemd_get_systemunitdir)"
 		--with-dbus-user=messagebus
 		$(use_with X x)
 	)
@@ -190,14 +193,14 @@ multilib_src_compile() {
 		use selinux && addwrite /selinux/access
 
 		einfo "Running make in ${BUILD_DIR}"
-		emake V=1
+		emake
 
 		if use test; then
 			einfo "Running make in ${TBD}"
-			emake V=1 -C "${TBD}"
+			emake -C "${TBD}"
 		fi
 	else
-		emake V=1 -C dbus libdbus-1.la
+		emake -C dbus libdbus-1.la
 	fi
 }
 
@@ -218,6 +221,26 @@ multilib_src_install() {
 
 multilib_src_install_all() {
 	newinitd "${T}"/dbus.initd dbus
+
+	# Delete upstream units
+	rm -f ${D}${_unitdir}/dbus.{socket,service}
+	rm -f ${D}${_unitdir}/sockets.target.wants/dbus.socket
+	rm -f ${D}${_unitdir}/multi-user.target.wants/dbus.service
+	rm -f ${D}${_userunitdir}/dbus.{socket,service}
+	rm -f ${D}${_userunitdir}/sockets.target.wants/dbus.socket
+
+	# Install downstream units
+	insinto ${_sysconfdir}/X11/xinit/xinitrc.d/
+	insopts -m0755
+	doins "${WORKDIR}"/00-start-message-bus.sh
+
+	systemd_dounit -r "${WORKDIR}"/{"dbus.socket","dbus-daemon.service"}
+	systemd_newuserunit "${WORKDIR}"/dbus.user.socket dbus.socket
+	systemd_newuserunit "${WORKDIR}"/dbus-daemon.user.service dbus-daemon.service
+
+	# Obsolete, but still widely used, for drop-in configuration snippets.
+	dodir ${_sysconfdir}/dbus-1/{"session.d","system.d"}
+	dodir ${_datadir}/dbus-1/interfaces
 
 	if use X; then
 		# dbus X session script (#77504)
@@ -245,6 +268,9 @@ multilib_src_install_all() {
 }
 
 pkg_postinst() {
+	systemd_post dbus.socket dbus-daemon.service
+	systemd_user_post dbus.socket dbus-daemon.service
+
 	readme.gentoo_print_elog
 
 	# Ensure unique id is generated and put it in /etc wrt #370451 but symlink

@@ -55,19 +55,12 @@ RDEPEND="${DEPEND}
 
 S=${WORKDIR}/${MY_P}/src
 
-PATCHES=(
-	"${FILESDIR}/${PN}-1.12_warn_cflags.patch"
-	"${FILESDIR}/${PN}-config_LDFLAGS-r1.patch"
-	"${FILESDIR}/${PN}_dont_create_run.patch"
-	"${FILESDIR}/${PN}-1.18.2-krb5-config.patch"
-)
-
 MULTILIB_CHOST_TOOLS=(
 	/usr/bin/krb5-config
 )
 
 src_unpack() {
-	rpm_unpack ${A} && mkdir -p $S
+	rhel_unpack ${A}
 	sed -i "/Patch7/d" ${WORKDIR}/*.spec
 	rpmbuild --rmsource -bp $WORKDIR/*.spec --nodeps
 }
@@ -77,9 +70,9 @@ src_prepare() {
 	# Make sure we always use the system copies.
 	rm -rf util/{et,ss,verto}
 	sed -i 's:^[[:space:]]*util/verto$::' configure.ac || die
-
+	ln -s  autoconf.h.in ${S}/include/autoconf.h
 	eautoreconf
-	source /usr/lib64/tclConfig.sh
+
 }
 
 src_configure() {
@@ -88,8 +81,9 @@ src_configure() {
 	INCLUDES=-I/usr/include/et
 	CFLAGS="$CFLAGS $DEFINES $INCLUDES"
 	CPPFLAGS="$DEFINES $INCLUDES"
+	append-cflags-fPIC -fstack-protector-all
 	# QA
-	append-flags -fno-strict-aliasing -fPIC -fstack-protector-all
+	append-flags -fno-strict-aliasing 
 	append-flags -fno-strict-overflow
 
 	multilib-minimal_src_configure
@@ -97,7 +91,6 @@ src_configure() {
 
 multilib_src_configure() {
 	ECONF_SOURCE=${S} \
-	WARN_CFLAGS="set" \
 	econf \
 		$(use_with openldap ldap) \
 		"$(multilib_native_use_with test tcl "${EPREFIX}/usr")" \
@@ -113,7 +106,6 @@ multilib_src_configure() {
 		--enable-dns-for-realm \
 		--enable-kdc-lookaside-cache \
 		--with-pam \
-		--with-selinux \
 		--with-prng-alg=os \
 		--with-system-verto \
 		--with-netlib=-lresolv \

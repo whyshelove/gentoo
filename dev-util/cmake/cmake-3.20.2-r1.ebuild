@@ -44,7 +44,7 @@ BDEPEND="
 		dev-python/requests
 		dev-python/sphinx
 	)
-	test? ( app-arch/libarchive[zstd] )
+	test? ( app-arch/libarchive )
 "
 
 SITEFILE="50${PN}-gentoo.el"

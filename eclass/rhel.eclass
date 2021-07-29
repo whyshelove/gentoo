@@ -66,7 +66,7 @@ else
 				gtk-doc-am ) MY_PF=${P/-am}-${MY_PR} ;;
 				e2fsprogs-libs ) MY_PF=${P/-libs}-${MY_PR} ;;
 				mit-krb5 ) MY_PF=${P/mit-}-${MY_PR} ;;
-				perl ) inherit rhel-9 ; MY_PF=${P}-${MY_PR} ;;
+				perl | dbus | gpgme) inherit rhel-9 ; MY_PF=${P}-${MY_PR} ;;
 				*) MY_PF=${P}-${MY_PR} ;;
 			esac
 		fi
@@ -124,6 +124,7 @@ srcrhel_unpack() {
 
 	eshopts_push -s nullglob
 
+	sed -i "/%{gpgverify}/d" ${WORKDIR}/*.spec
 	sed -i "/#!%{__python3}/d" ${WORKDIR}/*.spec
 	sed -i "/@exec_prefix@/d" ${WORKDIR}/*.spec
 	sed -i "/py_provides/d" ${WORKDIR}/*.spec
