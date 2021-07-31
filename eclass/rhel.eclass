@@ -32,7 +32,8 @@ else
 		if [ ${CATEGORY} == "dev-python" ] ; then
 			[[ ${PN} == lxml ]] ||  inherit rhel-9
 			case ${PN} in
-				Babel | pytz | numpy | pyparsing | pyxdg | dbus-python | pycairo) MY_PF=${P,,}-${MY_PR} ;;
+				Babel | pytz | numpy | pyparsing | pyxdg | dbus-python | pycairo \
+				) MY_PF=${P,,}-${MY_PR} ;;
 				pyyaml ) MY_PF=${P/pyyaml/PyYAML}-${MY_PR} ;;
 				cython ) MY_PF=${P/c/C}-${MY_PR} ;;
 				jinja ) MY_P=${P/-/2-}; MY_PF=python-${MY_P}-${MY_PR}; S="${WORKDIR}/${MY_P/j/J}" ;;
@@ -60,13 +61,13 @@ else
 				openssh ) PARCH=${P/_}; MY_PF=${PARCH}-${MY_PR} ;;
 				lcms | gnupg | grub | libnsl ) MY_P=${P/-/2-}; MY_PF=${MY_P}-${MY_PR} ;;
 				procps ) MY_P=${P/-/-x11-}; MY_PF=${MY_P}-${MY_PR} ;;
-				xorg-server | glib ) MY_P=${P/-/2-}; MY_PF=${MY_P}-${MY_PR} ;;
+				xorg-server | glib | librsvg ) MY_P=${P/-/2-}; MY_PF=${MY_P}-${MY_PR} ;;
 				mpc ) MY_PF=lib${P}-${MY_PR}.1 ;;
 				docbook-xsl-stylesheets ) MY_PF=docbook-style-xsl-${PV}-${MY_PR} ;;
 				gtk-doc-am ) MY_PF=${P/-am}-${MY_PR} ;;
 				e2fsprogs-libs ) MY_PF=${P/-libs}-${MY_PR} ;;
 				mit-krb5 ) MY_PF=${P/mit-}-${MY_PR} ;;
-				perl | dbus | gpgme) inherit rhel-9 ; MY_PF=${P}-${MY_PR} ;;
+				perl | dbus | gpgme | libxcrypt ) inherit rhel-9 ; MY_PF=${P}-${MY_PR} ;;
 				go ) MY_PF=${P/-/lang-}-${MY_PR} ;;
 				cunit ) MY_PF=${P/cu/CU}-${MY_PR} ;;
 				gtk+ ) MY_P=${P/+/$(ver_cut 1)}; MY_PF=${MY_P}-${MY_PR} ;;

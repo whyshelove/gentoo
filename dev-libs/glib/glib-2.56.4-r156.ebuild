@@ -217,6 +217,8 @@ multilib_src_install_all() {
 	rm "${ED}usr/share/man/man1/glib-mkenums.1" || die
 	rm "${ED}usr/bin/gtester-report" || die
 	rm "${ED}usr/share/man/man1/gtester-report.1" || die
+	rm "${ED}usr/bin/gdbus-codegen" || die
+ 	rm "${ED}usr/share/man/man1/gdbus-codegen.1" || die
 
 	# Do not install charset.alias even if generated, leave it to libiconv
 	rm -f "${ED}/usr/$(get_libdir)/charset.alias"

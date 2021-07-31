@@ -883,6 +883,7 @@ glibc_do_configure() {
 		--enable-tunables
 		--without-cvs
 		--disable-werror
+		--disable-crypt
 		--enable-bind-now
 		--build=${CBUILD_OPT:-${CBUILD}}
 		--host=${CTARGET_OPT:-${CTARGET}}
