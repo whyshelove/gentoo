@@ -16,9 +16,9 @@ inherit macros
 
 if [[ ${PV} == *8888 ]]; then
 	inherit git-r3
-	CENTOS_GIT_REPO_URI="https://git.centos.org/rpms"
+	CENTOS_GIT_REPO_URI="https://gitlab.com/redhat/centos-stream/src"
 	EGIT_REPO_URI="${CENTOS_GIT_REPO_URI}/${PN}.git"
-	S="${WORKDIR}/${PN}"
+	S="${WORKDIR}/${P}"
 else
 	inherit rpm
 	if [ -z ${MIRROR} ] ; then MIRROR="https://vault.centos.org"; fi
@@ -147,6 +147,7 @@ srcrhel_unpack() {
 # archives in a source rpm, then the sub archives will be unpacked as well.
 rhel_src_unpack() {
 	if [[ ${PV} == *8888 ]]; then
+		git-r3_src_unpack
 		return 0
 	fi
 	local a
