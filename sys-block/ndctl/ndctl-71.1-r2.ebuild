@@ -63,5 +63,5 @@ src_test() {
 src_install() {
 	default
 
-	use bash-completion && bashcomp_alias ndctl daxctl
+	bashcomp_alias ndctl daxctl
 }
