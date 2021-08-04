@@ -11,7 +11,7 @@ SRC_URI="https://download.gnome.org/sources/libgudev/${PV}/${P}.tar.xz"
 
 LICENSE="LGPL-2.1+"
 SLOT="0/0"
-KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
+KEYWORDS="~amd64 ~arm64 ~mips ~ppc64 ~x86"
 IUSE="introspection static-libs test"
 RESTRICT="!test? ( test )"
 
@@ -43,4 +43,12 @@ multilib_src_configure() {
 		-Dvapi=disabled
 	)
 	meson_src_configure
+}
+
+src_test() {
+	# libsandbox interferes somehow.
+	# There are no access violations, but tests fail.
+	# https://bugs.gentoo.org/805449
+	local -x SANDBOX_ON=0
+	meson-multilib_src_test
 }

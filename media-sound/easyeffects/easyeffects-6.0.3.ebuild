@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit gnome2-utils meson toolchain-funcs
+inherit gnome2-utils flag-o-matic meson toolchain-funcs
 
 DESCRIPTION="Limiter, auto volume and many other plugins for PipeWire applications"
 HOMEPAGE="https://github.com/wwmm/easyeffects"
@@ -36,7 +36,7 @@ DEPEND=">=dev-cpp/glibmm-2.68:2.68
 	>=media-libs/zita-convolver-3.0.0
 	>=media-video/pipewire-0.3.31
 	sci-libs/fftw:3.0
-	>=x11-libs/gtk+-4.2.1:4"
+	>=gui-libs/gtk-4.2.1:4"
 RDEPEND="${DEPEND}
 	gnome-extra/yelp
 	>=media-libs/lsp-plugins-1.1.24[lv2]
