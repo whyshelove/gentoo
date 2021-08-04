@@ -13,7 +13,6 @@ PYVER=$(ver_cut 1-2)
 DESCRIPTION="An interpreted, interactive, object-oriented programming language"
 HOMEPAGE="https://www.python.org/"
 if [[ ${PV} != *8888 ]]; then
-	MY_PR=${PVR##*p}
 	MY_PF=${PN}3-${PV%_p*}-${MY_PR}
 	SRC_URI="${REPO_URI}/${MY_PF}${DIST}.src.rpm"
 	S="${WORKDIR}/${MY_P}"
@@ -58,11 +57,27 @@ BDEPEND="
 PDEPEND="app-eselect/eselect-python"
 RDEPEND+=" !build? ( app-misc/mime-types )"
 
+src_unpack() {
+	rpm_src_unpack ${A}
+	rm ${WORKDIR}/{"00329-fips.patch","00132-add-rpmbuild-hooks-to-unittest.patch","00251-change-user-install-location.patch"}
+}
+
 src_prepare() {
 	# Ensure that internal copies of expat, libffi and zlib are not used.
 	rm -fr Modules/expat || die
 	rm -fr Modules/_ctypes/libffi* || die
 	rm -fr Modules/zlib || die
+
+	rm Lib/ensurepip/_bundled/*.whl || die
+	find -name '*.exe' -print -delete || die
+	rm configure pyconfig.h.in || die
+
+	git apply ${WORKDIR}/00351-avoid-infinite-loop-in-the-tarfile-module.patch || die
+	rm ${WORKDIR}/00351-avoid-infinite-loop-in-the-tarfile-module.patch
+
+	local PATCHES=(
+		${WORKDIR}
+	)
 
 	default
 
@@ -84,6 +99,8 @@ src_prepare() {
 	sed -i -e "/self\.parallel/s:True:${jobs}:" setup.py || die
 
 	eautoreconf
+	eautoconf
+	eautoheader
 }
 
 src_configure() {
@@ -126,7 +143,7 @@ src_configure() {
 
 	local dbmliborder
 	if use gdbm; then
-		dbmliborder+="${dbmliborder:+:}gdbm"
+		dbmliborder+="${dbmliborder:+:}gdbm:ndbm:bdb"
 	fi
 
 	local myeconfargs=(
@@ -159,16 +176,14 @@ src_configure() {
 		eerror "Please ensure that /dev/shm is mounted as a tmpfs with mode 1777."
 		die "Broken sem_open function (bug 496328)"
 	fi
-	export CFLAGS="$CFLAGS -D_GNU_SOURCE -fPIC -fwrapv"
-	export CFLAGS_NODIST="$CFLAGS -D_GNU_SOURCE -fPIC -fwrapv -fno-semantic-interposition"
-	export CXXFLAGS="$CXXFLAGS -D_GNU_SOURCE -fPIC -fwrapv"
+
+	append-flags -D_GNU_SOURCE -fPIC
+
+	export CFLAGS_NODIST="$CFLAGS -fno-semantic-interposition"
 	export CPPFLAGS="$(pkg-config --cflags-only-I libffi)"
-	export OPT="$CFLAGS -D_GNU_SOURCE -fPIC -fwrapv"
-	export LINKCC="gcc"
 	export CFLAGS="$CFLAGS $(pkg-config --cflags openssl)"
 	export LDFLAGS="$LDFLAGS -g $(pkg-config --libs-only-L openssl)"
 	export LDFLAGS_NODIST="$LDFLAGS -fno-semantic-interposition -g $(pkg-config --libs-only-L openssl)"
-
 }
 
 src_compile() {

@@ -72,6 +72,7 @@ else
 				cunit ) MY_PF=${P/cu/CU}-${MY_PR} ;;
 				gtk+ ) MY_P=${P/+/$(ver_cut 1)}; MY_PF=${MY_P}-${MY_PR} ;;
 				libusb ) MY_PF=${P/-/x-}-${MY_PR} ;;
+				python ) MY_PR=${PVR##*p}; MY_P=${P%_p*}; MY_PF=${MY_P/-/3$(ver_cut 2)-}-${MY_PR} ;;
 				*) MY_PF=${P}-${MY_PR} ;;
 			esac
 		fi
@@ -95,7 +96,14 @@ rpm_clean() {
 # Unpack the contents of the specified Red Hat Enterprise Linux Series rpms like the unpack() function.
 rhel_unpack() {
 	[[ $# -eq 0 ]] && set -- ${A}
-	rpm_unpack "$@"
+
+	local a
+	for a in ${A} ; do
+		case ${a} in
+		*.rpm) [[ ${a} =~ ".rpm" ]] && 	rpm_unpack "${a}" ;;
+		*)     unpack "${a}" ;;
+		esac
+	done
 
 	RPMBUILD=$HOME/rpmbuild
 	mkdir -p $RPMBUILD
