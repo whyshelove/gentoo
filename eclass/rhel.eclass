@@ -51,7 +51,7 @@ else
 			case ${PN} in
 				xz-utils ) MY_P="${PN/-utils}-${PV/_}"; MY_PF=${MY_P}-${MY_PR} ;;
 				libpcre* ) MY_P=${P/lib}; MY_PF=${MY_P}-${MY_PR} ;;
-				iproute2 ) MY_PR=0; MY_PF=${P/2}-${MY_PR} ;;
+				iproute2 ) MY_PF=${P/2}-${MY_PR} ;;
 				shadow ) MY_PF=${P/-/-utils-}-${MY_PR} ;;
 				thin-provisioning-tools ) MY_PF=device-mapper-persistent-data-${PV}-${MY_PR} ;;
 				xorg-proto ) MY_PF=${PN/-/-x11-}-devel-${PV}-${MY_PR} ;;
@@ -59,15 +59,16 @@ else
 				ninja) MY_PF=${P/-/-build-}-${MY_PR} ;;
 				procps ) MY_P=${P/-/-ng-}; MY_PF=${MY_P}-${MY_PR} ;;
 				openssh ) PARCH=${P/_}; MY_PF=${PARCH}-${MY_PR} ;;
-				lcms | gnupg | grub | libnsl ) MY_P=${P/-/2-}; MY_PF=${MY_P}-${MY_PR} ;;
+				lcms | gnupg | grub | libnl | glib | librsvg) \
+				[[ ${PN} == libnl ]] && inherit rhel-9; MY_P=${P/-/$(ver_cut 1)-}; MY_PF=${MY_P}-${MY_PR} ;;
+				libnsl ) MY_P=${P/-/2-}; MY_PF=${MY_P}-${MY_PR} ;;
 				procps ) MY_P=${P/-/-x11-}; MY_PF=${MY_P}-${MY_PR} ;;
-				xorg-server | glib | librsvg ) MY_P=${P/-/2-}; MY_PF=${MY_P}-${MY_PR} ;;
 				mpc ) MY_PF=lib${P}-${MY_PR}.1 ;;
 				docbook-xsl-stylesheets ) MY_PF=docbook-style-xsl-${PV}-${MY_PR} ;;
 				gtk-doc-am ) MY_PF=${P/-am}-${MY_PR} ;;
 				e2fsprogs-libs ) MY_PF=${P/-libs}-${MY_PR} ;;
 				mit-krb5 ) MY_PF=${P/mit-}-${MY_PR} ;;
-				perl | dbus | gpgme | libxcrypt ) inherit rhel-9 ; MY_PF=${P}-${MY_PR} ;;
+				perl | dbus | gpgme | libxcrypt | ipset | jansson | pinentry) inherit rhel-9 ; MY_PF=${P}-${MY_PR} ;;
 				go ) MY_PF=${P/-/lang-}-${MY_PR} ;;
 				cunit ) MY_PF=${P/cu/CU}-${MY_PR} ;;
 				gtk+ ) MY_P=${P/+/$(ver_cut 1)}; MY_PF=${MY_P}-${MY_PR} ;;

@@ -8,7 +8,6 @@ _fixperms="/bin/chmod -Rf a+rX,u+w,g-w,o-w"
 _rpmconfigdir=/usr/lib/rpm
 rpmmacrodir=${_rpmconfigdir}/macros.d
 rpmluadir=${_rpmconfigdir}/lua
-rubygems_dir=${_datadir}/rubygems
 
 _usr=/usr
 _var=/var
@@ -39,30 +38,28 @@ _unitdir=${_prefix}/lib/systemd/system
 _userunitdir=${_prefix}/lib/systemd/user
 _presetdir=/lib/systemd/system-preset
 
+rubygems_dir=${_datadir}/rubygems
+
 systemd_post(){
-	if [ $1 -eq 1 ] ; then 
-		# Initial installation 
-		systemctl --no-reload preset  &>/dev/null
-	fi 
+	# Initial installation 
+	[[ $# -eq 0 ]] && set -- ${A}
+	systemctl enable "$@"
 }
 
 systemd_preun(){
-	if [ $1 -eq 0 ] ; then 
-		# Package removal, not upgrade 
-		systemctl --no-reload disable --now  &>/dev/null
-	fi
+	# Package removal, not upgrade 
+	[[ $# -eq 0 ]] && set -- ${A}
+	systemctl disable "$@"
 }
 
 systemd_postun_with_restart(){
-	if [ $1 -ge 1 ] ; then 
-		# Package upgrade, not uninstall 
-		systemctl try-restart  &>/dev/null
-	fi 
+	# Package upgrade, not uninstall
+	[[ $# -eq 0 ]] && set -- ${A} 
+	systemctl restart "$@"
 }
 
 systemd_user_post(){
-	if [ $1 -eq 1 ] ; then 
-		# Initial installation 
-		systemctl --no-reload preset \--global  &>/dev/null
-	fi 
+	# Initial installation 
+	[[ $# -eq 0 ]] && set -- ${A}
+	systemctl --user enable "$@"
 }
