@@ -16,7 +16,6 @@ if [[ ${PV} == 9999 ]] ; then
 	EGIT_REPO_URI+="https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git"
 else
 	KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux"
-	SRC_URI+="https://dev.gentoo.org/~polynomial-c/${MY_P}-manpages.tar.xz"
 	S="${WORKDIR}/${MY_P}"
 fi
 
@@ -30,7 +29,6 @@ IUSE="audit build caps +cramfs cryptsetup fdformat hardlink kill +logger magic n
 # Most lib deps here are related to programs rather than our libs,
 # so we rarely need to specify ${MULTILIB_USEDEP}.
 RDEPEND="
-	virtual/libcrypt:=
 	audit? ( >=sys-process/audit-2.6:= )
 	caps? ( sys-libs/libcap-ng )
 	cramfs? ( sys-libs/zlib:= )
@@ -87,8 +85,7 @@ RESTRICT="!test? ( test )"
 S="${WORKDIR}/${MY_P}"
 
 PATCHES=(
-	# https://github.com/karelzak/util-linux/pull/1329
-	"${FILESDIR}/${P}-ppc-nortas.patch"
+	"${FILESDIR}"/${PN}-2.37.1-lscpu_nullptr.patch
 )
 
 rm_man() {
@@ -118,14 +115,6 @@ src_prepare() {
 	if [[ ${PV} == 9999 ]] ; then
 		po/update-potfiles
 		eautoreconf
-	else
-		# Conditionally remove some man-pages
-		use hardlink 	|| rm_man "hardlink"
-		use kill 	|| rm_man "kill"
-		use logger 	|| rm_man "logger"
-		use ncurses 	|| rm_man "pg"
-		use su 		|| rm_man "su"
-		use tty-helpers	|| rm_man "mesg wall write"
 	fi
 
 	elibtoolize
@@ -338,10 +327,6 @@ multilib_src_install_all() {
 
 	# e2fsprogs-libs didnt install .la files, and .pc work fine
 	find "${ED}" -name "*.la" -delete || die
-
-	if [[ ${PV} != 9999 ]] ; then
-		doman "${WORKDIR}"/man/man*/*
-	fi
 
 	if ! use userland_GNU ; then
 		# manpage collisions

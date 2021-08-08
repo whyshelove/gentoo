@@ -43,8 +43,7 @@ src_prepare() {
 	sed -e '/CFLAGS=/s: -ggdb3::' \
 		-i configure.ac || die
 
-	eautoreconf
-	autoreconf -ifv
+	eautoreconf -ifv
 }
 
 multilib_src_configure() {

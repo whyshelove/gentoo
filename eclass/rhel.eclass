@@ -57,6 +57,7 @@ else
 				thin-provisioning-tools ) MY_PF=device-mapper-persistent-data-${PV}-${MY_PR} ;;
 				xorg-proto ) MY_PF=${PN/-/-x11-}-devel-${PV}-${MY_PR} ;;
 				webkit-gtk ) MY_PF=${P/-gtk/2gtk3}-${MY_PR} ;;
+				ninja ) MY_PF=${P/-/-build-}-${MY_PR} ;;
 				udisks | lcms | openjpeg | glib | librsvg ) MY_PF=${P/-/2-}-${MY_PR} ;;
 				binutils-libs ) MY_PF=${P/-libs}-${MY_PR} ;;
 				gdk-pixbuf ) MY_PF=${P/gdk-pixbuf/gdk-pixbuf2}-${MY_PR} ;;

@@ -7,15 +7,13 @@ inherit flag-o-matic systemd toolchain-funcs udev usr-ldscript rhel
 
 DESCRIPTION="Standard EXT2/EXT3/EXT4 filesystem utilities"
 HOMEPAGE="http://e2fsprogs.sourceforge.net/"
-if [[ ${PV} != *8888 ]]; then
-	SRC_URI="${SRC_URI}
+SRC_URI="${SRC_URI}
 	elibc_mintlib? ( mirror://gentoo/${PN}-1.42.9-mint-r1.patch.xz )"
-fi
 
 LICENSE="GPL-2 BSD"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
-IUSE="cron fuse nls static-libs elibc_FreeBSD"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc x86 ~amd64-linux ~x86-linux"
+IUSE="cron fuse lto nls static-libs +threads elibc_FreeBSD"
 
 RDEPEND="~sys-libs/${PN}-libs-${PV}
 	>=sys-apps/util-linux-2.16
@@ -79,7 +77,6 @@ src_configure() {
 		--enable-symlink-install
 		--enable-elf-shlibs
 		$(tc-has-tls || echo --disable-tls)
-		--without-included-gettext
 		$(use_enable fuse fuse2fs)
 		$(use_enable nls)
 		--disable-libblkid
@@ -87,6 +84,8 @@ src_configure() {
 		--disable-fsck
 		--disable-uuidd
 		--disable-e2initrd-helper
+		$(use_enable lto)
+		$(use_with threads pthread)
 	)
 	ac_cv_path_LDCONFIG=: econf "${myeconfargs[@]}"
 

@@ -3,9 +3,6 @@
 
 EAPI=7
 
-MY_PR=${PVR##*r}
-MY_PF=${PN}-build-${PV}-${MY_PR}
-
 PYTHON_COMPAT=( python3_{7,8,9} )
 
 inherit bash-completion-r1 elisp-common python-any-r1 toolchain-funcs rhel-c

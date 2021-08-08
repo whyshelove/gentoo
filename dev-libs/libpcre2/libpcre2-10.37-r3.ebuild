@@ -5,17 +5,19 @@ EAPI=7
 
 inherit libtool multilib-minimal usr-ldscript rhel
 
+PATCH_SET="${PN}-10.36-patchset-01.tar.xz"
+
 DESCRIPTION="Perl-compatible regular expression library"
 HOMEPAGE="https://www.pcre.org/"
 
-if [[ ${PV} != *8888 ]]; then
-	SRC_URI="${SRC_URI}/${MY_PF}${DIST}.1.src.rpm"
-	S="${WORKDIR}/${MY_P}"
+if [[ -n "${PATCH_SET}" ]] ; then
+	SRC_URI+=" https://dev.gentoo.org/~whissi/dist/${PN}/${PATCH_SET}
+		https://dev.gentoo.org/~polynomial-c/dist/${PATCH_SET}"
 fi
 
 LICENSE="BSD"
-SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+SLOT="0/3" # libpcre2-posix.so version
+KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 IUSE="bzip2 +jit libedit +pcre16 pcre32 +readline +recursion-limit static-libs unicode zlib"
 REQUIRED_USE="?? ( libedit readline )"
 
@@ -30,6 +32,12 @@ RDEPEND="
 	zlib? ( sys-libs/zlib )
 "
 DEPEND="${RDEPEND}"
+
+S="${WORKDIR}/${MY_P}"
+
+PATCHES=(
+	"${WORKDIR}"/patches/pcre2-10.33-003-Fix-crash-when-X-is-used-without-UTF-in-JIT.patch
+)
 
 MULTILIB_CHOST_TOOLS=(
 	/usr/bin/pcre2-config
@@ -53,7 +61,6 @@ multilib_src_configure() {
 		--enable-newline-is-lf
 		--enable-percent-zt
 		--disable-rebuild-chartables
-		--disable-silent-rules
 		--disable-valgrind
 		--disable-jit-sealloc
 		--enable-pcre2grep-callout

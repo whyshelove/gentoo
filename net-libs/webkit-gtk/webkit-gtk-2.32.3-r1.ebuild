@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-PYTHON_COMPAT=( python3_{7..9} )
-USE_RUBY="ruby24 ruby25 ruby26 ruby27 ruby30"
+PYTHON_COMPAT=( python3_{8..10} )
+USE_RUBY="ruby26 ruby27 ruby30"
 
 inherit check-reqs cmake flag-o-matic gnome2 pax-utils python-any-r1 ruby-single toolchain-funcs virtualx rhel-a
 
@@ -13,7 +13,7 @@ HOMEPAGE="https://www.webkitgtk.org"
 
 LICENSE="LGPL-2+ BSD"
 SLOT="4/37" # soname version of libwebkit2gtk-4.0
-KEYWORDS="amd64 arm arm64 ppc64 ~sparc x86"
+KEYWORDS="amd64 arm arm64 ~ppc ppc64 ~riscv ~sparc x86"
 
 IUSE="aqua +egl examples gamepad +geolocation gles2-only gnome-keyring +gstreamer gtk-doc +introspection +jpeg2k +jumbo-build libnotify +opengl seccomp spell systemd wayland +X"
 
@@ -81,7 +81,7 @@ RDEPEND="
 	dev-libs/hyphen
 	jpeg2k? ( >=media-libs/openjpeg-2.2.0:2= )
 
-	egl? ( media-libs/mesa[egl] )
+	egl? ( media-libs/mesa[egl(+)] )
 	gles2-only? ( media-libs/mesa[gles2] )
 	opengl? ( virtual/opengl )
 	wayland? (
@@ -172,7 +172,6 @@ pkg_setup() {
 
 src_prepare() {
 	eapply "${FILESDIR}"/2.28.2-opengl-without-X-fixes.patch
-	eapply "${FILESDIR}"/${PV}-Properly-use-CompletionHandler-when-USE_OPENGL_OR_ES.patch
 	cmake_src_prepare
 	gnome2_src_prepare
 }
