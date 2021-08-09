@@ -7,9 +7,6 @@ inherit libtool multilib-minimal rhel
 
 DESCRIPTION="A secure communications library implementing the SSL, TLS and DTLS protocols"
 HOMEPAGE="https://www.gnutls.org/"
-if [[ ${PV} != *8888 ]]; then
-	SRC_URI="${REPO_URI}/${MY_PF}${DIST}_3.src.rpm"
-fi
 
 LICENSE="GPL-3 LGPL-2.1+"
 SLOT="0/30" # libgnutls.so number

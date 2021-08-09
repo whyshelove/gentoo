@@ -7,9 +7,6 @@ inherit autotools multilib-build multilib-minimal toolchain-funcs rhel
 
 DESCRIPTION="Low-level cryptographic library"
 HOMEPAGE="http://www.lysator.liu.se/~nisse/nettle/"
-if [[ ${PV} != *8888 ]]; then
-	SRC_URI="${REPO_URI}/${MY_PF}${DIST}_3.src.rpm"
-fi
 
 LICENSE="|| ( LGPL-3 LGPL-2.1 )"
 SLOT="0/8-6" # subslot = libnettle - libhogweed soname version

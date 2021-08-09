@@ -5,8 +5,9 @@ EAPI=7
 
 inherit eutils rpm
 
-BaseOS="https://vault.centos.org/8-stream/BaseOS/Source/SPackages"
+BaseOS="http://mirror.centos.org/centos/8-stream/BaseOS/x86_64/os/Packages"
 AppStream="http://mirror.centos.org/centos/8-stream/AppStream/x86_64/os/Packages"
+SRC_URI="${SRC_URI} ${BaseOS}/rootfiles-8.1-22.el8.noarch.rpm"
 SRC_URI="${SRC_URI} ${AppStream}/python36-rpm-macros-3.6.8-37.module_el8.5.0+771+e5d9a225.noarch.rpm"
 SRC_URI="${SRC_URI} ${AppStream}/python38-rpm-macros-3.8.8-2.module_el8.5.0+765+e829a51d.noarch.rpm"
 SRC_URI="${SRC_URI} ${AppStream}/python2-rpm-macros-3-38.module_el8.5.0+743+cd2f5d28.noarch.rpm"
