@@ -70,12 +70,13 @@ else
 				e2fsprogs-libs ) MY_PF=${P/-libs}-${MY_PR} ;;
 				mit-krb5 ) MY_PF=${P/mit-}-${MY_PR} ;;
 				gdk-pixbuf ) inherit rhel-9 ;MY_PF=${P/gdk-pixbuf/gdk-pixbuf2}-${MY_PR} ;;
+				tiff ) inherit rhel-9 ;MY_PF=lib${P}-${MY_PR} ;;
 				perl | dbus | gpgme | libxcrypt | ipset | jansson | pinentry | libogg | libatomic_ops \
 				| fribidi | libX11 | libICE | libXfixes | libXcursor | libXcomposite | libXdamage \
 				| xcb-util-keysyms | xcb-util-renderutil | xcb-util-wm | libXxf86vm | libXtst \
 				| xcb-util | xcb-util-image | libXt | xauth | libXpm | flac | libXaw | dconf \
-				| atk | vala | cairo | libXft | harfbuzz | libinput | at-spi2-core | at-spi2-atk \
-				| polkit | xdg-utils ) inherit rhel-9 ; MY_PF=${P}-${MY_PR} ;;
+				| atk | vala | cairo | harfbuzz | libinput | at-spi2-core | at-spi2-atk \
+				| polkit | xdg-utils | icu | libevdev | graphite2 | libXmu ) inherit rhel-9 ; MY_PF=${P}-${MY_PR} ;;
 				go ) MY_PF=${P/-/lang-}-${MY_PR} ;;
 				cunit ) MY_PF=${P/cu/CU}-${MY_PR} ;;
 				gtk+ ) MY_P=${P/+/$(ver_cut 1)}; MY_PF=${MY_P}-${MY_PR} ;;
