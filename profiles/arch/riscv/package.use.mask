@@ -1,6 +1,18 @@
 # Copyright 2019-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
+# Alex Fan <alexfanqi@yahoo.com> (2021-08-05)
+# pdfannotextractor depends on java, not (sustainably) supported yet
+app-text/texlive pdfannotextractor
+
+# Yixun Lan <dlan@gentoo.org> (2021-08-05)
+# Boost.Context can be built on riscv
+dev-libs/boost -context
+
+# Ye Cao <ye.c@rioslab.org> (2021-07-31)
+# Dependencies not keyworded, not tested
+dev-util/perf unwind
+
 # Marek Szuba <marecki@gentoo.org> (2021-07-28)
 # app-cdr/cdrtools fails to compile on riscv
 dev-util/catalyst iso
@@ -65,8 +77,8 @@ dev-python/ipython nbconvert notebook
 
 # Marek Szuba <marecki@gentoo.org> (2021-07-05)
 # Dependencies not keyworded here yet:
-#  - gnome-base/gconf, dev-libs/libotf & dev-libs/m17n-lib, net-libs/webkit-gtk
-app-editors/emacs gconf m17n-lib xwidgets
+#  - gnome-base/gconf, dev-libs/libotf & dev-libs/m17n-lib
+app-editors/emacs gconf m17n-lib
 #  - net-fs/openafs
 app-crypt/heimdal afs
 #  - app-xemacs/ruby-modes (and by extension xemacs itself)
@@ -83,6 +95,8 @@ dev-vcs/subversion kwallet
 media-libs/allegro dumb openal
 #  - media-gfx/nvidia-texture-tools
 media-libs/devil nvtt
+#  - media-libs/libcddb
+dev-libs/libcdio cddb
 #  - sys-cluster/ceph, dev-ruby/rrdtool-bindings
 net-analyzer/rrdtool rados ruby
 #  - net-wireless/iwd, net-misc/ofono
@@ -103,10 +117,10 @@ media-libs/libsdl2 nas pulseaudio
 media-libs/libcaca doc imlib
 dev-libs/libbytesize test
 sys-libs/libblockdev dmraid escrow
-app-misc/geoclue modemmanager zeroconf
-dev-libs/libgdata gnome-online-accounts
-gnome-base/gvfs bluray cdda gnome-online-accounts google mtp ios zeroconf
+app-misc/geoclue modemmanager
+gnome-base/gvfs bluray cdda mtp ios
 sys-power/upower ios
+net-libs/gnome-online-accounts gnome
 net-libs/webkit-gtk gstreamer
 xfce-base/xfce4-settings libcanberra
 xfce-extra/tumbler epub ffmpeg gstreamer odf pdf raw
@@ -132,7 +146,7 @@ x11-base/xwayland unwind
 
 # Yixun Lan <dlan@gentoo.org> (2021-05-19)
 # Dependencies not keyworded, not tested
-net-libs/libproxy spidermonkey webkit kde networkmanager
+net-libs/libproxy spidermonkey kde networkmanager
 
 # Sam James <sam@gentoo.org> (2021-03-11)
 # Yixun Lan <dlan@gentoo.org> (2021-07-27)
