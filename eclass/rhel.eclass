@@ -51,7 +51,7 @@ else
 				libpcre* ) MY_P=${P/lib}; MY_PF=${MY_P}-${MY_PR} ;;	
 				iproute2 ) MY_PF=${P/2}-${MY_PR} ;;
 				tiff ) MY_PF=lib${P}-${MY_PR} ;;
-				xauth ) MY_PF=xorg-x11-${P}-${MY_PR} ;;
+				xauth | xbitmaps ) MY_PF=xorg-x11-${P}-${MY_PR} ;;
 				sysprof-capture ) MY_PF=${P/-capture}-${MY_PR} ;;
 				shadow ) MY_PF=${P/-/-utils-}-${MY_PR} ;;
 				thin-provisioning-tools ) MY_PF=device-mapper-persistent-data-${PV}-${MY_PR} ;;
