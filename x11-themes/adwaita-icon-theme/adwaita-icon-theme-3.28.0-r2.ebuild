@@ -34,14 +34,6 @@ DEPEND="${COMMON_DEPEND}
 RESTRICT="binchecks strip"
 
 src_prepare() {
-	if use branding; then
-		for i in 16 22 24 32 48; do
-			cp "${WORKDIR}"/tango-gentoo-v1.1/${i}x${i}/gentoo.png \
-			"${S}"/Adwaita/${i}x${i}/places/start-here.png \
-			|| die "Copying gentoo logos failed"
-		done
-	fi
-
 	# Install cursors in the right place used in Gentoo
 	sed -e 's:^\(cursordir.*\)icons\(.*\):\1cursors/xorg-x11\2:' \
 		-i "${S}"/Makefile.am \

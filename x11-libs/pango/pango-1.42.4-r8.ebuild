@@ -40,11 +40,6 @@ DEPEND="${RDEPEND}
 	!<=sys-devel/autoconf-2.63:2.5
 "
 
-PATCHES=(
-	"${WORKDIR}"/patches/ # bug fix cherry-picks from master by 20190216; each patch has commit id of origin/master included and will be part of 1.43.1/1.44
-	"${FILESDIR}"/${PV}-CVE-2019-1010238.patch
-)
-
 src_prepare() {
 	gnome2_src_prepare
 	# This should be updated if next release fails to pre-generate the manpage as well, or src_prepare removed if is properly generated
