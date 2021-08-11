@@ -5,7 +5,7 @@ EAPI=6
 
 DIST_AUTHOR=SHLOMIF
 DIST_VERSION=2.72
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="Work with IO sockets in ipv6"
 

@@ -6,7 +6,7 @@ EAPI=8
 DIST_AUTHOR=SULLR
 DIST_VERSION=2.070
 DIST_EXAMPLES=("example/*")
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="Nearly transparent SSL encapsulation for IO::Socket::INET"
 

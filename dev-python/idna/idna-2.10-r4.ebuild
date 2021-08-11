@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{7,8,9} pypy3 )
 
-inherit distutils-r1 rhel
+inherit distutils-r1 rhel9
 
 DESCRIPTION="Internationalized Domain Names in Applications (IDNA)"
 HOMEPAGE="https://github.com/kjd/idna https://pypi.org/project/idna/"

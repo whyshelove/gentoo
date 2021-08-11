@@ -5,7 +5,7 @@ EAPI=6
 
 DIST_AUTHOR=SBURKE
 DIST_VERSION=1.30
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="Plain ASCII transliterations of Unicode text"
 

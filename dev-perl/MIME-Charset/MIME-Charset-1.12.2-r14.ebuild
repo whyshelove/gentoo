@@ -5,7 +5,7 @@ EAPI=6
 
 DIST_AUTHOR=NEZUMI
 DIST_VERSION=1.012.2
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="Charset Informations for MIME"
 

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools multilib-minimal flag-o-matic rhel-a
+inherit autotools multilib-minimal flag-o-matic rhel9-a
 
 DESCRIPTION="Tag Image File Format (TIFF) library"
 HOMEPAGE="http://libtiff.maptools.org"

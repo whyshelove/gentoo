@@ -5,7 +5,7 @@ EAPI=7
 
 DIST_AUTHOR=PETDANCE
 DIST_VERSION=3.20
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="Data tables useful in parsing HTML"
 

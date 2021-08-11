@@ -6,7 +6,7 @@ EAPI=7
 DIST_AUTHOR=NEZUMI
 DIST_VERSION=2019.001
 
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="UAX #14 Unicode Line Breaking Algorithm"
 

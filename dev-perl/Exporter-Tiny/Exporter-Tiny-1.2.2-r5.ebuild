@@ -6,7 +6,7 @@ EAPI=7
 DIST_AUTHOR=TOBYINK
 DIST_VERSION=1.002002
 DIST_EXAMPLES=( "examples/*" )
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="An exporter with the features of Sub::Exporter but only core dependencies"
 

@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
-inherit autotools rhel-a
+inherit autotools rhel9-a
 
 MY_P="${P/_/-}"
 

@@ -5,7 +5,7 @@ EAPI=8
 
 DIST_AUTHOR=OALDERS
 DIST_VERSION=6.04
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="Media types and mailcap processing"
 

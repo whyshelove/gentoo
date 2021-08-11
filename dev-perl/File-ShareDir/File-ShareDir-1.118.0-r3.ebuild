@@ -5,7 +5,7 @@ EAPI=7
 
 DIST_AUTHOR=REHSACK
 DIST_VERSION=1.118
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="Locate per-dist and per-module shared files"
 

@@ -8,7 +8,7 @@ DIST_VERSION=0.4231
 inherit perl-module
 
 DIST_VERSION=0.42.31
-inherit rhel-a
+inherit rhel9-a
 
 DESCRIPTION="Build and install Perl modules"
 

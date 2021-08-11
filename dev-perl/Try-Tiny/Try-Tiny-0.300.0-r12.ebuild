@@ -5,7 +5,7 @@ EAPI=6
 
 DIST_AUTHOR=ETHER
 DIST_VERSION=0.30
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="Minimal try/catch with proper localization of \$@"
 

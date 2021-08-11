@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit gnome.org meson-multilib systemd virtualx xdg rhel-a
+inherit gnome.org meson-multilib systemd virtualx xdg rhel9-a
 
 DESCRIPTION="D-Bus accessibility specifications and registration daemon"
 HOMEPAGE="https://wiki.gnome.org/Accessibility"

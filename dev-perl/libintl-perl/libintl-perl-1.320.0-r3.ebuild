@@ -6,7 +6,7 @@ EAPI=8
 DIST_AUTHOR=GUIDO
 DIST_VERSION=1.32
 DIST_EXAMPLES=("sample/*")
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="High-Level Interface to Uniforum Message Translation"
 HOMEPAGE="http://guido-flohr.net/projects/libintl-perl https://metacpan.org/release/libintl-perl"

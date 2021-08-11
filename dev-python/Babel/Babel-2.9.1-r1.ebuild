@@ -6,7 +6,7 @@ EAPI=7
 PYTHON_COMPAT=( pypy3 python3_{7..10} )
 PYTHON_REQ_USE="threads(+)"
 
-inherit distutils-r1 rhel-a
+inherit distutils-r1 rhel9-a
 
 DESCRIPTION="Collection of tools for internationalizing Python applications"
 HOMEPAGE="https://babel.pocoo.org/ https://pypi.org/project/Babel/"

@@ -6,7 +6,7 @@ EAPI=7
 PYTHON_COMPAT=( python3_{7..10} )
 PYTHON_REQ_USE="threads(+)"
 
-inherit autotools python-r1 rhel
+inherit autotools python-r1 rhel9
 
 DESCRIPTION="Python bindings for the D-Bus messagebus"
 HOMEPAGE="https://www.freedesktop.org/wiki/Software/DBusBindings/ https://dbus.freedesktop.org/doc/dbus-python/"

@@ -5,7 +5,7 @@ EAPI=8
 
 DIST_AUTHOR=REHSACK
 DIST_VERSION=0.430
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="Provide the missing functionality from List::Util"
 

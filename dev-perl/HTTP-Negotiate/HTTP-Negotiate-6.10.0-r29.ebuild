@@ -5,7 +5,7 @@ EAPI=6
 
 DIST_AUTHOR=GAAS
 DIST_VERSION=6.01
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="HTTP content negotiation"
 

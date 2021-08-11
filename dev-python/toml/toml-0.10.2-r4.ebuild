@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{7..10} pypy3 )
 
-inherit distutils-r1 rhel-a
+inherit distutils-r1 rhel9-a
 
 TOML_TEST_VER="280497fa5f12e43d7233aed0d74e07ca61ef176b"
 

@@ -5,7 +5,7 @@ EAPI=7
 
 XORG_DOC=doc
 XORG_MULTILIB=yes
-inherit toolchain-funcs xorg-3 rhel-a
+inherit toolchain-funcs xorg-3 rhel9-a
 
 DESCRIPTION="X.Org X11 library"
 

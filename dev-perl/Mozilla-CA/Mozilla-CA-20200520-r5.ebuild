@@ -5,7 +5,7 @@ EAPI=6
 
 MODULE_VERSION=$PV
 
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 #SRC_URI="https://dev.gentoo.org/~dilfridge/distfiles/${P}.tar.gz"
 
 DESCRIPTION="Mozilla's CA cert bundle in PEM format (Gentoo stub)"

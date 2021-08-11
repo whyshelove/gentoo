@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit alternatives flag-o-matic toolchain-funcs multilib multiprocessing rhel-a
+inherit alternatives flag-o-matic toolchain-funcs multilib multiprocessing rhel9-a
 
 CROSS_VER=1.3.4
 

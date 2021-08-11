@@ -6,7 +6,7 @@ EAPI="7"
 PYTHON_COMPAT=( python3_{8..10} pypy3 )
 PYTHON_REQ_USE="threads(+)"
 
-inherit distutils-r1 rhel-a
+inherit distutils-r1 rhel9-a
 
 DESCRIPTION="Python bindings for the cairo library"
 HOMEPAGE="https://www.cairographics.org/pycairo/ https://github.com/pygobject/pycairo"

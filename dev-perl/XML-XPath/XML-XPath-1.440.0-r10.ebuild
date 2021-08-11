@@ -6,7 +6,7 @@ EAPI=6
 DIST_AUTHOR=MANWAR
 DIST_VERSION=1.44
 DIST_EXAMPLES=("examples/*")
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="A XPath Perl Module"
 

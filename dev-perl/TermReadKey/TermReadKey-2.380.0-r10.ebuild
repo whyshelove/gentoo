@@ -6,7 +6,7 @@ EAPI=6
 DIST_AUTHOR=JSTOWE
 DIST_VERSION=2.38
 DIST_EXAMPLES=("example/*")
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="Change terminal modes, and perform non-blocking reads"
 

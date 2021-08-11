@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib-minimal flag-o-matic rhel-a
+inherit multilib-minimal flag-o-matic rhel9-a
 
 DESCRIPTION="free lossless audio encoder and decoder"
 HOMEPAGE="https://xiph.org/flac/"

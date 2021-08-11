@@ -5,7 +5,7 @@ EAPI=8
 
 DIST_AUTHOR=CJM
 DIST_VERSION=1.004
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="Open an HTML file with automatic charset detection"
 

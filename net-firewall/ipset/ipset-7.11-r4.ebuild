@@ -3,7 +3,7 @@
 
 EAPI="7"
 MODULES_OPTIONAL_USE=modules
-inherit autotools linux-info linux-mod systemd rhel
+inherit autotools linux-info linux-mod systemd rhel9
 
 DESCRIPTION="IPset tool for iptables, successor to ippool"
 HOMEPAGE="https://ipset.netfilter.org/"

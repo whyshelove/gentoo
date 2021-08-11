@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib-minimal toolchain-funcs autotools flag-o-matic rhel-a
+inherit multilib-minimal toolchain-funcs autotools flag-o-matic rhel9-a
 
 DESCRIPTION="A free implementation of the unicode bidirectional algorithm"
 HOMEPAGE="https://fribidi.org/"

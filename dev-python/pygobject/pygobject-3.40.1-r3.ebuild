@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{7..10} )
 
-inherit gnome.org meson python-r1 virtualx xdg rhel
+inherit gnome.org meson python-r1 virtualx xdg rhel9
 
 DESCRIPTION="Python bindings for GObject Introspection"
 HOMEPAGE="https://pygobject.readthedocs.io/"

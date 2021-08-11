@@ -7,7 +7,7 @@ EAPI=7
 # pypy bundles a modified version of cffi. Use python_gen_cond_dep instead.
 PYTHON_COMPAT=( python3_{7..10} )
 
-inherit distutils-r1 toolchain-funcs rhel-a
+inherit distutils-r1 toolchain-funcs rhel9-a
 
 DESCRIPTION="Foreign Function Interface for Python calling C code"
 HOMEPAGE="https://cffi.readthedocs.io/ https://pypi.org/project/cffi/"

@@ -3,7 +3,7 @@
 
 EAPI=6
 
-inherit gnome2 rhel-a
+inherit gnome2 rhel9-a
 
 DESCRIPTION="Compiler for the GObject type system"
 HOMEPAGE="https://wiki.gnome.org/Projects/Vala"

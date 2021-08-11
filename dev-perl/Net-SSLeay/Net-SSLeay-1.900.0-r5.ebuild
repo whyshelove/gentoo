@@ -6,7 +6,7 @@ EAPI=8
 DIST_AUTHOR=CHRISN
 DIST_VERSION=1.90
 DIST_EXAMPLES=("examples/*")
-inherit multilib perl-module rhel-a
+inherit multilib perl-module rhel9-a
 
 DESCRIPTION="Perl extension for using OpenSSL"
 

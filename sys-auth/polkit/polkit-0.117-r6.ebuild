@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools pam pax-utils systemd xdg-utils rhel
+inherit autotools pam pax-utils systemd xdg-utils rhel9
 
 DESCRIPTION="Policy framework for controlling privileges for system-wide services"
 HOMEPAGE="https://www.freedesktop.org/wiki/Software/polkit https://gitlab.freedesktop.org/polkit/polkit"

@@ -5,7 +5,7 @@ EAPI=7
 
 DIST_AUTHOR=PLICEASE
 DIST_VERSION=1.36
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="Provides information about Classes"
 

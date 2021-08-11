@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic autotools multilib-minimal rhel-a
+inherit flag-o-matic autotools multilib-minimal rhel9-a
 
 if [[ ${PV} == *9999* ]]; then
 	EGIT_REPO_URI="${EGIT_REPO_URI} https://gitlab.freedesktop.org/cairo/cairo.git"

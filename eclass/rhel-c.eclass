@@ -3,6 +3,4 @@
 
 REPO=CRB
 
-inherit rhel
-
-
+inherit rhel9

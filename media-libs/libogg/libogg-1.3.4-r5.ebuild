@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib-minimal rhel-a
+inherit multilib-minimal rhel9-a
 
 DESCRIPTION="The Ogg media file format library"
 HOMEPAGE="https://xiph.org/ogg/"

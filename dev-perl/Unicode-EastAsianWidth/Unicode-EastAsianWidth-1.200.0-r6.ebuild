@@ -5,7 +5,7 @@ EAPI=5
 
 MODULE_AUTHOR=AUDREYT
 MODULE_VERSION=12.0
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="East Asian Width properties"
 

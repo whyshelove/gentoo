@@ -7,7 +7,7 @@ DISTUTILS_USE_SETUPTOOLS=manual
 PYTHON_COMPAT=( python3_{7..9} pypy3 )
 PYTHON_REQ_USE="xml(+)"
 
-inherit distutils-r1 multiprocessing rhel
+inherit distutils-r1 multiprocessing rhel9
 
 DESCRIPTION="Collection of extensions to Distutils"
 HOMEPAGE="https://github.com/pypa/setuptools https://pypi.org/project/setuptools/"

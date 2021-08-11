@@ -5,7 +5,7 @@ EAPI=8
 
 DIST_AUTHOR=OALDERS
 DIST_VERSION=6.10
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="Provide https support for LWP::UserAgent"
 

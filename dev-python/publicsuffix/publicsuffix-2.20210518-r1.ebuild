@@ -4,7 +4,7 @@
 EAPI=7
 
 PYTHON_COMPAT=( python3_{6,8,9} )
-inherit distutils-r1 rhel
+inherit distutils-r1 rhel9
 
 DESCRIPTION="Get a public suffix for a domain name using the Public Suffix List."
 HOMEPAGE="https://github.com/nexB/python-publicsuffix2"

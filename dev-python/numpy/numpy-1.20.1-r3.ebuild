@@ -10,7 +10,7 @@ FORTRAN_NEEDED=lapack
 
 DISTUTILS_USE_SETUPTOOLS=rdepend
 
-inherit distutils-r1 flag-o-matic fortran-2 multiprocessing toolchain-funcs rhel-a
+inherit distutils-r1 flag-o-matic fortran-2 multiprocessing toolchain-funcs rhel9-a
 
 DOC_PV="1.16.4"
 DESCRIPTION="Fast array and numerical python library"

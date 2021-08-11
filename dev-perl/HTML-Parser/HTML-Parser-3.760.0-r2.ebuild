@@ -5,7 +5,7 @@ EAPI=7
 
 DIST_AUTHOR=OALDERS
 DIST_VERSION=3.76
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="Parse HTML documents"
 

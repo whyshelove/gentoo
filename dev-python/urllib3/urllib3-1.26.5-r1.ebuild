@@ -6,7 +6,7 @@ EAPI=7
 PYTHON_COMPAT=( python3_{7..10} pypy3 )
 PYTHON_REQ_USE="ssl(+)"
 
-inherit distutils-r1 rhel
+inherit distutils-r1 rhel9
 
 DESCRIPTION="HTTP library with thread-safe connection pooling, file post, and more"
 HOMEPAGE="https://github.com/urllib3/urllib3"

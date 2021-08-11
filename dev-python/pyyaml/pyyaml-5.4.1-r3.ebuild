@@ -4,7 +4,7 @@
 EAPI=7
 
 PYTHON_COMPAT=( python3_{7..10} pypy3 )
-inherit distutils-r1 rhel
+inherit distutils-r1 rhel9
 
 DESCRIPTION="YAML parser and emitter for Python"
 HOMEPAGE="https://pyyaml.org/wiki/PyYAML

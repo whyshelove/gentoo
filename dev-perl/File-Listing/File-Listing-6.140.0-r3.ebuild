@@ -5,7 +5,7 @@ EAPI=7
 
 DIST_AUTHOR=PLICEASE
 DIST_VERSION=6.14
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="Parse directory listings"
 

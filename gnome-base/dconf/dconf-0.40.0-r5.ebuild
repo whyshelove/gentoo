@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit bash-completion-r1 gnome.org gnome2-utils meson systemd virtualx xdg rhel-a
+inherit bash-completion-r1 gnome.org gnome2-utils meson systemd virtualx xdg rhel9-a
 
 DESCRIPTION="Simple low-level configuration system"
 HOMEPAGE="https://wiki.gnome.org/Projects/dconf"

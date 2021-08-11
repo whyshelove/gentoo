@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib-minimal rhel
+inherit multilib-minimal rhel9
 
 DESCRIPTION="C library for encoding, decoding and manipulating JSON data"
 HOMEPAGE="https://www.digip.org/jansson/"

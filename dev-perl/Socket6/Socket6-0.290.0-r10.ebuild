@@ -5,7 +5,7 @@ EAPI=6
 
 DIST_AUTHOR=UMEMOTO
 DIST_VERSION=0.29
-inherit perl-module toolchain-funcs rhel-a
+inherit perl-module toolchain-funcs rhel9-a
 
 DESCRIPTION="IPv6 related part of the C socket.h defines and structure manipulators"
 

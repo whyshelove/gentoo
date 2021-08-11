@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{7..10} pypy3  )
 
-inherit distutils-r1 rhel-a
+inherit distutils-r1 rhel9-a
 
 DESCRIPTION="Core utilities for Python packages"
 HOMEPAGE="

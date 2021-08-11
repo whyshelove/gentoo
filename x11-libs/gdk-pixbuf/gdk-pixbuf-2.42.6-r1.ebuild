@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit gnome.org gnome2-utils meson-multilib multilib xdg rhel-a
+inherit gnome.org gnome2-utils meson-multilib multilib xdg rhel9-a
 
 DESCRIPTION="Image loading library for GTK+"
 HOMEPAGE="https://gitlab.gnome.org/GNOME/gdk-pixbuf"

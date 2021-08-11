@@ -5,7 +5,7 @@ EAPI=6
 
 DIST_AUTHOR=GAAS
 DIST_VERSION=1.05
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="Determine the locale encoding"
 

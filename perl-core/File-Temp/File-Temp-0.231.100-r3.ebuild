@@ -8,7 +8,7 @@ DIST_VERSION=0.2311
 inherit perl-module
 
 DIST_VERSION=${PV}
-inherit rhel-a
+inherit rhel9-a
 
 DESCRIPTION="File::Temp can be used to create and open temporary files in a safe way"
 

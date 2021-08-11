@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{6,8,9} )
 DISTUTILS_OPTIONAL=1
-inherit distutils-r1 libtool multilib-minimal autotools rhel
+inherit distutils-r1 libtool multilib-minimal autotools rhel9
 
 LIBNL_P=${P/_/-}
 LIBNL_DIR=${PV/_/}

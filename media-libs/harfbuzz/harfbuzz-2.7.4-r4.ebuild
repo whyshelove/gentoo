@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{7..9} )
 
-inherit flag-o-matic meson-multilib python-any-r1 xdg-utils rhel
+inherit flag-o-matic meson-multilib python-any-r1 xdg-utils rhel9
 
 DESCRIPTION="An OpenType text shaping engine"
 HOMEPAGE="https://www.freedesktop.org/wiki/Software/HarfBuzz"

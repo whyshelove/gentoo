@@ -5,7 +5,7 @@ EAPI=8
 
 DIST_AUTHOR=JKEENAN
 DIST_VERSION=1.30
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="Run commands simply, with detailed diagnostics"
 

@@ -4,7 +4,7 @@
 EAPI=7
 PYTHON_COMPAT=( python3_{7..10} pypy3 )
 
-inherit distutils-r1 rhel
+inherit distutils-r1 rhel9
 
 MY_P=${P/-/_}
 DESCRIPTION="Easy-to-use Python module for text parsing"

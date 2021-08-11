@@ -5,7 +5,7 @@ EAPI=8
 
 DIST_AUTHOR=REHSACK
 DIST_VERSION=1.102
-inherit perl-module rhel-a
+inherit perl-module rhel9-a
 
 DESCRIPTION="Utility functions to aid in parameter checking"
 

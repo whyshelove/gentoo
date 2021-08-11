@@ -4,7 +4,7 @@
 EAPI=7
 PYTHON_COMPAT=( python3_{7,8,9} )
 
-inherit meson python-any-r1 udev rhel-a
+inherit meson python-any-r1 udev rhel9-a
 
 DESCRIPTION="Library to handle input devices in Wayland"
 HOMEPAGE="https://www.freedesktop.org/wiki/Software/libinput/ https://gitlab.freedesktop.org/libinput/libinput"
