@@ -34,6 +34,7 @@ elif [ ${CATEGORY} == "dev-perl" ] || [ ${CATEGORY} == "perl-core" ] ; then
 else
 	case ${PN} in
 		tiff ) MY_PF=lib${P}-${MY_PR} ;;
+		libsdl* ) MY_P=${P/lib}; MY_PF=${MY_P^^}-${MY_PR} ;;
 		gdk-pixbuf ) MY_PF=${P/gdk-pixbuf/gdk-pixbuf2}-${MY_PR} ;;
 		wayland-scanner ) MY_PF=${P/-scanner}-${MY_PR} ;;
 		xauth | xbitmaps | util-macros | xinit ) MY_PF=xorg-x11-${P}-${MY_PR} ;;

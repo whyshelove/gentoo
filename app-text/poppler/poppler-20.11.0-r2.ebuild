@@ -3,14 +3,15 @@
 
 EAPI=7
 
-inherit cmake toolchain-funcs xdg-utils rhel9-a
+inherit cmake toolchain-funcs xdg-utils rhel-a
 
-if [[ ${PV} == *8888* ]] ; then
-	EGIT_REPO_URI="$EGIT_REPO_URI https://anongit.freedesktop.org/git/poppler/poppler.git"
+if [[ ${PV} == *9999* ]] ; then
+	inherit git-r3
+	EGIT_REPO_URI="https://anongit.freedesktop.org/git/poppler/poppler.git"
 	SLOT="0/9999"
 else
 	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-	SLOT="0/110"   # CHECK THIS WHEN BUMPING!!! SUBSLOT IS libpoppler.so SOVERSION
+	SLOT="0/104"   # CHECK THIS WHEN BUMPING!!! SUBSLOT IS libpoppler.so SOVERSION
 fi
 
 DESCRIPTION="PDF rendering library based on the xpdf-3.0 code base"
@@ -29,7 +30,6 @@ BDEPEND="
 DEPEND="
 	media-libs/fontconfig
 	media-libs/freetype
-	sys-libs/zlib
 	cairo? (
 		dev-libs/glib:2
 		x11-libs/cairo
@@ -55,14 +55,16 @@ RDEPEND="${DEPEND}
 DOCS=( AUTHORS NEWS README.md README-XPDF )
 
 PATCHES=(
-	"${FILESDIR}/${PN}-20.12.1-qt5-deps.patch"
-	"${FILESDIR}/${PN}-21.04.0-respect-cflags.patch"
+	"${FILESDIR}/${PN}-0.60.1-qt5-dependencies.patch"
+	"${FILESDIR}/${PN}-0.28.1-fix-multilib-configuration.patch"
+	"${FILESDIR}/${PN}-20.11.0-respect-cflags.patch"
+	"${FILESDIR}/${PN}-0.61.0-respect-cflags.patch"
 	"${FILESDIR}/${PN}-0.57.0-disable-internal-jpx.patch"
 )
 
 src_prepare() {
 	cmake_src_prepare
-
+	export CC="gcc -fPIC" # hack to make the cmake call pass
 	# Clang doesn't grok this flag, the configure nicely tests that, but
 	# cmake just uses it, so remove it if we use clang
 	if [[ ${CC} == clang ]] ; then
@@ -83,7 +85,6 @@ src_configure() {
 		-DBUILD_GTK_TESTS=OFF
 		-DBUILD_QT5_TESTS=OFF
 		-DBUILD_CPP_TESTS=OFF
-		-DBUILD_MANUAL_TESTS=OFF
 		-DRUN_GPERF_IF_PRESENT=OFF
 		-DENABLE_SPLASH=ON
 		-DENABLE_ZLIB=OFF

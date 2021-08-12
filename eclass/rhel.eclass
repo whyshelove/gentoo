@@ -54,7 +54,7 @@ else
 			python ) MY_PR=${PVR##*p}; MY_P=${P%_p*}; MY_PF=${MY_P/-/3$(ver_cut 2)-}-${MY_PR} ;;
 			qtgui | qtcore | qtdbus | qtnetwork | qttest | qtxml \
 			| linguist-tools | qtsql | qtconcurrent | qdbus | qtpaths ) MY_P="qt5-${QT5_MODULE}-${PV}"; MY_PF=${MY_P}-${MY_PR} ;;
-			qtdeclarative | qtsvg ) MY_PF=qt5-${P}-${MY_PR} ;;
+			qtdeclarative | qtsvg | qtscript ) MY_PF=qt5-${P}-${MY_PR} ;;
 			*) MY_PF=${P}-${MY_PR} ;;
 		esac
 
