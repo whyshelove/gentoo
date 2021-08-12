@@ -66,14 +66,15 @@ src_prepare() {
 
 	eapply_user
 
-	eautoreconf
+	eautoreconf -i -f
 
 	# Prevent automake maintainer mode from kicking in (#450448).
 	touch -r Makefile.am preinstall.am
 }
 
 src_configure() {
-	append-cppflags -I"${EPREFIX}/usr/include/nss" -I"${EPREFIX}/usr/include/nspr"
+	append-cppflags -I"${EPREFIX}/usr/include/nss" -I"${EPREFIX}/usr/include/nspr" -DLUA_COMPAT_APIINTCASTS
+	append-cflags -DLUA_COMPAT_APIINTCASTS
 	econf \
     		--prefix=/usr \
     		--sysconfdir=/etc \

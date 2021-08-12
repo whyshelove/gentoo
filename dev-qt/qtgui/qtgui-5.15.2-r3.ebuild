@@ -161,21 +161,11 @@ src_prepare() {
 }
 
 src_configure() {
-	filter-flags -fcf-protection
 	local myconf=(
-		-shared
-		-glib
 		-gtk
-		-no-pch
 		-no-reduce-relocations
 		-no-rpath
-		-no-separate-debug-info
-		-no-strip
-		-system-zlib
-		-no-directfb
 		-no-feature-relocatable
-		-no-sql-ibase
-		-no-sql-tds
 		-no-use-gold-linker
 		$(usex dbus -dbus-linked '')
 		$(qt_use egl)

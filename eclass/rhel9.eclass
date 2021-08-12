@@ -35,8 +35,10 @@ else
 	case ${PN} in
 		tiff ) MY_PF=lib${P}-${MY_PR} ;;
 		gdk-pixbuf ) MY_PF=${P/gdk-pixbuf/gdk-pixbuf2}-${MY_PR} ;;
-		xauth | xbitmaps | util-macros ) MY_PF=xorg-x11-${P}-${MY_PR} ;;
-		libnl | glib ) MY_P=${P/-/$(ver_cut 1)-}; MY_PF=${MY_P}-${MY_PR} ;;
+		wayland-scanner ) MY_PF=${P/-scanner}-${MY_PR} ;;
+		xauth | xbitmaps | util-macros | xinit ) MY_PF=xorg-x11-${P}-${MY_PR} ;;
+		libnl | glib | openjpeg ) MY_P=${P/-/$(ver_cut 1)-}; MY_PF=${MY_P}-${MY_PR} ;;
+		docbook-xsl-ns-stylesheets) MY_PF=docbook-style-xsl-${PV}-${MY_PR} ;;
 		*) MY_PF=${P}-${MY_PR} ;;
 	esac
 

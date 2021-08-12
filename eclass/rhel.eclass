@@ -39,7 +39,7 @@ else
 			ninja) MY_PF=${P/-/-build-}-${MY_PR} ;;
 			procps ) MY_P=${P/-/-ng-}; MY_PF=${MY_P}-${MY_PR} ;;
 			openssh ) PARCH=${P/_}; MY_PF=${PARCH}-${MY_PR} ;;
-			lcms | gnupg | grub ) MY_P=${P/-/$(ver_cut 1)-}; MY_PF=${MY_P}-${MY_PR} ;;
+			lcms | gnupg | grub | udisks ) MY_P=${P/-/$(ver_cut 1)-}; MY_PF=${MY_P}-${MY_PR} ;;
 			libnsl ) MY_P=${P/-/2-}; MY_PF=${MY_P}-${MY_PR} ;;
 			procps ) MY_P=${P/-/-x11-}; MY_PF=${MY_P}-${MY_PR} ;;
 			mpc ) MY_PF=lib${P}-${MY_PR}.1 ;;
@@ -53,7 +53,7 @@ else
 			libusb ) MY_PF=${P/-/x-}-${MY_PR} ;;
 			python ) MY_PR=${PVR##*p}; MY_P=${P%_p*}; MY_PF=${MY_P/-/3$(ver_cut 2)-}-${MY_PR} ;;
 			qtgui | qtcore | qtdbus | qtnetwork | qttest | qtxml \
-			| linguist-tools ) MY_P="qt5-${QT5_MODULE}-${PV}"; MY_PF=${MY_P}-${MY_PR} ;;
+			| linguist-tools | qtsql | qtconcurrent | qdbus | qtpaths ) MY_P="qt5-${QT5_MODULE}-${PV}"; MY_PF=${MY_P}-${MY_PR} ;;
 			qtdeclarative | qtsvg ) MY_PF=qt5-${P}-${MY_PR} ;;
 			*) MY_PF=${P}-${MY_PR} ;;
 		esac
