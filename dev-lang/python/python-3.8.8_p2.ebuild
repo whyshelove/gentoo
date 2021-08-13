@@ -245,6 +245,9 @@ src_install() {
 
 	emake DESTDIR="${D}" altinstall
 
+	insinto ${rpmmacrodir}/
+	doins "${WORKDIR}"/macros.python38
+
 	# Remove static library
 	#rm "${ED}"/usr/$(get_libdir)/libpython*.a || die
 

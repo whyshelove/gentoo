@@ -122,6 +122,7 @@ srcrhel_unpack() {
 	sed -i "/#!%{__python3}/d" ${WORKDIR}/*.spec
 	sed -i "/@exec_prefix@/d" ${WORKDIR}/*.spec
 	sed -i "/py_provides/d" ${WORKDIR}/*.spec
+	sed -i "/%python_provide/d" ${WORKDIR}/*.spec
  
 	rpmbuild -bp $WORKDIR/*.spec --nodeps
 

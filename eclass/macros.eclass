@@ -8,6 +8,7 @@ _fixperms="/bin/chmod -Rf a+rX,u+w,g-w,o-w"
 _rpmconfigdir=/usr/lib/rpm
 rpmmacrodir=${_rpmconfigdir}/macros.d
 rpmluadir=${_rpmconfigdir}/lua
+rpm_macros_dir=$(d=${_rpmconfigdir}/macros.d; [ -d $d ] || d=${_sysconfdir}/rpm; echo $d)
 
 _usr=/usr
 _var=/var

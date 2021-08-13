@@ -86,6 +86,7 @@ cmake_src_bootstrap() {
 	tc-env_build ${CONFIG_SHELL:-sh} ./bootstrap \
 		--prefix="${T}/cmakestrap/" \
 		--parallel=$(makeopts_jobs "${MAKEOPTS}" "$(get_nproc)") \
+		--no-system-librhash \
 		|| die "Bootstrap failed"
 }
 
@@ -209,6 +210,26 @@ src_install() {
 	doins "${FILESDIR}/${PN}.vim"
 
 	dobashcomp Auxiliary/bash-completion/{${PN},ctest,cpack}
+
+	rpm_macros_dir=$(d=${_rpmconfigdir}/macros.d; [ -d $d ] || d=${_sysconfdir}/rpm; echo $d)
+
+	# RPM macros
+	insinto ${rpm_macros_dir}
+	doins "${WORKDIR}"/macros.${PN}
+
+	sed -i \
+		-e "s|@@CMAKE_VERSION@@|${PV}|g" \
+		-e "s|@@CMAKE_MAJOR_VERSION@@|$(ver_cut 1)|g" \
+		${ED}${rpm_macros_dir}/macros.${PN} || die "sed failed"
+
+	touch -r "${WORKDIR}"/macros.${PN} ${ED}${rpm_macros_dir}/macros.${PN}
+
+	insinto ${_prefix}/lib/rpm/fileattrs/
+	doins "${WORKDIR}"/${PN}.attr
+
+	insopts -m0755
+	insinto ${_prefix}/lib/rpm/
+	doins ${PN}.{prov,req}
 }
 
 pkg_postinst() {

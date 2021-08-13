@@ -1,14 +1,14 @@
 # Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
-PYTHON_COMPAT=( python3_{6,8} )
+LUA_COMPAT=( lua5-{2..4} )
+PYTHON_COMPAT=( python3_{6,8,9} )
 
-inherit autotools flag-o-matic perl-module python-single-r1 eapi7-ver rhel
+inherit autotools flag-o-matic lua-single perl-module python-single-r1 toolchain-funcs rhel
 
 DESCRIPTION="Red Hat Package Management Utils"
-
 
 LICENSE="GPL-2 LGPL-2"
 SLOT="0"
@@ -18,7 +18,8 @@ KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~s390 ~sparc x86 ~a
 RESTRICT="test"
 
 IUSE="acl caps doc dbus lua nls python selinux test zstd"
-REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
+REQUIRED_USE="lua? ( ${LUA_REQUIRED_USE} )
+	python? ( ${PYTHON_REQUIRED_USE} )"
 
 CDEPEND="!app-arch/rpm5
 	app-arch/libarchive
@@ -27,6 +28,7 @@ CDEPEND="!app-arch/rpm5
 	>=app-arch/bzip2-1.0.1
 	>=dev-libs/popt-1.7
 	>=app-crypt/gnupg-1.2
+	dev-db/lmdb
 	dbus? ( sys-apps/dbus )
 	dev-libs/elfutils
 	virtual/libintl
@@ -34,7 +36,7 @@ CDEPEND="!app-arch/rpm5
 	dev-libs/nss
 	python? ( ${PYTHON_DEPS} )
 	nls? ( virtual/libintl )
-	lua? ( >=dev-lang/lua-5.1.0 )
+	lua? ( ${LUA_DEPS} )
 	acl? ( virtual/acl )
 	caps? ( >=sys-libs/libcap-2.0 )
 	zstd? ( app-arch/zstd )
@@ -51,18 +53,19 @@ RDEPEND="${CDEPEND}
 "
 
 pkg_setup() {
+	use lua && lua-single_pkg_setup
 	use python && python-single-r1_pkg_setup
 }
 
+
+
 src_prepare() {
 	eapply "${FILESDIR}"/${PN}-4.11.0-autotools.patch
-	eapply "${FILESDIR}"/${PN}-4.8.1-db-path.patch
-	eapply "${FILESDIR}"/${PN}-4.9.1.2-libdir.patch
 
 	# fix #356769
 	sed -i 's:%{_var}/tmp:/var/tmp:' macros.in || die "Fixing tmppath failed"
 	# fix #492642
-	sed -i "s:@__PYTHON@:${PYTHON}:" macros.in || die "Fixing %__python failed"
+
 
 	eapply_user
 
@@ -75,32 +78,33 @@ src_prepare() {
 src_configure() {
 	append-cppflags -I"${EPREFIX}/usr/include/nss" -I"${EPREFIX}/usr/include/nspr" -DLUA_COMPAT_APIINTCASTS
 	append-cflags -DLUA_COMPAT_APIINTCASTS
+
 	econf \
-    		--prefix=/usr \
-    		--sysconfdir=/etc \
-    		--localstatedir=/var \
-    		--sharedstatedir=/var/lib \
-    		--libdir=/usr/lib64 \
-    		--build=x86_64-pc-linux-gnu \
-    		--host=x86_64-pc-linux-gnu \
+    		--localstatedir="${EPREFIX}"/var \
+    		--sharedstatedir="${EPREFIX}"/var/lib \
+    		--libdir="${EPREFIX}"/usr/$(get_libdir) \
     		--with-vendor=redhat \
 		--without-selinux \
 		--with-fapolicyd \
 		--with-external-db \
 		--with-crypto=nss \
+		--enable-ndb \
+		--enable-lmdb \
+		--without-archive \
+		--disable-plugins \
 		$(use_enable python) \
-		$(use_with doc hackingdocs) \
 		$(use_enable nls) \
 		$(use_enable dbus inhibit-plugin) \
 		$(use_with lua) \
 		$(use_with caps cap) \
 		$(use_with acl) \
-		PYTHON=python3 \
+		PYTHON=${EPYTHON} \
 		$(use_enable zstd zstd $(usex zstd yes no))
 }
 
 src_install() {
 	default
+
 	# remove la files
 	find "${ED}" -name '*.la' -delete || die
 
@@ -127,6 +131,15 @@ src_install() {
 	perl_delete_localpod
 
 	use python && python_optimize
+
+	for dbi in \
+	    Basenames Conflictname Dirnames Group Installtid Name Obsoletename \
+	    Packages Providename Requirename Triggername Sha1header Sigmd5 \
+	    __db.001 __db.002 __db.003 __db.004 __db.005 __db.006 __db.007 \
+	    __db.008 __db.009
+	do
+	    touch ${ED}/var/lib/rpm/$dbi
+	done
 }
 
 src_test() {
@@ -142,9 +155,9 @@ src_test() {
 pkg_postinst() {
 	if [[ -f "${EROOT}"/var/lib/rpm/Packages ]] ; then
 		einfo "RPM database found... Rebuilding database (may take a while)..."
-		"${EROOT}"/usr/bin/rpmdb --rebuilddb --root="${EROOT}" || die
+		"${EROOT}"/usr/bin/rpmdb --rebuilddb --root="${EROOT}/" || die
 	else
 		einfo "No RPM database found... Creating database..."
-		"${EROOT}"/usr/bin/rpmdb --initdb --root="${EROOT}" || die
+		"${EROOT}"/usr/bin/rpmdb --initdb --root="${EROOT}/" || die
 	fi
 }

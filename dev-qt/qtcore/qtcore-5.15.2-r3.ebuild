@@ -93,6 +93,19 @@ src_configure() {
 src_install() {
 	qt5-build_src_install
 
+	# rpm macros
+	MY_PN=qt5-qtbase
+	insinto ${rpm_macros_dir}
+	doins "${WORKDIR}"/macros.${MY_PN}
+
+	sed -i \
+	  -e "s|@@NAME@@|${MY_PN}|g" \
+	  -e "s|@@EPOCH@@|0|g" \
+	  -e "s|@@VERSION@@|${PV}|g" \
+	  -e "s|@@EVR@@|${PV}-${MY_PR}${DIST}|g" \
+	  ${ED}${rpm_macros_dir}/macros.${MY_PN} || die "sed failed"
+
+
 	local flags=(
 		DBUS FREETYPE IMAGEFORMAT_JPEG IMAGEFORMAT_PNG
 		OPENGL OPENSSL SSL WIDGETS
