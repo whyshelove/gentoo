@@ -372,4 +372,3 @@ pkg_postinst() {
 		elog "might want to add --noclear to your /etc/inittab lines."
 	fi
 }
-
