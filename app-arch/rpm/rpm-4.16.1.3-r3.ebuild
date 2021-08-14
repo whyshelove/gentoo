@@ -67,8 +67,6 @@ pkg_setup() {
 
 src_prepare() {
 	eapply "${FILESDIR}"/${PN}-4.16.0-autotools.patch
-	eapply "${FILESDIR}"/${PN}-4.8.1-db-path.patch
-	eapply "${FILESDIR}"/${P}-libdir.patch
 
 	# fix #356769
 	sed -i 's:%{_var}/tmp:/var/tmp:' macros.in || die "Fixing tmppath failed"
@@ -83,14 +81,20 @@ src_prepare() {
 }
 
 src_configure() {
+	append-cppflags -I"${EPREFIX}/usr/include/nss" -I"${EPREFIX}/usr/include/nspr" -DLUA_COMPAT_APIINTCASTS
+	append-cflags -DLUA_COMPAT_APIINTCASTS
+
 	econf \
+    		--localstatedir="${EPREFIX}"/var \
+    		--sharedstatedir="${EPREFIX}"/var/lib \
+    		--libdir="${EPREFIX}"/usr/$(get_libdir) \
+    		--with-vendor=redhat \
 		--without-selinux \
 		--with-crypto=libgcrypt \
 		--enable-bdb=yes \
-		--with-external-db \
-		--build=x86_64-pc-linux-gnu \
-    		--host=x86_64-pc-linux-gnu \
-		--with-vendor=redhat \
+		--enable-bdb-ro \
+		--without-archive \
+		--disable-plugins \
 		$(use_enable python) \
 		$(use_enable nls) \
 		$(use_enable openmp) \
@@ -98,7 +102,7 @@ src_configure() {
 		$(use_with lua) \
 		$(use_with caps cap) \
 		$(use_with acl) \
-		PYTHON=python3 \
+		PYTHON=${EPYTHON} \
 		$(use_enable zstd zstd $(usex zstd yes no))
 }
 

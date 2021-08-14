@@ -3,9 +3,12 @@
 
 # @ECLASS: macros.eclass
 
+_fixperms="/bin/chmod -Rf a+rX,u+w,g-w,o-w"
+
 _rpmconfigdir=/usr/lib/rpm
 rpmmacrodir=${_rpmconfigdir}/macros.d
 rpmluadir=${_rpmconfigdir}/lua
+rpm_macros_dir=$(d=${_rpmconfigdir}/macros.d; [ -d $d ] || d=${_sysconfdir}/rpm; echo $d)
 
 _usr=/usr
 _var=/var
@@ -35,6 +38,8 @@ _systemd_util_dir=${_prefix}/lib/systemd
 _unitdir=${_prefix}/lib/systemd/system
 _userunitdir=${_prefix}/lib/systemd/user
 _presetdir=/lib/systemd/system-preset
+
+rubygems_dir=${_datadir}/rubygems
 
 systemd_post(){
 	# Initial installation 

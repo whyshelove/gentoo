@@ -12,7 +12,7 @@ EAPI="7"
 
 PLOCALES="de fr ja pt_BR tr uk zh_CN"
 
-inherit fcaps flag-o-matic l10n meson systemd toolchain-funcs rhel
+inherit fcaps flag-o-matic meson plocale systemd toolchain-funcs rhel
 
 if [[ ${PV} != *8888 ]]; then
 	SRC_URI="${SRC_URI}
@@ -62,7 +62,7 @@ fi
 src_prepare() {
 	default
 
-	l10n_get_locales > po/LINGUAS || die
+	plocale_locales > po/LINGUAS || die
 }
 
 src_configure() {
