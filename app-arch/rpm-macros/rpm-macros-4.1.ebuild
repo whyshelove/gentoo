@@ -12,7 +12,7 @@ SRC_URI="${SRC_URI} ${BaseOS}/rootfiles-8.1-30.el9.noarch.rpm"
 
 for macro in efi-srpm-macros-4-7 kernel-rpm-macros-185-7.el9 perl-srpm-macros-1-40 redhat-rpm-config-187-1 \
 	python-qt5-rpm-macros-5.15.0-9 python-rpm-macros-3.9-41 python-srpm-macros-3.9-41 python3-rpm-macros-3.9-41 \
-	go-srpm-macros-3.0.9-7 qt5-rpm-macros-5.15.2-8 rust-srpm-macros-17-3 qt5-srpm-macros-5.15.2-8 ;
+	go-srpm-macros-3.0.9-7 qt5-rpm-macros-5.15.2-8 rust-srpm-macros-17-3 ;
 do
 SRC_URI="${SRC_URI} ${AppStream}/${macro}.el9.noarch.rpm"
 done

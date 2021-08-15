@@ -188,7 +188,7 @@ qt5-build_src_configure() {
 	if [[ ${QT5_MODULE} == qttools ]] && [[ -z ${QT5_TARGET_SUBDIRS[@]} ]]; then
 		qt5_tools_configure
 	fi
-
+	filter-flags -fcf-protection
 	qt5_foreach_target_subdir qt5_qmake
 }
 

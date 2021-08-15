@@ -48,14 +48,15 @@ if [ -z ${MY_PF} ] ; then
 		[[ ${PN} == Locale-gettext ]] && MY_PF=perl-${PN/Locale-}-${DIST_VERSION}-${MY_PR}
 	else
 		case ${PN} in
-			tiff ) MY_PF=lib${P}-${MY_PR} ;;
+			tiff | appstream-glib ) MY_PF=lib${P}-${MY_PR} ;;
 			ghostscript-gpl ) MY_PF=${P/-gpl}-${MY_PR} ;;
 			wayland-scanner ) MY_PF=${P/-scanner}-${MY_PR} ;;
 			libsdl* ) MY_P=${P/lib}; MY_PF=${MY_P^^}-${MY_PR} ;;
 			gdk-pixbuf ) MY_PF=${P/gdk-pixbuf/gdk-pixbuf2}-${MY_PR} ;;
 			docbook-xsl-ns-stylesheets) MY_PF=docbook-style-xsl-${PV}-${MY_PR} ;;
 			xauth | xbitmaps | util-macros | xinit ) MY_PF=xorg-x11-${P}-${MY_PR} ;;
-			libnl | glib | openjpeg | lcms | gnupg | grub | udisks \
+			libnl | glib | openjpeg | lcms | gnupg | grub | udisks | geoclue \
+			| udisks | lcms | openjpeg | glib | librsvg | gstreamer \
 			) MY_P=${P/-/$(ver_cut 1)-}; MY_PF=${MY_P}-${MY_PR} ;;
 			sysprof-capture ) MY_PF=${P/-capture}-${MY_PR} ;;
 			thin-provisioning-tools ) MY_PF=device-mapper-persistent-data-${PV}-${MY_PR} ;;
@@ -72,7 +73,15 @@ if [ -z ${MY_PF} ] ; then
 			xz-utils ) MY_P="${PN/-utils}-${PV/_}"; MY_PF=${MY_P}-${MY_PR} ;;
 			glib-utils ) MY_P="${PN/-utils}2-${PV}"; MY_PF=${MY_P}-${MY_PR} ;;	
 			python ) MY_P=${P%_p*}; MY_PF=${MY_P/-/3.$(ver_cut 2)-}-${MY_PR} ;;
-			udisks | lcms | openjpeg | glib | librsvg ) MY_PF=${P/-/2-}-${MY_PR} ;;
+			nspr ) MY_P=nss-3.67.0; MY_PF=${MY_P}-${MY_PR}; S="${WORKDIR}/${MY_P/.0}";;
+			qtgui | qtcore | qtwidgets | qtdbus | qtnetwork | qttest | qtxml \
+			| linguist-tools | qtsql | qtconcurrent | qdbus | qtpaths \
+			| qtprintsupport | designer ) MY_P="qt5-${QT5_MODULE}-${PV}"; MY_PF=${MY_P}-${MY_PR} ;;
+			qtdeclarative | qtsvg | qtscript | qtgraphicaleffects | qtwayland | qtquickcontrols* \
+			| qtxmlpatterns ) MY_PF=qt5-${P}-${MY_PR} ;;
+			gst-plugins* ) MY_PF=${P/-/reamer1-}-${MY_PR} ;;
+			modemmanager ) MY_PF=${P/modemmanager/ModemManager}-${MY_PR} ;;
+			networkmanager ) MY_PF=${P/networkmanager/NetworkManager}-${MY_PR} ;;
 			*) MY_PF=${P}-${MY_PR} ;;
 		esac
 	fi
@@ -135,12 +144,11 @@ srcrhel_unpack() {
 
 	eshopts_push -s nullglob
 
-	sed -i "/%{gpgverify}/d" ${WORKDIR}/*.spec
-	sed -i "/%{__python3}/d" ${WORKDIR}/*.spec
+	sed -i  -e "/%{gpgverify}/d" \
+		-e "/%{__python3}/d" \
+		${WORKDIR}/*.spec
 	
 	rpmbuild -bp $WORKDIR/*.spec --nodeps
-
-	rpm_clean
 
 	eshopts_pop
 
@@ -162,6 +170,16 @@ rhel_src_unpack() {
 		*)     unpack "${a}" ;;
 		esac
 	done
+}
+
+# @FUNCTION: rhel_src_install
+# @DESCRIPTION:
+
+rhel_src_install() {
+	sed -i  -e '/rm -rf $RPM_BUILD_ROOT/d' \
+		-e '/meson_install/d' \
+		${WORKDIR}/*.spec
+	rpmbuild --short-circuit -bi $WORKDIR/*.spec --nodeps --rmsource --nocheck --nodebuginfo --buildroot=$D
 }
 
 fi
