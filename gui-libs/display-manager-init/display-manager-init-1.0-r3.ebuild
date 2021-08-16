@@ -15,7 +15,7 @@ S="${WORKDIR}"
 RDEPEND="
 	sys-apps/gentoo-functions
 	!<=sys-apps/sysvinit-2.98
-	!<=x11-apps/xinit-1.4.1
+	!<=x11-apps/xinit-1.4.0
 	!<=x11-base/xorg-server-1.20.10
 	!=x11-base/xorg-server-1.20.10-r2
 "

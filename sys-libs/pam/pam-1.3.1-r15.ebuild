@@ -11,7 +11,7 @@ HOMEPAGE="https://github.com/linux-pam/linux-pam"
 LICENSE="|| ( BSD GPL-2 )"
 SLOT="0"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv s390 sparc x86 ~amd64-linux ~x86-linux"
-IUSE="audit berkdb +cracklib debug nis +pie selinux static-libs"
+IUSE="audit berkdb cracklib debug nis +pie selinux static-libs"
 
 BDEPEND="app-text/docbook-xml-dtd:4.1.2
 	app-text/docbook-xml-dtd:4.3
@@ -57,7 +57,7 @@ multilib_src_configure() {
 
 	local myconf=(
 		--with-db-uniquename=-$(db_findver sys-libs/db)
-		--enable-securedir="${EPREFIX}"/usr/$(get_libdir)/security
+		--enable-securedir="${EPREFIX}"/$(get_libdir)/security
 		--libdir=/usr/$(get_libdir)
 		--disable-prelude
 		--disable-rpath
@@ -139,6 +139,9 @@ multilib_src_install() {
 	# Install the file for autocreation of /var/run subdirectories on boot
 	insinto ${_prefix}/lib/tmpfiles.d/
 	newins "${WORKDIR}"/pamtmp.conf pam.conf
+
+	fperms 4755 /sbin/pam_timestamp_check
+	fperms 4755 /sbin/unix_chkpwd
 
 	gen_usr_ldscript -a pam pam_misc pamc
 }

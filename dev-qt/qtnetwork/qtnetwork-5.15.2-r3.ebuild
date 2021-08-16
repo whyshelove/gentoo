@@ -59,7 +59,6 @@ pkg_setup() {
 }
 
 src_configure() {
-	filter-flags -fcf-protection
 	local myconf=(
 		$(usex connman -dbus-linked '')
 		$(usex gssapi -feature-gssapi -no-feature-gssapi)

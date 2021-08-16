@@ -163,10 +163,6 @@ src_prepare() {
 src_configure() {
 	local myconf=(
 		-gtk
-		-no-reduce-relocations
-		-no-rpath
-		-no-feature-relocatable
-		-no-use-gold-linker
 		$(usex dbus -dbus-linked '')
 		$(qt_use egl)
 		$(qt_use eglfs)

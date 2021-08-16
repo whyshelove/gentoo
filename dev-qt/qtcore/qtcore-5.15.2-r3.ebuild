@@ -76,7 +76,6 @@ src_prepare() {
 }
 
 src_configure() {
-	filter-flags -fcf-protection
 	local myconf=(
 		$(qt_use icu)
 		$(qt_use !icu iconv)

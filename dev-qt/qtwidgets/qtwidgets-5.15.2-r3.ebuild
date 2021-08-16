@@ -50,10 +50,6 @@ PATCHES=( "${WORKDIR}/qtbase-${PV}-gcc11.patch" ) # bug 752012
 
 src_configure() {
 	local myconf=(
-		-no-reduce-relocations
-		-no-rpath
-		-no-feature-relocatable
-		-no-use-gold-linker
 		-opengl $(usex gles2-only es2 desktop)
 		$(qt_use gtk)
 		-gui

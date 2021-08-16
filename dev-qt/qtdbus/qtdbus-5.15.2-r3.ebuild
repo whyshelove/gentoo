@@ -42,7 +42,6 @@ QT5_GENTOO_PRIVATE_CONFIG=(
 PATCHES=( "${WORKDIR}"/qtbase-${PV}-gcc11.patch ) # bug 752012
 
 src_configure() {
-	filter-flags -fcf-protection
 	local myconf=(
 		-dbus-linked
 	)

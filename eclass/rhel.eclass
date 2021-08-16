@@ -110,11 +110,12 @@ srcrhel_unpack() {
 
 	eshopts_push -s nullglob
 
-	sed -i "/%{gpgverify}/d" ${WORKDIR}/*.spec
-	sed -i "/#!%{__python3}/d" ${WORKDIR}/*.spec
-	sed -i "/@exec_prefix@/d" ${WORKDIR}/*.spec
-	sed -i "/py_provides/d" ${WORKDIR}/*.spec
-	sed -i "/%python_provide/d" ${WORKDIR}/*.spec
+	sed -i  -e "/%{gpgverify}/d" \
+		-e "/#!%{__python3}/d" \
+		-e "/@exec_prefix@/d" \
+		-e "/py_provides/d" \
+		-e "/%python_provide/d" \
+		${WORKDIR}/*.spec
  
 	rpmbuild -bp $WORKDIR/*.spec --nodeps
 
@@ -145,7 +146,9 @@ rhel_src_unpack() {
 # @DESCRIPTION:
 
 rhel_src_install() {
-	sed -i '/rm -rf $RPM_BUILD_ROOT/d' ${WORKDIR}/*.spec
+	sed -i  -e '/rm -rf $RPM_BUILD_ROOT/d' \
+		-e '/meson_install/d' \
+		${WORKDIR}/*.spec
 
 	rpmbuild --short-circuit -bi $WORKDIR/*.spec --nodeps --rmsource --nocheck --nodebuginfo --buildroot=$D
 }
