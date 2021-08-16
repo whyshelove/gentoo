@@ -21,11 +21,14 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}
 	>=dev-util/gtk-doc-am-1.12
+	dev-lang/nasm
 "
 
 DOCS="AUTHORS ChangeLog NEWS README RELEASE"
 
 multilib_src_configure() {
+	filter-flags -specs=/usr/lib/rpm/redhat/redhat-annobin-cc1
+
 	GST_PLUGINS_NOAUTO="bz2"
 	local emesonargs=(
 		-Dbz2=enabled
@@ -38,6 +41,13 @@ multilib_src_configure() {
 
 		# gst-plugins-v4l2
 		-Dv4l2=disabled
+		-Dasm=enabled
+		-Dmonoscope=disabled
+		-Daalib=disabled
+		-Dlibcaca=disabled
+		-Drpicamsrc=disabled
+		-Ddv=enabled
+		-Ddv1394=enabled
 	)
 
 	gstreamer_multilib_src_configure

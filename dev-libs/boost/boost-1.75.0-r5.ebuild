@@ -128,6 +128,9 @@ pkg_setup() {
 			die "Unsupported target in ${EROOT}/etc/site-config.jam"
 		fi
 	fi
+
+	export RPM_OPT_FLAGS="$OPT_FLAGS -fno-strict-aliasing -Wno-unused-local-typedefs -Wno-deprecated-declarations"
+	export RPM_LD_FLAGS="$LDFLAGS"
 }
 
 src_prepare() {
@@ -154,8 +157,6 @@ ejam() {
 }
 
 src_configure() {
-	append-cflags -fno-strict-aliasing -Wno-unused-local-typedefs -Wno-deprecated-declarations
-
 	./bootstrap.sh --with-toolset=gcc --with-icu
 	# Workaround for too many parallel processes requested, bug #506064
 	[[ "$(makeopts_jobs)" -gt 64 ]] && MAKEOPTS="${MAKEOPTS} -j64"
