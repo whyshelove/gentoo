@@ -38,22 +38,34 @@ XORG_CONFIGURE_OPTIONS=(
 src_install() {
 	xorg-3_src_install
 
+	exeinto /etc/X11
+	doexe "${FILESDIR}"/chooser.sh "${FILESDIR}"/startDM.sh
+	exeinto /etc/X11/Sessions
+	doexe "${FILESDIR}"/Xsession
 	exeinto /etc/X11/xinit
-	doexe "${WORKDIR}"/{xinitrc,Xclients,Xsession}
-	exeopts -m0644
-	doexe "${WORKDIR}"/xinitrc-common
-
-	insinto /etc/X11
-	doins ${WORKDIR}/{Xmodmap,Xresources}
-
+	newexe "${FILESDIR}"/xserverrc.2 xserverrc
 	exeinto /etc/X11/xinit/xinitrc.d/
-	doexe ${WORKDIR}/localuser.sh
-
-	exeinto ${_libexecdir}
-	doexe ${WORKDIR}/xinit-compat
+	doexe "${FILESDIR}"/00-xhost
 
 	insinto /usr/share/xsessions
 	doins "${FILESDIR}"/Xsession.desktop
+
+#	exeinto /etc/X11/xinit
+#	doexe "${WORKDIR}"/{xinitrc,Xclients,Xsession}
+#	exeopts -m0644
+#	doexe "${WORKDIR}"/xinitrc-common
+
+#	insinto /etc/X11
+#	doins ${WORKDIR}/{Xmodmap,Xresources}
+
+#	exeinto /etc/X11/xinit/xinitrc.d/
+#	doexe ${WORKDIR}/localuser.sh
+
+#	exeinto ${_libexecdir}
+#	doexe ${WORKDIR}/xinit-compat
+
+#	insinto /usr/share/xsessions
+#	doins "${FILESDIR}"/Xsession.desktop
 }
 
 pkg_postinst() {
