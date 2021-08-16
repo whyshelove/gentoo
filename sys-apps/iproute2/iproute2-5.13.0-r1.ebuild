@@ -5,8 +5,11 @@ EAPI=7
 
 inherit toolchain-funcs flag-o-matic multilib rhel
 
-if [[ ${PV} != *8888 ]]; then
-	KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
+if [[ ${PV} == "9999" ]] ; then
+	EGIT_REPO_URI="https://git.kernel.org/pub/scm/linux/kernel/git/shemminger/iproute2.git"
+	inherit git-r3
+else
+	KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
 fi
 
 DESCRIPTION="kernel routing and traffic control utilities"
@@ -19,12 +22,12 @@ IUSE="atm berkdb bpf caps elf +iptables ipv6 libbsd minimal selinux"
 # We could make libmnl optional, but it's tiny, so eh
 RDEPEND="
 	!net-misc/arpd
-	!minimal? ( net-libs/libmnl )
+	!minimal? ( net-libs/libmnl:= )
 	atm? ( net-dialup/linux-atm )
 	berkdb? ( sys-libs/db:= )
-	bpf? ( dev-libs/libbpf )
+	bpf? ( dev-libs/libbpf:= )
 	caps? ( sys-libs/libcap )
-	elf? ( virtual/libelf )
+	elf? ( virtual/libelf:= )
 	iptables? ( >=net-firewall/iptables-1.4.20:= )
 	libbsd? ( dev-libs/libbsd )
 	selinux? ( sys-libs/libselinux )
