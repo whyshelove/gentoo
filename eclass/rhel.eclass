@@ -56,7 +56,7 @@ if [ -z ${MY_PF} ] ; then
 			docbook-xsl-ns-stylesheets) MY_PF=docbook-style-xsl-${PV}-${MY_PR} ;;
 			xauth | xbitmaps | util-macros | xinit ) MY_PF=xorg-x11-${P}-${MY_PR} ;;
 			libnl | glib | openjpeg | lcms | gnupg | grub | udisks | geoclue \
-			| udisks | lcms | openjpeg | glib | librsvg | gstreamer \
+			| udisks | lcms | openjpeg | glib | librsvg | gstreamer | gtksourceview \
 			) MY_P=${P/-/$(ver_cut 1)-}; MY_PF=${MY_P}-${MY_PR} ;;
 			sysprof-capture ) MY_PF=${P/-capture}-${MY_PR} ;;
 			thin-provisioning-tools ) MY_PF=device-mapper-persistent-data-${PV}-${MY_PR} ;;
@@ -82,6 +82,7 @@ if [ -z ${MY_PF} ] ; then
 			gst-plugins* ) MY_PF=${P/-/reamer1-}-${MY_PR} ;;
 			modemmanager ) MY_PF=${P/modemmanager/ModemManager}-${MY_PR} ;;
 			networkmanager ) MY_PF=${P/networkmanager/NetworkManager}-${MY_PR} ;;
+			vte ) MY_PF=${P/-/291-}-${MY_PR} ;;
 			*) MY_PF=${P}-${MY_PR} ;;
 		esac
 	fi
