@@ -56,7 +56,7 @@ else
 			| linguist-tools | qtsql | qtconcurrent | qdbus | qtpaths \
 			| qtprintsupport | designer ) MY_P="qt5-${QT5_MODULE}-${PV}"; MY_PF=${MY_P}-${MY_PR} ;;
 			qtdeclarative | qtsvg | qtscript | qtgraphicaleffects | qtwayland | qtquickcontrols* \
-			| qtxmlpatterns ) MY_PF=qt5-${P}-${MY_PR} ;;
+			| qtxmlpatterns | qtwebchannel ) MY_PF=qt5-${P}-${MY_PR} ;;
 			*) MY_PF=${P}-${MY_PR} ;;
 		esac
 
