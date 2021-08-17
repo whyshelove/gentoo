@@ -180,6 +180,7 @@ rhel_src_install() {
 	sed -i  -e '/rm -rf $RPM_BUILD_ROOT/d' \
 		-e '/meson_install/d' \
 		${WORKDIR}/*.spec
+
 	rpmbuild --short-circuit -bi $WORKDIR/*.spec --nodeps --rmsource --nocheck --nodebuginfo --buildroot=$D
 }
 

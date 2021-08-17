@@ -6,7 +6,7 @@ GNOME_ORG_MODULE="NetworkManager"
 VALA_USE_DEPEND="vapigen"
 PYTHON_COMPAT=( python3_{7..10} )
 
-inherit bash-completion-r1 gnome2 linux-info multilib python-any-r1 systemd readme.gentoo-r1 vala virtualx udev multilib-minimal rhel
+inherit bash-completion-r1 gnome2 linux-info multilib python-any-r1 systemd readme.gentoo-r1 vala virtualx udev multilib-minimal rhel9
 
 DESCRIPTION="A set of co-operative tools that make networking simple and straightforward"
 HOMEPAGE="https://wiki.gnome.org/Projects/NetworkManager"
