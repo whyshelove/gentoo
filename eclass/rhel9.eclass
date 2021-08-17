@@ -43,6 +43,7 @@ else
 		docbook-xsl-ns-stylesheets) MY_PF=docbook-style-xsl-${PV}-${MY_PR} ;;
 		xauth | xbitmaps | util-macros | xinit ) MY_PF=xorg-x11-${P}-${MY_PR} ;;
 		libnl | glib | openjpeg ) MY_P=${P/-/$(ver_cut 1)-}; MY_PF=${MY_P}-${MY_PR} ;;
+		gtk+ ) MY_P=${P/+/$(ver_cut 1)}; MY_PF=${MY_P}-${MY_PR} ;;
 		modemmanager ) MY_PF=${P/modemmanager/ModemManager}-${MY_PR} ;;
 		networkmanager ) MY_PF=${P/networkmanager/NetworkManager}-${MY_PR} ;;
 		*) MY_PF=${P}-${MY_PR} ;;
