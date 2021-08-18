@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{8..9} )
 PYTHON_REQ_USE="threads(+),xml(+)"
-inherit python-single-r1 waf-utils multilib-minimal linux-info systemd pam tmpfiles
+inherit python-single-r1 waf-utils multilib-minimal linux-info systemd pam tmpfiles rhel
 
 DESCRIPTION="Samba Suite Version 4"
 HOMEPAGE="https://samba.org/"
@@ -15,8 +15,7 @@ MY_P="${PN}-${MY_PV}"
 if [[ ${PV} = *_rc* ]]; then
 	SRC_URI="mirror://samba/rc/${MY_P}.tar.gz"
 else
-	SRC_URI="mirror://samba/stable/${MY_P}.tar.gz"
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~ppc ~ppc64 ~riscv ~sparc ~x86"
+	KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ~ppc ~ppc64 ~riscv ~sparc ~x86"
 fi
 S="${WORKDIR}/${MY_P}"
 
@@ -196,7 +195,7 @@ multilib_src_configure() {
 	if ! use system-heimdal && ! use system-mitkrb5 ; then
 		bundled_libs="heimbase,heimntlm,hdb,kdc,krb5,wind,gssapi,hcrypto,hx509,roken,asn1,com_err,NONE"
 	fi
-
+	_systemd_extra="Environment=KRB5CCNAME=FILE:/run/samba/krb5cc_samba"
 	local myconf=(
 		--enable-fhs
 		--sysconfdir="${EPREFIX}/etc"
@@ -210,6 +209,16 @@ multilib_src_configure() {
 		--nopyc
 		--nopyo
 		--without-winexe
+		--with-sockets-dir=/run/samba
+		--with-lockdir=/var/lib/samba/lock
+		--with-statedir=/var/lib/samba
+		--with-cachedir=/var/lib/samba
+		--with-pie
+		--with-relro
+		--systemd-smb-extra=${_systemd_extra}
+		--systemd-nmb-extra=${_systemd_extra}
+		--systemd-winbind-extra=${_systemd_extra}
+		--systemd-samba-extra=${_systemd_extra}
 		$(multilib_native_use_with acl acl-support)
 		$(multilib_native_usex addc '' '--without-ad-dc')
 		$(multilib_native_use_with addns dnsupdate)
