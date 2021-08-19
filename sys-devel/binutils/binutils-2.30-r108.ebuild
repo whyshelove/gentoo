@@ -81,7 +81,7 @@ src_prepare() {
 }
 
 toolchain-binutils_bugurl() {
-	printf "https://bugs.gentoo.org/"
+	printf "http://bugzilla.redhat.com/bugzilla/"
 }
 toolchain-binutils_pkgversion() {
 	printf "Gentoo ${BVER}"
@@ -123,7 +123,7 @@ src_configure() {
 	fi
 
 	if use gold ; then
-		myconf+=( --enable-gold )
+		myconf+=( --enable-gold=default )
 	fi
 
 	if use nls ; then
@@ -179,7 +179,7 @@ src_configure() {
 		--includedir="${EPREFIX}"${INCPATH}
 		--enable-obsolete
 		--enable-shared
-		--enable-threads
+		--enable-threads=yes
 		# Newer versions (>=2.27) offer a configure flag now.
 		--enable-relro=yes
 		# Newer versions (>=2.24) make this an explicit option. #497268
@@ -278,6 +278,15 @@ src_install() {
 			mv "${ED}"/usr/${CHOST}/${CTARGET}/lib/* "${ED}"/${LIBPATH}/
 			rm -r "${ED}"/usr/${CHOST}/{include,lib}
 		fi
+
+		# For cross-binutils we drop the documentation.
+		rm -rf ${ED}${_infodir}
+		# We keep these as one can have native + cross binutils of different versions.
+		#rm -rf {buildroot}{_prefix}/share/locale
+		#rm -rf {buildroot}{_mandir}
+		rm -rf ${ED}${_libdir}/libiberty.a
+		# Remove libtool files, which reference the .so libs
+		rm -f ${ED}${_libdir}/lib{bfd,opcodes}.la
 	fi
 	insinto ${INCPATH}
 	local libiberty_headers=(
@@ -324,6 +333,16 @@ src_install() {
 		docinto opcodes
 		dodoc opcodes/ChangeLog*
 	fi
+
+	# Remove Windows/Novell only man pages
+	rm -f ${ED}${_mandir}/man1/{dlltool,nlmconv,windres,windmc}*
+
+	# Prevent programs from linking against libbfd and libopcodes
+	# dynamically, as they are changed far too often.
+	rm -f ${ED}${_libdir}/lib{bfd,opcodes}.so
+
+	# Remove libtool files, which reference the .so libs
+	rm -f ${ED}${_libdir}/lib{bfd,opcodes}.la
 
 	# Remove shared info pages
 	rm -f "${ED}"/${DATAPATH}/info/{dir,configure.info,standards.info}
