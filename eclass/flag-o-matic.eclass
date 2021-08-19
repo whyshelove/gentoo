@@ -71,6 +71,14 @@ _setup-allowed-flags() {
 
 		# Linker choice flag
 		'-fuse-ld'
+
+		# rpm optflag
+		'-Werror=format-security' -Wformat-security
+		-fexceptions -grecord-gcc-switches
+		-fasynchronous-unwind-tables
+		-fstack-clash-protection -fcf-protection
+		'--specs=/usr/lib/rpm/redhat/redhat-*'
+		-fPIE -pie
 	)
 
 	# allow a bunch of flags that negate features / control ABI
@@ -126,7 +134,7 @@ _filter-hardened() {
 			# Ideally we should only concern ourselves with PIE flags,
 			# not -fPIC or -fpic, but too many places filter -fPIC without
 			# thinking about -fPIE.
-			-fPIC|-fpic|-fPIE|-fpie|-Wl,pie|-pie)
+			-fPIC|-fpic|-fpie|-Wl,pie)
 				gcc-specs-pie || continue
 				if ! is-flagq -nopie && ! is-flagq -no-pie ; then
 					# Support older Gentoo form first (-nopie) before falling
