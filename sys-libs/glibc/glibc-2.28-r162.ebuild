@@ -25,7 +25,7 @@ PATCH_VER=9
 SRC_URI+=" https://dev.gentoo.org/~dilfridge/distfiles/${P}-patches-${PATCH_VER}.tar.xz"
 SRC_URI+=" multilib? ( https://dev.gentoo.org/~dilfridge/distfiles/gcc-multilib-bootstrap-${GCC_BOOTSTRAP_VER}.tar.xz )"
 
-IUSE="audit caps cet compile-locales doc gd headers-only +multiarch multilib nscd profile selinux +ssp suid systemtap test vanilla"
+IUSE="audit caps compile-locales doc gd headers-only +multiarch multilib nscd profile selinux +ssp suid systemtap test vanilla"
 
 # Minimum kernel version that glibc requires
 MIN_KERN_VER="3.2.0"
@@ -844,7 +844,7 @@ glibc_do_configure() {
 
 	# Enable Intel Control-flow Enforcement Technology on amd64 if requested
 	case ${CTARGET} in
-		x86_64-*) myconf+=( $(use_enable cet) ) ;;
+		x86_64-*) myconf+=( --enable-cet --enable-static-pie ) ;;
 		*) ;;
 	esac
 
@@ -879,7 +879,7 @@ glibc_do_configure() {
 	fi
 
 	myconf+=(
-		--with-nonshared-cflags="-g -Wa,--generate-missing-build-notes=yes"
+		--with-nonshared-cflags="-Wp,-D_FORTIFY_SOURCE=2"
 		--enable-tunables
 		--without-cvs
 		--disable-werror
@@ -1080,7 +1080,7 @@ src_configure() {
 }
 
 do_src_compile() {
-	emake -C "$(builddir nptl)"
+	emake -C "$(builddir nptl)" -O -r ASFLAGS="-g -Wa,--generate-missing-build-notes=yes"
 }
 
 src_compile() {
@@ -1275,7 +1275,7 @@ glibc_do_src_install() {
 
 		sed -i "${nscd_args[@]}" "${ED}"/etc/init.d/nscd
 
-		systemd_dounit nscd/nscd.service
+		systemd_dounit nscd/nscd.{service,socket}
 		systemd_newtmpfilesd nscd/nscd.tmpfiles nscd.conf
 	else
 		# Do this since extra/etc/*.conf above might have nscd.conf.

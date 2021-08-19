@@ -729,9 +729,7 @@ toolchain-rhel_src_configure() {
 		--enable-obsolete
 		--disable-werror
 		--with-system-zlib
-		--enable-checking=release
 		--enable-gnu-unique-object
-		--with-gcc-major-version-only
 		--disable-libunwind-exceptions
 		--enable-decimal-float
 	)
