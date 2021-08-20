@@ -86,8 +86,9 @@ if [ -z ${MY_PF} ] ; then
 			*) MY_PF=${P}-${MY_PR} ;;
 		esac
 	fi
-	SRC_URI="${REPO_URI}/${MY_PF}${DIST}.src.rpm"
 fi
+
+SRC_URI="${REPO_URI}/${MY_PF}${DIST}.src.rpm"
 
 rpm_clean() {
 	# delete everything
