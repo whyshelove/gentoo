@@ -160,7 +160,7 @@ if [[ ${PN} != "kgcc64" && ${PN} != gcc-* ]] ; then
 	tc_version_is_at_least 8.0 &&
 		IUSE+=" systemtap" TC_FEATURES+=(systemtap)
 	tc_version_is_at_least 9.0 && IUSE+=" d"
-	tc_version_is_at_least 9.1 && IUSE+=" lto"
+	tc_version_is_at_least 8.1 && IUSE+=" lto"
 	tc_version_is_at_least 10 && IUSE+=" zstd" TC_FEATURES+=(zstd)
 	tc_version_is_at_least 11 && IUSE+=" valgrind" TC_FEATURES+=(valgrind)
 	tc_version_is_at_least 11 && IUSE+=" custom-cflags"
