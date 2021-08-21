@@ -137,7 +137,7 @@ src_configure() {
 
 	cp defconfig .config || die
 	append-flags -fPIE -DPIE
-
+	filter-flags '*-annobin-cc1'
 	# Basic setup
 	Kconfig_style_config CTRL_IFACE
 	Kconfig_style_config MATCH_IFACE

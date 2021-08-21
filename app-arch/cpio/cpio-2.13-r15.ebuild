@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit rhel
+inherit autotools flag-o-matic rhel
 
 DESCRIPTION="A file archival tool which can also read and write tar files"
 HOMEPAGE="https://www.gnu.org/software/cpio/cpio.html"
@@ -17,9 +17,14 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-2.12-non-gnu-compilers.patch #275295
 )
 
+src_prepare() {
+	default
+	eautoreconf -fi
+}
+
 src_configure() {
-	autoreconf -fi
-	export CFLAGS="-D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -pedantic -fno-strict-aliasing -Wall $CFLAGS"
+	append-cflags -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -pedantic -fno-strict-aliasing -Wall
+
 	local myeconfargs=(
 		$(use_enable nls)
 		--bindir="${EPREFIX}"/bin

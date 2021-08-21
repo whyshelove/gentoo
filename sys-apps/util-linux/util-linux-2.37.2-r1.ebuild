@@ -3,7 +3,7 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7..9} )
+PYTHON_COMPAT=( python3_{8,9} )
 
 inherit toolchain-funcs libtool flag-o-matic bash-completion-r1 usr-ldscript \
 	pam python-r1 multilib-minimal multiprocessing systemd rhel
@@ -85,17 +85,8 @@ RESTRICT="!test? ( test )"
 S="${WORKDIR}/${MY_P}"
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-2.37.1-lscpu_nullptr.patch
+	"${FILESDIR}"/${PN}-2.37.1-agetty_ctrl-c_erase.patch #804972
 )
-
-rm_man() {
-	[[ -n $1 ]] || die
-	local el
-	for el in $1 ; do
-		find "${WORKDIR}/man" -type f -name "${el}.?" -delete \
-			|| die
-	done
-}
 
 src_prepare() {
 	default
@@ -156,11 +147,12 @@ python_configure() {
 
 multilib_src_configure() {
 	unset LINGUAS
-	export CFLAGS="-D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 $CFLAGS"
+	append-cflags -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
 	export SUID_CFLAGS="-fpie"
 	export SUID_LDFLAGS="-pie -Wl,-z,relro -Wl,-z,now"
 	export DAEMON_CFLAGS="$SUID_CFLAGS"
 	export DAEMON_LDFLAGS="$SUID_LDFLAGS"
+
 	lfs_fallocate_test
 	# The scanf test in a run-time test which fails while cross-compiling.
 	# Blindly assume a POSIX setup since we require libmount, and libmount

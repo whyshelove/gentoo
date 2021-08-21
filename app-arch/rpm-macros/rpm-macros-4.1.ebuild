@@ -10,7 +10,7 @@ AppStream="https://odcs.stream.centos.org/production/latest-CentOS-Stream/compos
 SRC_URI="${SRC_URI} ${BaseOS}/centos-stream-release-9.0-1.0.9.el9.noarch.rpm"
 SRC_URI="${SRC_URI} ${BaseOS}/rootfiles-8.1-30.el9.noarch.rpm"
 
-for macro in efi-srpm-macros-4-7 kernel-rpm-macros-185-7.el9 perl-srpm-macros-1-40 redhat-rpm-config-187-1 \
+for macro in efi-srpm-macros-4-7 kernel-rpm-macros-185-7.el9 perl-srpm-macros-1-40 redhat-rpm-config-187-2 \
 	python-qt5-rpm-macros-5.15.0-9 python-rpm-macros-3.9-41 python-srpm-macros-3.9-41 python3-rpm-macros-3.9-41 \
 	go-srpm-macros-3.0.9-7 qt5-rpm-macros-5.15.2-8 rust-srpm-macros-17-3 ;
 do

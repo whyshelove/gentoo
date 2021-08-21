@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit eutils libtool flag-o-matic gnuconfig multilib toolchain-funcs rhel
+inherit eutils autotools libtool flag-o-matic gnuconfig multilib toolchain-funcs rhel
 
 DESCRIPTION="Tools necessary to build programs"
 HOMEPAGE="https://sourceware.org/binutils/"
@@ -11,11 +11,17 @@ LICENSE="GPL-3+"
 IUSE="cet default-gold doc +gold multitarget +nls +plugins static-libs test vanilla"
 REQUIRED_USE="default-gold? ( gold )"
 
+PATCH_VER=1
 PATCH_DEV=dilfridge
 
-if [[ ${PV} == *8888 ]]; then
+if [[ ${PV} == 9999* ]]; then
+	inherit git-r3
 	SLOT=${PV}
 else
+	PATCH_BINUTILS_VER=${PATCH_BINUTILS_VER:-${PV}}
+	PATCH_DEV=${PATCH_DEV:-slyfox}
+	[[ -z ${PATCH_VER} ]] || SRC_URI="${SRC_URI}
+		https://dev.gentoo.org/~${PATCH_DEV}/distfiles/binutils-${PATCH_BINUTILS_VER}-patches-${PATCH_VER}.tar.xz"
 	SLOT=$(ver_cut 1-2)
 	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
 fi
@@ -59,12 +65,25 @@ PATCHES=(
 MY_BUILDDIR=${WORKDIR}/build
 
 src_unpack() {
-	rpm_src_unpack ${A}
+	rhel_src_unpack ${A}
+	unpack binutils-${PATCH_BINUTILS_VER}-patches-${PATCH_VER}.tar.xz
+
 	cd "${WORKDIR}" || die
 	mkdir -p "${MY_BUILDDIR}" || die
 }
 
 src_prepare() {
+	patchsetname="${PATCH_BINUTILS_VER}-${PATCH_VER}"
+
+	if [[ ! -z ${PATCH_VER} ]] ; then
+		if ! use vanilla; then
+			rm ${WORKDIR}/patch/0009-PR26574-heap-buffer-overflow-in-_bfd_elf_slurp_secon.patch
+			einfo "Applying binutils patchset ${patchsetname}"
+			eapply "${WORKDIR}/patch"
+			einfo "Done."
+		fi
+	fi
+
 	# This check should probably go somewhere else, like pkg_pretend.
 	if [[ ${CTARGET} == *-uclibc* ]] ; then
 		if grep -qs 'linux-gnu' "${S}"/ltconfig ; then
@@ -100,6 +119,13 @@ src_prepare() {
 	# Run misc portage update scripts
 	gnuconfig_update
 	elibtoolize --portage --no-uclibc
+
+	pushd libiberty
+	eautoconf
+	popd
+	pushd intl
+	eautoconf
+	popd
 }
 
 toolchain-binutils_bugurl() {
@@ -165,7 +191,7 @@ src_configure() {
 		ppc|sparc|x86|arm*) myconf+=( --enable-64-bit-bfd ) ;;
 	esac
 
-	use multitarget && myconf+=( --enable-targets=x86_64-pep --enable-64-bit-bfd )
+	use multitarget && myconf+=( --enable-targets=x86_64-pep,bpf-unknown-none --enable-64-bit-bfd )
 
 	[[ -n ${CBUILD} ]] && myconf+=( --build=${CBUILD} )
 
