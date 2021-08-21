@@ -1323,7 +1323,7 @@ gcc_do_filter_flags() {
 
 	export CONFIG_SITE=NONE
 
-	filter-flags '-D_FORTIFY_SOURCE=[12]' -pipe '-specs=/usr/lib/rpm/redhat/redhat-annobin-cc1'
+	filter-flags '-D_FORTIFY_SOURCE=[12]' -pipe '*-annobin-cc1'
 	replace-flags -mfpmath=sse '-mfpmath=sse -msse2'
 	replace-flags -Werror=format-security -Wformat-security
 
