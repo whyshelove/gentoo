@@ -14,7 +14,7 @@ PATCHSET="python-gentoo-patches-${MY_PV%_p*}_p1"
 
 DESCRIPTION="An interpreted, interactive, object-oriented programming language"
 HOMEPAGE="https://www.python.org/"
-SRC_URI="${REPO_URI}/${MY_PF}.module_el8.5.0+765+e829a51d.src.rpm
+SRC_URI="${REPO_URI}/${MY_PF}.module_el8.5.0+871+689c57c1.src.rpm
 	https://dev.gentoo.org/~mgorny/dist/python/${PATCHSET}.tar.xz"
 S="${WORKDIR}/${MY_P}"
 
