@@ -32,7 +32,6 @@ src_prepare() {
 		"${FILESDIR}"/PySocks-1.7.1-test_server.patch
 	)
 
-	rm test/bin/3proxy || die
 #	if use test; then
 #		ln -s "${BROOT}/usr/bin/3proxy" test/bin/3proxy || die
 #	fi
