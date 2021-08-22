@@ -52,8 +52,7 @@ DEPEND="${RDEPEND}
 	X? ( x11-base/xorg-proto )
 "
 
-PATCHES=( "${FILESDIR}/${PN}-5.16.0-no-detailed-mem-message.patch"
-	  "${FILESDIR}/${P}_fix-processcore-on-gcc8.patch" )
+PATCHES=( "${FILESDIR}/${PN}-5.16.0-no-detailed-mem-message.patch" )
 
 src_configure() {
 	local mycmakeargs=(
