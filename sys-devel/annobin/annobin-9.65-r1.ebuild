@@ -82,4 +82,5 @@ src_compile() {
 src_install() {
 	emake DESTDIR="${D}" install PLUGIN_INSTALL_DIR="${D}"${ANNOBIN_CLANG_PLUGIN_DIR}
 	rm -f "${ED}"${_infodir}/dir
+	tree ${ED}
 }

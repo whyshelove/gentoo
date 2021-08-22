@@ -4,7 +4,7 @@
 EAPI=7
 
 LUA_COMPAT=( lua5-{2..4} )
-PYTHON_COMPAT=( python3_{6,8,9} )
+PYTHON_COMPAT=( python2_7 python3_{6,8,9} )
 
 inherit autotools flag-o-matic lua-single perl-module python-single-r1 toolchain-funcs rhel
 
@@ -57,8 +57,6 @@ pkg_setup() {
 	use python && python-single-r1_pkg_setup
 }
 
-
-
 src_prepare() {
 	eapply "${FILESDIR}"/${PN}-4.11.0-autotools.patch
 
@@ -76,8 +74,8 @@ src_prepare() {
 }
 
 src_configure() {
-	append-cppflags -I"${EPREFIX}/usr/include/nss" -I"${EPREFIX}/usr/include/nspr" -DLUA_COMPAT_APIINTCASTS
-	append-cflags -DLUA_COMPAT_APIINTCASTS
+	append-cppflags -DLUA_COMPAT_APIINTCASTS
+	append-cflags  -fsanitize=undefined -DLUA_COMPAT_APIINTCASTS
 
 	econf \
     		--localstatedir="${EPREFIX}"/var \
