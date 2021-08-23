@@ -9,7 +9,6 @@ inherit autotools flag-o-matic multilib-minimal python-single-r1 systemd user rh
 MY_P=${PN}-${PV/_/}
 DESCRIPTION="A validating, recursive and caching DNS resolver"
 HOMEPAGE="https://unbound.net/ https://nlnetlabs.nl/projects/unbound/about/"
-#SRC_URI="https://nlnetlabs.nl/downloads/unbound/${MY_P}.tar.gz"
 
 LICENSE="BSD GPL-2"
 SLOT="0/8" # ABI version of libunbound.so
@@ -61,7 +60,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-1.5.7-trust-anchor-file.patch
 )
 
-S=${WORKDIR}/${MY_P}
+S=${WORKDIR}/${MY_P}/${MY_P}
 
 pkg_setup() {
 	enewgroup unbound
@@ -75,16 +74,8 @@ pkg_setup() {
 	use python && python-single-r1_pkg_setup
 }
 
-src_unpack() {
-	rhel_unpack ${A} && unpack ${WORKDIR}/*.tar.*
-
-}
-
 src_prepare() {
 	default
-	eapply ${WORKDIR}
-
-	eautoreconf -iv
 
 	# required for the python part
 	multilib_copy_sources

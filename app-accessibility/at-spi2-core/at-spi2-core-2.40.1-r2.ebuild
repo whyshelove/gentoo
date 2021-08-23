@@ -41,6 +41,7 @@ PATCHES=(
 
 multilib_src_configure() {
 	local emesonargs=(
+		-Ddbus_daemon=/usr/bin/dbus-daemon
 		-Dsystemd_user_dir="$(systemd_get_userunitdir)"
 		$(meson_native_use_bool gtk-doc docs)
 		-Dintrospection=$(multilib_native_usex introspection)

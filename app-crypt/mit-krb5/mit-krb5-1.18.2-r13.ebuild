@@ -4,7 +4,7 @@
 EAPI=7
 
 PYTHON_COMPAT=( python3_{6,8,9} )
-inherit autotools flag-o-matic multilib-minimal python-any-r1 systemd toolchain-funcs rhel
+inherit autotools flag-o-matic python-any-r1 systemd toolchain-funcs rhel
 
 MY_P="${P/mit-}"
 P_DIR=$(ver_cut 1-2)
@@ -13,26 +13,26 @@ HOMEPAGE="https://web.mit.edu/kerberos/www/"
 
 LICENSE="openafs-krb5-a BSD MIT OPENLDAP BSD-2 HPND BSD-4 ISC RSA CC-BY-SA-3.0 || ( BSD-2 GPL-2+ )"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sparc ~x86"
-IUSE="cpu_flags_x86_aes doc +keyutils lmdb nls openldap +pkinit selinux +threads test xinetd"
+KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sparc ~x86"
+IUSE="cpu_flags_x86_aes doc keyutils lmdb nls openldap +pkinit selinux threads test xinetd"
 
 # Test suite requires network access
 RESTRICT="test"
 
 DEPEND="
 	!!app-crypt/heimdal
-	>=sys-libs/e2fsprogs-libs-1.42.9[${MULTILIB_USEDEP}]
+	>=sys-libs/e2fsprogs-libs-1.42.9
 	|| (
-		>=dev-libs/libverto-0.2.5[libev,${MULTILIB_USEDEP}]
-		>=dev-libs/libverto-0.2.5[libevent,${MULTILIB_USEDEP}]
-		>=dev-libs/libverto-0.2.5[tevent,${MULTILIB_USEDEP}]
+		>=dev-libs/libverto-0.2.5[libev]
+		>=dev-libs/libverto-0.2.5[libevent]
+		>=dev-libs/libverto-0.2.5[tevent]
 	)
-	keyutils? ( >=sys-apps/keyutils-1.5.8:=[${MULTILIB_USEDEP}] )
+	keyutils? ( >=sys-apps/keyutils-1.5.8:= )
 	lmdb? ( dev-db/lmdb )
-	nls? ( sys-devel/gettext[${MULTILIB_USEDEP}] )
-	openldap? ( >=net-nds/openldap-2.4.38-r1[${MULTILIB_USEDEP}] )
+	nls? ( sys-devel/gettext )
+	openldap? ( >=net-nds/openldap-2.4.38-r1 )
 	pkinit? (
-		>=dev-libs/openssl-1.0.1h-r2:0=[${MULTILIB_USEDEP}]
+		>=dev-libs/openssl-1.0.1h-r2:0=
 	)
 	xinetd? ( sys-apps/xinetd )
 	"
@@ -55,81 +55,83 @@ RDEPEND="${DEPEND}
 
 S=${WORKDIR}/${MY_P}/src
 
-MULTILIB_CHOST_TOOLS=(
+CHOST_TOOLS=(
 	/usr/bin/krb5-config
 )
 
-src_unpack() {
-	rhel_unpack ${A}
-	sed -i "/Patch7/d" ${WORKDIR}/*.spec
-	rpmbuild --rmsource -bp $WORKDIR/*.spec --nodeps
-}
+PATCHES=(
+	"${FILESDIR}/${PN}-1.12_warn_cflags.patch"
+	"${FILESDIR}/${PN}-config_LDFLAGS-r1.patch"
+	"${FILESDIR}/${PN}_dont_create_run.patch"
+)
 
 src_prepare() {
 	default
 	# Make sure we always use the system copies.
 	rm -rf util/{et,ss,verto}
 	sed -i 's:^[[:space:]]*util/verto$::' configure.ac || die
-	ln -s  autoconf.h.in ${S}/include/autoconf.h
+
 	eautoreconf
 
 }
 
 src_configure() {
-	export runstatedir=/var/run
+	# Go ahead and supply tcl info, because configure doesn't know how to find it.
+	source ${_libdir}/tclConfig.sh
+
 	# Work out the CFLAGS and CPPFLAGS which we intend to use.
 	INCLUDES=-I/usr/include/et
 	CFLAGS="$CFLAGS $DEFINES $INCLUDES"
 	CPPFLAGS="$DEFINES $INCLUDES"
-	append-cflags-fPIC -fstack-protector-all
+	append-cflags -fPIC -fstack-protector-all
+
 	# QA
 	append-flags -fno-strict-aliasing 
 	append-flags -fno-strict-overflow
 
-	multilib-minimal_src_configure
-}
-
-multilib_src_configure() {
 	ECONF_SOURCE=${S} \
 	econf \
 		$(use_with openldap ldap) \
-		"$(multilib_native_use_with test tcl "${EPREFIX}/usr")" \
 		$(use_enable nls) \
-		$(use_enable pkinit) \
 		$(use_enable threads thread-support) \
 		$(use_with lmdb) \
 		$(use_with keyutils) \
+		SS_LIB="-lss" \
+		--localstatedir=${_var}/kerberos \
+		--without-krb5-config \
+		--with-netlib=-lresolv \
+		--with-tcl \
+		--enable-dns-for-realm \
+		--with-dirsrv-account-locking \
+		--with-crypto-impl=openssl \
+		--with-pkinit-crypto-impl=openssl \
+		--with-tls-impl=openssl \
+		--with-pam \
+		--with-prng-alg=os \
+		--with-system-verto \
 		--without-hesiod \
 		--enable-shared \
 		--with-system-et \
 		--with-system-ss \
-		--enable-dns-for-realm \
-		--enable-kdc-lookaside-cache \
-		--with-pam \
-		--with-prng-alg=os \
-		--with-system-verto \
-		--with-netlib=-lresolv \
 		--disable-rpath \
 		\
 		AR="$(tc-getAR)"
 }
 
-multilib_src_compile() {
+src_compile() {
 	emake -j1
 }
 
-multilib_src_test() {
-	multilib_is_native_abi && emake -j1 check
+src_test() {
+	emake -j1 check
 }
 
-multilib_src_install() {
+src_install() {
 	emake \
 		DESTDIR="${D}" \
 		EXAMPLEDIR="${EPREFIX}/usr/share/doc/${PF}/examples" \
 		install
-}
 
-multilib_src_install_all() {
 	# default database dir
 	keepdir /var/lib/krb5kdc
 
