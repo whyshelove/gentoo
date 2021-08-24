@@ -33,6 +33,7 @@ else
 			thin-provisioning-tools ) MY_PF=device-mapper-persistent-data-${PV}-${MY_PR} ;;
 			iproute2 ) MY_PF=${P/2}-${MY_PR} ;;
 			mit-krb5 ) MY_PF=${P/mit-}-${MY_PR} ;;
+			lxml ) MY_PF=python-${P}-${MY_PR} ;;
 			ninja) MY_PF=${P/-/-build-}-${MY_PR} ;;
 			shadow ) MY_PF=${P/-/-utils-}-${MY_PR} ;;
 			webkit-gtk ) MY_PF=${P/-gtk/2gtk3}-${MY_PR} ;;
