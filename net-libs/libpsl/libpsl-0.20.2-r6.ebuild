@@ -24,7 +24,7 @@ RDEPEND="
 	)
 "
 
-DEPEND="
+DEPEND="dev-python/publicsuffix
 	${RDEPEND}
 "
 BDEPEND="
