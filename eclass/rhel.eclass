@@ -60,9 +60,8 @@ else
 			| qtxmlpatterns | qtwebchannel ) MY_PF=qt5-${P}-${MY_PR} ;;
 			*) MY_PF=${P}-${MY_PR} ;;
 		esac
-
-		SRC_URI="${REPO_URI}/${MY_PF}${DIST}.src.rpm"
 	fi
+	SRC_URI="${REPO_URI}/${MY_PF}${DIST}.src.rpm"
 fi
 
 rpm_clean() {
