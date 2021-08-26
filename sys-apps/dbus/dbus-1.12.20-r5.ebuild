@@ -2,9 +2,10 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
+PYTHON_COMPAT=( python3_{8,9} )
+TMPFILES_OPTIONAL=1
 
-PYTHON_COMPAT=( python3_{7,8,9} )
-inherit autotools flag-o-matic linux-info python-any-r1 readme.gentoo-r1 systemd virtualx multilib-minimal rhel
+inherit autotools flag-o-matic linux-info python-any-r1 readme.gentoo-r1 systemd tmpfiles virtualx multilib-minimal rhel9
 
 DESCRIPTION="A message bus system, a simple way for applications to talk to each other"
 HOMEPAGE="https://dbus.freedesktop.org/"
@@ -45,6 +46,7 @@ DEPEND="${COMMON_DEPEND}
 RDEPEND="${COMMON_DEPEND}
 	acct-user/messagebus
 	selinux? ( sec-policy/selinux-dbus )
+	systemd? ( virtual/tmpfiles )
 "
 
 DOC_CONTENTS="
@@ -136,7 +138,7 @@ multilib_src_configure() {
 		--with-session-socket-dir="${EPREFIX}"/tmp
 		--with-system-pid-file="${EPREFIX}${rundir}"/dbus.pid
 		--with-system-socket="${EPREFIX}${rundir}"/dbus/system_bus_socket
-		--with-systemdsystemunitdir="/usr/$(systemd_get_systemunitdir)"
+		--with-systemdsystemunitdir="$(systemd_get_systemunitdir)"
 		--with-dbus-user=messagebus
 		$(use_with X x)
 	)
@@ -273,9 +275,14 @@ pkg_postinst() {
 
 	readme.gentoo_print_elog
 
+	if use systemd; then
+		tmpfiles_process dbus.conf
+	fi
+
 	# Ensure unique id is generated and put it in /etc wrt #370451 but symlink
 	# for DBUS_MACHINE_UUID_FILE (see tools/dbus-launch.c) and reverse
 	# dependencies with hardcoded paths (although the known ones got fixed already)
+	# TODO: should be safe to remove at least the ln because of the above tmpfiles_process?
 	dbus-uuidgen --ensure="${EROOT}"/etc/machine-id
 	ln -sf "${EPREFIX}"/etc/machine-id "${EROOT}"/var/lib/dbus/machine-id
 

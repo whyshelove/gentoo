@@ -13,6 +13,11 @@ GENTOO_VER=
 DESCRIPTION="Intelligent Input Bus for Linux / Unix OS"
 HOMEPAGE="https://github.com/ibus/ibus/wiki"
 
+[[ -n ${GENTOO_VER} ]] && \
+	GENTOO_PATCHSET_URI="https://dev.gentoo.org/~dlan/distfiles/${P}-gentoo-patches-${GENTOO_VER}.tar.xz"
+SRC_URI+="
+	${GENTOO_PATCHSET_URI}"
+
 LICENSE="LGPL-2.1"
 SLOT="0"
 KEYWORDS="~alpha amd64 ~arm ~arm64 ~ia64 ~ppc ~ppc64 ~riscv ~sparc ~x86"
@@ -134,6 +139,7 @@ src_configure() {
 		$(use_with unicode ucd-dir "${EPREFIX}/usr/share/unicode-data") \
 		$(use_enable vala) \
 		$(use_enable wayland) \
+		--enable-surrounding-text \
 		"${python_conf[@]}"
 }
 
@@ -163,7 +169,7 @@ src_install() {
 	newbashcomp tools/${PN}.bash ${PN}
 
 	insinto /etc/X11/xinit/xinput.d
-	newins "${WORKDIR}"/${PN}-xinput ${PN}.conf
+	newins xinput-${PN} ${PN}.conf
 
 	# Undo compression of man page
 	find "${ED}"/usr/share/man -type f -name '*.gz' -exec gzip -d {} \; || die

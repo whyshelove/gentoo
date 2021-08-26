@@ -2,12 +2,14 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
+PYTHON_COMPAT=( python3_{8..10} )
 
-if [[ ${PV} != *8888 ]]; then
-	KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~riscv sparc x86"
+if [[ ${PV} == 9999 ]]; then
+	EGIT_REPO_URI="https://github.com/systemd/systemd.git"
+	inherit git-r3
+else
+	KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86"
 fi
-
-PYTHON_COMPAT=( python3_{7..9} )
 
 inherit bash-completion-r1 linux-info meson-multilib pam python-any-r1 systemd toolchain-funcs udev usr-ldscript rhel
 
@@ -121,7 +123,7 @@ RDEPEND="${COMMON_DEPEND}
 
 # sys-apps/dbus: the daemon only (+ build-time lib dep for tests)
 PDEPEND=">=sys-apps/dbus-1.9.8[systemd]
-	hwdb? ( >=sys-apps/hwids-20150417[udev] )
+	hwdb? ( sys-apps/hwids[systemd(+),udev] )
 	>=sys-fs/udev-init-scripts-34
 	policykit? ( sys-auth/polkit )
 	!vanilla? ( sys-apps/gentoo-systemd-integration )"
@@ -130,21 +132,29 @@ BDEPEND="
 	app-arch/xz-utils:0
 	dev-util/gperf
 	>=dev-util/meson-0.46
-	>=dev-util/intltool-0.50
 	>=sys-apps/coreutils-8.16
-	sys-devel/m4
+	sys-devel/gettext
 	virtual/pkgconfig
-	test? ( sys-apps/dbus )
+	test? (
+		app-text/tree
+		dev-lang/perl
+		sys-apps/dbus
+	)
 	app-text/docbook-xml-dtd:4.2
 	app-text/docbook-xml-dtd:4.5
 	app-text/docbook-xsl-stylesheets
 	dev-libs/libxslt:0
+	$(python_gen_any_dep 'dev-python/jinja[${PYTHON_USEDEP}]')
 	$(python_gen_any_dep 'dev-python/lxml[${PYTHON_USEDEP}]')
 "
 
 python_check_deps() {
+	has_version -b "dev-python/jinja[${PYTHON_USEDEP}]" &&
 	has_version -b "dev-python/lxml[${PYTHON_USEDEP}]"
 }
+
+QA_FLAGS_IGNORED="usr/lib/systemd/boot/efi/.*"
+QA_EXECSTACK="usr/lib/systemd/boot/efi/*"
 
 pkg_pretend() {
 	if [[ ${MERGE_TYPE} != buildonly ]]; then
@@ -191,15 +201,19 @@ pkg_setup() {
 }
 
 src_unpack() {
-	rpm_unpack ${A} && unpack ${WORKDIR}/*.tar.*
+	rhel_src_unpack ${A}
+	[[ ${PV} != 9999 ]] || git-r3_src_unpack
 }
 
 src_prepare() {
 	# Do NOT add patches here
 	local PATCHES=()
 
+	[[ -d "${WORKDIR}"/patches ]] && PATCHES+=( "${WORKDIR}"/patches )
+
 	# Add local patches here
 	PATCHES+=(
+		"${FILESDIR}/249-libudev-static.patch"
 	)
 
 	if ! use vanilla; then
@@ -207,15 +221,6 @@ src_prepare() {
 			"${FILESDIR}/gentoo-generator-path-r2.patch"
 			"${FILESDIR}/gentoo-systemctl-disable-sysv-sync-r1.patch"
 			"${FILESDIR}/gentoo-journald-audit.patch"
-			"${FILESDIR}/gentoo-pam.patch"
-			"${WORKDIR}"/0001-rfkill-don-t-compare-values-of-different-signedness.patch
-			"${WORKDIR}"/0002-rfkill-fix-the-format-string-to-prevent-compilation-.patch
-			"${WORKDIR}"/0003-logind-set-RemoveIPC-to-false-by-default.patch
-			"${WORKDIR}"/0004-Revert-rfkill-fix-the-format-string-to-prevent-compi.patch
-			"${WORKDIR}"/0005-Revert-rfkill-don-t-compare-values-of-different-sign.patch
-			"${WORKDIR}"/0006-rfkill-add-some-casts-to-silence-Werror-sign-compare.patch
-			"${WORKDIR}"/0007-core-allow-omitting-second-part-of-LoadCredentials-a.patch
-			"${WORKDIR}"/f58b96d3e8d1cb0dd3666bc74fa673918b586612.patch
 		)
 	fi
 
@@ -287,11 +292,9 @@ multilib_src_configure() {
 		$(meson_native_use_bool xkb xkbcommon)
 		-Dntp-servers="0.gentoo.pool.ntp.org 1.gentoo.pool.ntp.org 2.gentoo.pool.ntp.org 3.gentoo.pool.ntp.org"
 		# Breaks screen, tmux, etc.
+		-Ddefault-kill-user-processes=false
+		-Dcreate-log-dirs=false
 		-Dmode=release
-		-Ddefault-kill-user-processes=false
-		-Dcreate-log-dirs=false
-		-Ddefault-kill-user-processes=false
-		-Dcreate-log-dirs=false
         	-Dsysvinit-path=/etc/rc.d/init.d
 #        	-Drc-local=/etc/rc.d/rc.local
 		-Ddns-servers=''
@@ -331,7 +334,6 @@ multilib_src_configure() {
 		$(meson_native_true vconsole)
 
 		# static-libs
-		$(meson_use static-libs static-libsystemd)
 		$(meson_use static-libs static-libudev)
 	)
 
@@ -364,6 +366,7 @@ multilib_src_install_all() {
 
 	# /etc/sysctl.conf compat
 	newins "${WORKDIR}"/sysctl.conf.README sysctl.conf
+	dosym ../sysctl.conf /etc/sysctl.d/99-sysctl.conf
 
 	# Make sure these directories are properly owned
 	dodir ${system_unit_dir}/{"basic.target.wants","default.target.wants","dbus.target.wants","syslog.target.wants"}
@@ -470,6 +473,10 @@ multilib_src_install_all() {
 	# Symlink /etc/sysctl.conf for easy migration.
 	dosym ../sysctl.conf /etc/sysctl.d/99-sysctl.conf
 
+	if use pam; then
+		newpamd "${FILESDIR}"/systemd-user.pam systemd-user
+	fi
+
 	if use hwdb; then
 		rm -r "${ED}${rootprefix}"/lib/udev/hwdb.d || die
 	fi
@@ -527,19 +534,7 @@ migrate_locale() {
 	fi
 }
 
-save_enabled_units() {
-	ENABLED_UNITS=()
-	type systemctl &>/dev/null || return
-	for x; do
-		if systemctl --quiet --root="${ROOT:-/}" is-enabled "${x}"; then
-			ENABLED_UNITS+=( "${x}" )
-		fi
-	done
-}
-
 pkg_preinst() {
-	save_enabled_units {machines,remote-{cryptsetup,fs}}.target getty@tty1.service
-
 	if ! use split-usr; then
 		local dir
 		for dir in bin sbin lib; do
@@ -561,22 +556,16 @@ pkg_postinst() {
 	systemd_update_catalog
 
 	# Keep this here in case the database format changes so it gets updated
-	# when required. Despite that this file is owned by sys-apps/hwids.
-	if has_version "sys-apps/hwids[udev]"; then
-		udevadm hwdb --update --root="${EROOT}"
+	# when required.
+	if use hwdb; then
+		systemd-hwdb --root="${ROOT}" update
 	fi
 
 	udev_reload || FAIL=1
 
-	# Bug 465468, make sure locales are respect, and ensure consistency
+	# Bug 465468, make sure locales are respected, and ensure consistency
 	# between OpenRC & systemd
 	migrate_locale
-
-	systemd_reenable systemd-networkd.service systemd-resolved.service
-
-	if [[ ${ENABLED_UNITS[@]} ]]; then
-		systemctl --root="${ROOT:-/}" enable "${ENABLED_UNITS[@]}"
-	fi
 
 	if [[ -z ${REPLACING_VERSIONS} ]]; then
 		if type systemctl &>/dev/null; then

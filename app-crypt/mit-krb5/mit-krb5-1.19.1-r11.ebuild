@@ -66,6 +66,7 @@ MULTILIB_CHOST_TOOLS=(
 
 src_prepare() {
 	default
+
 	# Make sure we always use the system copies.
 	rm -rf util/{et,ss,verto}
 	sed -i 's:^[[:space:]]*util/verto$::' configure.ac || die
@@ -74,6 +75,15 @@ src_prepare() {
 }
 
 src_configure() {
+	# Go ahead and supply tcl info, because configure doesn't know how to find it.
+	source ${_libdir}/tclConfig.sh
+
+	# Work out the CFLAGS and CPPFLAGS which we intend to use.
+	INCLUDES=-I/usr/include/et
+	CFLAGS="$CFLAGS $DEFINES $INCLUDES"
+	CPPFLAGS="$DEFINES $INCLUDES"
+	append-cflags -fPIC -fstack-protector-all
+
 	# QA
 	append-flags -fno-strict-aliasing
 	append-flags -fno-strict-overflow
@@ -93,6 +103,16 @@ multilib_src_configure() {
 		$(use_enable threads thread-support) \
 		$(use_with lmdb) \
 		$(use_with keyutils) \
+		SS_LIB="-lss" \
+		--localstatedir=${_var}/kerberos \
+		--without-krb5-config \
+		--with-netlib=-lresolv \
+		--enable-dns-for-realm \
+		--with-dirsrv-account-locking \
+		--with-crypto-impl=openssl \
+		--with-tls-impl=openssl \
+		--with-pam \
+		--with-prng-alg=os \
 		--without-hesiod \
 		--enable-shared \
 		--with-system-et \
