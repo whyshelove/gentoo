@@ -2,30 +2,14 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit autotools db flag-o-matic java-pkg-opt-2 multilib multilib-minimal toolchain-funcs
-
-#Number of official patches
-#PATCHNO=`echo ${PV}|sed -e "s,\(.*_p\)\([0-9]*\),\2,"`
-PATCHNO="${PV/*.*.*_p}"
-if [[ ${PATCHNO} == "${PV}" ]] ; then
-	MY_PV="${PV}"
-	MY_P="${P}"
-	PATCHNO=0
-else
-	MY_PV="${PV/_p${PATCHNO}}"
-	MY_P="${PN}-${MY_PV}"
-fi
+inherit autotools db flag-o-matic java-pkg-opt-2 multilib multilib-minimal toolchain-funcs rhel
 
 RESTRICT="!test? ( test )"
 
-S_BASE="${WORKDIR}/${MY_P}"
+S_BASE="${S}"
 S="${S_BASE}/build_unix"
 DESCRIPTION="Oracle Berkeley DB"
 HOMEPAGE="http://www.oracle.com/technetwork/database/database-technologies/berkeleydb/overview/index.html"
-SRC_URI="http://download.oracle.com/berkeley-db/${MY_P}.tar.gz"
-for (( i=1 ; i<=${PATCHNO} ; i++ )) ; do
-	export SRC_URI="${SRC_URI} http://www.oracle.com/technology/products/berkeley-db/db/update/${MY_PV}/patch.${MY_PV}.${i}"
-done
 
 LICENSE="Sleepycat"
 SLOT="$(ver_cut 1-2)"
@@ -60,10 +44,13 @@ PATCHES=(
 	# The upstream testsuite copies .lib and the binaries for each parallel test
 	# core, ~300MB each. This patch uses links instead, saves a lot of space.
 	"${FILESDIR}"/${PN}-6.0.20-test-link.patch
-
-	# Needed when compiling with clang
-	"${FILESDIR}"/${PN}-5.1.29-rename-atomic-compare-exchange.patch
 )
+
+src_unpack() {
+	rhel_unpack ${A}
+	sed -i "/%patch32 -p1/d" ${WORKDIR}/*.spec
+	rpmbuild --rmsource -bp $WORKDIR/*.spec --nodeps
+}
 
 src_prepare() {
 	cd "${S_BASE}" || die
@@ -120,14 +107,16 @@ src_prepare() {
 }
 
 multilib_src_configure() {
+	append-cflags -fno-strict-aliasing
+
 	local myconf=(
 		# sql_compat will cause a collision with sqlite3
 		#--enable-sql_compat
 		# Don't --enable-sql* because we don't want to use bundled sqlite.
 		# See Gentoo bug #605688
 		--enable-compat185
-		--enable-dbm
-		--enable-o_direct
+		--with-cryptography=openssl
+		--disable-rpath
 		--without-uniquename
 		--disable-sql
 		--disable-sql_codegen
