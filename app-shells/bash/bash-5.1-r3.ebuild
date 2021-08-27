@@ -180,6 +180,7 @@ src_install() {
 	dodir /bin
 	mv "${ED}"/usr/bin/bash "${ED}"/bin/ || die
 	dosym bash /bin/rbash
+	dosym /bin/bash /usr/bin/bash
 
 	insinto /etc/bash
 	doins "${FILESDIR}"/bash_logout

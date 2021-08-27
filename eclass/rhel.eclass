@@ -48,7 +48,7 @@ if [ -z ${MY_PF} ] ; then
 		[[ ${PN} == Locale-gettext ]] && MY_PF=perl-${PN/Locale-}-${DIST_VERSION}-${MY_PR}
 	else
 		case ${PN} in
-			tiff | appstream-glib ) MY_PF=lib${P}-${MY_PR} ;;
+			tiff | db | appstream-glib ) MY_PF=lib${P}-${MY_PR} ;;
 			ghostscript-gpl ) MY_PF=${P/-gpl}-${MY_PR} ;;
 			wayland-scanner ) MY_PF=${P/-scanner}-${MY_PR} ;;
 			libsdl* ) MY_P=${P/lib}; MY_PF=${MY_P^^}-${MY_PR} ;;
@@ -57,8 +57,9 @@ if [ -z ${MY_PF} ] ; then
 			xauth | xbitmaps | util-macros | xinit ) MY_PF=xorg-x11-${P}-${MY_PR} ;;
 			libnl | glib | openjpeg | lcms | gnupg | grub | udisks | geoclue \
 			| udisks | lcms | openjpeg | glib | librsvg | gstreamer | gtksourceview \
-			) MY_P=${P/-/$(ver_cut 1)-}; MY_PF=${MY_P}-${MY_PR} ;;
+			| gtk) MY_P=${P/-/$(ver_cut 1)-}; MY_PF=${MY_P}-${MY_PR} ;;
 			sysprof-capture ) MY_PF=${P/-capture}-${MY_PR} ;;
+			procps ) MY_P=${P/-/-ng-}; MY_PF=${MY_P}-${MY_PR} ;;
 			thin-provisioning-tools ) MY_PF=device-mapper-persistent-data-${PV}-${MY_PR} ;;
 			iproute2 ) MY_PF=${P/2}-${MY_PR} ;;
 			mit-krb5 ) MY_PF=${P/mit-}-${MY_PR} ;;
@@ -66,6 +67,7 @@ if [ -z ${MY_PF} ] ; then
 			shadow ) MY_PF=${P/-/-utils-}-${MY_PR} ;;
 			binutils-libs ) MY_PF=${P/-libs}-${MY_PR} ;;
 			webkit-gtk ) MY_PF=${P/-gtk/2gtk3}-${MY_PR} ;;
+			libnsl ) MY_P=${P/-/2-}; MY_PF=${MY_P}-${MY_PR} ;;
 			libpcre* ) MY_P=${P/lib}; MY_PF=${MY_P}-${MY_PR} ;;
 			xorg-proto ) MY_PF=${PN/-/-x11-}-devel-${PV}-${MY_PR} ;;
 			gdk-pixbuf ) MY_PF=${P/gdk-pixbuf/gdk-pixbuf2}-${MY_PR} ;;
@@ -83,11 +85,13 @@ if [ -z ${MY_PF} ] ; then
 			modemmanager ) MY_PF=${P/modemmanager/ModemManager}-${MY_PR} ;;
 			networkmanager ) MY_PF=${P/networkmanager/NetworkManager}-${MY_PR} ;;
 			vte ) MY_PF=${P/-/291-}-${MY_PR} ;;
+			libltdl ) MY_PF=libtool-${PV}-${MY_PR} ;;
 			*) MY_PF=${P}-${MY_PR} ;;
 		esac
 	fi
 fi
 
+[ ${CATEGORY} != "dev-qt" ] && SRC_URI=""
 SRC_URI="${SRC_URI} ${REPO_URI}/${MY_PF}${DIST}.src.rpm"
 
 rpm_clean() {
@@ -146,8 +150,7 @@ srcrhel_unpack() {
 
 	eshopts_push -s nullglob
 
-	sed -i  -e "/%{gpgverify}/d" \
-		-e "/%{__python3}/d" \
+	sed -i -e "/%{__python3}/d" \
 		${WORKDIR}/*.spec
 	
 	rpmbuild -bp $WORKDIR/*.spec --nodeps
