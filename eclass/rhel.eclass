@@ -29,6 +29,7 @@ else
 		MY_PR=${PVR##*r}
 
 		case ${PN} in
+			tiff | db | appstream-glib ) MY_PF=lib${P}-${MY_PR} ;;
 			docbook-xsl-stylesheets ) MY_PF=docbook-style-xsl-${PV}-${MY_PR} ;;
 			thin-provisioning-tools ) MY_PF=device-mapper-persistent-data-${PV}-${MY_PR} ;;
 			iproute2 ) MY_PF=${P/2}-${MY_PR} ;;
@@ -38,6 +39,7 @@ else
 			shadow ) MY_PF=${P/-/-utils-}-${MY_PR} ;;
 			webkit-gtk ) MY_PF=${P/-gtk/2gtk3}-${MY_PR} ;;
 			libpcre* ) MY_P=${P/lib}; MY_PF=${MY_P}-${MY_PR} ;;
+			libnsl ) MY_P=${P/-/2-}; MY_PF=${MY_P}-${MY_PR} ;;
 			xorg-proto ) MY_PF=${PN/-/-x11-}-devel-${PV}-${MY_PR} ;;
 			xorg-server ) MY_PF=${P/-/-x11-}-2 ;;
 			gtk+ ) MY_P=${P/+/$(ver_cut 1)}; MY_PF=${MY_P}-${MY_PR} ;;
@@ -50,7 +52,6 @@ else
 			libusb ) MY_PF=${P/-/x-}-${MY_PR} ;;
 			gtk-doc-am ) MY_PF=${P/-am}-${MY_PR} ;;
 			e2fsprogs-libs ) MY_PF=${P/-libs}-${MY_PR} ;;
-			libnsl ) MY_P=${P/-/2-}; MY_PF=${MY_P}-${MY_PR} ;;
 			openssh ) PARCH=${P/_}; MY_PF=${PARCH}-${MY_PR} ;;
 			procps ) MY_P=${P/-/-ng-}; MY_PF=${MY_P}-${MY_PR} ;;
 			qtgui | qtcore | qtdbus | qtnetwork | qttest | qtxml \
