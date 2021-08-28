@@ -86,37 +86,11 @@ multilib_src_install() {
 
 	rm -rf ${D}${_datadir}/doc/Linux-PAM
 
-	_moduledir=${_libdir}/security
+	_moduledir="${EPREFIX}"/$(get_libdir)/security
 	_pamconfdir=${_sysconfdir}/pam.d
 	_pamvendordir=${_datadir}/pam.d
 
-	# Install default configuration files.
-	diropts -m 0755 && dodir ${_pamconfdir} ${_pamvendordir} ${_sysconfdir}/motd.d /usr/lib/motd.d ${_moduledir}
-	insinto ${_pamconfdir}/
-
-	for pamconf in other system-auth password-auth fingerprint-auth smartcard-auth config-util postlogin ; do
-		newins "${WORKDIR}"/${pamconf}.pamd ${pamconf}
-	done
-	
-	insopts -m0600
-	newins /dev/null opasswd
-
-	# Temporary compat link
-	use selinux && dosym ${_moduledir}/pam_sepermit.so ${_moduledir}/pam_selinux_permit.so
-
-	for phase in auth acct passwd session ; do
-		dosym ${_moduledir}/pam_unix.so ${_moduledir}/pam_unix_${phase}.so 
-	done
-
-	# Install the file for autocreation of /var/run subdirectories on boot
-	insinto ${_prefix}/lib/tmpfiles.d/
-	newins "${WORKDIR}"/pamtmp.conf pam.conf
-
-	rm -rf ${D}${_datadir}/doc/Linux-PAM
-
-	_moduledir=${_libdir}/security
-	_pamconfdir=${_sysconfdir}/pam.d
-	_pamvendordir=${_datadir}/pam.d
+	dosym ${_moduledir} ${_libdir}/security
 
 	# Install default configuration files.
 	diropts -m 0755 && dodir ${_pamconfdir} ${_pamvendordir} ${_sysconfdir}/motd.d /usr/lib/motd.d ${_moduledir}
