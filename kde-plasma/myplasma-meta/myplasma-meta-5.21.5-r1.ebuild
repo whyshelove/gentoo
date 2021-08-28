@@ -15,6 +15,7 @@ RDEPEND="
 	kde-plasma/systemsettings
 	kde-plasma/powerdevil
 	kde-plasma/kwallet-pam
+	kde-plasma/kscreen
 	kde-apps/ark
 	kde-apps/konsole
 	kde-apps/kwrite
