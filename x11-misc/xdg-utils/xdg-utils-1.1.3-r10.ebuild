@@ -1,43 +1,42 @@
 # Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 inherit autotools rhel9-a
-
-MY_P="${P/_/-}"
 
 DESCRIPTION="Portland utils for cross-platform/cross-toolkit/cross-desktop interoperability"
 HOMEPAGE="https://www.freedesktop.org/wiki/Software/xdg-utils/"
-#SRC_URI="https://dev.gentoo.org/~johu/distfiles/${P}.tar.xz"
-#SRC_URI="https://people.freedesktop.org/~rdieter/${PN}/${MY_P}.tar.gz
-#	https://dev.gentoo.org/~ssuominen/${P}-patchset-1.tar.xz"
-#SRC_URI="https://portland.freedesktop.org/download/${MY_P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~s390 sparc x86 ~amd64-linux ~x86-linux"
-IUSE="doc"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
+IUSE="dbus doc gnome"
+REQUIRED_USE="gnome? ( dbus )"
 
 RDEPEND="
 	dev-util/desktop-file-utils
 	dev-perl/File-MimeInfo
-	dev-perl/Net-DBus
-	dev-perl/X11-Protocol
-	sys-apps/dbus
+	dbus? (
+		sys-apps/dbus
+		gnome? (
+			dev-perl/Net-DBus
+			dev-perl/X11-Protocol
+		)
+	)
 	x11-misc/shared-mime-info
 	x11-apps/xprop
 	x11-apps/xset
 "
-DEPEND="
+BDEPEND="
 	>=app-text/xmlto-0.0.28-r3[text(+)]
 	virtual/awk
 "
 
 DOCS=( ChangeLog README RELEASE_NOTES TODO )
 
-RESTRICT="test" # Disabled because of sandbox violation(s)
-
-#S=${WORKDIR}/${MY_P}
+# Tests run random system programs, including interactive programs
+# that block forever
+RESTRICT="test"
 
 src_prepare() {
 	default
