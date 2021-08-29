@@ -54,11 +54,6 @@ src_unpack() {
 
 src_prepare() {
 	cd "${S_BASE}" || die
-	for (( i=1 ; i<=${PATCHNO} ; i++ ))
-	do
-		eapply -p0 "${DISTDIR}"/patch."${MY_PV}"."${i}"
-	done
-
 	default
 
 	# Upstream release script grabs the dates when the script was run, so lets

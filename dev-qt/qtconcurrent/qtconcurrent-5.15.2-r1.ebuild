@@ -24,4 +24,7 @@ QT5_TARGET_SUBDIRS=(
 	src/concurrent
 )
 
-PATCHES=( "${WORKDIR}"/qtbase-${PV}-gcc11.patch ) # bug 752012
+PATCHES=(
+	"${WORKDIR}"/qtbase-${PV}-gcc11.patch # bug 752012
+	"${FILESDIR}"/${P}-gcc11.patch # bug #764977
+)
