@@ -21,9 +21,12 @@ if [[ ${PV} == *8888 ]]; then
 else
 	inherit rpm
 	if [ -z ${MIRROR} ] ; then MIRROR="https://vault.centos.org"; fi
-	DIST=".el8"
+	DIST="el8"
 	RELEASE="8-stream"
 	REPO_URI="${MIRROR}/${RELEASE}/${REPO:-BaseOS}/Source/SPackages"
+
+	if [ -z ${MIRROR_BIN} ] ; then MIRROR_BIN="http://mirror.centos.org/centos"; fi
+	REPO_BIN="${MIRROR_BIN}/${RELEASE}/${REPO:-BaseOS}/x86_64/os/Packages"
 
 	if [ -z ${MY_PF} ] ; then
 		MY_PR=${PVR##*r}
@@ -59,10 +62,12 @@ else
 			| qtprintsupport | designer ) MY_P="qt5-${QT5_MODULE}-${PV}"; MY_PF=${MY_P}-${MY_PR} ;;
 			qtdeclarative | qtsvg | qtscript | qtgraphicaleffects | qtwayland | qtquickcontrols* \
 			| qtxmlpatterns | qtwebchannel | qtsensors ) MY_PF=qt5-${P}-${MY_PR} ;;
+			edk2-ovmf ) MY_PF=${P}git${GITCOMMIT}-${MY_PR} ;;
+			ipxe ) MY_PF=${P}-${MY_PR}.${GIT_REV} ;;
 			*) MY_PF=${P}-${MY_PR} ;;
 		esac
 	fi
-	SRC_URI="${REPO_URI}/${MY_PF}${DIST}.src.rpm"
+	SRC_URI="${REPO_URI}/${MY_PF}.${DIST}.src.rpm"
 fi
 
 rpm_clean() {
