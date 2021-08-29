@@ -8,7 +8,7 @@ if [[ ${PV} == "9999" ]] ; then
 	EGIT_REPO_URI="https://gitlab.freedesktop.org/mobile-broadband/libqmi.git"
 else
 	KEYWORDS="amd64 arm arm64 ~mips ppc ppc64 x86"
-	inherit rhel
+	inherit rhel9
 fi
 
 DESCRIPTION="Qualcomm MSM (Mobile Station Modem) Interface (QMI) modem protocol library"

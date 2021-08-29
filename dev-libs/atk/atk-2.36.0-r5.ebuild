@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit gnome.org meson-multilib xdg rhel-a
+inherit gnome.org meson-multilib xdg rhel9-a
 
 DESCRIPTION="GTK+ & GNOME Accessibility Toolkit"
 HOMEPAGE="https://wiki.gnome.org/Accessibility"

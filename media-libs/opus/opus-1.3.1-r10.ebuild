@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic multilib-minimal rhel-a
+inherit flag-o-matic multilib-minimal rhel9-a
 
 DESCRIPTION="Open codec for interactive speech and music transmission over the Internet"
 HOMEPAGE="https://opus-codec.org/"

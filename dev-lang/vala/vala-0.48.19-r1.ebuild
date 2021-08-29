@@ -1,16 +1,16 @@
 # Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
-inherit gnome2 rhel-a
+inherit gnome2 rhel-c
 
 DESCRIPTION="Compiler for the GObject type system"
 HOMEPAGE="https://wiki.gnome.org/Projects/Vala"
 
 LICENSE="LGPL-2.1+"
 SLOT="0.48"
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x86-linux"
+KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~x86-linux"
 IUSE="test valadoc"
 RESTRICT="!test? ( test )"
 
@@ -24,14 +24,17 @@ RDEPEND="
 # as the newer is not required with older vala when those are picked instead of 0.46.
 # vala-0.45.91 ships a broken libsoup-2.4.vapi copy too, but that'll be fixed by 0.45.92
 DEPEND="${RDEPEND}
+	test? (
+		dev-libs/dbus-glib
+		>=dev-libs/glib-2.26:2
+		dev-libs/gobject-introspection
+	)
+"
+BDEPEND="
 	dev-libs/libxslt
 	sys-devel/flex
 	virtual/pkgconfig
 	virtual/yacc
-	test? (
-		dev-libs/dbus-glib
-		>=dev-libs/glib-2.26:2
-		dev-libs/gobject-introspection )
 "
 
 src_configure() {
@@ -41,7 +44,7 @@ src_configure() {
 		$(use_enable valadoc) \
 		VALAC=: \
 		WEASYPRINT=:
-		
+
 	# Don't use rpath!
 	sed -i 's|/lib /usr/lib|/lib /usr/lib /lib64 /usr/lib64|' libtool
 }

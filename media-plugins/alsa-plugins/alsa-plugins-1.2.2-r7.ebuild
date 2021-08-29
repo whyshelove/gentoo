@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit autotools flag-o-matic multilib multilib-minimal rhel-a
+inherit autotools flag-o-matic multilib multilib-minimal rhel9-a
 
 DESCRIPTION="ALSA extra plugins"
 HOMEPAGE="https://alsa-project.org/wiki/Main_Page"

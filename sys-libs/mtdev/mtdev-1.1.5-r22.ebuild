@@ -3,11 +3,10 @@
 
 EAPI=7
 
-inherit autotools rhel-a
+inherit autotools rhel9-a
 
 DESCRIPTION="Multitouch Protocol Translation Library"
 HOMEPAGE="https://bitmath.org/code/mtdev/"
-#SRC_URI="https://bitmath.org/code/mtdev/${P}.tar.bz2"
 
 LICENSE="MIT"
 SLOT="0"

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit rhel
+inherit rhel9
 
 DESCRIPTION="Mobile Broadband Interface Model (MBIM) modem protocol helper library"
 HOMEPAGE="https://www.freedesktop.org/wiki/Software/libmbim/ https://gitlab.freedesktop.org/mobile-broadband/libmbim"

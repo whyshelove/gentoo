@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit gnome.org meson-multilib virtualx xdg rhel-a
+inherit gnome.org meson-multilib virtualx xdg rhel9-a
 
 DESCRIPTION="Gtk module for bridging AT-SPI to Atk"
 HOMEPAGE="https://wiki.gnome.org/Accessibility"

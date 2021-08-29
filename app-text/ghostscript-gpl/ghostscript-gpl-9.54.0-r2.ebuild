@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools flag-o-matic toolchain-funcs rhel-a
+inherit autotools flag-o-matic toolchain-funcs rhel9-a
 
 DESCRIPTION="Interpreter for the PostScript language and PDF"
 HOMEPAGE="https://ghostscript.com/"
