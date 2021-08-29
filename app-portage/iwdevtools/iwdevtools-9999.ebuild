@@ -12,6 +12,8 @@ EGIT_REPO_URI="https://github.com/ionenwks/iwdevtools.git"
 LICENSE="BSD-2"
 SLOT="0"
 KEYWORDS=""
+IUSE="test"
+RESTRICT="!test? ( test )"
 
 RDEPEND="
 	app-misc/pax-utils
@@ -20,9 +22,14 @@ RDEPEND="
 	sys-apps/file
 	sys-apps/portage
 	sys-apps/util-linux"
+BDEPEND="
+	test? (
+		${RDEPEND}
+		dev-util/libabigail
+	)"
 
 src_configure() {
-	meson_src_configure -Ddocdir=${PF}
+	meson_src_configure -Ddocdir=${PF} $(meson_use test)
 }
 
 pkg_postinst() {
