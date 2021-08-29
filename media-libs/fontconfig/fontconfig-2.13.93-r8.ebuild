@@ -7,7 +7,6 @@ inherit autotools multilib-minimal readme.gentoo-r1 rhel-a
 
 DESCRIPTION="A library for configuring and customizing font access"
 HOMEPAGE="https://fontconfig.org/"
-#SRC_URI="https://fontconfig.org/release/${P}.tar.xz"
 
 LICENSE="MIT"
 SLOT="1.0"
@@ -129,6 +128,11 @@ multilib_src_install_all() {
 
 	insinto ${_sysconfdir}/fonts/conf.d
 	doins "${WORKDIR}"/25-no-bitmap-fedora.conf
+	dosym ${_sysconfdir}/fonts/conf.avail/25-unhint-nonlatin.conf ${_sysconfdir}/fonts/conf.d/25-unhint-nonlatin.conf
+
+	exeinto ${_bindir}
+	doexe "${WORKDIR}"/fc-cache
+
 	# fc-lang directory contains language coverage datafiles
 	# which are needed to test the coverage of fonts.
 	insinto /usr/share/fc-lang
@@ -156,6 +160,7 @@ multilib_src_install_all() {
 	readme.gentoo_create_doc
 
 	keepdir /var/cache/${PN}
+	tree ${ED}
 }
 
 pkg_preinst() {

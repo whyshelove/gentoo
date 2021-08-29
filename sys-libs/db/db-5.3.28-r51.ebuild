@@ -37,10 +37,43 @@ src_unpack() {
 	rpmbuild --rmsource -bp $WORKDIR/*.spec --nodeps
 }
 
+PATCHES=(
+	# bug #510506
+	"${FILESDIR}"/${PN}-4.8.24-java-manifest-location.patch
+
+	# use the includes from the prefix
+	"${FILESDIR}"/${PN}-4.6-jni-check-prefix-first.patch
+	"${FILESDIR}"/${PN}-4.2-listen-to-java-options.patch
+
+	# sqlite configure call has an extra leading ..
+	# upstreamed:5.2.36, missing in 5.3.x
+	"${FILESDIR}"/${PN}-5.2.28-sqlite-configure-path.patch
+
+	# The upstream testsuite copies .lib and the binaries for each parallel test
+	# core, ~300MB each. This patch uses links instead, saves a lot of space.
+	"${FILESDIR}"/${PN}-6.0.20-test-link.patch
+)
+
 src_prepare() {
+	cd "${S_BASE}" || die
 	default
 
-	cd "${S_BASE}"/dist || die
+	# Upstream release script grabs the dates when the script was run, so lets
+	# end-run them to keep the date the same.
+	export REAL_DB_RELEASE_DATE="$(awk \
+		'/^DB_VERSION_STRING=/{ gsub(".*\\(|\\).*","",$0); print $0; }' \
+		"${S_BASE}"/dist/configure)"
+	sed -r \
+		-e "/^DB_RELEASE_DATE=/s~=.*~='${REAL_DB_RELEASE_DATE}'~g" \
+		-i dist/RELEASE || die
+
+	# Include the SLOT for Java JAR files
+	# This supersedes the unused jarlocation patches.
+	sed -r \
+		-e '/jarfile=.*\.jar$/s,(.jar$),-$(LIBVERSION)\1,g' \
+		-i dist/Makefile.in || die
+
+	cd dist || die
 	rm aclocal/libtool.m4 || die
 	sed \
 		-e '/AC_PROG_LIBTOOL$/aLT_OUTPUT' \
@@ -77,6 +110,8 @@ multilib_src_configure() {
 		# Don't --enable-sql* because we don't want to use bundled sqlite.
 		# See Gentoo bug #605688
 		--enable-compat185
+		--with-cryptography=no
+		--disable-rpath
 		--enable-dbm
 		--enable-o_direct
 		--without-uniquename

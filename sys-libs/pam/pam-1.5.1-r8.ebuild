@@ -36,7 +36,7 @@ DEPEND="
 	berkdb? ( >=sys-libs/db-4.8.30-r1:=[${MULTILIB_USEDEP}] )
 	selinux? ( >=sys-libs/libselinux-2.2.2-r4[${MULTILIB_USEDEP}] )
 	nis? ( net-libs/libnsl[${MULTILIB_USEDEP}]
-	>=net-libs/libtirpc-0.2.4-r2[${MULTILIB_USEDEP}] )"
+	>=net-libs/libtirpc-0.2.4-r2:=[${MULTILIB_USEDEP}] )"
 
 RDEPEND="${DEPEND}"
 
@@ -62,7 +62,7 @@ multilib_src_configure() {
 		CC_FOR_BUILD="$(tc-getBUILD_CC)"
 		--with-db-uniquename=-$(db_findver sys-libs/db)
 		--with-xml-catalog=/etc/xml/catalog
-		--enable-securedir=/usr/$(get_libdir)/security
+		--enable-securedir=/$(get_libdir)/security
 		--includedir=/usr/include/security
 		--libdir=/usr/$(get_libdir)
 		--enable-pie
@@ -97,9 +97,11 @@ multilib_src_install() {
 	# Included in setup package
 	rm -f ${D}${_sysconfdir}/environment
 
-	_moduledir=${_libdir}/security
+	_moduledir="${EPREFIX}"/$(get_libdir)/security
 	_pamconfdir=${_sysconfdir}/pam.d
 	_pamvendordir=${_datadir}/pam.d
+
+	dosym ${_moduledir} ${_libdir}/security
 
 	# Install default configuration files.
 	diropts -m 0755 && dodir ${_pamconfdir} ${_pamvendordir} ${_sysconfdir}/motd.d /usr/lib/motd.d ${_moduledir}
