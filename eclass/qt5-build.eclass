@@ -464,6 +464,11 @@ qt5_base_configure() {
 
 	# configure arguments
 	local conf=(
+		-no-reduce-relocations
+		-no-rpath
+		-no-feature-relocatable
+		-no-use-gold-linker
+
 		# installation paths
 		-prefix "${QT5_PREFIX}"
 		-bindir "${QT5_BINDIR}"

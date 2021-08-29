@@ -130,6 +130,7 @@ multilib_src_install_all() {
 	doins "${WORKDIR}"/25-no-bitmap-fedora.conf
 	dosym ${_sysconfdir}/fonts/conf.avail/25-unhint-nonlatin.conf ${_sysconfdir}/fonts/conf.d/25-unhint-nonlatin.conf
 
+	mv ${ED}${_bindir}/fc-cache ${ED}${_bindir}/fc-cache-64
 	exeinto ${_bindir}
 	doexe "${WORKDIR}"/fc-cache
 
