@@ -1,32 +1,20 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="7"
 
-PYTHON_COMPAT=( python{3_6,3_7,3_8} )
+PYTHON_COMPAT=( python3_{6,8,9} )
 PYTHON_REQ_USE="ncurses,readline"
 
 PLOCALES="bg de_DE fr_FR hu it tr zh_CN"
 
 FIRMWARE_ABI_VERSION="4.0.0-r50"
 
-inherit eutils linux-info toolchain-funcs multilib python-r1 \
-	udev fcaps readme.gentoo-r1 pax-utils l10n xdg-utils
+inherit eutils linux-info toolchain-funcs multilib python-r1
+inherit udev fcaps readme.gentoo-r1 pax-utils xdg-utils rhel-a
 
-if [[ ${PV} = *9999* ]]; then
-	EGIT_REPO_URI="https://git.qemu.org/git/qemu.git"
-	EGIT_SUBMODULES=(
-		slirp
-		tests/fp/berkeley-{test,soft}float-3
-		ui/keycodemapdb
-	)
-	inherit git-r3
-	SRC_URI=""
-else
-	SRC_URI="https://download.qemu.org/${P}.tar.xz
-		https://dev.gentoo.org/~tamiko/distfiles/${P}-patches-r2.tar.xz"
-	KEYWORDS="amd64 ~arm64 ~ppc ~ppc64 x86"
-fi
+SRC_URI="${REPO_URI}/${MY_PF/-/-kvm-}.module_el8.5.0+853+a4d5519d.src.rpm"
+KEYWORDS="amd64 arm64 ~ppc ~ppc64 x86"
 
 DESCRIPTION="QEMU + Kernel-based Virtual Machine userland tools"
 HOMEPAGE="http://www.qemu.org http://www.linux-kvm.org"
@@ -35,12 +23,12 @@ LICENSE="GPL-2 LGPL-2 BSD-2"
 SLOT="0"
 
 IUSE="accessibility +aio alsa bzip2 capstone +caps +curl debug doc
-	+fdt glusterfs gnutls gtk infiniband iscsi jemalloc +jpeg kernel_linux
-	kernel_FreeBSD lzo ncurses nfs nls numa opengl +oss +pin-upstream-blobs
+	+fdt glusterfs gnutls gtk infiniband iscsi jemalloc jpeg +kernel_linux
+	kernel_FreeBSD +lzo ncurses nfs nls numa opengl oss +pin-upstream-blobs
 	plugins +png pulseaudio python rbd sasl +seccomp sdl sdl-image selinux
 	smartcard snappy spice ssh static static-user systemtap tci test usb
 	usbredir vde +vhost-net vhost-user-fs virgl virtfs +vnc vte xattr xen
-	xfs +xkb"
+	xfs xkb"
 
 COMMON_TARGETS="aarch64 alpha arm cris hppa i386 m68k microblaze microblazeel
 	mips mips64 mips64el mipsel nios2 or1k ppc ppc64 riscv32 riscv64 s390x
@@ -71,6 +59,7 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	virtfs? ( xattr )
 	vte? ( gtk )
 	plugins? ( !static !static-user )
+	spice? ( smartcard ) 
 "
 
 # Dependencies required for qemu tools (qemu-nbd, qemu-img, qemu-io, ...)
@@ -107,7 +96,6 @@ SOFTMMU_TOOLS_DEPEND="
 	fdt? ( >=sys-apps/dtc-1.5.0[static-libs(+)] )
 	glusterfs? ( >=sys-cluster/glusterfs-3.4.0[static-libs(+)] )
 	gnutls? (
-		dev-libs/nettle:=[static-libs(+)]
 		>=net-libs/gnutls-3.0:=[static-libs(+)]
 	)
 	gtk? (
@@ -162,9 +150,9 @@ SOFTMMU_TOOLS_DEPEND="
 
 X86_FIRMWARE_DEPEND="
 	pin-upstream-blobs? (
-		~sys-firmware/edk2-ovmf-201905[binary]
-		~sys-firmware/ipxe-1.0.0_p20190728[binary]
-		~sys-firmware/seabios-1.12.0[binary,seavgabios]
+		~sys-firmware/edk2-ovmf-20210527[binary]
+		~sys-firmware/ipxe-20181214[binary]
+		~sys-firmware/seabios-1.13.0[binary,seavgabios]
 		~sys-firmware/sgabios-0.1_pre8[binary]
 	)
 	!pin-upstream-blobs? (
@@ -218,8 +206,6 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-2.5.0-cflags.patch
 	"${FILESDIR}"/${PN}-2.11.1-capstone_include_path.patch
 	"${FILESDIR}"/${PN}-4.0.0-mkdir_systemtap.patch #684902
-	"${FILESDIR}"/${PN}-4.2.0-ati-vga-crash.patch #719266
-	"${WORKDIR}"/patches
 )
 
 QA_PREBUILT="
@@ -359,7 +345,6 @@ handle_locales() {
 	if use nls ; then
 		# Delete locales the user does not want. #577814
 		rm_loc() { rm po/$1.po || die; }
-		l10n_for_each_disabled_locale_do rm_loc
 	else
 		# Cheap hack to disable gettext .mo generation.
 		rm -f po/*.po
@@ -397,7 +382,7 @@ qemu_src_configure() {
 	local builddir="${S}/${buildtype}-build"
 
 	mkdir "${builddir}"
-
+	block_drivers_list="qcow2,raw,file,host_device,nbd,iscsi,rbd,blkdebug,luks,null-co,nvme,copy-on-read,throttle"
 	local conf_opts=(
 		--prefix=/usr
 		--sysconfdir=/etc
@@ -409,14 +394,63 @@ qemu_src_configure() {
 		--with-confsuffix=/qemu
 		--localstatedir=/var
 		--disable-bsd-user
-		--disable-guest-agent
+		--enable-guest-agent
 		--disable-strip
-		--disable-werror
+		--enable-werror
+		--libexecdir="${_libexecdir}"
+		--extra-ldflags="-Wl,--build-id -Wl,-z,relro -Wl,-z,now"
+		--extra-cflags="${CFLAGS}"
+		--disable-pvrdma
+		--disable-tcmalloc
+		--enable-vhost-user
+		--block-drv-rw-whitelist=${block_drivers_list}
+		--block-drv-ro-whitelist=vmdk,vhdx,vpc,https,ssh
+		--with-coroutine=ucontext
+		--tls-priority=@QEMU,SYSTEM
+		--enable-coroutine-pool
+		--disable-live-block-migration
+		--disable-qom-cast-debug
+		--disable-sparse
+		--enable-tpm
+		--disable-vhost-scsi
+		--disable-cocoa
+		--disable-guest-agent-msi
+		--disable-hax
+		--enable-modules
+		--disable-netmap
+		--disable-replication
+		--enable-vhost-vsock
+		--enable-mpath
+		--enable-tcg
+		--with-git=git
+		--disable-sanitizers
+		--disable-hvf
+		--disable-whpx
+		--enable-malloc-trim
+		--disable-membarrier
+		--disable-vhost-crypto
+		--disable-git-update
+		--disable-crypto-afalg
+		--disable-debug-mutex
+		--disable-bochs
+		--disable-cloop
+		--disable-dmg
+		--disable-qcow1
+		--disable-vdi
+		--disable-vvfat
+		--disable-qed
+		--disable-parallels
+		--disable-sheepdog
+		--disable-auth-pam
+		--enable-iconv
+		--disable-lzfse
+		--enable-vhost-kernel
+		--without-default-devices
 		# We support gnutls/nettle for crypto operations.  It is possible
 		# to use gcrypt when gnutls/nettle are disabled (but not when they
 		# are enabled), but it's not really worth the hassle.  Disable it
 		# all the time to avoid automatically detecting it. #568856
-		--disable-gcrypt
+		--enable-gcrypt
 		--python="${PYTHON}"
 		--cc="$(tc-getCC)"
 		--cxx="$(tc-getCXX)"
@@ -428,6 +462,8 @@ qemu_src_configure() {
 		$(use_enable tci tcg-interpreter)
 		$(use_enable xattr attr)
 	)
+
+	[[ $(tc-arch) == "amd64" ]] && conf_opts+=( --disable-libpmem --enable-avx2 )
 
 	# Disable options not used by user targets. This simplifies building
 	# static user targets (USE=static-user) considerably.
@@ -449,7 +485,7 @@ qemu_src_configure() {
 		$(conf_notuser fdt)
 		$(conf_notuser glusterfs)
 		$(conf_notuser gnutls)
-		$(conf_notuser gnutls nettle)
+		--disable-nettle
 		$(conf_notuser gtk)
 		$(conf_notuser infiniband rdma)
 		$(conf_notuser iscsi libiscsi)
@@ -697,7 +733,7 @@ src_install() {
 		[[ -e check-report.html ]] && dodoc check-report.html
 
 		if use kernel_linux; then
-			udev_newrules "${FILESDIR}"/65-kvm.rules-r1 65-kvm.rules
+			udev_newrules "${WORKDIR}"/81-kvm-rhel.rules 65-kvm.rules
 		fi
 
 		if use python; then
@@ -715,7 +751,7 @@ src_install() {
 
 	# Install config file example for qemu-bridge-helper
 	insinto "/etc/qemu"
-	doins "${FILESDIR}/bridge.conf"
+	doins "${WORKDIR}/bridge.conf"
 
 	cd "${S}"
 	dodoc Changelog MAINTAINERS docs/specs/pci-ids.txt
@@ -742,12 +778,10 @@ src_install() {
 		rm "${ED}/usr/share/qemu/vgabios-vmware.bin"
 		# PPC64 loads vgabios-stdvga
 		if use qemu_softmmu_targets_x86_64 || use qemu_softmmu_targets_i386 || use qemu_softmmu_targets_ppc64; then
-			dosym ../seavgabios/vgabios-isavga.bin /usr/share/qemu/vgabios.bin
 			dosym ../seavgabios/vgabios-cirrus.bin /usr/share/qemu/vgabios-cirrus.bin
 			dosym ../seavgabios/vgabios-qxl.bin /usr/share/qemu/vgabios-qxl.bin
 			dosym ../seavgabios/vgabios-stdvga.bin /usr/share/qemu/vgabios-stdvga.bin
 			dosym ../seavgabios/vgabios-virtio.bin /usr/share/qemu/vgabios-virtio.bin
-			dosym ../seavgabios/vgabios-vmware.bin /usr/share/qemu/vgabios-vmware.bin
 		fi
 
 		# Remove sgabios since we're using the sgabios packaged one

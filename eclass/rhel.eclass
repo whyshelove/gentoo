@@ -35,6 +35,7 @@ else
 			tiff | db | appstream-glib ) MY_PF=lib${P}-${MY_PR} ;;
 			docbook-xsl-stylesheets ) MY_PF=docbook-style-xsl-${PV}-${MY_PR} ;;
 			thin-provisioning-tools ) MY_PF=device-mapper-persistent-data-${PV}-${MY_PR} ;;
+			multipath-tools ) MY_PF=device-mapper-multipath-${PV}-${MY_PR} ;;
 			iproute2 ) MY_PF=${P/2}-${MY_PR} ;;
 			mit-krb5 ) MY_PF=${P/mit-}-${MY_PR} ;;
 			lxml ) MY_PF=python-${P}-${MY_PR} ;;
@@ -48,7 +49,7 @@ else
 			gtk+ ) MY_P=${P/+/$(ver_cut 1)}; MY_PF=${MY_P}-${MY_PR} ;;
 			xz-utils ) MY_P="${PN/-utils}-${PV/_}"; MY_PF=${MY_P}-${MY_PR} ;;
 			python ) MY_PR=${PVR##*p}; MY_P=${P%_p*}; MY_PF=${MY_P/-/3$(ver_cut 2)-}-${MY_PR} ;;
-			udisks | gnupg | grub | lcms | glib | enchant ) MY_P=${P/-/$(ver_cut 1)-}; MY_PF=${MY_P}-${MY_PR} ;;
+			udisks | gnupg | grub | lcms | glib | enchant | gtksourceview ) MY_P=${P/-/$(ver_cut 1)-}; MY_PF=${MY_P}-${MY_PR} ;;
 			mpc | talloc | tdb | tevent | ldb ) MY_PF=lib${P}-${MY_PR}; [[ ${PN} == mpc ]] && MY_PF=${MY_PF}.1 ;;
 			go ) MY_PF=${P/-/lang-}-${MY_PR} ;;
 			cunit ) MY_PF=${P/cu/CU}-${MY_PR} ;;
@@ -64,6 +65,7 @@ else
 			| qtxmlpatterns | qtwebchannel | qtsensors ) MY_PF=qt5-${P}-${MY_PR} ;;
 			edk2-ovmf ) MY_PF=${P}git${GITCOMMIT}-${MY_PR} ;;
 			ipxe ) MY_PF=${P}-${MY_PR}.${GIT_REV} ;;
+			vte ) MY_PF=${P/-/291-}-${MY_PR} ;;
 			*) MY_PF=${P}-${MY_PR} ;;
 		esac
 	fi
