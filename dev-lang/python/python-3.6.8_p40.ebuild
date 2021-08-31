@@ -12,11 +12,10 @@ PYVER=$(ver_cut 1-2)
 
 DESCRIPTION="An interpreted, interactive, object-oriented programming language"
 HOMEPAGE="https://www.python.org/"
-if [[ ${PV} != *8888 ]]; then
-	MY_PF=${PN}3-${PV%_p*}-${MY_PR}
-	SRC_URI="${REPO_URI}/${MY_PF}${DIST}.src.rpm"
-	S="${WORKDIR}/${MY_P}"
-fi
+
+MY_PF=${PN}3-${PV%_p*}-${MY_PR}
+SRC_URI="${REPO_URI}/${MY_PF}.${DIST}.src.rpm"
+S="${WORKDIR}/${MY_P}"
 
 LICENSE="PSF-2"
 SLOT="${PYVER}/${PYVER}m"
