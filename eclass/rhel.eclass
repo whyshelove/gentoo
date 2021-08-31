@@ -143,10 +143,10 @@ rhel_src_unpack() {
 		git-r3_src_unpack
 		return 0
 	fi
-	local a
 
 	use binary && rpm_unpack ${A} && mkdir -p $S && return
 
+	local a
 	for a in ${A} ; do
 		case ${a} in
 		*.rpm) [[ ${a} =~ ".rpm" ]] && srcrhel_unpack "${a}" ;;
@@ -157,14 +157,12 @@ rhel_src_unpack() {
 
 # @FUNCTION: rhel_src_compile
 # @DESCRIPTION:
-
 rhel_src_compile() {
 	rpmbuild  -bc $WORKDIR/*.spec --nodeps --nodebuginfo
 }
 
 # @FUNCTION: rhel_src_install
 # @DESCRIPTION:
-
 rhel_src_install() {
 	sed -i  -e '/rm -rf $RPM_BUILD_ROOT/d' \
 		-e '/meson_install/d' \
@@ -175,9 +173,12 @@ rhel_src_install() {
 
 # @FUNCTION: rhel_bin_install
 # @DESCRIPTION:
-
 rhel_bin_install() {
-	use binary && rm -rf $D $S ${S_BASE} && ln -s ${WORKDIR} ${PORTAGE_BUILDDIR}/image && tree ${ED}
+	if use binary; then
+		rm -rf $D $S ${S_BASE} "${WORKDIR}/usr/lib/.build-id"
+		ln -s "${WORKDIR}" "${PORTAGE_BUILDDIR}/image"
+		tree "${ED}"
+	fi
 }
 
 fi

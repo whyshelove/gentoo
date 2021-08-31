@@ -27,17 +27,13 @@ done
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64"
+IUSE="+binary"
 
 RDEPEND="app-arch/rpm[lua,python]"
 DEPEND="${RDEPEND}"
 BDEPEND=""
 
-src_unpack() {
-	rpm_unpack ${A} && mkdir $S
-}
-
 src_install() {
-	rm -rf $D $S
-	ln -s ${WORKDIR} ${PORTAGE_BUILDDIR}/image
-	rm -rf $D/usr/lib/.build-id $D/etc/{issue,os-release}
+	rhel_bin_install
+	rm -rf $D/etc/{os-release,issue}
 }
