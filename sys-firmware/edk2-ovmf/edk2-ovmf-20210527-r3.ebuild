@@ -89,12 +89,6 @@ pkg_setup() {
 	[[ ${PV} != "999999" ]] && use binary || python-any-r1_pkg_setup
 }
 
-src_unpack() {
-	use binary && rpm_unpack ${A} && mkdir $S && return
-
-	rhel_src_unpack ${A}
-}
-
 src_prepare() {
 	if use binary; then
 		eapply_user
@@ -113,6 +107,7 @@ src_prepare() {
 
 src_compile() {
 	use binary && return
+	export PYTHON_COMMAND=${EPYTHON}
 
 	TARGET_ARCH=X64
 	TARGET_NAME=RELEASE
@@ -120,26 +115,25 @@ src_compile() {
 
 	# Build with neither SB nor SMM; include UEFI shell.
 
-	CC_FLAGS="-D FD_SIZE_4MB -a X64 \
-		-D PVSCSI_ENABLE=FALSE \
-		-D MPT_SCSI_ENABLE=FALSE \
-		-p OvmfPkg/OvmfPkgX64.dsc"
+	CC_FLAGS="--cmd-len=65536 -t ${TARGET_TOOLS} -b DEBUG --hash \
+		-D NETWORK_IP6_ENABLE \
+		-D NETWORK_HTTP_BOOT_ENABLE \
+		-D NETWORK_TLS_ENABLE"
 
 	BUILD_FLAGS="-D TLS_ENABLE \
-		--cmd-len=65536 -t ${TARGET_TOOLS} -b DEBUG --hash \
-		-D NETWORK_HTTP_BOOT_ENABLE \
 		-D HTTP_BOOT_ENABLE \
-		-D NETWORK_IP6_ENABLE \
+		${CC_FLAGS} \
 		-D TPM_ENABLE \
+		-D FD_SIZE_4MB -a X64 \
+		-D PVSCSI_ENABLE=FALSE -D MPT_SCSI_ENABLE=FALSE \
+		-p OvmfPkg/OvmfPkgX64.dsc \
 		-D TPM2_ENABLE -D TPM2_CONFIG_ENABLE"
 
-	SECUREBOOT_BUILD_FLAGS="${BUILD_FLAGS} \
+	SECUREBOOT_BUILD_FLAGS="${CC_FLAGS} \
+		-D SECURE_BOOT_ENABLE -D EXCLUDE_SHELL_FROM_FD \
 		-a IA32 -a X64 -p OvmfPkg/OvmfPkgIa32X64.dsc -D SMM_REQUIRE \
 		-D PVSCSI_ENABLE=FALSE -D MPT_SCSI_ENABLE=FALSE \
-		-D FD_SIZE_4MB \
-		-D SECURE_BOOT_ENABLE \
-		-D SMM_REQUIRE \
-		-D EXCLUDE_SHELL_FROM_FD"
+		-D TPM_ENABLE -D FD_SIZE_4MB"
 
 	[[ ${PV} != "999999" ]] && use binary && return
 
@@ -153,7 +147,7 @@ src_compile() {
 
 	./OvmfPkg/build.sh \
 		-a "${TARGET_ARCH}" -b "${TARGET_NAME}" -t "${TARGET_TOOLS}" \
-		${CC_FLAGS} ${BUILD_FLAGS} || die "OvmfPkg/build.sh failed"
+		${BUILD_FLAGS} || die "OvmfPkg/build.sh failed"
 
 	cp Build/OvmfX64/*/FV/OVMF_*.fd ovmf/
 	rm -rf Build/OvmfX64
@@ -177,7 +171,7 @@ src_compile() {
 }
 
 src_install() {
-	use binary && rm -rf $D $S && ln -s ${WORKDIR} ${PORTAGE_BUILDDIR}/image && return
+	rhel_bin_install && return
 
 	insinto /usr/share/${PN}
 	doins ovmf/*

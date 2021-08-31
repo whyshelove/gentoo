@@ -144,6 +144,9 @@ rhel_src_unpack() {
 		return 0
 	fi
 	local a
+
+	use binary && rpm_unpack ${A} && mkdir -p $S && return
+
 	for a in ${A} ; do
 		case ${a} in
 		*.rpm) [[ ${a} =~ ".rpm" ]] && srcrhel_unpack "${a}" ;;
@@ -168,6 +171,13 @@ rhel_src_install() {
 		${WORKDIR}/*.spec
 
 	rpmbuild --short-circuit -bi $WORKDIR/*.spec --nodeps --rmsource --nocheck --nodebuginfo --buildroot=$D
+}
+
+# @FUNCTION: rhel_bin_install
+# @DESCRIPTION:
+
+rhel_bin_install() {
+	use binary && rm -rf $D $S ${S_BASE} && ln -s ${WORKDIR} ${PORTAGE_BUILDDIR}/image && tree ${ED}
 }
 
 fi

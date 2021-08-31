@@ -34,7 +34,7 @@ HOMEPAGE="https://www.seabios.org/"
 
 LICENSE="LGPL-3 GPL-3"
 SLOT="0"
-IUSE="+binary debug +seavgabios"
+IUSE="binary debug +seavgabios"
 
 REQUIRED_USE="debug? ( !binary )"
 
@@ -92,8 +92,6 @@ pkg_setup() {
 }
 
 src_unpack() {
-	use binary && rpm_unpack ${A} && mkdir $S && return
-
 	rhel_src_unpack ${A}
 
 	# This simplifies the logic between binary & source builds.
@@ -164,7 +162,7 @@ src_compile() {
 }
 
 src_install() {
-	use binary && rm -rf $D $S && ln -s ${WORKDIR} ${PORTAGE_BUILDDIR}/image && return
+	rhel_bin_install && return
 
 	insinto /usr/share/seabios
 	doins ../bios.bin

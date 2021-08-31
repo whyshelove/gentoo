@@ -19,7 +19,7 @@ SRC_URI="
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~mips ~ppc ppc64 x86"
-IUSE="+binary +efi ipv6 iso lkrn +qemu undi usb vmware"
+IUSE="binary +efi ipv6 iso lkrn +qemu undi usb vmware"
 
 REQUIRED_USE="!amd64? ( !x86? ( binary ) )"
 
@@ -39,10 +39,6 @@ RDEPEND=""
 
 S_BASE=${WORKDIR}/${MY_PN}
 S="${S_BASE}/src"
-
-src_unpack() {
-	use binary && rpm_unpack ${A} && mkdir -p $S
-}
 
 src_configure() {
 	use binary && return
@@ -112,7 +108,7 @@ src_compile() {
 }
 
 src_install() {
-	use binary && rm -rf $D ${S_BASE} && ln -s ${WORKDIR} ${PORTAGE_BUILDDIR}/image && return
+	rhel_bin_install && return
 
 	insinto /usr/share/ipxe/
 
