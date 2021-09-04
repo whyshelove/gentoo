@@ -4,7 +4,7 @@
 EAPI=7
 VALA_USE_DEPEND="vapigen"
 
-inherit gnome.org meson-multilib vala xdg rhel-a
+inherit gnome.org meson-multilib vala xdg rhel9-a
 
 DESCRIPTION="HTTP client/server library for GNOME"
 HOMEPAGE="https://wiki.gnome.org/Projects/libsoup"

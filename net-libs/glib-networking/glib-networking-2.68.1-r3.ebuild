@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit gnome.org gnome2-utils meson-multilib xdg rhel
+inherit gnome.org gnome2-utils meson-multilib xdg rhel9
 
 DESCRIPTION="Network-related giomodules for glib"
 HOMEPAGE="https://gitlab.gnome.org/GNOME/glib-networking"

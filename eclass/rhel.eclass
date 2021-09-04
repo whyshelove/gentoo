@@ -21,10 +21,13 @@ if [[ ${PV} == *8888 ]]; then
 	S="${WORKDIR}/${PN}"
 fi
 
-MIRROR="https://odcs.stream.centos.org/production/latest-CentOS-Stream"
-DIST=".el9"
+if [ -z ${MIRROR} ] ; then MIRROR="https://odcs.stream.centos.org/production/latest-CentOS-Stream"; fi
+DIST="el9"
 RELEASE="compose"
 REPO_URI="${MIRROR}/${RELEASE}/${REPO:-BaseOS}/source/tree/Packages"
+
+if [ -z ${MIRROR_BIN} ] ; then MIRROR_BIN="${MIRROR}"; fi
+REPO_BIN="${MIRROR_BIN}/${RELEASE}/${REPO:-BaseOS}/x86_64/os/Packages"
 
 if [ -z ${MY_PF} ] ; then
 	MY_PR=${PVR##*r}
@@ -82,6 +85,10 @@ if [ -z ${MY_PF} ] ; then
 			qtdeclarative | qtsvg | qtscript | qtgraphicaleffects | qtwayland | qtquickcontrols* \
 			| qtxmlpatterns ) MY_PF=qt5-${P}-${MY_PR} ;;
 			gst-plugins* ) MY_PF=${P/-/reamer1-}-${MY_PR} ;;
+			edk2-ovmf ) MY_PF=${P}git${GITCOMMIT}-${MY_PR} ;;
+			ipxe ) MY_PF=${P}-${MY_PR}.${GIT_REV} ;;
+			vte ) MY_PF=${P/-/291-}-${MY_PR} ;;
+			rhel-kernel ) MY_P=${P/rhel-}; MY_PF=${MY_P}-${MY_PR}; MY_KVP=${PVR/r}.${DIST} ;;
 			modemmanager ) MY_PF=${P/modemmanager/ModemManager}-${MY_PR} ;;
 			networkmanager ) MY_PF=${P/networkmanager/NetworkManager}-${MY_PR} ;;
 			vte ) MY_PF=${P/-/291-}-${MY_PR} ;;
@@ -92,7 +99,7 @@ if [ -z ${MY_PF} ] ; then
 fi
 
 [ ${CATEGORY} != "dev-qt" ] && SRC_URI=""
-SRC_URI="${SRC_URI} ${REPO_URI}/${MY_PF}${DIST}.src.rpm"
+SRC_URI="${SRC_URI} ${REPO_URI}/${MY_PF}.${DIST}.src.rpm"
 
 rpm_clean() {
 	# delete everything
@@ -110,13 +117,7 @@ rpm_clean() {
 rhel_unpack() {
 	[[ $# -eq 0 ]] && set -- ${A}
 
-	local a
-	for a in ${A} ; do
-		case ${a} in
-		*.rpm) [[ ${a} =~ ".rpm" ]] && 	rpm_unpack "${a}" ;;
-		*)     unpack "${a}" ;;
-		esac
-	done
+	rpm_unpack "$@"
 
 	RPMBUILD=$HOME/rpmbuild
 	mkdir -p $RPMBUILD
@@ -166,26 +167,44 @@ srcrhel_unpack() {
 # archives in a source rpm, then the sub archives will be unpacked as well.
 rhel_src_unpack() {
 	if [[ ${PV} == *8888 ]]; then
-		return 0
+		git-r3_src_unpack
+		return
 	fi
+
 	local a
 	for a in ${A} ; do
 		case ${a} in
-		*.rpm) [[ ${a} =~ ".rpm" ]] && srcrhel_unpack "${a}" ;;
+		*.src.rpm) [[ ${a} =~ ".src.rpm" ]] && srcrhel_unpack "${a}" ;;
+		*.rpm) [[ ${a} =~ ".rpm" ]] && rpm_unpack "${a}" && mkdir -p $S ;;
 		*)     unpack "${a}" ;;
 		esac
 	done
 }
 
+# @FUNCTION: rhel_src_compile
+# @DESCRIPTION:
+rhel_src_compile() {
+	rpmbuild  -bc $WORKDIR/*.spec --nodeps --nodebuginfo
+}
+
 # @FUNCTION: rhel_src_install
 # @DESCRIPTION:
-
 rhel_src_install() {
 	sed -i  -e '/rm -rf $RPM_BUILD_ROOT/d' \
 		-e '/meson_install/d' \
 		${WORKDIR}/*.spec
 
 	rpmbuild --short-circuit -bi $WORKDIR/*.spec --nodeps --rmsource --nocheck --nodebuginfo --buildroot=$D
+}
+
+# @FUNCTION: rhel_bin_install
+# @DESCRIPTION:
+rhel_bin_install() {
+	if use binary; then
+		rm -rf $D $S ${S_BASE} "${WORKDIR}/usr/lib/.build-id"
+		ln -s "${WORKDIR}" "${PORTAGE_BUILDDIR}/image"
+		tree "${ED}"
+	fi
 }
 
 fi
