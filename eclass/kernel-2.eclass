@@ -558,7 +558,6 @@ kernel_is() {
 	local v n=0
 	for v in OKV KV_{MAJOR,MINOR,PATCH} ; do [[ -z ${!v} ]] && n=1 ; done
 	[[ ${n} -eq 1 ]] && detect_version
-	unset v n
 
 	# Now we can continue
 	local operator test value
@@ -583,6 +582,7 @@ if [[ ${ETYPE} == sources ]]; then
 	[[ ${EAPI} == 6 ]] && DEPEND="!build? ( sys-apps/sed )" ||
 	BDEPEND="!build? ( sys-apps/sed )"
 	RDEPEND="!build? (
+		app-arch/cpio
 		dev-lang/perl
 		sys-devel/bc
 		sys-devel/bison
@@ -604,8 +604,12 @@ if [[ ${ETYPE} == sources ]]; then
 			[[ -z ${K_DEBLOB_AVAILABLE} ]] && \
 				kernel_is le 2 6 ${DEBLOB_MAX_VERSION} && \
 					K_DEBLOB_AVAILABLE=1
+		# deblob less than 5.10 require python 2.7
+		if kernel_is lt 5 10; then
+			K_DEBLOB_AVAILABLE=0
+		fi
 		if [[ ${K_DEBLOB_AVAILABLE} == 1 ]]; then
-			PYTHON_COMPAT=( python2_7 )
+			PYTHON_COMPAT=( python3_{7..10} )
 
 			inherit python-any-r1
 

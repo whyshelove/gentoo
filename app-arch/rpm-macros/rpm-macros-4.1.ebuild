@@ -12,7 +12,7 @@ do
 SRC_URI="${SRC_URI} ${REPO_BIN}/${macro}.${DIST}.noarch.rpm"
 done
 
-inherit rhel-a
+REPO_BIN="${MIRROR_BIN}/${RELEASE}/AppStream/x86_64/os/Packages"
 
 SRC_URI="${SRC_URI} ${REPO_BIN}/python2-rpm-macros-3-38.module_el8.5.0+743+cd2f5d28.noarch.rpm"
 SRC_URI="${SRC_URI} ${REPO_BIN}/python36-rpm-macros-3.6.8-37.module_el8.5.0+771+e5d9a225.noarch.rpm"

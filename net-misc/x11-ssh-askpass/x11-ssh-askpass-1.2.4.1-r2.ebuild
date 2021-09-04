@@ -11,7 +11,7 @@ SRC_URI="https://github.com/sigmavirus24/${PN}/archive/${PV}.tar.gz -> ${P}.gh.t
 
 LICENSE="HPND"
 SLOT="0"
-KEYWORDS="~alpha amd64 ~arm ~arm64 ~ia64 ppc ~ppc64 sparc x86"
+KEYWORDS="~alpha amd64 ~arm arm64 ~ia64 ppc ~ppc64 sparc x86"
 IUSE=""
 
 RDEPEND="virtual/ssh
@@ -21,7 +21,7 @@ RDEPEND="virtual/ssh
 	x11-libs/libXt"
 DEPEND="${RDEPEND}"
 BDEPEND="app-text/rman
-	>=x11-misc/imake-1.0.8-r1"
+	>=x11-misc/imake-1.0.7-r1"
 
 src_configure() {
 	econf --libexecdir=/usr/"$(get_libdir)"/misc \

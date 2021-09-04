@@ -68,6 +68,7 @@ else
 			edk2-ovmf ) MY_PF=${P}git${GITCOMMIT}-${MY_PR} ;;
 			ipxe ) MY_PF=${P}-${MY_PR}.${GIT_REV} ;;
 			vte ) MY_PF=${P/-/291-}-${MY_PR} ;;
+			rhel-kernel ) MY_P=${P/rhel-}; MY_PF=${MY_P}-${MY_PR}; MY_KVP=${PVR/r}.${DIST} ;;
 			*) MY_PF=${P}-${MY_PR} ;;
 		esac
 	fi
@@ -90,13 +91,7 @@ rpm_clean() {
 rhel_unpack() {
 	[[ $# -eq 0 ]] && set -- ${A}
 
-	local a
-	for a in ${A} ; do
-		case ${a} in
-		*.rpm) [[ ${a} =~ ".rpm" ]] && 	rpm_unpack "${a}" ;;
-		*)     unpack "${a}" ;;
-		esac
-	done
+	rpm_unpack "$@"
 
 	RPMBUILD=$HOME/rpmbuild
 	mkdir -p $RPMBUILD
@@ -141,15 +136,14 @@ srcrhel_unpack() {
 rhel_src_unpack() {
 	if [[ ${PV} == *8888 ]]; then
 		git-r3_src_unpack
-		return 0
+		return
 	fi
-
-	use binary && rpm_unpack ${A} && mkdir -p $S && return
 
 	local a
 	for a in ${A} ; do
 		case ${a} in
-		*.rpm) [[ ${a} =~ ".rpm" ]] && srcrhel_unpack "${a}" ;;
+		*.src.rpm) [[ ${a} =~ ".src.rpm" ]] && srcrhel_unpack "${a}" ;;
+		*.rpm) [[ ${a} =~ ".rpm" ]] && rpm_unpack "${a}" && mkdir -p $S ;;
 		*)     unpack "${a}" ;;
 		esac
 	done

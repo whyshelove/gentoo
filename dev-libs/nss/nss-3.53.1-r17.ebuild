@@ -11,7 +11,7 @@ RTM_NAME="NSS_${PV//./_}_RTM"
 DESCRIPTION="Mozilla's Network Security Services library that implements PKI support"
 HOMEPAGE="https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS"
 if [[ ${PV} != *8888 ]]; then
-	SRC_URI="${REPO_URI}/${MY_PF}${DIST}_3.src.rpm
+	SRC_URI="${REPO_URI}/${MY_PF}.${DIST}_3.src.rpm
 	cacert? ( https://dev.gentoo.org/~whissi/dist/ca-certificates/nss-cacert-class1-class3-r2.patch )"
 fi
 

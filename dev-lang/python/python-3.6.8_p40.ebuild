@@ -247,6 +247,9 @@ src_install() {
 
 	emake DESTDIR="${D}" altinstall
 
+	exeinto ${_bindir}
+	doexe Tools/scripts/pathfix.py
+
 	# Remove static library
 	#rm "${ED}"/usr/$(get_libdir)/libpython*.a || die
 
