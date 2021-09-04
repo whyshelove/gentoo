@@ -32,11 +32,28 @@
 
 #--- END OF EXAMPLES ---
 
-# Arthur Zamarin <arthurzam@gentoo.org> (2021-08-28)
-# Both versions have several bugs and have been pulled off PyPI
-# Bugs #810808 and #810790.
-=dev-python/setuptools_scm-6.1.0
-=dev-python/setuptools_scm-6.2.0
+# Ionen Wolkens <ionen@gentoo.org> (2021-09-03)
+# Currently may not function with kde-plasma/kwin (black screen),
+# so keeping masked for testing due to being a primary consumer.
+# Should be safe to unmask if you are using x11-wm/mutter instead.
+>=gui-libs/egl-wayland-1.1.8
+
+# Sam James <sam@gentoo.org> (2021-09-03)
+# Mask broken version of setuptools_scm with
+# missing runtime dependency.
+# bug #811504
+=dev-python/setuptools_scm-6.3.0
+
+# David Seifert <soap@gentoo.org> (2021-08-29)
+# Broken for the past 5 years (#585942), no new upstream release in over
+# 5 years. Same issues as sci-biology/wgs-assembler, use a modern
+# assembler like sci-biology/abyss or canu.
+# Bug #585942, #731880, #808667, removal in 30 days.
+sci-biology/mira
+
+# Alexey Sokolov <alexey+gentoo@asokolov.org> (2021-08-30)
+# Homepage dead, uses gtk2, fails to build, https://bugs.gentoo.org/711344
+games-puzzle/gnudoku
 
 # Stephan Hartmann <sultan@gentoo.org> (2021-08-28)
 # Dev channel releases are only for people who
@@ -158,50 +175,6 @@ dev-python/pydiff
 # as replacement. Bug #769017.
 app-i18n/man-pages-it
 
-# David Seifert <soap@gentoo.org> (2021-08-05)
-# Dead upstream, last release over 5 years ago, multiple
-# build issues, fails to build with GCC 11. Use something like
-# sci-biology/abyss or canu as a modern day replacement.
-# Bug #610094, #715874, #731860, #739486, removal in 30 days.
-sci-biology/wgs-assembler
-
-# David Seifert <soap@gentoo.org> (2021-08-05)
-# Unmaintained, tons of issues, fails to build with GCC 11.
-# Bug #631598, #690024, #735960, #749038, #761415, #761667,
-# #778557, #786789, #799179, removal in 30 days.
-app-backup/bareos
-dev-libs/bareos-fastlzlib
-dev-python/bareos
-
-# Sam James <sam@gentoo.org> (2021-08-05)
-# Fails to build with GCC 11. No activity upstream.
-# bug #740308, bug #789816. Removal on 2021-09-05.
-app-eselect/eselect-audicle
-app-eselect/eselect-miniaudicle
-media-sound/audicle
-
-# Sam James <sam@gentoo.org> (2021-08-04)
-# Fails to build with GCC 11. Library with no reverse-dependencies.
-# bug #731254, bug #787905. Removal on 2021-09-04.
-net-libs/openmq-cclient
-
-# Sam James <sam@gentoo.org> (2021-08-04)
-# Fails to build with GCC 11, no activity upstream.
-# bug #729106, bug #786648. Removal on 2021-09-04.
-app-backup/zbackup
-
-# Sam James <sam@gentoo.org> (2021-08-04)
-# Fails to build with GCC 11, large number of open bugs,
-# no activity upstream. bug #692806, bug #694674, bug #712832,
-# bug #725166, bug #740792, bug #788637, bug #798042.
-# Removal on 2021-09-04.
-net-misc/stargazer
-
-# Sam James <sam@gentoo.org> (2021-08-04)
-# Fails to build with GCC 11 and has Boost incompatibility issues.
-# bug #741646, bug #792993. Removal on 2021-09-04.
-sci-physics/sassena
-
 # David Seifert <soap@gentoo.org> (2021-08-04)
 # Last release over 4 years ago, upstream pretty much dead, the
 # ecosystem has switched to dev-util/pkgconf, which is alive. Testing
@@ -212,26 +185,6 @@ sci-physics/sassena
 # Bug #245228, #632124, #691268, #767853, removal in 30 days.
 dev-util/pkgconfig
 
-# David Seifert <soap@gentoo.org> (2021-08-04)
-# Last release 11 years ago, XDG env issue, no revdeps, blocks
-# WANT_AUTOMAKE=1.11 removal, last major distro to package this.
-# Bug #586586, removal in 30 days.
-media-libs/memphis
-
-# David Seifert <soap@gentoo.org> (2021-08-04)
-# Last release 16 years ago, multiple build failures, unmaintained,
-# upstream disappeared, last distro that still packages this.
-# Bug #722376, #742938, #742941, removal in 30 days.
-app-i18n/libtabe
-app-i18n/xcin
-
-# David Seifert <soap@gentoo.org> (2021-08-04)
-# Last release 7 years ago, multiple test failures, unmaintained,
-# last distro that still packages this.
-# Bug #629610, #646690, removal in 30 days.
-dev-libs/hyperleveldb
-dev-libs/replicant
-
 # Andreas Sturmlechner <asturm@gentoo.org> (2021-08-02)
 # Two years after the tracker was opened it is time to mask dev-qt/qtwebkit
 # for good. No commits to upstream repository for >9 months, latest available
@@ -241,36 +194,6 @@ dev-qt/qtwebkit:5
 app-text/fb2edit
 mail-client/trojita
 <media-video/openshot-2.5.1_p20210228
-
-# Sam James <sam@gentoo.org> (2021-08-01)
-# Fails to compile, multiple open bugs.
-# No activity upstream since 2015.
-# bug #570484, bug #715412, bug #723204.
-# Removal on 2021-09-01.
-sys-apps/lmctfy
-
-# Sam James <sam@gentoo.org> (2021-08-01)
-# Fails to build with network-sandbox and variety
-# of other open bugs. Unmaintained.
-# bug #632638, bug #688530, bug #709992, bug #757768,
-# bug #796920. Removal on 2021-09-01.
-sys-apps/habitat
-
-# David Seifert <soap@gentoo.org> (2021-08-01)
-# Dropped into ::gentoo, then unmaintained. Multiple versions behind
-# upstream, GCC 11 bug open, lacks python 3.10, python library without
-# revdeps. Bug #790137, #792870, removal in 30 days.
-sci-libs/sktime
-
-# David Seifert <soap@gentoo.org> (2021-08-01)
-# Last release 10 years ago, EOL upstream, no other distro packages this
-# anymore, tons of bugs. Revdeps are unmaintained too and out of date.
-# Bug #798015, removal in 30 days.
-sci-biology/ncbi-tools
-sci-biology/njplot
-sci-biology/psipred
-sci-chemistry/mars
-sci-libs/rosetta-fragments
 
 # Andreas K. Hüttel <dilfridge@gentoo.org> (2021-07-31)
 # Obsolete; all versions in current Perl core distributions
@@ -283,19 +206,6 @@ perl-core/Getopt-Long
 perl-core/HTTP-Tiny
 perl-core/JSON-PP
 perl-core/libnet
-
-# David Seifert <soap@gentoo.org> (2021-07-30)
-# games-engines/renpy has been gone for 6 months, the
-# eselect module has no use anymore and the ebuild has
-# QA issues. Bug #805275, removal in 30 days.
-app-eselect/eselect-renpy
-
-# Miroslav Šulc <fordfrog@gentoo.org> (2021-07-30)
-# these libs have no consumers, removal in 30 days
-# see bug: https://bugs.gentoo.org/805152
-dev-java/jgoodies-animation
-dev-java/jgoodies-binding
-dev-java/jgoodies-forms
 
 # Joonas Niilola <juippis@gentoo.org> (2021-07-29)
 # Upstream provided migration instructions from 2. -> 3. update,
@@ -396,11 +306,6 @@ sys-libs/db:5.1
 # Mask gcc-6 branch (ended upstream support). Please switch
 # to a fresher gcc branch.
 <sys-devel/gcc-7
-
-# Sam James <sam@gentoo.org> (2021-05-09)
-# Not working properly with cmake.eclass port
-# bug #788448
-=app-arch/brotli-1.0.9-r3
 
 # Sam James <sam@gentoo.org> (2021-05-07)
 # Masked for testing. Two major releases ahead of last packaged version.
