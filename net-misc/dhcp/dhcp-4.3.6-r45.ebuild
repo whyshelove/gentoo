@@ -48,9 +48,8 @@ PATCHES=(
 
 src_unpack() {
 	rhel_unpack ${A}
-	sed -i "/%filter_requires_in/d" ${WORKDIR}/*.spec
-	sed -i "/%{filter_setup}/d" ${WORKDIR}/*.spec
 	sed -i "/bind.tar.gz/d" ${WORKDIR}/*.spec
+	sed -i '367,383d' ${WORKDIR}/*.spec
 	rpmbuild --rmsource -bp $WORKDIR/*.spec --nodeps
 	cd "${S}"/bind
 	unpack ./bind.tar.gz

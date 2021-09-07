@@ -169,8 +169,8 @@ rhel_src_install() {
 # @DESCRIPTION:
 rhel_bin_install() {
 	if use binary; then
-		rm -rf $D $S ${S_BASE} "${WORKDIR}/usr/lib/.build-id"
-		ln -s "${WORKDIR}" "${PORTAGE_BUILDDIR}/image"
+		rm -rf $S ${S_BASE} "${WORKDIR}/usr/lib/.build-id"
+		mv "${WORKDIR}"/* "${D}"/
 		tree "${ED}"
 	fi
 }

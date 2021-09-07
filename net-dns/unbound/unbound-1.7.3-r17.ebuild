@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="7"
-PYTHON_COMPAT=( python2_7 python3_{6,8} )
+PYTHON_COMPAT=( python2_7 python3_{6,8,9} )
 
 inherit autotools flag-o-matic multilib-minimal python-single-r1 systemd user rhel-a
 
@@ -13,7 +13,7 @@ HOMEPAGE="https://unbound.net/ https://nlnetlabs.nl/projects/unbound/about/"
 LICENSE="BSD GPL-2"
 SLOT="0/8" # ABI version of libunbound.so
 KEYWORDS="~alpha amd64 arm ~arm64 ~hppa ~mips ppc ppc64 x86"
-IUSE="debug dnscrypt dnstap +ecdsa ecs gost libressl python redis selinux static-libs systemd test threads"
+IUSE="debug dnscrypt dnstap +ecdsa ecs gost libressl python redis selinux static-libs test threads"
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 RESTRICT="!test? ( test )"
 
@@ -46,7 +46,7 @@ DEPEND="${CDEPEND}
 		dev-util/splint
 		app-text/wdiff
 	)
-	systemd? ( sys-apps/systemd )"
+    sys-apps/systemd"
 
 RDEPEND="${CDEPEND}
 	net-dns/dnssec-root
@@ -74,6 +74,13 @@ pkg_setup() {
 	use python && python-single-r1_pkg_setup
 }
 
+src_unpack() {
+	rhel_unpack ${A}
+	sed -i "/patch13 -p1/d" ${WORKDIR}/*.spec
+	sed -i '141,200d' ${WORKDIR}/unbound-1.7.3-security-hardening.patch
+	rpmbuild --rmsource -bp $WORKDIR/*.spec --nodeps
+}
+
 src_prepare() {
 	default
 
@@ -96,7 +103,6 @@ multilib_src_configure() {
 		$(use_enable ecs subnet) \
 		$(multilib_native_use_enable redis cachedb) \
 		$(use_enable static-libs static) \
-		$(use_enable systemd) \
 		$(multilib_native_use_with python pythonmodule) \
 		$(multilib_native_use_with python pyunbound) \
 		$(use_with threads pthreads) \

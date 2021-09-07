@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit autotools linux-info multilib systemd toolchain-funcs udev flag-o-matic rhel
+inherit autotools linux-info multilib systemd toolchain-funcs tmpfiles udev flag-o-matic rhel
 
 DESCRIPTION="User-land utilities for LVM2 (device-mapper) software"
 HOMEPAGE="https://sourceware.org/lvm2/"
@@ -15,6 +15,7 @@ SLOT="0"
 KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux"
 IUSE="readline static static-libs systemd lvm2create_initrd sanlock selinux +udev +thin device-mapper-only"
 REQUIRED_USE="device-mapper-only? ( !lvm2create_initrd !sanlock !thin )
+	static? ( !systemd )
 	systemd? ( udev )"
 
 DEPEND_COMMON="
@@ -41,6 +42,7 @@ DEPEND="${DEPEND_COMMON}
 	static? (
 		selinux? ( sys-libs/libselinux[static-libs] )
 		>=sys-apps/util-linux-2.16[static-libs]
+				udev? ( >=virtual/libudev-208:=[static-libs] )
 	)"
 BDEPEND="
 	sys-devel/autoconf-archive
@@ -156,8 +158,6 @@ src_configure() {
 		--enable-pkgconfig
 		--enable-write_install
 		--enable-blkid_wiping
-		--enable-lvmlockd-dlm
-		--enable-lvmlockd-dlmcontrol
 		--with-writecache=internal
 		--with-integrity=internal
 		--with-user=
@@ -260,6 +260,8 @@ src_install() {
 }
 
 pkg_postinst() {
+	tmpfiles_process lvm2.conf
+
 	if [[ -z "${REPLACING_VERSIONS}" ]]; then
 		# This is a new installation
 		ewarn "Make sure the \"lvm\" init script is in the runlevels:"
