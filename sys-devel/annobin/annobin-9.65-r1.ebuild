@@ -3,7 +3,7 @@
 
 EAPI="7"
 
-inherit autotools flag-o-matic toolchain-funcs rhel-a
+inherit autotools flag-o-matic toolchain-funcs rhel8-a
 
 DESCRIPTION="Annotate and examine compiled binary files"
 HOMEPAGE=""

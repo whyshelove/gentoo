@@ -4,7 +4,7 @@
 EAPI=7
 
 QT5_MODULE="qttools"
-inherit desktop qt5-build xdg-utils rhel-a
+inherit desktop qt5-build xdg-utils rhel8-a
 
 DESCRIPTION="WYSIWYG tool for designing and building graphical user interfaces with QtWidgets"
 

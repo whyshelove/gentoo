@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{6..9} )
 
-inherit autotools flag-o-matic python-r1 rhel
+inherit autotools flag-o-matic python-r1 rhel8
 
 DESCRIPTION="POSIX 1003.1e capabilities"
 HOMEPAGE="https://people.redhat.com/sgrubb/libcap-ng/"

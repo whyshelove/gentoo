@@ -4,7 +4,7 @@
 EAPI=7
 
 QT5_MODULE="qtbase"
-inherit linux-info qt5-build rhel-a
+inherit linux-info qt5-build rhel8-a
 
 DESCRIPTION="Cross-platform application development framework"
 SRC_URI+=" https://dev.gentoo.org/~asturm/distfiles/qtbase-${PV}-gcc11.patch.xz"

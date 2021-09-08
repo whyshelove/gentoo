@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{6..9} )
 PYTHON_REQ_USE="threads(+)"
-inherit waf-utils multilib-minimal python-single-r1 rhel
+inherit waf-utils multilib-minimal python-single-r1 rhel8
 
 DESCRIPTION="Samba tevent library"
 HOMEPAGE="https://tevent.samba.org/"

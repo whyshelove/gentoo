@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic rhel-a
+inherit flag-o-matic rhel8-a
 
 DESCRIPTION="A general-purpose (yacc-compatible) parser generator"
 HOMEPAGE="https://www.gnu.org/software/bison/"

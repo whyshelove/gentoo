@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic libtool multilib-minimal toolchain-funcs rhel
+inherit flag-o-matic libtool multilib-minimal toolchain-funcs rhel8
 
 MY_PV=${PV/_p*}
 MY_PV=${MY_PV/_/-}

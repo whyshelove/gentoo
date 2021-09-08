@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit autotools portability toolchain-funcs rhel
+inherit autotools portability toolchain-funcs rhel8
 
 DESCRIPTION="A powerful light-weight programming language designed for extending applications"
 HOMEPAGE="https://www.lua.org/"

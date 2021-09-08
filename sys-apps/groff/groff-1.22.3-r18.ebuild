@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit toolchain-funcs rhel
+inherit toolchain-funcs rhel8
 
 DESCRIPTION="Text formatter used for man pages"
 HOMEPAGE="https://www.gnu.org/software/groff/groff.html"

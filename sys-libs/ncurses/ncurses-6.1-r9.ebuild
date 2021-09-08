@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit toolchain-funcs multilib multilib-minimal preserve-libs usr-ldscript rhel
+inherit toolchain-funcs multilib multilib-minimal preserve-libs usr-ldscript rhel8
 
 DATE=20180224
 MY_P=${P}-${DATE}

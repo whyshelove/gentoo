@@ -4,7 +4,7 @@
 EAPI=7
 
 QT5_MODULE="qtbase"
-inherit qt5-build rhel-a
+inherit qt5-build rhel8-a
 
 DESCRIPTION="Qt5 module for inter-process communication over the D-Bus protocol"
 SRC_URI+=" https://dev.gentoo.org/~asturm/distfiles/qtbase-${PV}-gcc11.patch.xz"

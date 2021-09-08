@@ -9,7 +9,7 @@ if [[ ${PV} = 9999* ]]; then
 	GIT_ECLASS="git-r3"
 fi
 
-inherit ${GIT_ECLASS} meson-multilib rhel-a
+inherit ${GIT_ECLASS} meson-multilib rhel8-a
 
 DESCRIPTION="X.Org libdrm library"
 HOMEPAGE="https://dri.freedesktop.org/ https://gitlab.freedesktop.org/mesa/drm"

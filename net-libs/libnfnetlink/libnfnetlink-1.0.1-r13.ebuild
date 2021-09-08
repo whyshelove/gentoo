@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit linux-info rhel
+inherit linux-info rhel8
 
 PATCH_BLOB=04aef8a4dedf267dd5744afb134ef8046e77f613
 PATCH_FN=${PATCH_BLOB}-musl-fix-includes.patch

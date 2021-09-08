@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools libtool rhel
+inherit autotools libtool rhel8
 
 DESCRIPTION="YAML 1.1 parser and emitter written in C"
 HOMEPAGE="https://github.com/yaml/libyaml"

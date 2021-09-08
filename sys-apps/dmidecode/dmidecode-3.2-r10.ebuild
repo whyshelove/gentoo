@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit toolchain-funcs rhel
+inherit toolchain-funcs rhel8
 
 DESCRIPTION="DMI (Desktop Management Interface) table related utilities"
 HOMEPAGE="https://www.nongnu.org/dmidecode/"

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit libtool multilib-minimal rhel
+inherit libtool multilib-minimal rhel8
 
 DESCRIPTION="Portable Network Graphics library"
 HOMEPAGE="http://www.libpng.org/"

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit toolchain-funcs flag-o-matic rhel
+inherit toolchain-funcs flag-o-matic rhel8
 
 DESCRIPTION="SYSLINUX, PXELINUX, ISOLINUX, EXTLINUX and MEMDISK bootloaders"
 HOMEPAGE="https://www.syslinux.org/"

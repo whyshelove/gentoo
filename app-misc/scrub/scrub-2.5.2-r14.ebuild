@@ -5,7 +5,7 @@ EAPI="6"
 
 DESCRIPTION="Overwrite files with iterative patterns."
 HOMEPAGE="https://github.com/chaos/scrub"
-inherit rhel-a
+inherit rhel8-a
 
 LICENSE="GPL-2"
 SLOT="0"

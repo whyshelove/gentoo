@@ -3,8 +3,8 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7,8,9} )
-inherit autotools multilib-minimal python-single-r1 rhel-a
+PYTHON_COMPAT=( python3_{6,8,9} )
+inherit autotools multilib-minimal python-single-r1 rhel8-a
 
 DESCRIPTION="Advanced Linux Sound Architecture Library"
 HOMEPAGE="https://alsa-project.org/wiki/Main_Page"

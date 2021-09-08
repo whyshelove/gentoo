@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools linux-info multilib pam rhel
+inherit autotools linux-info multilib pam rhel8
 
 DESCRIPTION="Tools for Managing Linux CIFS Client Filesystems"
 HOMEPAGE="https://wiki.samba.org/index.php/LinuxCIFS_utils"

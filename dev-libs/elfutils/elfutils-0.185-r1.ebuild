@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic multilib-minimal rhel
+inherit flag-o-matic multilib-minimal rhel8
 
 DESCRIPTION="Libraries/utilities to handle ELF objects (drop in replacement for libelf)"
 HOMEPAGE="http://elfutils.org/"

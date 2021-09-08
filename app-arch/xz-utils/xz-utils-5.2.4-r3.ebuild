@@ -6,7 +6,7 @@
 
 EAPI=7
 
-inherit libtool multilib multilib-minimal preserve-libs usr-ldscript rhel
+inherit libtool multilib multilib-minimal preserve-libs usr-ldscript rhel8
 
 if [[ ${PV} == "8888" ]] ; then
 	EGIT_REPO_URI="$EGIT_REPO_URIhttps://git.tukaani.org/xz.git"

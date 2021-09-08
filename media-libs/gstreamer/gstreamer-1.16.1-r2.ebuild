@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit bash-completion-r1 multilib-minimal pax-utils rhel-a
+inherit bash-completion-r1 multilib-minimal pax-utils rhel8-a
 
 DESCRIPTION="Open source multimedia framework"
 HOMEPAGE="https://gstreamer.freedesktop.org/"

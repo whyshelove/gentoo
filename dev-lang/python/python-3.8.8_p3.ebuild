@@ -5,7 +5,7 @@ EAPI="7"
 WANT_LIBTOOL="none"
 
 inherit autotools flag-o-matic multiprocessing pax-utils \
-	python-utils-r1 toolchain-funcs rhel-a
+	python-utils-r1 toolchain-funcs rhel8-a
 
 MY_PV=${PV/_rc/rc}
 MY_P="Python-${MY_PV%_p*}"

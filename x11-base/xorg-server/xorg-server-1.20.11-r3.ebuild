@@ -4,7 +4,7 @@
 EAPI=7
 
 XORG_DOC=doc
-inherit xorg-3 multilib flag-o-matic toolchain-funcs rhel-a
+inherit xorg-3 multilib flag-o-matic toolchain-funcs rhel8-a
 EGIT_REPO_URI="https://gitlab.freedesktop.org/xorg/xserver.git"
 DESCRIPTION="X.Org X servers"
 SLOT="0/${PV}"

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib-minimal autotools rhel
+inherit multilib-minimal autotools rhel8
 
 DESCRIPTION="set of utility libraries (mostly used by sssd)"
 HOMEPAGE="https://pagure.io/SSSD/ding-libs"

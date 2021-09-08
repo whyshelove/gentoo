@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit gnome2 multilib-minimal flag-o-matic rhel
+inherit gnome2 multilib-minimal flag-o-matic rhel8
 
 DESCRIPTION="Generic Cascading Style Sheet (CSS) parsing and manipulation toolkit"
 HOMEPAGE="https://gitlab.gnome.org/Archive/libcroco"

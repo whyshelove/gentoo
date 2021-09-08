@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit rhel-a
+inherit rhel8-a
 
 DESCRIPTION="virtual Common Access Card (CAC) library emulator"
 HOMEPAGE="https://www.spice-space.org/"

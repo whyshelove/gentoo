@@ -3,7 +3,7 @@
 
 EAPI=7
 QT5_MODULE="qttools"
-inherit qt5-build rhel-a
+inherit qt5-build rhel8-a
 
 DESCRIPTION="Command line client to QStandardPaths"
 

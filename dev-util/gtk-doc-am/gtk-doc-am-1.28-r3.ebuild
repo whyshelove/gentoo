@@ -4,7 +4,7 @@
 EAPI=7
 GNOME_ORG_MODULE="gtk-doc"
 
-inherit gnome.org rhel-p
+inherit gnome.org rhel8-p
 
 DESCRIPTION="Automake files from gtk-doc"
 HOMEPAGE="https://wiki.gnome.org/DocumentationProject/GtkDoc"

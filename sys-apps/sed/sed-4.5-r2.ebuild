@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic rhel
+inherit flag-o-matic rhel8
 
 DESCRIPTION="Super-useful stream editor"
 HOMEPAGE="http://sed.sourceforge.net/"

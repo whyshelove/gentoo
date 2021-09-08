@@ -3,7 +3,7 @@
 
 EAPI="7"
 
-inherit toolchain-funcs multilib-minimal rhel
+inherit toolchain-funcs multilib-minimal rhel8
 
 MY_P="${P//_/-}"
 

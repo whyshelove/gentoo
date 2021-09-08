@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{6..9} )
 
-inherit autotools bash-completion-r1 multilib python-r1 rhel
+inherit autotools bash-completion-r1 multilib python-r1 rhel8
 
 if [[ ${PV} != *8888 ]]; then
 	inherit libtool

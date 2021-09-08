@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic toolchain-funcs rhel
+inherit flag-o-matic toolchain-funcs rhel8
 
 DESCRIPTION="GNU regular expression matcher"
 HOMEPAGE="https://www.gnu.org/software/grep/"

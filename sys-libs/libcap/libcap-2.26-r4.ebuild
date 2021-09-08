@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib-minimal toolchain-funcs pam usr-ldscript rhel
+inherit multilib-minimal toolchain-funcs pam usr-ldscript rhel8
 
 DESCRIPTION="POSIX 1003.1e capabilities"
 HOMEPAGE="https://sites.google.com/site/fullycapable/"

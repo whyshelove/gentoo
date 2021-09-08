@@ -3,8 +3,8 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7..9} )
-inherit python-any-r1 qt5-build rhel-a
+PYTHON_COMPAT=( python3_{6..9} )
+inherit python-any-r1 qt5-build rhel8-a
 
 DESCRIPTION="The QML and Quick modules for the Qt5 framework"
 

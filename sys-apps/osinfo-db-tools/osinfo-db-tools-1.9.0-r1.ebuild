@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{6..9} )
 
-inherit meson python-any-r1 rhel-a
+inherit meson python-any-r1 rhel8-a
 
 DESCRIPTION="Tools for managing the osinfo database"
 HOMEPAGE="https://libosinfo.org/"

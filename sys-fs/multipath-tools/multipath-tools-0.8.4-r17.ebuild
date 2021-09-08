@@ -3,7 +3,7 @@
 
 EAPI="7"
 
-inherit linux-info systemd toolchain-funcs udev rhel
+inherit linux-info systemd toolchain-funcs udev rhel8
 
 DESCRIPTION="Device mapper target autoconfig"
 HOMEPAGE="http://christophe.varoqui.free.fr/"

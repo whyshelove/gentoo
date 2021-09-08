@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit rhel
+inherit rhel8
 
 DESCRIPTION="A set of tools that use the proc filesystem"
 HOMEPAGE="http://psmisc.sourceforge.net/"

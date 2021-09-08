@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools multilib-minimal rhel-a
+inherit autotools multilib-minimal rhel8-a
 
 DESCRIPTION="A high-performance event loop/event model with lots of feature"
 HOMEPAGE="http://software.schmorp.de/pkg/libev.html"

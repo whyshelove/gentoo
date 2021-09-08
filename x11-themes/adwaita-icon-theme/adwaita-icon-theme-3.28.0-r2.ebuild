@@ -3,7 +3,7 @@
 
 EAPI="6"
 
-inherit gnome2 rhel-a
+inherit gnome2 rhel8-a
 
 DESCRIPTION="GNOME default icon theme"
 HOMEPAGE="https://git.gnome.org/browse/adwaita-icon-theme/"

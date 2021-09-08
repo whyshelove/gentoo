@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools db-use flag-o-matic multilib-minimal preserve-libs ssl-cert toolchain-funcs systemd tmpfiles rhel
+inherit autotools db-use flag-o-matic multilib-minimal preserve-libs ssl-cert toolchain-funcs systemd tmpfiles rhel8
 
 BIS_PN=rfc2307bis.schema
 BIS_PV=20140524

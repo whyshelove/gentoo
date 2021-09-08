@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{6..10} )
 
-inherit autotools flag-o-matic linux-info multilib-minimal python-single-r1 pam systemd toolchain-funcs rhel
+inherit autotools flag-o-matic linux-info multilib-minimal python-single-r1 pam systemd toolchain-funcs rhel8
 
 DESCRIPTION="System Security Services Daemon provides access to identity and authentication"
 HOMEPAGE="https://github.com/SSSD/sssd"

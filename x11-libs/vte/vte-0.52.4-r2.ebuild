@@ -5,7 +5,7 @@ EAPI="6"
 VALA_USE_DEPEND="vapigen"
 VALA_MIN_API_VERSION="0.32"
 
-inherit gnome2 vala flag-o-matic rhel-a
+inherit gnome2 vala flag-o-matic rhel8-a
 
 DESCRIPTION="Library providing a virtual terminal emulator widget"
 HOMEPAGE="https://wiki.gnome.org/Apps/Terminal/VTE"

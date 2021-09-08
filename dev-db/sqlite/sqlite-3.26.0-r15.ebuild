@@ -3,7 +3,7 @@
 
 EAPI="7"
 
-inherit autotools flag-o-matic multilib-minimal toolchain-funcs rhel
+inherit autotools flag-o-matic multilib-minimal toolchain-funcs rhel8
 
 if [[ "${PV}" != "8888" ]]; then
 	SRC_PV="$(printf "%u%02u%02u%02u" $(ver_rs 1- " "))"

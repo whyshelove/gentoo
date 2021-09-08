@@ -4,7 +4,7 @@
 EAPI=7
 VALA_USE_DEPEND="vapigen"
 
-inherit meson udev vala xdg rhel-a
+inherit meson udev vala xdg rhel8-a
 
 DESCRIPTION="GObject library for managing information about real and virtual OSes"
 HOMEPAGE="https://libosinfo.org/"

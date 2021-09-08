@@ -4,7 +4,7 @@
 EAPI=7
 
 PYTHON_COMPAT=( python3_{6,8,9} )
-inherit autotools python-single-r1 xdg-utils rhel-a
+inherit autotools python-single-r1 xdg-utils rhel8-a
 
 DESCRIPTION="A library for manipulating block devices"
 HOMEPAGE="https://github.com/storaged-project/libblockdev"

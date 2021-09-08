@@ -9,10 +9,10 @@ if [[ ${PV} = 9999* ]]; then
 	GIT_ECLASS="git-r3"
 fi
 
-PYTHON_COMPAT=( python3_{7..9} )
+PYTHON_COMPAT=( python3_{6..9} )
 VIRTUALX_REQUIRED=manual
 
-inherit ${GIT_ECLASS} meson-multilib python-any-r1 virtualx autotools rhel-a
+inherit ${GIT_ECLASS} meson-multilib python-any-r1 virtualx autotools rhel8-a
 
 DESCRIPTION="The GL Vendor-Neutral Dispatch library"
 HOMEPAGE="https://gitlab.freedesktop.org/glvnd/libglvnd"

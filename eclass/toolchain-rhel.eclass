@@ -7,7 +7,7 @@
 DESCRIPTION="The GNU Compiler Collection"
 HOMEPAGE="https://gcc.gnu.org/"
 
-inherit flag-o-matic gnuconfig libtool multilib pax-utils toolchain-funcs prefix rhel
+inherit flag-o-matic gnuconfig libtool multilib pax-utils toolchain-funcs prefix rhel8
 
 FEATURES=${FEATURES/multilib-strict/}
 

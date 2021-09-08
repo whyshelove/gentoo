@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{6..9} )
 PYTHON_REQ_USE="threads(+)"
-inherit waf-utils python-single-r1 multilib-minimal rhel
+inherit waf-utils python-single-r1 multilib-minimal rhel8
 
 DESCRIPTION="Samba talloc library"
 HOMEPAGE="https://talloc.samba.org/"

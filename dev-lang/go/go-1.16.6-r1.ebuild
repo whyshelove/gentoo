@@ -8,7 +8,7 @@ export CTARGET=${CTARGET:-${CHOST}}
 
 MY_PV=${PV/_/}
 
-inherit toolchain-funcs rhel-a
+inherit toolchain-funcs rhel8-a
 
 case ${PV}  in
 *9999*)

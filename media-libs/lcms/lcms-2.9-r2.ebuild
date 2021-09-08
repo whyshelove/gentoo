@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit libtool multilib-minimal rhel-a
+inherit libtool multilib-minimal rhel8-a
 
 DESCRIPTION="A lightweight, speed optimized color management engine"
 HOMEPAGE="http://www.littlecms.com/"

@@ -3,7 +3,7 @@
 
 EAPI=6
 
-inherit flag-o-matic rhel
+inherit flag-o-matic rhel8
 
 DESCRIPTION="Standard GNU compressor"
 HOMEPAGE="https://www.gnu.org/software/gzip/"

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit toolchain-funcs flag-o-matic multilib rhel
+inherit toolchain-funcs flag-o-matic multilib rhel8
 
 if [[ ${PV} == "8888" ]] ; then
 	EGIT_REPO_URI="$EGIT_REPO_URI https://git.kernel.org/pub/scm/linux/kernel/git/shemminger/iproute2.git"

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools flag-o-matic rhel
+inherit autotools flag-o-matic rhel8
 
 DESCRIPTION="A suite of tools for thin provisioning on Linux"
 HOMEPAGE="https://github.com/jthornber/thin-provisioning-tools"

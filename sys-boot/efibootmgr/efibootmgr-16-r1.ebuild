@@ -3,7 +3,7 @@
 
 EAPI=6
 
-inherit toolchain-funcs rhel
+inherit toolchain-funcs rhel8
 
 DESCRIPTION="User-space application to modify the EFI boot manager"
 HOMEPAGE="https://github.com/rhinstaller/efibootmgr"

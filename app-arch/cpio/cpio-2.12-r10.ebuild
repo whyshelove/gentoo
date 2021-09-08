@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit rhel
+inherit rhel8
 
 DESCRIPTION="A file archival tool which can also read and write tar files"
 HOMEPAGE="https://www.gnu.org/software/cpio/cpio.html"

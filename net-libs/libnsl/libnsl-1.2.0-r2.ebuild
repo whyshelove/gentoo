@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib-minimal rhel
+inherit multilib-minimal rhel8
 
 DESCRIPTION="Public client interface for NIS(YP) and NIS+ in a IPv6 ready version"
 HOMEPAGE="https://github.com/thkukuk/libnsl"

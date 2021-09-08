@@ -3,9 +3,9 @@
 
 EAPI="7"
 
-PYTHON_COMPAT=( python3_{6,8} )
+PYTHON_COMPAT=( python3_{6,8,9} )
 
-inherit flag-o-matic toolchain-funcs python-any-r1 rhel
+inherit flag-o-matic toolchain-funcs python-any-r1 rhel8
 
 DESCRIPTION="GNU utilities for finding files"
 HOMEPAGE="https://www.gnu.org/software/findutils/"

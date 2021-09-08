@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic libtool toolchain-funcs multilib-minimal usr-ldscript rhel
+inherit flag-o-matic libtool toolchain-funcs multilib-minimal usr-ldscript rhel8
 
 DESCRIPTION="Extended attributes tools"
 HOMEPAGE="https://savannah.nongnu.org/projects/attr"

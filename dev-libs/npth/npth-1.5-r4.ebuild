@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools rhel
+inherit autotools rhel8
 
 DESCRIPTION="New GNU Portable Threads Library"
 HOMEPAGE="https://git.gnupg.org/cgi-bin/gitweb.cgi?p=npth.git"

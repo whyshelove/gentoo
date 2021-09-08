@@ -7,7 +7,7 @@ PYTHON_COMPAT=( python3_8 )
 DISTUTILS_SINGLE_IMPL=1
 
 DISTUTILS_USE_SETUPTOOLS=no
-inherit gnome2 distutils-r1 rhel-a
+inherit gnome2 distutils-r1 rhel8-a
 
 DESCRIPTION="A graphical tool for administering virtual machines"
 HOMEPAGE="http://virt-manager.org"

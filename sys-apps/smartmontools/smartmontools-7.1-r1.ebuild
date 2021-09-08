@@ -3,7 +3,7 @@
 
 EAPI="6"
 
-inherit autotools flag-o-matic systemd rhel
+inherit autotools flag-o-matic systemd rhel8
 if [[ ${PV} == "9999" ]] ; then
 	ESVN_REPO_URI+="https://svn.code.sf.net/p/smartmontools/code/trunk/smartmontools"
 	ESVN_PROJECT="smartmontools"

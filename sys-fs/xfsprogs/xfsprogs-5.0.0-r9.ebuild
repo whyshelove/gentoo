@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic toolchain-funcs systemd usr-ldscript rhel
+inherit flag-o-matic toolchain-funcs systemd usr-ldscript rhel8
 
 DESCRIPTION="xfs filesystem utilities"
 HOMEPAGE="https://xfs.wiki.kernel.org/"

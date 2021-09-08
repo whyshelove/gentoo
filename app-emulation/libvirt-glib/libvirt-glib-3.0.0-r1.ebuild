@@ -4,7 +4,7 @@
 EAPI=6
 GNOME2_LA_PUNT="yes"
 
-inherit gnome2 vala rhel-a
+inherit gnome2 vala rhel8-a
 
 DESCRIPTION="GLib and GObject mappings for libvirt"
 HOMEPAGE="http://libvirt.org/git/?p=libvirt-glib.git"

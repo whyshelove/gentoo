@@ -3,7 +3,7 @@
 
 EAPI=6
 
-inherit autotools rhel
+inherit autotools rhel8
 
 DESCRIPTION="Supporting tools for IMA and EVM"
 HOMEPAGE="http://linux-ima.sourceforge.net"

@@ -10,7 +10,7 @@ fi
 
 PYTHON_COMPAT=( python3_{6..9} )
 
-inherit multilib multilib-minimal toolchain-funcs python-r1 linux-info systemd usr-ldscript rhel
+inherit multilib multilib-minimal toolchain-funcs python-r1 linux-info systemd usr-ldscript rhel8
 
 DESCRIPTION="Userspace utilities for storing and processing auditing records"
 HOMEPAGE="https://people.redhat.com/sgrubb/audit/"

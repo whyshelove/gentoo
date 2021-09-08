@@ -4,7 +4,7 @@
 EAPI=7
 
 VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/danielveillard.asc
-inherit libtool multilib-minimal verify-sig rhel
+inherit libtool multilib-minimal verify-sig rhel8
 
 # Note: Please bump this in sync with dev-libs/libxml2.
 DESCRIPTION="XSLT libraries and tools"

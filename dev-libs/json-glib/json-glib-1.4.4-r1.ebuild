@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
-inherit gnome.org meson multilib-minimal xdg-utils rhel
+inherit gnome.org meson multilib-minimal xdg-utils rhel8
 
 DESCRIPTION="Library providing GLib serialization and deserialization for the JSON format"
 HOMEPAGE="https://wiki.gnome.org/Projects/JsonGlib"

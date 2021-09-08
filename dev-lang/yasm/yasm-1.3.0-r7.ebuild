@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit toolchain-funcs rhel-p
+inherit toolchain-funcs rhel8-p
 
 if [[ ${PV} == 8888* ]] ; then
 	EGIT_REPO_URI="$EGIT_REPO_URI https://github.com/yasm/yasm.git"

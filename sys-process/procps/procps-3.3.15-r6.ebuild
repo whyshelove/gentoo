@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit toolchain-funcs flag-o-matic usr-ldscript rhel
+inherit toolchain-funcs flag-o-matic usr-ldscript rhel8
 
 DESCRIPTION="standard informational utilities and process-handling tools"
 HOMEPAGE="http://procps-ng.sourceforge.net/ https://gitlab.com/procps-ng/procps"

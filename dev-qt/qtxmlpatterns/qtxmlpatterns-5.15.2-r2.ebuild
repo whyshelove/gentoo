@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit qt5-build rhel-a
+inherit qt5-build rhel8-a
 
 DESCRIPTION="XPath, XQuery, XSLT, and XML Schema validation library for the Qt5 framework"
 

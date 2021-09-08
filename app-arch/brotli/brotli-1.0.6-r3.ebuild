@@ -7,7 +7,7 @@ PYTHON_COMPAT=( python3_{7,8,9} )
 DISTUTILS_OPTIONAL="1"
 DISTUTILS_IN_SOURCE_BUILD="1"
 
-inherit cmake-multilib distutils-r1 rhel
+inherit cmake-multilib distutils-r1 rhel8
 
 DESCRIPTION="Generic-purpose lossless compression algorithm"
 HOMEPAGE="https://github.com/google/brotli"

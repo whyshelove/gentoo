@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit libtool rhel
+inherit libtool rhel8
 
 DESCRIPTION="IPC library used by GnuPG and GPGME"
 HOMEPAGE="https://www.gnupg.org/related_software/libassuan/index.en.html"

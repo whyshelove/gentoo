@@ -3,7 +3,7 @@
 
 EAPI="6"
 
-inherit autotools flag-o-matic rhel-a
+inherit autotools flag-o-matic rhel8-a
 
 DESCRIPTION="Fork of the json-c library, which is optimized for liblognorm processing"
 HOMEPAGE="https://www.rsyslog.com/tag/libfastjson/"

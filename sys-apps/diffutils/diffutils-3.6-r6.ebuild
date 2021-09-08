@@ -3,7 +3,7 @@
 
 EAPI=6
 
-inherit flag-o-matic rhel
+inherit flag-o-matic rhel8
 
 DESCRIPTION="Tools to make diffs and compare files"
 HOMEPAGE="https://www.gnu.org/software/diffutils/"

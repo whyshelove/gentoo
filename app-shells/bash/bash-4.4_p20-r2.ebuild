@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic toolchain-funcs prefix rhel
+inherit flag-o-matic toolchain-funcs prefix rhel8
 
 PLEVEL="${PV##*_p}"
 MY_PV="${PV/_p*}"

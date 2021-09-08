@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic toolchain-funcs rhel
+inherit flag-o-matic toolchain-funcs rhel8
 
 DESCRIPTION="Library that allows non-privileged apps to write utmp (login) info"
 HOMEPAGE="https://altlinux.org/index.php?module=sisyphus&package=libutempter"

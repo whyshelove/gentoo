@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic multilib-minimal toolchain-funcs rhel
+inherit flag-o-matic multilib-minimal toolchain-funcs rhel8
 
 MY_P="${PN^^}_${PV}"
 

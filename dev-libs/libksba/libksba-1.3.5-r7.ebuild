@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit rhel
+inherit rhel8
 
 DESCRIPTION="X.509 and CMS (PKCS#7) library"
 HOMEPAGE="http://www.gnupg.org/related_software/libksba"

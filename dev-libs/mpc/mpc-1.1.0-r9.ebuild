@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib-minimal rhel-a
+inherit multilib-minimal rhel8-a
 
 DESCRIPTION="A library for multiprecision complex arithmetic with exact rounding"
 HOMEPAGE="http://mpc.multiprecision.org/"

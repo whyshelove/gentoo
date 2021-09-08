@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools flag-o-matic multilib-minimal toolchain-funcs rhel
+inherit autotools flag-o-matic multilib-minimal toolchain-funcs rhel8
 
 DESCRIPTION="General purpose crypto library based on the code used in GnuPG"
 HOMEPAGE="https://www.gnupg.org/"

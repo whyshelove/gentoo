@@ -4,7 +4,7 @@
 EAPI=7
 
 QT5_MODULE="qtbase"
-inherit qt5-build rhel-a
+inherit qt5-build rhel8-a
 
 DESCRIPTION="The GUI module and platform plugins for the Qt5 framework"
 SRC_URI+=" https://dev.gentoo.org/~asturm/distfiles/qtbase-${PV}-gcc11.patch.xz"

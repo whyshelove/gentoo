@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools flag-o-matic rhel-a
+inherit autotools flag-o-matic rhel8-a
 
 DESCRIPTION="TCP daemon and set of libraries for usbredir protocol (redirecting USB traffic)"
 HOMEPAGE="https://www.spice-space.org/usbredir.html"

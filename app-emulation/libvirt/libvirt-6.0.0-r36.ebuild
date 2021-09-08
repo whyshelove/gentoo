@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{6,8,9} )
 
-inherit autotools out-of-source bash-completion-r1 eutils linux-info python-any-r1 readme.gentoo-r1 systemd rhel-a
+inherit autotools out-of-source bash-completion-r1 eutils linux-info python-any-r1 readme.gentoo-r1 systemd rhel8-a
 
 if [[ ${PV} = *9999* ]]; then
 	inherit git-r3

@@ -3,7 +3,7 @@
 
 EAPI="7"
 
-inherit flag-o-matic autotools rhel
+inherit flag-o-matic autotools rhel8
 
 DESCRIPTION="utilities to access MS-DOS disks from Unix without mounting them"
 HOMEPAGE="https://www.gnu.org/software/mtools/ https://savannah.gnu.org/projects/mtools"

@@ -3,7 +3,7 @@
 
 EAPI="7"
 
-inherit toolchain-funcs rhel
+inherit toolchain-funcs rhel8
 
 DESCRIPTION="SELinux policy compiler"
 HOMEPAGE="http://userspace.selinuxproject.org"

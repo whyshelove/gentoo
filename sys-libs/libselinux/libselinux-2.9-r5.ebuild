@@ -6,7 +6,7 @@ PYTHON_COMPAT=( python3_{6..9} )
 USE_RUBY="ruby25 ruby26 ruby27"
 
 # No, I am not calling ruby-ng
-inherit python-r1 toolchain-funcs multilib-minimal rhel
+inherit python-r1 toolchain-funcs multilib-minimal rhel8
 
 MY_P="${P//_/-}"
 SEPOL_VER="${PV}"

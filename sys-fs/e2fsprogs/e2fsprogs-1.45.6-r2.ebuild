@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic systemd toolchain-funcs udev usr-ldscript rhel
+inherit flag-o-matic systemd toolchain-funcs udev usr-ldscript rhel8
 
 DESCRIPTION="Standard EXT2/EXT3/EXT4 filesystem utilities"
 HOMEPAGE="http://e2fsprogs.sourceforge.net/"

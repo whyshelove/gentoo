@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit prefix systemd toolchain-funcs rhel
+inherit prefix systemd toolchain-funcs rhel8
 
 DESCRIPTION="File transfer program to keep remote files into sync"
 HOMEPAGE="https://rsync.samba.org/"

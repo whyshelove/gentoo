@@ -4,7 +4,7 @@
 EAPI=7
 
 AUTOTOOLS_AUTO_DEPEND="no"
-inherit autotools multilib-minimal usr-ldscript rhel
+inherit autotools multilib-minimal usr-ldscript rhel8
 
 DESCRIPTION="Standard (de)compression library"
 HOMEPAGE="https://zlib.net/"

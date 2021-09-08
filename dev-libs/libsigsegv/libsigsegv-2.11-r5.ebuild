@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools rhel
+inherit autotools rhel8
 
 DESCRIPTION="Library for handling page faults in user mode"
 HOMEPAGE="https://www.gnu.org/software/libsigsegv/"

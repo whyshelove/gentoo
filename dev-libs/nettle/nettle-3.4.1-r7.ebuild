@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools multilib-build multilib-minimal toolchain-funcs rhel
+inherit autotools multilib-build multilib-minimal toolchain-funcs rhel8
 
 DESCRIPTION="Low-level cryptographic library"
 HOMEPAGE="http://www.lysator.liu.se/~nisse/nettle/"

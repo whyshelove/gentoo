@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib-minimal rhel-a
+inherit multilib-minimal rhel8-a
 
 DESCRIPTION="Video Acceleration (VA) API for Linux"
 HOMEPAGE="https://01.org/linuxmedia/vaapi"

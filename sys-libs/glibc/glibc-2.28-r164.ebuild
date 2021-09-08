@@ -4,7 +4,7 @@
 EAPI=6
 
 inherit prefix eutils eapi7-ver toolchain-funcs flag-o-matic gnuconfig \
-	multilib systemd multiprocessing rhel
+	multilib systemd multiprocessing rhel8
 
 DESCRIPTION="GNU libc C library"
 HOMEPAGE="https://www.gnu.org/software/libc/"

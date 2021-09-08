@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools rhel-p
+inherit autotools rhel8-p
 
 DESCRIPTION="rpcsvc protocol definitions from glibc"
 HOMEPAGE="https://github.com/thkukuk/rpcsvc-proto"

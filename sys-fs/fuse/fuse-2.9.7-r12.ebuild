@@ -3,11 +3,11 @@
 
 EAPI=7
 
-inherit flag-o-matic libtool linux-info udev rhel
+inherit flag-o-matic libtool linux-info udev rhel8
 
 DESCRIPTION="An interface for filesystems implemented in userspace"
 HOMEPAGE="https://github.com/libfuse/libfuse"
-#SRC_URI="https://github.com/libfuse/libfuse/releases/download/${P}/${P}.tar.gz"
+
 S="${WORKDIR}"/fuse2and3/libfuse-${P}
 LICENSE="GPL-2"
 SLOT="0"

@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit bash-completion-r1 linux-info systemd tmpfiles udev xdg-utils rhel-a
+inherit bash-completion-r1 linux-info systemd tmpfiles udev xdg-utils rhel8-a
 
 DESCRIPTION="Daemon providing interfaces to work with storage devices"
 HOMEPAGE="https://www.freedesktop.org/wiki/Software/udisks"

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools rhel
+inherit autotools rhel8
 
 DESCRIPTION="A JSON implementation in C"
 HOMEPAGE="https://github.com/json-c/json-c/wiki"

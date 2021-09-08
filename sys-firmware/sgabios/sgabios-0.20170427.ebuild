@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit toolchain-funcs rhel-a
+inherit toolchain-funcs rhel8-a
 
 DESCRIPTION="serial graphics adapter bios option rom for x86"
 HOMEPAGE="https://code.google.com/p/sgabios/"

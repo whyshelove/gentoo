@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit toolchain-funcs multilib-minimal rhel-a
+inherit toolchain-funcs multilib-minimal rhel8-a
 
 DESCRIPTION="HTTP request/response parser for C"
 HOMEPAGE="https://github.com/nodejs/http-parser"

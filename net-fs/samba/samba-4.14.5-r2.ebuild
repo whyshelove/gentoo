@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{8..9} )
 PYTHON_REQ_USE="threads(+),xml(+)"
-inherit python-single-r1 waf-utils multilib-minimal linux-info systemd pam tmpfiles rhel
+inherit python-single-r1 waf-utils multilib-minimal linux-info systemd pam tmpfiles rhel8
 
 DESCRIPTION="Samba Suite Version 4"
 HOMEPAGE="https://samba.org/"

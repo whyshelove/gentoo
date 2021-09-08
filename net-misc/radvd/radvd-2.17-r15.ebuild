@@ -3,11 +3,10 @@
 
 EAPI=7
 
-inherit readme.gentoo-r1 systemd toolchain-funcs rhel-a
+inherit readme.gentoo-r1 systemd toolchain-funcs rhel8-a
 
 DESCRIPTION="Linux IPv6 Router Advertisement Daemon"
 HOMEPAGE="http://v6web.litech.org/radvd/"
-
 
 LICENSE="BSD"
 SLOT="0"

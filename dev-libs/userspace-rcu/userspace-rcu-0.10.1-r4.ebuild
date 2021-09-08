@@ -5,7 +5,7 @@ EAPI=7
 
 DESCRIPTION="userspace RCU (read-copy-update) library"
 HOMEPAGE="https://liburcu.org/"
-inherit autotools rhel
+inherit autotools rhel8
 
 LICENSE="LGPL-2.1"
 SLOT="0/6" # subslot = soname version

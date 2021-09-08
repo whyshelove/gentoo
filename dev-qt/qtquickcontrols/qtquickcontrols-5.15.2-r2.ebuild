@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit qt5-build rhel-a
+inherit qt5-build rhel8-a
 
 DESCRIPTION="Set of Qt Quick controls to create complete user interfaces (deprecated)"
 

@@ -6,7 +6,7 @@ EAPI=7
 PYTHON_COMPAT=( python2_7 python3_{6,8,9} )
 DISTUTILS_OPTIONAL=1
 
-inherit distutils-r1 libtool toolchain-funcs multilib-minimal flag-o-matic rhel
+inherit distutils-r1 libtool toolchain-funcs multilib-minimal flag-o-matic rhel8
 
 if [[ ${PV} == "8888" ]] ; then
 	EGIT_REPO_URI="$EGIT_REPO_URI https://github.com/glensc/file.git"

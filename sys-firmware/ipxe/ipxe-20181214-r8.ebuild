@@ -7,7 +7,7 @@ HASH=133f4c47
 GIT_REV="git${HASH}"
 MY_PN=${P}-${GIT_REV}
 
-inherit toolchain-funcs savedconfig rhel-a
+inherit toolchain-funcs savedconfig rhel8-a
 
 DESCRIPTION="Open source network boot (PXE) firmware"
 HOMEPAGE="https://ipxe.org/"

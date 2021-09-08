@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic libtool multilib-minimal usr-ldscript rhel
+inherit flag-o-matic libtool multilib-minimal usr-ldscript rhel8
 
 DESCRIPTION="Access control list utilities, libraries, and headers"
 HOMEPAGE="https://savannah.nongnu.org/projects/acl"

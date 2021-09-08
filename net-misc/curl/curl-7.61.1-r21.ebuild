@@ -3,7 +3,7 @@
 
 EAPI="7"
 
-inherit autotools prefix multilib-minimal rhel
+inherit autotools prefix multilib-minimal rhel8
 
 DESCRIPTION="A Client that groks URLs"
 HOMEPAGE="https://curl.haxx.se/"

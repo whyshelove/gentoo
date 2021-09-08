@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib-minimal rhel
+inherit multilib-minimal rhel8
 
 DESCRIPTION="library for multiple-precision floating-point computations with exact rounding"
 HOMEPAGE="https://www.mpfr.org/"

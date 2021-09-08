@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib multilib-minimal rhel
+inherit multilib multilib-minimal rhel8
 
 if [[ ${PV} != *8888 ]]; then
 	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"

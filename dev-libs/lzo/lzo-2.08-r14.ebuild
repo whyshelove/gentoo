@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib-minimal usr-ldscript rhel
+inherit multilib-minimal usr-ldscript rhel8
 
 DESCRIPTION="An extremely fast compression and decompression library"
 HOMEPAGE="https://www.oberhumer.com/opensource/lzo/"

@@ -4,7 +4,7 @@
 EAPI=6
 GNOME2_LA_PUNT="yes"
 
-inherit gnome2 multilib-minimal toolchain-funcs rhel-a
+inherit gnome2 multilib-minimal toolchain-funcs rhel8-a
 
 DESCRIPTION="Internationalized text layout and rendering library"
 HOMEPAGE="https://www.pango.org/"

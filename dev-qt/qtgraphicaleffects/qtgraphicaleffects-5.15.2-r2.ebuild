@@ -3,7 +3,7 @@
 
 EAPI=7
 VIRTUALX_REQUIRED="test"
-inherit qt5-build rhel-a
+inherit qt5-build rhel8-a
 
 DESCRIPTION="Set of QML types for adding visual effects to user interfaces"
 

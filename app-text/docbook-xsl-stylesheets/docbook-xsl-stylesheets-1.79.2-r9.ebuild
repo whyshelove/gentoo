@@ -4,7 +4,7 @@
 EAPI=6
 USE_RUBY="ruby25 ruby26 ruby27"
 
-inherit ruby-single rhel-a
+inherit ruby-single rhel8-a
 
 DOCBOOKDIR="/usr/share/sgml/${PN/-//}"
 MY_PN="${PN%-stylesheets}"

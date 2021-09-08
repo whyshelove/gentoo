@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit toolchain-funcs flag-o-matic bash-completion-r1 rhel
+inherit toolchain-funcs flag-o-matic bash-completion-r1 rhel8
 
 DESCRIPTION="Lists directories recursively, and produces an indented listing of files"
 HOMEPAGE="http://mama.indstate.edu/users/ice/tree/"

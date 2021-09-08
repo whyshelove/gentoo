@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit meson rhel-a
+inherit meson rhel8-a
 
 KEYWORDS="amd64 arm64 ~ppc ppc64 x86"
 

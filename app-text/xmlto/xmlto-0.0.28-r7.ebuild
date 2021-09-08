@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools rhel-a
+inherit autotools rhel8-a
 
 DESCRIPTION="Script for converting XML and DocBook documents to a variety of output formats"
 HOMEPAGE="https://pagure.io/xmlto"

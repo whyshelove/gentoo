@@ -8,7 +8,7 @@ PYTHON_COMPAT=( python3_{6..9} )
 DISTUTILS_USE_SETUPTOOLS=no
 MY_P="${P/_rc/-rc}"
 
-inherit distutils-r1 verify-sig rhel-a
+inherit distutils-r1 verify-sig rhel8-a
 
 if [[ ${PV} = *9999* ]]; then
 	inherit git-r3

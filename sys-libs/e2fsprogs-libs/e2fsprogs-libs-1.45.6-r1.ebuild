@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit toolchain-funcs multilib-minimal usr-ldscript rhel
+inherit toolchain-funcs multilib-minimal usr-ldscript rhel8
 
 MY_PN=${PN%-libs}
 MY_P="${MY_PN}-${PV}"

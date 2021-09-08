@@ -4,7 +4,7 @@
 EAPI=6
 GNOME2_LA_PUNT="yes"
 
-inherit autotools flag-o-matic gnome2 multilib virtualx multilib-minimal rhel-a
+inherit autotools flag-o-matic gnome2 multilib virtualx multilib-minimal rhel8-a
 
 DESCRIPTION="Gimp ToolKit +"
 HOMEPAGE="https://www.gtk.org/"

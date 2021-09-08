@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit meson rhel-a
+inherit meson rhel8-a
 
 DESCRIPTION="Headers defining the SPICE protocol"
 HOMEPAGE="https://www.spice-space.org/"

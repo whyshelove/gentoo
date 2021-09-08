@@ -3,7 +3,7 @@
 
 EAPI=6
 
-inherit eutils libtool flag-o-matic gnuconfig multilib toolchain-funcs versionator rhel
+inherit eutils libtool flag-o-matic gnuconfig multilib toolchain-funcs versionator rhel8
 
 DESCRIPTION="Tools necessary to build programs"
 HOMEPAGE="https://sourceware.org/binutils/"

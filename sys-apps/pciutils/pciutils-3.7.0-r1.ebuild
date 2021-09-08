@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib toolchain-funcs multilib-minimal flag-o-matic rhel
+inherit multilib toolchain-funcs multilib-minimal flag-o-matic rhel8
 
 DESCRIPTION="Various utilities dealing with the PCI bus"
 HOMEPAGE="https://mj.ucw.cz/sw/pciutils/ https://git.kernel.org/?p=utils/pciutils/pciutils.git"

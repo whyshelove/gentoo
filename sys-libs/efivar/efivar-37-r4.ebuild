@@ -3,7 +3,7 @@
 
 EAPI=6
 
-inherit toolchain-funcs flag-o-matic rhel
+inherit toolchain-funcs flag-o-matic rhel8
 
 DESCRIPTION="Tools and library to manipulate EFI variables"
 HOMEPAGE="https://github.com/rhinstaller/efivar"

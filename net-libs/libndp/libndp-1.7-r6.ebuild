@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit gnome2 multilib-minimal rhel
+inherit gnome2 multilib-minimal rhel8
 
 DESCRIPTION="Library for Neighbor Discovery Protocol"
 HOMEPAGE="http://libndp.org"

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit toolchain-autoconf rhel-a
+inherit toolchain-autoconf rhel8-a
 
 DESCRIPTION="Used to create autoconfiguration files"
 HOMEPAGE="https://www.gnu.org/software/autoconf/autoconf.html"

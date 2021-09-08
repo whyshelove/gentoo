@@ -4,7 +4,7 @@
 EAPI=7
 AUTOTOOLS_AUTO_DEPEND=no
 AT_NOEAUTOHEADER=yes  # because expat_config.h.in would need post-processing
-inherit autotools multilib-minimal usr-ldscript rhel
+inherit autotools multilib-minimal usr-ldscript rhel8
 
 DESCRIPTION="Stream-oriented XML parser library"
 HOMEPAGE="https://libexpat.github.io/"

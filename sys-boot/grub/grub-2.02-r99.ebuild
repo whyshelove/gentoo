@@ -18,7 +18,7 @@ if [[ -n ${GRUB_AUTORECONF} ]]; then
 	inherit autotools
 fi
 
-inherit bash-completion-r1 flag-o-matic multibuild optfeature pax-utils toolchain-funcs rhel
+inherit bash-completion-r1 flag-o-matic multibuild optfeature pax-utils toolchain-funcs rhel8
 
 if [[ ${PV} != 9999 ]]; then
 	S=${WORKDIR}/${P%_*}

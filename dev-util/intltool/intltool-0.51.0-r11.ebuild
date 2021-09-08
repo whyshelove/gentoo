@@ -3,7 +3,7 @@
 
 EAPI=6
 
-inherit rhel-a
+inherit rhel8-a
 
 DESCRIPTION="Internationalization Tool Collection"
 HOMEPAGE="https://launchpad.net/intltool/"

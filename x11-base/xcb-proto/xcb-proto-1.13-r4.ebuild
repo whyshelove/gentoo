@@ -8,7 +8,7 @@ XORG_TARBALL_SUFFIX="xz"
 XORG_MODULE=proto/
 XORG_MULTILIB=yes
 
-inherit python-r1 xorg-3 rhel-p
+inherit python-r1 xorg-3 rhel8-p
 
 DESCRIPTION="X C-language Bindings protocol headers"
 HOMEPAGE="https://xcb.freedesktop.org/ https://gitlab.freedesktop.org/xorg/proto/xcbproto"

@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{6,8,9} )
 
-inherit flag-o-matic multiprocessing python-r1 toolchain-funcs multilib-minimal rhel-a
+inherit flag-o-matic multiprocessing python-r1 toolchain-funcs multilib-minimal rhel8-a
 
 MY_PV="$(ver_rs 1- _)"
 MAJOR_V="$(ver_cut 1-2)"

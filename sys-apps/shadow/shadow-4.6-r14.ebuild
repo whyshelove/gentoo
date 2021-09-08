@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools pam rhel
+inherit autotools pam rhel8
 
 DESCRIPTION="Utilities to deal with user accounts"
 HOMEPAGE="https://github.com/shadow-maint/shadow"

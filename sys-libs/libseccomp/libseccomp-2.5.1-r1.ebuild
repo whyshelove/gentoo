@@ -6,7 +6,7 @@ EAPI=7
 PYTHON_COMPAT=( python3_{6..9} )
 DISTUTILS_OPTIONAL=1
 
-inherit distutils-r1 multilib-minimal rhel
+inherit distutils-r1 multilib-minimal rhel8
 
 DESCRIPTION="high level interface to Linux seccomp filter"
 HOMEPAGE="https://github.com/seccomp/libseccomp"

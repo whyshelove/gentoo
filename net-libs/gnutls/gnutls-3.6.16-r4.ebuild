@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit libtool multilib-minimal rhel
+inherit libtool multilib-minimal rhel8
 
 DESCRIPTION="A secure communications library implementing the SSL, TLS and DTLS protocols"
 HOMEPAGE="https://www.gnutls.org/"

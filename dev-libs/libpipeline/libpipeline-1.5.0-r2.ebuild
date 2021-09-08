@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit rhel
+inherit rhel8
 
 DESCRIPTION="a pipeline manipulation library"
 HOMEPAGE="http://libpipeline.nongnu.org/"

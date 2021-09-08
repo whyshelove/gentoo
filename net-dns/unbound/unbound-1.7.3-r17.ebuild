@@ -4,7 +4,7 @@
 EAPI="7"
 PYTHON_COMPAT=( python2_7 python3_{6,8,9} )
 
-inherit autotools flag-o-matic multilib-minimal python-single-r1 systemd user rhel-a
+inherit autotools flag-o-matic multilib-minimal python-single-r1 systemd user rhel8-a
 
 MY_P=${PN}-${PV/_/}
 DESCRIPTION="A validating, recursive and caching DNS resolver"

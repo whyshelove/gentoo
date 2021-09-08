@@ -4,7 +4,7 @@
 EAPI=6
 GST_ORG_MODULE="gst-plugins-good"
 
-inherit flag-o-matic gstreamer rhel-a
+inherit flag-o-matic gstreamer rhel8-a
 
 DESCRIPTION="Basepack of plugins for GStreamer"
 HOMEPAGE="https://gstreamer.freedesktop.org/"

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic systemd toolchain-funcs rhel
+inherit flag-o-matic systemd toolchain-funcs rhel8
 
 MY_P="${P/_/-}"
 

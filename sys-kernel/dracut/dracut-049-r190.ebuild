@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit bash-completion-r1 linux-info optfeature systemd toolchain-funcs rhel
+inherit bash-completion-r1 linux-info optfeature systemd toolchain-funcs rhel8
 
 if [[ ${PV} == 9999 ]] ; then
 	EGIT_REPO_URI+="https://github.com/dracutdevs/dracut"

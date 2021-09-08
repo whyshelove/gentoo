@@ -4,7 +4,7 @@
 EAPI=7
 
 PYTHON_COMPAT=( python3_{6,8,9} )
-inherit autotools python-any-r1 readme.gentoo-r1 xdg-utils rhel-a
+inherit autotools python-any-r1 readme.gentoo-r1 xdg-utils rhel8-a
 
 DESCRIPTION="SPICE server"
 HOMEPAGE="https://www.spice-space.org/"

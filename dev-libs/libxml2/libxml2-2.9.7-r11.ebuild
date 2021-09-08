@@ -6,7 +6,7 @@ EAPI=7
 PYTHON_COMPAT=( python3_{6,8,9} )
 PYTHON_REQ_USE="xml"
 
-inherit autotools flag-o-matic prefix python-r1 multilib-minimal rhel
+inherit autotools flag-o-matic prefix python-r1 multilib-minimal rhel8
 
 DESCRIPTION="XML C parser and toolkit"
 HOMEPAGE="http://www.xmlsoft.org/ https://gitlab.gnome.org/GNOME/libxml2"

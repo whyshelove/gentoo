@@ -3,7 +3,7 @@
 
 EAPI="7"
 
-inherit multilib-minimal rhel
+inherit multilib-minimal rhel8
 
 MY_P="${P/_/}"
 

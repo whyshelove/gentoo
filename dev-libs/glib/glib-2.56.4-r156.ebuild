@@ -6,7 +6,7 @@ PYTHON_COMPAT=( python3_{6..9} )
 GNOME2_EAUTORECONF=yes
 
 inherit autotools flag-o-matic gnome2 gnome.org gnome2-utils linux-info \
-	multilib-minimal pax-utils python-any-r1 toolchain-funcs virtualx xdg rhel
+	multilib-minimal pax-utils python-any-r1 toolchain-funcs virtualx xdg rhel8
 
 DESCRIPTION="The GLib library of C routines"
 HOMEPAGE="https://www.gtk.org/"

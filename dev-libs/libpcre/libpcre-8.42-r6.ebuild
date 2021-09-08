@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit libtool multilib-minimal preserve-libs usr-ldscript rhel
+inherit libtool multilib-minimal preserve-libs usr-ldscript rhel8
 
 DESCRIPTION="Perl-compatible regular expression library"
 HOMEPAGE="http://www.pcre.org/"

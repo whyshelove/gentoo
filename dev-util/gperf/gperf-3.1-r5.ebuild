@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit rhel-p
+inherit rhel8-p
 
 DESCRIPTION="A perfect hash function generator"
 HOMEPAGE="https://www.gnu.org/software/gperf/"

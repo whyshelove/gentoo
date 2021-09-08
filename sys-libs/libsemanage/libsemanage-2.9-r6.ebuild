@@ -4,7 +4,7 @@
 EAPI=7
 PYTHON_COMPAT=( python3_{6..9} )
 
-inherit python-r1 toolchain-funcs multilib-minimal rhel
+inherit python-r1 toolchain-funcs multilib-minimal rhel8
 
 MY_P="${P//_/-}"
 

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools bash-completion-r1 rhel
+inherit autotools bash-completion-r1 rhel8
 
 DESCRIPTION="Helper tools and libraries for managing non-volatile memory on Linux"
 HOMEPAGE="https://github.com/pmem/ndctl"

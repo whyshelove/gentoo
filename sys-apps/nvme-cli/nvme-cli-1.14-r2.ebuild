@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit systemd toolchain-funcs udev rhel
+inherit systemd toolchain-funcs udev rhel8
 
 DESCRIPTION="NVM-Express user space tooling for Linux"
 HOMEPAGE="https://github.com/linux-nvme/nvme-cli"

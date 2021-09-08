@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{6..10} pypy3 )
 
-inherit distutils-r1 optfeature toolchain-funcs rhel-a
+inherit distutils-r1 optfeature toolchain-funcs rhel8-a
 
 DESCRIPTION="A Pythonic binding for the libxml2 and libxslt libraries"
 HOMEPAGE="https://lxml.de/ https://pypi.org/project/lxml/ https://github.com/lxml/lxml"

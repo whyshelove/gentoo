@@ -3,9 +3,9 @@
 
 EAPI="7"
 
-PYTHON_COMPAT=( python3_{7..9} )
+PYTHON_COMPAT=( python3_{6..9} )
 
-inherit toolchain-funcs python-any-r1 rhel-a
+inherit toolchain-funcs python-any-r1 rhel8-a
 
 # SeaBIOS maintainers sometimes don't release stable tarballs or stable
 # binaries to generate the stable tarball the following is necessary:

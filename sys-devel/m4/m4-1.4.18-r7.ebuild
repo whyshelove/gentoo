@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit rhel
+
+inherit rhel8
 
 DESCRIPTION="GNU macro processor"
 HOMEPAGE="https://www.gnu.org/software/m4/m4.html"

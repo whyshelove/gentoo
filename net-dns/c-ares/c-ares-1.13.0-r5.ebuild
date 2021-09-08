@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools multilib-minimal rhel
+inherit autotools multilib-minimal rhel8
 
 DESCRIPTION="C library that resolves names asynchronously"
 HOMEPAGE="https://c-ares.haxx.se/"

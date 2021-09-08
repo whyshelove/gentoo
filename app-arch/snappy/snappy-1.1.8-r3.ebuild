@@ -4,7 +4,7 @@
 EAPI=7
 
 CMAKE_ECLASS=cmake
-inherit cmake-multilib rhel
+inherit cmake-multilib rhel8
 
 DESCRIPTION="A high-speed compression/decompression library by Google"
 HOMEPAGE="https://github.com/google/snappy"

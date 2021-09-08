@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{6..9} )
 PYTHON_REQ_USE="threads(+)"
-inherit python-single-r1 waf-utils multilib-minimal rhel
+inherit python-single-r1 waf-utils multilib-minimal rhel8
 
 DESCRIPTION="LDAP-like embedded database"
 HOMEPAGE="https://ldb.samba.org"

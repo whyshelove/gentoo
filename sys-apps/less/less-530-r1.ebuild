@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit rhel
+inherit rhel8
 
 DESCRIPTION="Excellent text file viewer"
 HOMEPAGE="http://www.greenwoodsoftware.com/less/"

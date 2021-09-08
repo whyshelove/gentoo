@@ -5,7 +5,7 @@
 
 EAPI=7
 
-inherit mono-env libtool java-pkg-opt-2 multilib-minimal rhel
+inherit mono-env libtool java-pkg-opt-2 multilib-minimal rhel8
 
 DESCRIPTION="GNU locale utilities"
 HOMEPAGE="https://www.gnu.org/software/gettext/"

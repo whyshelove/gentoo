@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit rhel-a
+inherit rhel8-a
 
 DESCRIPTION="Spellchecker wrapping library"
 HOMEPAGE="https://abiword.github.io/enchant/"

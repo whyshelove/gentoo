@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{6,8,9} )
 
-inherit llvm meson-multilib python-any-r1 linux-info rhel-a
+inherit llvm meson-multilib python-any-r1 linux-info rhel8-a
 
 OPENGL_DIR="xorg-x11"
 

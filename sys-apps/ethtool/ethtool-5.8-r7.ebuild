@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit rhel
+inherit rhel8
 
 DESCRIPTION="Utility for examining and tuning ethernet-based network interfaces"
 HOMEPAGE="https://www.kernel.org/pub/software/network/ethtool/"

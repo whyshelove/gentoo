@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit usr-ldscript rhel
+inherit usr-ldscript rhel8
 
 DESCRIPTION="Minimalistic netlink library"
 HOMEPAGE="https://netfilter.org/projects/libmnl/"

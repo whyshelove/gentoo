@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit cmake toolchain-funcs xdg-utils rhel-a
+inherit cmake toolchain-funcs xdg-utils rhel8-a
 
 if [[ ${PV} == *9999* ]] ; then
 	inherit git-r3

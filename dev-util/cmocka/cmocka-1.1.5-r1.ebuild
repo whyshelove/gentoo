@@ -4,7 +4,7 @@
 EAPI=7
 
 CMAKE_ECLASS=cmake
-inherit cmake-multilib rhel-p
+inherit cmake-multilib rhel8-p
 
 DESCRIPTION="Unit testing framework for C"
 HOMEPAGE="https://cmocka.org/"

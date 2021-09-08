@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python{3_6,3_8,3_9} )
 
-inherit python-single-r1 systemd udev multilib-minimal rhel
+inherit python-single-r1 systemd udev multilib-minimal rhel8
 
 DESCRIPTION="PC/SC Architecture smartcard middleware library"
 HOMEPAGE="https://pcsclite.apdu.fr https://github.com/LudovicRousseau/PCSC"

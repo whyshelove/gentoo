@@ -8,7 +8,7 @@ EAPI=7
 PYTHON_COMPAT=( python3_{6..10} )
 DISTUTILS_OPTIONAL=1
 
-inherit distutils-r1 libtool multilib-minimal usr-ldscript rhel
+inherit distutils-r1 libtool multilib-minimal usr-ldscript rhel8
 
 MY_P=${P/_}
 DESCRIPTION="Password Checking Library"

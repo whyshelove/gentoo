@@ -5,7 +5,7 @@ EAPI=6
 PYTHON_COMPAT=( python3_{6..10} )
 PYTHON_REQ_USE="xml"
 
-inherit gnome2 gnome.org python-single-r1 toolchain-funcs xdg rhel
+inherit gnome2 gnome.org python-single-r1 toolchain-funcs xdg rhel8
 
 DESCRIPTION="Introspection system for GObject-based libraries"
 HOMEPAGE="https://wiki.gnome.org/Projects/GObjectIntrospection"

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib-minimal libtool rhel
+inherit multilib-minimal libtool rhel8
 
 DESCRIPTION="ASN.1 library"
 HOMEPAGE="https://www.gnu.org/software/libtasn1/"

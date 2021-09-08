@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic libtool multilib-minimal toolchain-funcs rhel-a
+inherit flag-o-matic libtool multilib-minimal toolchain-funcs rhel8-a
 
 DESCRIPTION="The Fast Lexical Analyzer"
 HOMEPAGE="https://github.com/westes/flex"

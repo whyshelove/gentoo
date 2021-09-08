@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit toolchain-funcs flag-o-matic rhel
+inherit toolchain-funcs flag-o-matic rhel8
 
 DESCRIPTION="A parallel implementation of gzip"
 HOMEPAGE="https://www.zlib.net/pigz/"

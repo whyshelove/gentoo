@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit multilib-minimal rhel
+inherit multilib-minimal rhel8
 
 DESCRIPTION="Library to execute a function when a specific event occurs on a file descriptor"
 HOMEPAGE="

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit rhel
+inherit rhel8
 
 DESCRIPTION="IP Calculator prints broadcast/network/etc for an IP address and netmask"
 LICENSE="GPL-2+"

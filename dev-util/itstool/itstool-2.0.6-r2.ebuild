@@ -6,7 +6,7 @@ EAPI=7
 PYTHON_COMPAT=( python3_{6,8,9} )
 PYTHON_REQ_USE="xml"
 
-inherit python-single-r1 rhel-a
+inherit python-single-r1 rhel8-a
 
 DESCRIPTION="Translation tool for XML documents that uses gettext files and ITS rules"
 HOMEPAGE="http://itstool.org/"

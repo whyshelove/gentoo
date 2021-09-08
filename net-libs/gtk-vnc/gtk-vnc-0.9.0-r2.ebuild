@@ -7,7 +7,7 @@ GNOME2_LA_PUNT="yes"
 VALA_MIN_API_VERSION="0.16"
 VALA_USE_DEPEND="vapigen"
 
-inherit vala gnome2 python-any-r1 rhel-a
+inherit vala gnome2 python-any-r1 rhel8-a
 
 DESCRIPTION="VNC viewer widget for GTK"
 HOMEPAGE="https://wiki.gnome.org/Projects/gtk-vnc"

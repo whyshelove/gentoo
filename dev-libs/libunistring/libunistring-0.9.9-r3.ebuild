@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib-minimal libtool rhel
+inherit multilib-minimal libtool rhel8
 
 DESCRIPTION="Library for manipulating Unicode and C strings according to Unicode standard"
 HOMEPAGE="https://www.gnu.org/software/libunistring/"

@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit multilib-minimal rhel
+inherit multilib-minimal rhel8
 
 DESCRIPTION="a portable, high level programming interface to various calling conventions"
 HOMEPAGE="https://sourceware.org/libffi/"

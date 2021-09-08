@@ -4,7 +4,7 @@
 EAPI=7
 
 XORG_MULTILIB=yes
-inherit xorg-3 rhel-a
+inherit xorg-3 rhel8-a
 
 DESCRIPTION="X.Org Xft library"
 

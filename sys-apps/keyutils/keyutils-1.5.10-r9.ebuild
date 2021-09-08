@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit toolchain-funcs linux-info multilib-minimal usr-ldscript rhel
+inherit toolchain-funcs linux-info multilib-minimal usr-ldscript rhel8
 
 DESCRIPTION="Linux Key Management Utilities"
 HOMEPAGE="https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/keyutils.git"

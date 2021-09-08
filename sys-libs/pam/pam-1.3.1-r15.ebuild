@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools db-use fcaps multilib-minimal toolchain-funcs usr-ldscript rhel
+inherit autotools db-use fcaps multilib-minimal toolchain-funcs usr-ldscript rhel8
 
 DESCRIPTION="Linux-PAM (Pluggable Authentication Modules)"
 HOMEPAGE="https://github.com/linux-pam/linux-pam"

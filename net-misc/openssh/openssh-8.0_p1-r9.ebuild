@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit user-info flag-o-matic autotools pam systemd toolchain-funcs rhel
+inherit user-info flag-o-matic autotools pam systemd toolchain-funcs rhel8
 
 DESCRIPTION="Port of OpenBSD's free SSH release"
 HOMEPAGE="https://www.openssh.com/"

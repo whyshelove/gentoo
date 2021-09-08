@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools multilib-minimal rhel
+inherit autotools multilib-minimal rhel8
 
 DESCRIPTION="Standard GNU database libraries"
 HOMEPAGE="https://www.gnu.org/software/gdbm/"

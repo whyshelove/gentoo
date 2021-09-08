@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib-minimal systemd rhel
+inherit multilib-minimal systemd rhel8
 
 DESCRIPTION="Provides a standard configuration setup for installing PKCS#11"
 HOMEPAGE="https://p11-glue.github.io/p11-glue/p11-kit.html"

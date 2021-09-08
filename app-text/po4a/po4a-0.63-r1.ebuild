@@ -4,7 +4,7 @@
 EAPI="7"
 PLOCALES="af ar ca cs da de eo es et eu fr hr hu id it ja kn ko nb nl pl pt pt_BR ru sl sr_Cyrl sv uk vi zh_CN zh_HK"
 
-inherit perl-module plocale rhel-p
+inherit perl-module plocale rhel8-p
 
 DESCRIPTION="Tools to ease the translation of documentation"
 HOMEPAGE="https://po4a.org/"

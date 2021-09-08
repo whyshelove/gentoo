@@ -4,10 +4,10 @@
 EAPI=7
 
 PYTHON_REQ_USE="sqlite"
-PYTHON_COMPAT=( python3_{7,8,9} )
+PYTHON_COMPAT=( python3_{6,8,9} )
 GITCOMMIT=e1999b264f1f
 
-inherit python-any-r1 readme.gentoo-r1 rhel-a
+inherit python-any-r1 readme.gentoo-r1 rhel8-a
 
 DESCRIPTION="UEFI firmware for 64-bit x86 virtual machines"
 HOMEPAGE="https://github.com/tianocore/edk2"

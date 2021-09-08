@@ -11,7 +11,7 @@ PLOCALES="bg de_DE fr_FR hu it tr zh_CN"
 FIRMWARE_ABI_VERSION="4.0.0-r50"
 
 inherit eutils linux-info toolchain-funcs multilib python-r1
-inherit udev fcaps readme.gentoo-r1 pax-utils xdg-utils rhel-a
+inherit udev fcaps readme.gentoo-r1 pax-utils xdg-utils rhel8-a
 
 SRC_URI="${REPO_URI}/${MY_PF/-/-kvm-}.module_el8.5.0+853+a4d5519d.src.rpm"
 KEYWORDS="amd64 arm64 ~ppc ~ppc64 x86"

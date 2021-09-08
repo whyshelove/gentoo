@@ -4,7 +4,7 @@
 EAPI=7
 
 CMAKE_ECLASS=cmake
-inherit cmake-multilib rhel
+inherit cmake-multilib rhel8
 
 DESCRIPTION="Extremely Fast Compression algorithm"
 HOMEPAGE="https://github.com/lz4/lz4"

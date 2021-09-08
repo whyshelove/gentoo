@@ -4,7 +4,7 @@
 EAPI=7
 
 CMAKE_ECLASS=cmake
-inherit cmake-multilib rhel-a
+inherit cmake-multilib rhel8-a
 
 DESCRIPTION="Small event-driven (SAX-style) JSON parser"
 HOMEPAGE="https://lloyd.github.com/yajl/"

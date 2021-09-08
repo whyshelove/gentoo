@@ -5,7 +5,7 @@ EAPI="6"
 VALA_MIN_API_VERSION="0.24"
 VALA_USE_DEPEND="vapigen"
 
-inherit gnome2 vala virtualx rhel-a
+inherit gnome2 vala virtualx rhel8-a
 
 DESCRIPTION="A text widget implementing syntax highlighting and other features"
 HOMEPAGE="https://wiki.gnome.org/Projects/GtkSourceView"

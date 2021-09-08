@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit rhel-a
+inherit rhel8-a
 
 DESCRIPTION="C library for encoding data in a QR Code symbol"
 HOMEPAGE="https://fukuchi.org/works/qrencode/"

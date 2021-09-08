@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit toolchain-funcs rhel-a
+inherit toolchain-funcs rhel8-a
 
 DESCRIPTION="C library for the MaxMind DB file format"
 HOMEPAGE="https://github.com/maxmind/libmaxminddb"

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools multilib-minimal rhel
+inherit autotools multilib-minimal rhel8
 
 DESCRIPTION="Main event loop abstraction library"
 HOMEPAGE="https://github.com/latchset/libverto/"

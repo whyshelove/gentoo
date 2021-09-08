@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit elisp-common rhel-a
+inherit elisp-common rhel8-a
 
 DESCRIPTION="Command line utilities to work with desktop menu entries"
 HOMEPAGE="https://freedesktop.org/wiki/Software/desktop-file-utils"

@@ -5,7 +5,7 @@
 
 EAPI=7
 
-inherit autotools linux-info systemd usr-ldscript multilib-minimal rhel-a
+inherit autotools linux-info systemd usr-ldscript multilib-minimal rhel8-a
 
 DESCRIPTION="Console-based mouse driver"
 HOMEPAGE="https://www.nico.schottelius.org/software/gpm/"

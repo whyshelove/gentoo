@@ -6,7 +6,7 @@ EAPI=7
 PYTHON_COMPAT=( python3_{6,8,9} )
 DISTUTILS_OPTIONAL=1
 
-inherit distutils-r1 flag-o-matic libtool qmake-utils toolchain-funcs rhel
+inherit distutils-r1 flag-o-matic libtool qmake-utils toolchain-funcs rhel8
 
 DESCRIPTION="GnuPG Made Easy is a library for making GnuPG easier to use"
 HOMEPAGE="http://www.gnupg.org/related_software/gpgme"

@@ -3,11 +3,10 @@
 
 EAPI=7
 
-inherit autotools multilib-minimal rhel
+inherit autotools multilib-minimal rhel8
 
 DESCRIPTION="Simple library for creating daemon processes in C"
 HOMEPAGE="http://0pointer.de/lennart/projects/libdaemon/"
-
 
 LICENSE="LGPL-2.1"
 SLOT="0/5"

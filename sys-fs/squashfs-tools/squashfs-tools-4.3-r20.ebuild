@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit flag-o-matic toolchain-funcs rhel
+inherit flag-o-matic toolchain-funcs rhel8
 
 DESCRIPTION="tools to create and extract Squashfs filesystems"
 HOMEPAGE="https://github.com/plougher/squashfs-tools/"

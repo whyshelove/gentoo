@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools toolchain-funcs multilib-minimal rhel-a
+inherit autotools toolchain-funcs multilib-minimal rhel8-a
 
 MIN_PV="$(ver_cut 2)"
 

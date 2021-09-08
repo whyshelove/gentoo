@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic toolchain-funcs rhel-a
+inherit flag-o-matic toolchain-funcs rhel8-a
 
 SRC_URI="!binary? ( ${REPO_URI}/${MY_PF}.${DIST}.src.rpm )
         binary? ( ${REPO_BIN}/${MY_PF}.${DIST}.x86_64.rpm )"

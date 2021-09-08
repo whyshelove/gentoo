@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib-minimal toolchain-funcs rhel-a
+inherit multilib-minimal toolchain-funcs rhel8-a
 
 DESCRIPTION="Efficient I/O with io_uring"
 HOMEPAGE="https://github.com/axboe/liburing"

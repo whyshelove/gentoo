@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib-minimal libtool rhel
+inherit multilib-minimal libtool rhel8
 
 DESCRIPTION="Parse Options - Command line parser"
 HOMEPAGE="https://github.com/rpm-software-management/popt"

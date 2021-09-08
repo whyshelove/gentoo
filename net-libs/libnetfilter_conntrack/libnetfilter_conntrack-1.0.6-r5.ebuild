@@ -3,7 +3,7 @@
 
 EAPI=6
 
-inherit linux-info rhel
+inherit linux-info rhel8
 
 DESCRIPTION="Programming interface (API) to the in-kernel connection tracking state table"
 HOMEPAGE="https://www.netfilter.org/projects/libnetfilter_conntrack/"
