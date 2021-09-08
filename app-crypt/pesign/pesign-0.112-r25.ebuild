@@ -33,6 +33,11 @@ pkg_setup() {
 	export conf="PREFIX=${EPREFIX}/usr LIBDIR=${EPREFIX}/usr/$(get_libdir)"
 }
 
+src_unpack() {
+	rhel_unpack 
+	rpmbuild -bb $WORKDIR/*.spec --nodeps
+}
+
 src_prepare() {
 	if use binary; then
 		eapply_user
@@ -42,8 +47,17 @@ src_prepare() {
 }
 
 src_compile() {
+	append-cflags -O1 #721934
 	use binary && return
-	emake $conf
+	emake AR="$(tc-getAR)" \
+		ARFLAGS="-cvqs" \
+		AS="$(tc-getAS)" \
+		CC="$(tc-getCC)" \
+		LD="$(tc-getLD)" \
+		OBJCOPY="$(tc-getOBJCOPY)" \
+		PKG_CONFIG="$(tc-getPKG_CONFIG)" \
+		RANLIB="$(tc-getRANLIB)" \
+		$conf
 }
 
 src_install() {

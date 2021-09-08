@@ -115,9 +115,10 @@ src_compile() {
 		myconf+="MALLOC=libc"
 	fi
 
+	make_flags=( DEBUG="" BUILD_WITH_SYSTEMD=yes BUILD_TLS=yes )
+
 	tc-export AR CC RANLIB
-	emake V="echo" ${myconf} AR="${AR}" CC="${CC}" RANLIB="${RANLIB}" \
-	      DEBUG="" BUILD_WITH_SYSTEMD=yes BUILD_TLS=yes all
+	emake V="echo" ${myconf} AR="${AR}" CC="${CC}" RANLIB="${RANLIB}" ${make_flags[@]} all
 }
 
 src_test() {

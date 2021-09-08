@@ -24,7 +24,7 @@ esac
 
 PYTHON_COMPAT=( python3_{6..10} )
 
-inherit python-any-r1 savedconfig toolchain-funcs rhel-kernel-install rhel
+inherit python-any-r1 savedconfig toolchain-funcs rhel-kernel-install rhel8
 
 BDEPEND="
 	${PYTHON_DEPS}
@@ -47,8 +47,6 @@ rhel-kernel-build_pkg_setup() {
     export hdmarch=${_target_cpu}
     export asmarch=${_target_cpu}
     export image_install_path=boot
-    export with_gcov=0
-    export with_vdso_install=0
 
     use gcov && export with_gcov=1
     use vdso && export with_vdso_install=1
@@ -164,11 +162,11 @@ rhel-kernel-build_src_configure() {
 rhel-kernel-build_src_compile() {
 	debug-print-function ${FUNCNAME} "${@}"
 
-	use debug && BuildKernel $make_target $kernel_image ${with_vdso_install} debug
+	use debug && BuildKernel $make_target $kernel_image ${with_vdso_install:-0} debug
 
-	use zfcpdump && BuildKernel $make_target $kernel_image ${with_vdso_install} zfcpdump
+	use zfcpdump && BuildKernel $make_target $kernel_image ${with_vdso_install:-0} zfcpdump
 
-	use up && BuildKernel $make_target $kernel_image ${with_vdso_install}
+	use up && BuildKernel $make_target $kernel_image ${with_vdso_install:-0}
 
     if use realtime; then
         # perf
@@ -252,7 +250,7 @@ rhel-kernel-build_src_install() {
 
     if use perf; then
         # perf tool binary and supporting scripts/binaries
-        perf_make DESTDIR="${ED}" lib=${_lib} install-bin install-traceevent-plugins
+        ${perf_make[@]} DESTDIR="${ED}" lib=${_lib} install-bin install-traceevent-plugins
         # remove the 'trace' symlink.
         rm -f "${ED}"${_bindir}/trace
 
@@ -265,11 +263,11 @@ rhel-kernel-build_src_install() {
         rm -rf "${ED}"/usr/lib/perf/{examples,include}
 
         # python-perf extension
-        perf_make DESTDIR="${ED}" install-python_ext
+        ${perf_make[@]} DESTDIR="${ED}" install-python_ext
 
         # perf man pages (note: implicit rpm magic compresses them later)
         dodir ${_mandir}/man1
-        perf_make DESTDIR="${ED}" install-man
+        ${perf_make[@]} DESTDIR="${ED}" install-man
     fi
 
     if use tools; then

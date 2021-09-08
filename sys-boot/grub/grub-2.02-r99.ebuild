@@ -22,7 +22,7 @@ inherit bash-completion-r1 flag-o-matic multibuild optfeature pax-utils toolchai
 
 if [[ ${PV} != 9999 ]]; then
 	S=${WORKDIR}/${P%_*}
-	KEYWORDS="amd64 ~arm arm64 ~ia64 ppc ppc64 sparc x86"
+	KEYWORDS="~amd64 ~arm arm64 ~ia64 ppc ppc64 sparc x86"
 else
 	EGIT_REPO_URI+="https://git.savannah.gnu.org/git/grub.git"
 fi
