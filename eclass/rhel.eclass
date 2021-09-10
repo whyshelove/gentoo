@@ -55,7 +55,7 @@ if [ -z ${MY_PF} ] ; then
 			ghostscript-gpl ) MY_PF=${P/-gpl}-${MY_PR} ;;
 			wayland-scanner ) MY_PF=${P/-scanner}-${MY_PR} ;;
 			libsdl* ) MY_P=${P/lib}; MY_PF=${MY_P^^}-${MY_PR} ;;
-			gdk-pixbuf ) MY_PF=${P/gdk-pixbuf/gdk-pixbuf2}-${MY_PR} ;;
+			gdk-pixbuf ) MY_PF=${P/pixbuf/pixbuf2}-${MY_PR} ;;
 			docbook-xsl-ns-stylesheets) MY_PF=docbook-style-xsl-${PV}-${MY_PR} ;;
 			xauth | xbitmaps | util-macros | xinit ) MY_PF=xorg-x11-${P}-${MY_PR} ;;
 			libnl | glib | openjpeg | lcms | gnupg | grub | udisks | geoclue \
