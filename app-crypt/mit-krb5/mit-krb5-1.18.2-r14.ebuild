@@ -4,7 +4,7 @@
 EAPI=7
 
 PYTHON_COMPAT=( python3_{6,8,9} )
-inherit autotools flag-o-matic python-any-r1 systemd toolchain-funcs rhel
+inherit autotools flag-o-matic python-any-r1 systemd toolchain-funcs rhel8
 
 MY_P="${P/mit-}"
 P_DIR=$(ver_cut 1-2)
