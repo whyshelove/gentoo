@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools flag-o-matic multilib-minimal toolchain-funcs rhel-a
+inherit autotools flag-o-matic multilib-minimal toolchain-funcs rhel8-a
 
 MY_PN="CUnit"
 MY_PV="${PV/.3/-3}"

@@ -49,7 +49,7 @@ else
 			| gtksourceview ) MY_P=${P/-/$(ver_cut 1)-}; MY_PF=${MY_P}-${MY_PR} ;;
 			mpc | talloc | tdb | tevent | ldb ) MY_PF=lib${P}-${MY_PR}; [[ ${PN} == mpc ]] && MY_PF=${MY_PF}.1 ;;
 			go ) MY_PF=${P/-/lang-}-${MY_PR} ;;
-			cunit ) MY_PF=${P/cu/CU}-${MY_PR} ;;
+			cunit ) MY_PF=${P^^[cu]}-${MY_PR} ;;
 			libusb ) MY_PF=${P/-/x-}-${MY_PR} ;;
 			gtk-doc-am ) MY_PF=${P/-am}-${MY_PR} ;;
 			e2fsprogs-libs ) MY_PF=${P/-libs}-${MY_PR} ;;

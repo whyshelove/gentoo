@@ -21,11 +21,11 @@ if [ -z ${MY_PF} ] ; then
 
 	if [ ${CATEGORY} == "dev-python" ] && [ ${PN} != lxml ] ; then
 		case ${PN} in
-			cython ) MY_PF=${P/c/C}-${MY_PR} ;;
+			cython ) MY_PF=${P^}-${MY_PR} ;;
 			pyyaml ) MY_PF=${P/pyyaml/PyYAML}-${MY_PR} ;;
 			configshell-fb ) MY_PF=python-${P/-fb}-${MY_PR} ;;
 			pygobject ) MY_P=${P/-/3-}; MY_PF=${MY_P}-${MY_PR} ;;
-			jinja ) MY_P=${P/-/2-}; MY_PF=python-${MY_P}-${MY_PR}; S="${WORKDIR}/${MY_P/j/J}" ;;
+			jinja ) MY_P=${P/-/2-}; MY_PF=python-${MY_P}-${MY_PR}; S="${WORKDIR}/${MY_P^j}" ;;
 			publicsuffix ) MY_P=${P/-2./-list-}; MY_PF=${MY_P}-${MY_PR}; S="${WORKDIR}/${MY_P}" ;;
 			Babel | pytz | numpy | pyparsing | pyxdg | dbus-python | pycairo | python-dateutil \
 			| pyserial) MY_PF=${P,,}-${MY_PR} ;;
