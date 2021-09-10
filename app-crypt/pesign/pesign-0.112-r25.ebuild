@@ -33,11 +33,6 @@ pkg_setup() {
 	export conf="PREFIX=${EPREFIX}/usr LIBDIR=${EPREFIX}/usr/$(get_libdir)"
 }
 
-src_unpack() {
-	rhel_unpack 
-	rpmbuild -bb $WORKDIR/*.spec --nodeps
-}
-
 src_prepare() {
 	if use binary; then
 		eapply_user

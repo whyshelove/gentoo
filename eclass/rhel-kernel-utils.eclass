@@ -248,7 +248,7 @@ BuildKernel() {
     fi
 }
 
-perf_make(
+perf_make=(
     emake EXTRA_CFLAGS="${OPT_FLAGS}" LDFLAGS="${LDFLAGS}" -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 ${perf_build_extra_opts} prefix="${EPREFIX}/usr" PYTHON=${EPYTHON}
 )
 
