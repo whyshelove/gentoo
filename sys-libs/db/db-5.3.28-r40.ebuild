@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit autotools db flag-o-matic java-pkg-opt-2 multilib multilib-minimal toolchain-funcs rhel
+inherit autotools db flag-o-matic java-pkg-opt-2 multilib multilib-minimal toolchain-funcs rhel8
 
 RESTRICT="!test? ( test )"
 
