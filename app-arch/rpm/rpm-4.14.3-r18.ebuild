@@ -6,7 +6,7 @@ EAPI=7
 LUA_COMPAT=( lua5-{2..4} )
 PYTHON_COMPAT=( python2_7 python3_{6,8,9} )
 
-inherit autotools flag-o-matic lua-single perl-module python-single-r1 toolchain-funcs rhel
+inherit autotools flag-o-matic lua-single perl-module python-single-r1 toolchain-funcs rhel8
 
 DESCRIPTION="Red Hat Package Management Utils"
 
