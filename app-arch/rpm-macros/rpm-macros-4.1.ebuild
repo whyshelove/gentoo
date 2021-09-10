@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit unpacker rhel
+inherit unpacker rhel8
 
 SRC_URI=""
 
