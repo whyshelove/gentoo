@@ -6,7 +6,7 @@ EAPI=7
 PYTHON_COMPAT=( python3_{8,9} )
 
 inherit toolchain-funcs libtool flag-o-matic bash-completion-r1 usr-ldscript \
-	pam python-r1 multilib-minimal multiprocessing systemd rhel
+	pam python-r1 multilib-minimal multiprocessing systemd rhel9
 
 MY_PV="${PV/_/-}"
 MY_P="${PN}-${MY_PV}"
@@ -15,7 +15,7 @@ if [[ ${PV} == 9999 ]] ; then
 	inherit autotools
 	EGIT_REPO_URI+="https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git"
 else
-	KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux"
+	KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux"
 	S="${WORKDIR}/${MY_P}"
 fi
 
