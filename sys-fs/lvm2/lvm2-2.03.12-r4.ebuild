@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit autotools linux-info multilib systemd toolchain-funcs tmpfiles udev flag-o-matic rhel
+inherit autotools linux-info multilib systemd toolchain-funcs tmpfiles udev flag-o-matic rhel9
 
 DESCRIPTION="User-land utilities for LVM2 (device-mapper) software"
 HOMEPAGE="https://sourceware.org/lvm2/"

@@ -3,10 +3,9 @@
 
 EAPI=8
 
-KDE_ORG_COMMIT=cfc616978b52a396b2ef6900546f7fc086d7cab3
 inherit qt5-build rhel9-a
 
-DESCRIPTION="SVG rendering library for the Qt5 framework"
+DESCRIPTION="Linux/X11-specific support library for the Qt5 framework"
 
 if [[ ${QT5_BUILD_TYPE} == release ]]; then
 	KEYWORDS="amd64 arm arm64 ~hppa ppc ppc64 ~riscv ~sparc x86"
@@ -15,11 +14,9 @@ fi
 IUSE=""
 
 RDEPEND="
-	~dev-qt/qtcore-${PV}
-	~dev-qt/qtgui-${PV}
-	~dev-qt/qtwidgets-${PV}
-	sys-libs/zlib:=
+	=dev-qt/qtcore-${QT5_PV}*
+	=dev-qt/qtgui-${QT5_PV}*[X]
 "
 DEPEND="${RDEPEND}
-	test? ( ~dev-qt/qtxml-${PV} )
+	test? ( =dev-qt/qtwidgets-${QT5_PV}* )
 "

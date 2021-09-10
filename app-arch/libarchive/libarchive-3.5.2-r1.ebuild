@@ -5,11 +5,12 @@ EAPI=7
 inherit libtool multilib-minimal toolchain-funcs rhel9
 
 DESCRIPTION="Multi-format archive and compression library"
+HOMEPAGE="https://www.libarchive.org/"
 
 LICENSE="BSD BSD-2 BSD-4 public-domain"
 SLOT="0/13"
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-IUSE="acl blake2 +bzip2 +e2fsprogs expat +iconv kernel_linux lz4 +lzma lzo nettle static-libs +threads xattr +zlib zstd"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+IUSE="acl blake2 +bzip2 +e2fsprogs expat +iconv kernel_linux lz4 +lzma lzo nettle static-libs xattr +zlib zstd"
 
 RDEPEND="
 	acl? ( virtual/acl[${MULTILIB_USEDEP}] )
@@ -23,7 +24,7 @@ RDEPEND="
 	)
 	dev-libs/openssl:0=[${MULTILIB_USEDEP}]
 	lz4? ( >=app-arch/lz4-0_p131:0=[${MULTILIB_USEDEP}] )
-	lzma? ( app-arch/xz-utils[threads=,${MULTILIB_USEDEP}] )
+	lzma? ( >=app-arch/xz-utils-5.2.5-r1[${MULTILIB_USEDEP}] )
 	lzo? ( >=dev-libs/lzo-2[${MULTILIB_USEDEP}] )
 	nettle? ( dev-libs/nettle:0=[${MULTILIB_USEDEP}] )
 	zlib? ( sys-libs/zlib[${MULTILIB_USEDEP}] )
@@ -61,7 +62,7 @@ multilib_src_configure() {
 		$(use_with nettle)
 		$(use_with zlib)
 		$(use_with zstd)
-		LT_SYS_LIBRARY_PATH=/usr/lib64
+
 		# Windows-specific
 		--without-cng
 	)
@@ -131,9 +132,4 @@ multilib_src_install() {
 
 	# Libs.private: should be used from libarchive.pc instead
 	find "${ED}" -type f -name "*.la" -delete || die
-}
-
-multilib_src_install_all() {
-	cd "${S}" || die
-	einstalldocs
 }

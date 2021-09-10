@@ -83,7 +83,7 @@ if [ -z ${MY_PF} ] ; then
 			| linguist-tools | qtsql | qtconcurrent | qdbus | qtpaths \
 			| qtprintsupport | designer ) MY_P="qt5-${QT5_MODULE}-${PV}"; MY_PF=${MY_P}-${MY_PR} ;;
 			qtdeclarative | qtsvg | qtscript | qtgraphicaleffects | qtwayland | qtquickcontrols* \
-			| qtxmlpatterns ) MY_PF=qt5-${P}-${MY_PR} ;;
+			| qtxmlpatterns | qtwebchannel | qtx11extras ) MY_PF=qt5-${P}-${MY_PR} ;;
 			gst-plugins* ) MY_PF=${P/-/reamer1-}-${MY_PR} ;;
 			edk2-ovmf ) MY_PF=${P}git${GITCOMMIT}-${MY_PR} ;;
 			ipxe ) MY_PF=${P}-${MY_PR}.${GIT_REV} ;;

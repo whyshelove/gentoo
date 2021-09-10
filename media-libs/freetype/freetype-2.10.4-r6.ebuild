@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic libtool multilib-build multilib-minimal toolchain-funcs rhel-a
+inherit flag-o-matic libtool multilib-build multilib-minimal toolchain-funcs rhel9-a
 
 DESCRIPTION="A high-quality and portable font engine"
 HOMEPAGE="https://www.freetype.org/"

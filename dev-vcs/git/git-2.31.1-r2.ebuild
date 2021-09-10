@@ -8,7 +8,7 @@ GENTOO_DEPEND_ON_PERL=no
 # bug #329479: git-remote-testgit is not multiple-version aware
 PYTHON_COMPAT=( python3_{7..9} )
 
-inherit toolchain-funcs elisp-common perl-module bash-completion-r1 plocale python-single-r1 systemd rhel-a
+inherit toolchain-funcs elisp-common perl-module bash-completion-r1 plocale python-single-r1 systemd rhel9-a
 
 PLOCALES="bg ca de es fr is it ko pt_PT ru sv vi zh_CN"
 
