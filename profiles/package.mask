@@ -32,10 +32,57 @@
 
 #--- END OF EXAMPLES ---
 
-# Sam James <sam@gentoo.org> (2021-09-05)
-# Generates broken configurations (no meters) on new
-# installs. bug #811687.
-=sys-process/htop-3.1.0_rc1
+# Jakov Smolić <jsmolic@gentoo.org> (2021-09-09)
+# Relies on setuptools' deprecated use_2to3 option.
+# Last release in 2019, no revdeps.
+# Removal on 2021-10-09. Bug #812236
+dev-python/sparql-wrapper
+
+# Jakov Smolić <jsmolic@gentoo.org> (2021-09-09)
+# Relies on setuptools' deprecated use_2to3 option.
+# Last release in 2019, no revdeps.
+# Removal on 2021-10-09. Bug #812233
+dev-python/pybluez
+
+# Jakov Smolić <jsmolic@gentoo.org> (2021-09-09)
+# Relies on setuptools' deprecated use_2to3 option.
+# Last release in 2015, no revdeps.
+# Removal on 2021-10-09. Bug #812224
+dev-python/lcdproc
+
+# Jakov Smolić <jsmolic@gentoo.org> (2021-09-09)
+# Relies on setuptools' use_2to3 option.
+# Last release in 2017, no revdeps.
+# Removal on 2021-10-09. Bug #812221
+dev-python/fudge
+
+# Anna Vyalkova <cyber+gentoo@sysrq.in> (2021-09-07)
+# Mask backwards-incompatible version to avoid autodeletion of previous one.
+# Data migration is not supported upstream and can't be done automatically.
+# https://github.com/martinrotter/rssguard/releases/tag/4.0.0
+# https://github.com/martinrotter/rssguard/blob/master/resources/docs/Documentation.md#migratt
+>=net-news/rssguard-4.0.0
+
+# Louis Sautier <sbraz@gentoo.org> (2021-09-09)
+# No reverse dependencies, no upstream activity for more than 3 years.
+# dev-python/oauthlib is maintained and provides the same functionality.
+# Removal on 2021-10-09.
+dev-python/oauth2
+
+# Thomas Deutschmann <whissi@gentoo.org> (2021-09-07)
+# Masked while being tested and reverse deps aren't fully compatible
+# bug #797325.
+=dev-libs/openssl-3.0*
+
+# Andreas Sturmlechner <asturm@gentoo.org> (2021-09-07)
+# EAPI-5, dead upstream, last (and only) version added in 2011
+# Bug 644344; Removal on 2021-10-07.
+net-libs/gsnmp
+
+# Andreas Sturmlechner <asturm@gentoo.org> (2021-09-07)
+# EAPI-5, dead upstream, last bump in 2012
+# Bug 644344; Removal on 2021-10-07.
+net-analyzer/scli
 
 # Andreas Sturmlechner <asturm@gentoo.org> (2021-09-04)
 # EAPI-5, dead, unused, bug 808213; Removal on 2021-10-04.
@@ -168,28 +215,6 @@ app-office/plan
 # EAPI-5, dead, unused; last consumer dropped in bug #352952
 # Removal on 2021-09-09.
 net-print/libgnomecups
-
-# Joshua Kinard <kumba@gentoo.org> (2021-08-09)
-# Dead upstream and has build issues in modern times.
-# See bugs #551786 and #715846.  Removal in 30 days.
-net-dialup/xc
-
-# Andreas Sturmlechner <asturm@gentoo.org> (2021-08-09)
-# EAPI-5, dead, unused; bug #776403. Removal on 2021-09-08.
-dev-perl/Goo-Canvas
-x11-libs/goocanvas:0
-
-# Louis Sautier <sbraz@gentoo.org> (2021-08-07)
-# No reverse dependencies, no upstream activity for more than 5 years,
-# failing tests with Python 3.10. Removal on 2021-09-06.
-dev-python/pydiff
-
-# Ulrich Müller <ulm@gentoo.org> (2021-08-06)
-# Masked for removal in 30 days. Upstream has joined the
-# manpages-l10n project, so 5.06 was their ultimate release
-# as a separate package. Use app-i18n/man-pages-l10n[l10n_it]
-# as replacement. Bug #769017.
-app-i18n/man-pages-it
 
 # David Seifert <soap@gentoo.org> (2021-08-04)
 # Last release over 4 years ago, upstream pretty much dead, the
