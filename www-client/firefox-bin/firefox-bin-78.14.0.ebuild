@@ -3,7 +3,7 @@
 
 EAPI=7
 
-MOZ_ESR=
+MOZ_ESR=yes
 
 MOZ_PV=${PV}
 MOZ_PV_SUFFIX=
@@ -37,7 +37,7 @@ DESCRIPTION="Firefox Web Browser"
 HOMEPAGE="https://www.mozilla.com/firefox"
 
 KEYWORDS="-* amd64 x86"
-SLOT="0/$(ver_cut 1)"
+SLOT="0/esr$(ver_cut 1)"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
 IUSE="+alsa +ffmpeg +gmp-autoupdate +pulseaudio selinux wayland"
 
@@ -68,6 +68,7 @@ RDEPEND="${CDEPEND}
 	virtual/freedesktop-icon-theme
 	>=x11-libs/cairo-1.10[X]
 	x11-libs/gdk-pixbuf
+	>=x11-libs/gtk+-2.18:2
 	>=x11-libs/gtk+-3.11:3[wayland?]
 	x11-libs/libX11
 	x11-libs/libXcomposite
