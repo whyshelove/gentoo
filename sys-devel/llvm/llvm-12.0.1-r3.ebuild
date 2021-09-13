@@ -57,12 +57,7 @@ BDEPEND="
 		dev-python/sphinx[${PYTHON_USEDEP}]
 	') )
 	libffi? ( virtual/pkgconfig )
-        pandoc-bin? (
-            app-text/pandoc-bin
-        )
-        !pandoc-bin? (
-            app-text/pandoc
-        )
+        || ( app-text/pandoc-bin app-text/pandoc )
 	${PYTHON_DEPS}"
 # There are no file collisions between these versions but having :0
 # installed means llvm-config there will take precedence.
