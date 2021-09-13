@@ -4,14 +4,14 @@
 EAPI=7
 
 PYTHON_COMPAT=( python3_{8..10} )
-inherit cmake flag-o-matic llvm llvm.org python-any-r1 toolchain-funcs
+inherit cmake flag-o-matic llvm llvm.rhel python-any-r1 toolchain-funcs
 
 DESCRIPTION="Compiler runtime library for clang (built-in part)"
 HOMEPAGE="https://llvm.org/"
-
+SRC_URI="${REPO_URI}/${MY_PF}.module_el8.5.0+892+54d791e1.src.rpm"
 LICENSE="Apache-2.0-with-LLVM-exceptions || ( UoI-NCSA MIT )"
 SLOT="$(ver_cut 1-3)"
-KEYWORDS=""
+KEYWORDS="amd64 arm arm64 ppc64 ~riscv x86 ~amd64-linux ~ppc-macos ~x64-macos"
 IUSE="+clang test"
 RESTRICT="!test? ( test ) !clang? ( test )"
 
@@ -29,8 +29,8 @@ BDEPEND="
 	${PYTHON_DEPS}"
 
 LLVM_COMPONENTS=( compiler-rt )
-LLVM_PATCHSET=9999-1
-llvm.org_set_globals
+LLVM_PATCHSET=12.0.1
+llvm.rhel_set_globals
 
 python_check_deps() {
 	use test || return 0
@@ -78,12 +78,13 @@ src_configure() {
 	fi
 
 	local mycmakeargs=(
+		-DLLVM_LIBDIR_SUFFIX=64
+
 		-DCOMPILER_RT_INSTALL_PATH="${EPREFIX}/usr/lib/clang/${SLOT}"
 
 		-DCOMPILER_RT_INCLUDE_TESTS=$(usex test)
 		-DCOMPILER_RT_BUILD_LIBFUZZER=OFF
 		-DCOMPILER_RT_BUILD_MEMPROF=OFF
-		-DCOMPILER_RT_BUILD_ORC=OFF
 		-DCOMPILER_RT_BUILD_PROFILE=OFF
 		-DCOMPILER_RT_BUILD_SANITIZERS=OFF
 		-DCOMPILER_RT_BUILD_XRAY=OFF

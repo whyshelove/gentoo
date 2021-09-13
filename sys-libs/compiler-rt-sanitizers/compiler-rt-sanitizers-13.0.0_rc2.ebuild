@@ -3,7 +3,7 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7..9} )
+PYTHON_COMPAT=( python3_{8..10} )
 inherit check-reqs cmake flag-o-matic llvm llvm.org python-any-r1
 
 DESCRIPTION="Compiler runtime libraries for clang (sanitizers & xray)"
@@ -11,10 +11,10 @@ HOMEPAGE="https://llvm.org/"
 
 LICENSE="Apache-2.0-with-LLVM-exceptions || ( UoI-NCSA MIT )"
 SLOT="$(ver_cut 1-3)"
-KEYWORDS="amd64 arm arm64 ~ppc64 ~riscv x86 ~amd64-linux ~ppc-macos ~x64-macos"
+KEYWORDS=""
 IUSE="+clang test elibc_glibc"
 # base targets
-IUSE+=" +libfuzzer +memprof +profile +xray"
+IUSE+=" +libfuzzer +memprof +orc +profile +xray"
 # sanitizer targets, keep in sync with config-ix.cmake
 # NB: ubsan, scudo deliberately match two entries
 SANITIZER_FLAGS=(
@@ -23,14 +23,12 @@ SANITIZER_FLAGS=(
 )
 IUSE+=" ${SANITIZER_FLAGS[@]/#/+}"
 REQUIRED_USE="
-	|| ( ${SANITIZER_FLAGS[*]} libfuzzer profile xray )
+	|| ( ${SANITIZER_FLAGS[*]} libfuzzer orc profile xray )
 	test? (
 		cfi? ( ubsan )
 		gwp-asan? ( scudo )
 	)"
 RESTRICT="!test? ( test ) !clang? ( test )"
-# Huge breakage with glibc-2.33.
-RESTRICT+=" test"
 
 CLANG_SLOT=${SLOT%%.*}
 # llvm-6 for new lit options
@@ -50,7 +48,7 @@ BDEPEND="
 
 LLVM_COMPONENTS=( compiler-rt )
 LLVM_TEST_COMPONENTS=( llvm/lib/Testing/Support llvm/utils/unittest )
-LLVM_PATCHSET=12.0.0-1
+LLVM_PATCHSET=13.0.0-rc2
 llvm.org_set_globals
 
 python_check_deps() {
@@ -86,9 +84,6 @@ src_prepare() {
 				cmake/config-ix.cmake || die
 		fi
 	done
-
-	# Known failures.
-	rm test/lsan/TestCases/many_threads_detach.cpp || die
 
 	# TODO: fix these tests to be skipped upstream
 	if use asan && ! use profile; then
@@ -131,6 +126,7 @@ src_configure() {
 		-DCOMPILER_RT_BUILD_CRT=OFF
 		-DCOMPILER_RT_BUILD_LIBFUZZER=$(usex libfuzzer)
 		-DCOMPILER_RT_BUILD_MEMPROF=$(usex memprof)
+		-DCOMPILER_RT_BUILD_ORC=$(usex orc)
 		-DCOMPILER_RT_BUILD_PROFILE=$(usex profile)
 		-DCOMPILER_RT_BUILD_SANITIZERS="${want_sanitizer}"
 		-DCOMPILER_RT_BUILD_XRAY=$(usex xray)

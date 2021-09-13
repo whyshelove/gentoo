@@ -3,9 +3,9 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7..9} )
-inherit cmake llvm llvm.org multilib-minimal pax-utils \
-	prefix python-single-r1 toolchain-funcs rhel-a
+PYTHON_COMPAT=( python3_{8..10} )
+inherit cmake llvm llvm.rhel multilib multilib-minimal \
+	prefix python-single-r1 toolchain-funcs
 
 DESCRIPTION="C language family frontend for LLVM"
 HOMEPAGE="https://llvm.org/"
@@ -22,7 +22,7 @@ ALL_LLVM_TARGETS=( "${ALL_LLVM_TARGETS[@]/#/llvm_targets_}" )
 
 LICENSE="Apache-2.0-with-LLVM-exceptions UoI-NCSA MIT"
 SLOT="$(ver_cut 1)"
-KEYWORDS="amd64 arm arm64 ~ppc ~ppc64 ~riscv ~sparc x86 ~amd64-linux ~x64-macos"
+KEYWORDS="amd64 arm arm64 ~ppc ppc64 ~riscv ~sparc x86 ~amd64-linux ~x64-macos"
 IUSE="debug default-compiler-rt default-libcxx default-lld
 	doc llvm-libunwind +static-analyzer test xml kernel_FreeBSD ${ALL_LLVM_TARGETS[*]}"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
@@ -46,9 +46,6 @@ BDEPEND="
 	doc? ( dev-python/sphinx )
 	xml? ( virtual/pkgconfig )
 	${PYTHON_DEPS}"
-RDEPEND="${RDEPEND}
-	!<sys-devel/llvm-4.0.0_rc:0
-	!sys-devel/clang:0"
 PDEPEND="
 	sys-devel/clang-common
 	~sys-devel/clang-runtime-${PV}
@@ -67,8 +64,8 @@ LLVM_TEST_COMPONENTS=(
 	llvm/utils/{lit,llvm-lit,unittest}
 	llvm/utils/{UpdateTestChecks,update_cc_test_checks.py}
 )
-LLVM_PATCHSET=12.0.0-1
-llvm.org_set_globals
+LLVM_PATCHSET=12.0.1
+llvm.rhel_set_globals
 
 # Multilib notes:
 # 1. ABI_* flags control ABIs libclang* is built for only.
@@ -87,11 +84,13 @@ pkg_setup() {
 }
 
 src_prepare() {
+	sed -i 's/\@FEDORA_LLVM_LIB_SUFFIX\@/64/g' test/lit.cfg.py || die
+
 	# create extra parent dir for relative CLANG_RESOURCE_DIR access
 	mkdir -p x/y || die
 	BUILD_DIR=${WORKDIR}/x/y/clang
 
-	llvm.org_src_prepare
+	llvm.rhel_src_prepare
 
 	# add Gentoo Portage Prefix for Darwin (see prefix-dirs.patch)
 	eprefixify \
@@ -235,8 +234,14 @@ get_distribution_components() {
 multilib_src_configure() {
 	local llvm_version=$(llvm-config --version) || die
 	local clang_version=$(ver_cut 1-3 "${llvm_version}")
-
+	filter-flags -ffat-lto-objects
 	local mycmakeargs=(
+		-DLLVM_PARALLEL_LINK_JOBS=1
+		-DLLVM_LINK_LLVM_DYLIB:BOOL=ON
+		-DCMAKE_INSTALL_RPATH:BOOL=";"
+		-DLLVM_EXTERNAL_LIT="${EPREFIX}${_bindir}/lit"
+		-DLLVM_LIBDIR_SUFFIX=64
+
 		-DLLVM_CMAKE_PATH="${EPREFIX}/usr/lib/llvm/${SLOT}/$(get_libdir)/cmake/llvm"
 		-DCMAKE_INSTALL_PREFIX="${EPREFIX}/usr/lib/llvm/${SLOT}"
 		-DCMAKE_INSTALL_MANDIR="${EPREFIX}/usr/lib/llvm/${SLOT}/share/man"
