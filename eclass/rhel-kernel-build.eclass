@@ -47,7 +47,7 @@ rhel-kernel-build_pkg_setup() {
     export hdmarch=${_target_cpu}
     export asmarch=${_target_cpu}
     export image_install_path=boot
-
+    export modsign_cmd="${WORKDIR}"/mod-sign.sh
     use gcov && export with_gcov=1
     use vdso && export with_vdso_install=1
     use zipmodules && zipsed="-e 's/\.ko$/\.ko.xz/'"
@@ -326,6 +326,15 @@ rhel-kernel-build_src_install() {
 # @DESCRIPTION:
 # Combine postinst from kernel-install and savedconfig eclasses.
 rhel-kernel-build_pkg_postinst() {
+    if use signmodules; then
+        use debug && ${modsign_cmd} certs/signing_key.pem.sign+debug certs/signing_key.x509.sign+debug "${ED}"/lib/modules/${KVERREL}+debug/
+        use up && ${modsign_cmd} certs/signing_key.pem.sign certs/signing_key.x509.sign "${ED}"/lib/modules/${KVERREL}/
+    fi
+
+    if use zipmodules; then
+        find "${ED}"/lib/modules/ -type f -name '*.ko' | "${WORKDIR}"/parallel_xz.sh;
+    fi
+
 	grub-mkconfig -o /boot/efi/EFI/gentoo/grub.cfg || die
 	grub-mkconfig -o /boot/grub/grub.cfg || die
 #	kernel-install_pkg_postinst

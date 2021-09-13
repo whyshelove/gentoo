@@ -45,7 +45,7 @@ HOMEPAGE="https://www.gnu.org/software/grub/"
 # Includes licenses for dejavu and unifont
 LICENSE="GPL-3+ BSD MIT fonts? ( GPL-2-with-font-exception ) themes? ( CC-BY-SA-3.0 BitstreamVera )"
 SLOT="2/${PVR}"
-IUSE="device-mapper doc +efiemu +fonts mount nls static sdl test +themes truetype libzfs"
+IUSE="device-mapper doc +efiemu +fonts mount nls static sdl test +themes truetype libzfs sign"
 
 GRUB_ALL_PLATFORMS=( coreboot efi-32 efi-64 emu ieee1275 loongson multiboot qemu qemu-mips pc uboot xen xen-32 )
 IUSE+=" ${GRUB_ALL_PLATFORMS[@]/#/grub_platforms_}"
@@ -55,6 +55,7 @@ REQUIRED_USE="
 	grub_platforms_qemu? ( fonts )
 	grub_platforms_ieee1275? ( fonts )
 	grub_platforms_loongson? ( fonts )
+    sign? ( ^^ ( amd64 arm64 ) )
 "
 
 BDEPEND="
@@ -64,6 +65,7 @@ BDEPEND="
 	sys-devel/bison
 	sys-apps/help2man
 	sys-apps/texinfo
+	sign? ( app-crypt/pesign )
 	fonts? (
 		media-libs/freetype:2
 		virtual/pkgconfig
@@ -113,6 +115,33 @@ QA_EXECSTACK="usr/bin/grub-emu* usr/lib/grub/*"
 QA_PRESTRIPPED="usr/lib/grub/.*"
 QA_MULTILIB_PATHS="usr/lib/grub/.*"
 QA_WX_LOAD="usr/lib/grub/*"
+
+pkg_setup() {
+    if use amd64; then
+        efiarch=x64
+        grub_target_name=x86_64-efi
+        package_arch=efi-x64
+    fi
+
+    if use arm64; then
+        efiarch=aa64
+        grub_target_name=arm64-efi
+        package_arch=efi-aa64
+    fi
+
+    S13="${WORKDIR}/centos-ca-secureboot.der"
+    S14="${WORKDIR}/centossecureboot001.der"
+    S15="${WORKDIR}/centossecurebootca2.der"
+    S16="${WORKDIR}/centossecureboot202.der"
+
+    GRUB_EFI64_S="${WORKDIR}/${P}-${package_arch/x}"
+    efi_esp_dir="boot/efi/EFI/gentoo"
+    grubefiname="grub${efiarch}.efi"
+    grubeficdname="gcd${efiarch}.efi"
+
+    _pesign_cert='Red Hat Test Certificate'
+    _pesign_nssdir="/etc/pki/pesign-rh-test"
+}
 
 src_prepare() {
 	default
@@ -177,9 +206,18 @@ grub_configure() {
 	esac
 
 	local myeconfargs=(
+		TARGET_CFLAGS="$CFLAGS -I$(pwd)"
+		TARGET_CPPFLAGS="${CPPFLAGS} -I$(pwd)"
+		TARGET_LDFLAGS="-static"
 		--disable-werror
 		--program-prefix=
 		--libdir="${EPREFIX}"/usr/lib
+		--with-utils=host
+		--target=${CHOST}
+		--with-grubdir=${PN}
+		--program-transform-name=s,${PN},${PN}2,
+        --with-debug-timestamps
+        --enable-boot-time
 		$(use_enable device-mapper)
 		$(use_enable mount grub-mount)
 		$(use_enable themes grub-themes)
@@ -205,11 +243,14 @@ grub_configure() {
 src_configure() {
 	# Bug 508758.
 	replace-flags -O3 -O2
+    replace-flags -mregparm=3 -mregparm=4
+	filter-flags '-O. ' '*-annobin-cc1' '-fplugin=annobin' '-fstack-protector*' '-Wp,-D_FORTIFY_SOURCE=*' '--param=ssp-buffer-size=4' -fexceptions -fasynchronous-unwind-tables
+	append-cflags -fno-strict-aliasing
 
 	# We don't want to leak flags onto boot code.
 	export HOST_CCASFLAGS=${CCASFLAGS}
 	export HOST_CFLAGS=${CFLAGS}
-	export HOST_CPPFLAGS=${CPPFLAGS}
+	export HOST_CPPFLAGS="${CPPFLAGS} -I$(pwd)"
 	export HOST_LDFLAGS=${LDFLAGS}
 	unset CCASFLAGS CFLAGS CPPFLAGS LDFLAGS
 
@@ -237,12 +278,44 @@ src_compile() {
 
 	grub_do emake
 	use doc && grub_do_once emake -C docs html
+
+    if use sign ; then
+        cd ${GRUB_EFI64_S}
+        #./grub-mkimage -O ${grub_target_name} -o ${grubefiname}.orig -p /EFI/gentoo -d grub-core || die
+        #./grub-mkimage -O ${grub_target_name} -o ${grubeficdname}.orig -p /EFI/BOOT -d grub-core || die
+        #pesign -s -i ${grubefiname}.orig -o ${grubefiname}.one -a "${S13}" -c "${S14}" -n centossecureboot001 || die
+        #pesign -s -i ${grubeficdname}.orig -o ${grubeficdname}.one -a "${S13}" -c "${S14}" -n centossecureboot001 || die
+        #pesign -s -i ${grubefiname}.one -o ${grubefiname} -a "${S15}" -c "${S16}" -n centossecureboot202 || die
+        #pesign -s -i ${grubeficdname}.one -o ${grubeficdname} -a "${S15}" -c "${S16}" -n centossecureboot202 || die
+    fi
 }
 
 src_test() {
 	# The qemu dependency is a bit complex.
 	# You will need to adjust QEMU_SOFTMMU_TARGETS to match the cpu/platform.
 	grub_do emake check
+}
+
+do_common_install()
+{
+	diropts -m0700
+	dodir /${efi_esp_dir} /boot/grub /boot/loader/entries boot/$PN/themes/system ${_sysconfdir}/{default,sysconfig}
+
+    touch ${ED}${_sysconfdir}/default/grub
+    dosym ../default/grub ${_sysconfdir}/sysconfig/grub
+    touch ${ED}/boot/${PN}/grub.cfg
+
+    touch ${ED}${efi_esp_dir}/grub.cfg
+    dosym /${efi_esp_dir}/grub.cfg ${_sysconfdir}/${PN}-efi.cfg
+
+	insopts -m0700
+	insinto /${efi_esp_dir}
+	doins ${grubefiname} ${grubeficdname}
+	insinto /${efi_esp_dir}/fonts
+	doins unicode.pf2
+
+    {ED}/${_bindir}/${PN}-editenv {ED}/${efi_esp_dir}/grubenv create
+    dosym ../efi/EFI/${efi_vendor}/grubenv /boot/grub/grubenv
 }
 
 src_install() {
@@ -253,6 +326,11 @@ src_install() {
 
 	insinto /etc/default
 	newins "${FILESDIR}"/grub.default-3 grub
+
+	if use sign ; then
+        cd ${GRUB_EFI64_S}
+       # do_common_install
+	fi
 }
 
 pkg_postinst() {

@@ -200,18 +200,10 @@ InitBuildVars() {
 }
 
 _pesign(){
-	_pesign_nssdir=/etc/pki/pesign-rh-test												
-	nss=$(mktemp -p $PWD -d)						
-	echo > ${nss}/pwfile						
-	certutil -N -d ${nss} -f ${nss}/pwfile				
-	certutil -A -n "ca" -t "CT,C," -i  -d ${nss}		
-	certutil -A -n "signer" -t ",c," -i  -d ${nss}		
-	sattrs=$(mktemp -p $PWD --suffix=.der)				
-	/usr/bin/pesign  -E ${sattrs} --certdir ${nss} --force		
-	rpmsign --key "" --rsadgstsign ${sattrs}			
-	/usr/bin/pesign -R ${sattrs}.sig -I ${sattrs} \
-			--certdir ${nss} -c signer 			
-	rm -rf ${sattrs} ${sattrs}.sig ${nss}		
+    _pesign_nssdir=/etc/pki/pesign-rh-test
+    _pesign_cert='Red Hat Test Certificate'
+    /usr/bin/pesign -c "${_pesign_cert}" \
+        --certdir ${_pesign_nssdir} -i $1 -o $2 -s || die
 }
 
 BuildKernel() {
@@ -287,8 +279,8 @@ InstallKernel(){
 
         case ${ARCH} in
             amd64|arm64)
-                    _pesign -s -i $SignImage -o vmlinuz.tmp -a ${secureboot_ca_0} -c ${secureboot_key_0} -n ${pesign_name_0}
-                    _pesign -s -i vmlinuz.tmp -o vmlinuz.signed -a ${secureboot_ca_1} -c ${secureboot_key_1} -n ${pesign_name_1}
+                    _pesign $SignImage vmlinuz.tmp ${secureboot_ca_0} ${secureboot_key_0} ${pesign_name_0}
+                    _pesign vmlinuz.tmp vmlinuz.signed ${secureboot_ca_1} ${secureboot_key_1} ${pesign_name_1}
                     rm vmlinuz.tmp
                     ;;
             s390|ppc64)
