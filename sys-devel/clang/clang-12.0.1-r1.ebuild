@@ -241,6 +241,8 @@ multilib_src_configure() {
 		-DCMAKE_INSTALL_RPATH:BOOL=";"
 		-DLLVM_EXTERNAL_LIT="${EPREFIX}${_bindir}/lit"
 		-DLLVM_LIBDIR_SUFFIX=64
+		-DCLANG_PLUGIN_SUPPORT:BOOL=ON
+		-DENABLE_LINKER_BUILD_ID:BOOL=ON
 
 		-DLLVM_CMAKE_PATH="${EPREFIX}/usr/lib/llvm/${SLOT}/$(get_libdir)/cmake/llvm"
 		-DCMAKE_INSTALL_PREFIX="${EPREFIX}/usr/lib/llvm/${SLOT}"
@@ -271,7 +273,7 @@ multilib_src_configure() {
 		-DCLANG_DEFAULT_CXX_STDLIB=$(usex default-libcxx libc++ "")
 		-DCLANG_DEFAULT_RTLIB=$(usex default-compiler-rt compiler-rt "")
 		-DCLANG_DEFAULT_LINKER=$(usex default-lld lld "")
-		-DCLANG_DEFAULT_UNWINDLIB=$(usex default-compiler-rt libunwind "")
+		-DCLANG_DEFAULT_UNWINDLIB=$(usex default-compiler-rt libunwind libgcc)
 
 		-DCLANG_ENABLE_ARCMT=$(usex static-analyzer)
 		-DCLANG_ENABLE_STATIC_ANALYZER=$(usex static-analyzer)
