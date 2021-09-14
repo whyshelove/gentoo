@@ -3,7 +3,7 @@
 
 EAPI="7"
 
-inherit autotools flag-o-matic toolchain-funcs rhel8-a
+inherit flag-o-matic toolchain-funcs rhel8-a
 
 DESCRIPTION="Annotate and examine compiled binary files"
 HOMEPAGE=""
@@ -28,22 +28,25 @@ DEPEND="
 
 src_prepare() {
 	default
+
 	if ! use clang ; then
 		sed -i 's/CLANG_PLUGIN//g'  configure.ac || die
 		sed -i 's/LLVM_PLUGIN//g'  configure.ac || die
 	fi
-	eautoconf
 }
 
 src_configure() {
 	ANNOBIN_GCC_PLUGIN_DIR=$(gcc --print-file-name=plugin)
 	export CLANG_TARGET_OPTIONS="-fcf-protection"
+
 	local myconf=(
 		$(use_with debuginfod)
 		$(use_with annocheck)
 		--with-gcc-plugin-dir=${ANNOBIN_GCC_PLUGIN_DIR}
 	)
 	if use clang ; then
+		ln -s /usr/lib/llvm/12/include/* .
+
 		myconf+=( --with-clang --with-llvm )
 		ANNOBIN_CLANG_PLUGIN_DIR=$(clang --print-search-dirs | gawk -e'BEGIN { FS = ":" } /libraries/ { print gensub(" =","",1,$2) } END { }')
 	fi
