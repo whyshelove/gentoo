@@ -8,7 +8,6 @@ inherit cmake-multilib rhel8
 
 DESCRIPTION="A high-speed compression/decompression library by Google"
 HOMEPAGE="https://github.com/google/snappy"
-#SRC_URI="https://github.com/google/${PN}/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV%%.*}"

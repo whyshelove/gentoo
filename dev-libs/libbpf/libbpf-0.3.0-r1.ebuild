@@ -3,16 +3,17 @@
 
 EAPI=7
 
-inherit flag-o-matic toolchain-funcs
+inherit flag-o-matic toolchain-funcs rhel8
 
 if [[ ${PV} =~ [9]{4,} ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/libbpf/libbpf.git"
 else
-	SRC_URI="https://github.com/libbpf/libbpf/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
-	KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
+	KEYWORDS="amd64 ~arm arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
 fi
-S="${WORKDIR}/${P}/src"
+
+kver=4.18.0-323.el8
+S="${WORKDIR}/linux-${kver}/tools/lib/bpf"
 
 HOMEPAGE="https://github.com/libbpf/libbpf"
 DESCRIPTION="Stand-alone build of libbpf from the Linux kernel"
@@ -21,9 +22,8 @@ LICENSE="GPL-2 LGPL-2.1 BSD-2"
 SLOT="0/${PV}"
 IUSE="+static-libs"
 
-COMMON_DEPEND="
-	virtual/libelf
-"
+COMMON_DEPEND="virtual/libelf
+	!<=dev-util/bcc-0.7.0"
 DEPEND="
 	${COMMON_DEPEND}
 	sys-kernel/linux-headers
@@ -32,26 +32,26 @@ RDEPEND="
 	${COMMON_DEPEND}
 "
 
-PATCHES=(
-	"${FILESDIR}/libbpf-0.3.0-paths.patch"
-)
-
 src_compile() {
 	append-cflags -fPIC
-	emake \
-		BUILD_SHARED=y \
-		LIBSUBDIR="$(get_libdir)" \
-		CC="$(tc-getCC)" \
-		AR="$(tc-getAR)" \
+	libbpf_ops=(
+		prefix="${EPREFIX}/usr"
+		EXTRA_CFLAGS="${CFLAGS}"
+		EXTRA_LDFLAGS="${LDFLAGS}"
+		DESTDIR="${D}"
+		BUILD_SHARED=y
+		LIBSUBDIR="$(get_libdir)"
+		CC="$(tc-getCC)"
+		AR="$(tc-getAR)"
 		V=1
+	)
+
+	emake "${libbpf_ops[@]}"
+	
 }
 
 src_install() {
-	emake \
-		BUILD_SHARED=y \
-		LIBSUBDIR="$(get_libdir)" \
-		DESTDIR="${D}" \
-		install install_uapi_headers
+	emake "${libbpf_ops[@]}" install install_lib install_headers install_pkgconfig
 
 	insinto /usr/$(get_libdir)/pkgconfig
 	doins ${PN}.pc
@@ -59,4 +59,5 @@ src_install() {
 	if ! use static-libs; then
 		find "${D}" -name '*.a' -delete || die
 	fi
+
 }

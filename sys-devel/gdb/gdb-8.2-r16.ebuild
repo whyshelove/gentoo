@@ -2,9 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-PYTHON_COMPAT=( python3_{7,8,9,10} )
+PYTHON_COMPAT=( python3_{6,8,9} )
 
-inherit eutils flag-o-matic python-single-r1 toolchain-funcs
+inherit eutils flag-o-matic python-single-r1 toolchain-funcs rhel8-a
 
 export CTARGET=${CTARGET:-${CHOST}}
 if [[ ${CTARGET} == ${CHOST} ]] ; then
@@ -14,45 +14,23 @@ if [[ ${CTARGET} == ${CHOST} ]] ; then
 fi
 is_cross() { [[ ${CHOST} != ${CTARGET} ]] ; }
 
-case ${PV} in
-9999*)
-	# live git tree
-	EGIT_REPO_URI="https://sourceware.org/git/binutils-gdb.git"
-	inherit git-r3
-	SRC_URI=""
-	;;
-*.*.50.2???????)
-	# weekly snapshots
-	SRC_URI="ftp://sourceware.org/pub/gdb/snapshots/current/gdb-weekly-${PV}.tar.xz"
-	;;
-*)
-	# Normal upstream release
-	SRC_URI="mirror://gnu/gdb/${P}.tar.xz
-		ftp://sourceware.org/pub/gdb/releases/${P}.tar.xz"
-	;;
-esac
-
-PATCH_VER=""
-PATCH_DEV=""
 DESCRIPTION="GNU debugger"
 HOMEPAGE="https://sourceware.org/gdb/"
-SRC_URI="${SRC_URI}
-	${PATCH_DEV:+https://dev.gentoo.org/~${PATCH_DEV}/distfiles/${P}-patches-${PATCH_VER}.tar.xz}
-	${PATCH_VER:+mirror://gentoo/${P}-patches-${PATCH_VER}.tar.xz}
-"
 
 LICENSE="GPL-2 LGPL-2"
 SLOT="0"
 if [[ ${PV} != 9999* ]] ; then
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~x64-cygwin ~amd64-linux ~x86-linux ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+	KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 fi
-IUSE="cet guile lzma multitarget nls +python +server source-highlight test vanilla xml xxhash"
+IUSE="guile lzma multitarget nls +python +server test vanilla xml"
 REQUIRED_USE="
 	python? ( ${PYTHON_REQUIRED_USE} )
 "
 
 # ia64 kernel crashes when gdb testsuite is running
+# hppa kernel crashes when gdb testsuite is running
 RESTRICT="
+	hppa? ( test )
 	ia64? ( test )
 
 	!test? ( test )
@@ -67,37 +45,24 @@ RDEPEND="
 	python? ( ${PYTHON_DEPS} )
 	guile? ( >=dev-scheme/guile-2.0 )
 	xml? ( dev-libs/expat )
-	source-highlight? (
-		dev-util/source-highlight
-	)
-	xxhash? (
-		dev-libs/xxhash
-	)
+	dev-util/babeltrace
 "
 DEPEND="${RDEPEND}"
 BDEPEND="
 	app-arch/xz-utils
 	sys-apps/texinfo
 	virtual/yacc
-	nls? ( sys-devel/gettext )
-	source-highlight? ( virtual/pkgconfig )
 	test? ( dev-util/dejagnu )
+	nls? ( sys-devel/gettext )
 "
-
-PATCHES=(
-	"${FILESDIR}"/${PN}-8.3.1-verbose-build.patch
-	"${FILESDIR}"/${PN}-10.1-cet.patch
-	"${FILESDIR}"/${PN}-10.2-sparc-nat.patch
-	"${FILESDIR}"/${PN}-10.2-DW_LLE-riscv64.patch
-)
 
 pkg_setup() {
 	use python && python-single-r1_pkg_setup
 }
-
+ 
 src_prepare() {
 	default
-
+	if grep -w RL_STATE_FEDORA_GDB ${_includedir}/readline/readline.h;then false;fi
 	strip-linguas -u bfd/po opcodes/po
 	export CC_FOR_BUILD=$(tc-getBUILD_CC)
 
@@ -118,6 +83,7 @@ gdb_branding() {
 
 src_configure() {
 	strip-unsupported-flags
+	append-ldflags -Wl,--as-needed
 
 	local myconf=(
 		# portage's econf() does not detect presence of --d-d-t
@@ -130,15 +96,6 @@ src_configure() {
 		--disable-werror
 		# Disable modules that are in a combined binutils/gdb tree. #490566
 		--disable-{binutils,etc,gas,gold,gprof,ld}
-
-		# avoid automagic dependency on (currently prefix) systems
-		# systems with debuginfod library, bug #754753
-		--without-debuginfod
-
-		# Allow user to opt into CET for host libraries.
-		# Ideally we would like automagic-or-disabled here.
-		# But the check does not quite work on i686: bug #760926.
-		$(use_enable cet)
 	)
 	local sysroot="${EPREFIX}/usr/${CTARGET}"
 	is_cross && myconf+=(
@@ -160,7 +117,20 @@ src_configure() {
 		--enable-64-bit-bfd
 		--disable-install-libbfd
 		--disable-install-libiberty
-		--enable-obsolete
+		--with-system-gdbinit="${EPREFIX}${_sysconfdir}/gdbinit"
+		--enable-gdb-build-warnings=,-Wno-unused
+		--enable-build-with-cxx
+		--disable-sim
+		--disable-rpath
+		--disable-libmcheck
+		--without-stage1-ldflags
+		--without-libunwind
+		--with-babeltrace
+		--enable-inprocess-agent
+		#--with-intel-pt
+		--with-mpfr
+		--with-auto-load-dir='$debugdir:$datadir/auto-load'
+		--with-auto-load-safe-path='$debugdir:$datadir/auto-load'	
 		# This only disables building in the readline subdir.
 		# For gdb itself, it'll use the system version.
 		--disable-readline
@@ -173,20 +143,16 @@ src_configure() {
 		$(use_with xml expat)
 		$(use_with lzma)
 		$(use_enable nls)
-		$(use_enable source-highlight)
-		$(use multitarget && echo --enable-targets=all)
+		$(use multitarget && echo --enable-targets=s390-linux-gnu,powerpc-linux-gnu,arm-linux-gnu,aarch64-linux-gnu,${CHOST})
 		$(use_with python python "${EPYTHON}")
-		$(use_with xxhash)
 		$(use_with guile)
 	)
+
 	if use sparc-solaris || use x86-solaris ; then
 		# disable largefile support
 		# https://sourceware.org/ml/gdb-patches/2014-12/msg00058.html
 		myconf+=( --disable-largefile )
 	fi
-
-	# source-highlight is detected with pkg-config: bug #716558
-	export ac_cv_path_pkg_config_prog_path="$(tc-getPKG_CONFIG)"
 
 	econf "${myconf[@]}"
 }
@@ -227,7 +193,7 @@ src_install() {
 	dodoc sim/{ChangeLog,MAINTAINERS,README-HACKING}
 	if use server ; then
 		docinto gdbserver
-		dodoc gdbserver/{ChangeLog,README}
+		dodoc gdb/gdbserver/{ChangeLog,README}
 	fi
 
 	if [[ -n ${PATCH_VER} ]] ; then
@@ -245,6 +211,13 @@ src_install() {
 	if use python; then
 		python_optimize "${ED}"/usr/share/gdb/python/gdb
 	fi
+
+	insinto ${_sysconfdir}/gdbinit.d
+	doins "${FILESDIR}"/gdbinit
+
+	newman "${WORKDIR}"/gdb-gstack.man gstack.1
+	dosym gstack.1 ${_mandir}/man1/pstack.1
+	dosym gstack ${_bindir}/pstack
 }
 
 pkg_postinst() {

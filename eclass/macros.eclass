@@ -38,6 +38,7 @@ _systemd_util_dir=${_prefix}/lib/systemd
 _unitdir=${_prefix}/lib/systemd/system
 _userunitdir=${_prefix}/lib/systemd/user
 _presetdir=/lib/systemd/system-preset
+_udevrulesdir=/lib/udev/rules.d
 
 rubygems_dir=${_datadir}/rubygems
 

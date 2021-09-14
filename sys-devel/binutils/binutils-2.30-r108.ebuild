@@ -138,10 +138,14 @@ src_configure() {
 	# the bi-arch logic in toolchain.eclass. #446946
 	# We used to do it for everyone, but it's slow on 32bit arches. #438522
 	case $(tc-arch) in
-		ppc|sparc|x86) myconf+=( --enable-64-bit-bfd ) ;;
+		ppc*|sparc|x86|s390|sh|arm*) myconf+=( --enable-64-bit-bfd ) ;;
+		ppc*) myconf+=( --enable-targets=spu ) ;;
+		ppc64) myconf+=( --enable-targets=powerpc64le-linux ) ;;
 	esac
 
-	use multitarget && myconf+=( --enable-targets=x86_64-pep --enable-64-bit-bfd )
+	( [[ $(tc-arch) == s390 ]] && CARGS=all ) || CARGS=x86_64-pep
+
+	use multitarget && myconf+=( --enable-targets=$CARGS --enable-64-bit-bfd )
 
 	[[ -n ${CBUILD} ]] && myconf+=( --build=${CBUILD} )
 
