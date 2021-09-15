@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib multilib-minimal rhel
+inherit multilib multilib-minimal rhel9
 
 if [[ ${PV} != *8888 ]]; then
 	KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~x64-cygwin ~ppc-macos ~x64-macos"
@@ -14,7 +14,7 @@ HOMEPAGE="https://git.sr.ht/~kaniini/pkgconf"
 
 LICENSE="ISC"
 SLOT="0/3"
-IUSE="+pkg-config test"
+IUSE="test"
 
 # tests require 'kyua'
 RESTRICT="!test? ( test )"
@@ -26,7 +26,7 @@ BDEPEND="
 	)
 "
 RDEPEND="
-	pkg-config? ( !dev-util/pkgconfig )
+	!dev-util/pkgconfig
 "
 
 MULTILIB_CHOST_TOOLS=(
@@ -39,18 +39,15 @@ src_prepare() {
 	[[ ${CHOST} == *-darwin9 ]] && eapply "${FILESDIR}"/${P}-darwin9.patch
 
 	[[ ${PV} == "9999" ]] && eautoreconf
-	if use pkg-config; then
-		MULTILIB_CHOST_TOOLS+=(
-			/usr/bin/pkg-config$(get_exeext)
-		)
-	fi
+	MULTILIB_CHOST_TOOLS+=(
+		/usr/bin/pkg-config$(get_exeext)
+	)
 }
 
 multilib_src_configure() {
 	local ECONF_SOURCE="${S}"
 	local args=(
 		--disable-static
-		--with-pkg-config-dir="${EPREFIX}/usr/$(get_libdir)/pkgconfig:${EPREFIX}/usr/share/pkgconfig"
 		--with-system-includedir="${EPREFIX}/usr/include"
 		--with-system-libdir="${EPREFIX}/$(get_libdir):${EPREFIX}/usr/$(get_libdir)"
 	)
@@ -69,15 +66,8 @@ multilib_src_install() {
 	insinto ${rpmmacrodir}/
 	doins "${FILESDIR}"/macros.pkgconf
 
-	if use pkg-config; then
-		dosym pkgconf$(get_exeext) /usr/bin/pkg-config$(get_exeext)
-		dosym pkgconf.1 /usr/share/man/man1/pkg-config.1
-	else
-		rm "${ED}"/usr/share/aclocal/pkg.m4 || die
-		rmdir "${ED}"/usr/share/aclocal || die
-		rm "${ED}"/usr/share/man/man7/pkg.m4.7 || die
-		rmdir "${ED}"/usr/share/man/man7 || die
-	fi
+	dosym pkgconf$(get_exeext) /usr/bin/pkg-config$(get_exeext)
+	dosym pkgconf.1 /usr/share/man/man1/pkg-config.1
 }
 
 multilib_src_install_all() {
