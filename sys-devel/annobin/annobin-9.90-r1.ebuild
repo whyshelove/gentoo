@@ -3,7 +3,7 @@
 
 EAPI="7"
 
-inherit autotools flag-o-matic toolchain-funcs rhel-a
+inherit flag-o-matic toolchain-funcs rhel9-a
 
 DESCRIPTION="Annotate and examine compiled binary files"
 HOMEPAGE=""
@@ -28,6 +28,7 @@ DEPEND="
 
 src_prepare() {
 	default
+
 	if ! use clang ; then
 		sed -i 's/CLANG_PLUGIN//g'  configure.ac || die
 		sed -i 's/LLVM_PLUGIN//g'  configure.ac || die
@@ -42,7 +43,10 @@ src_configure() {
 		$(use_with annocheck)
 		--with-gcc-plugin-dir=${ANNOBIN_GCC_PLUGIN_DIR}
 	)
+
 	if use clang ; then
+		ln -s /usr/lib/llvm/12/include/* .
+
 		myconf+=( --with-clang --with-llvm )
 		ANNOBIN_CLANG_PLUGIN_DIR=$(clang --print-search-dirs | gawk -e'BEGIN { FS = ":" } /libraries/ { print gensub(" =","",1,$2) } END { }')
 	fi
@@ -81,4 +85,5 @@ src_compile() {
 src_install() {
 	emake DESTDIR="${D}" install PLUGIN_INSTALL_DIR="${D}"${ANNOBIN_CLANG_PLUGIN_DIR}
 	rm -f "${ED}"${_infodir}/dir
+	tree ${ED}
 }

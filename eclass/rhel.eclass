@@ -117,7 +117,12 @@ rpm_clean() {
 rhel_unpack() {
 	[[ $# -eq 0 ]] && set -- ${A}
 
-	rpm_unpack "$@"
+	for a in ${@} ; do
+		case ${a} in
+		*.rpm) [[ ${a} =~ ".rpm" ]] && rpm_unpack "${a}" ;;
+		*)	unpack "${a}" ;;
+		esac
+	done
 
 	RPMBUILD=$HOME/rpmbuild
 	mkdir -p $RPMBUILD
@@ -151,8 +156,8 @@ srcrhel_unpack() {
 
 	eshopts_push -s nullglob
 
-	sed -i -e "/%{__python3}/d" \
-		${WORKDIR}/*.spec
+	#sed -i -e "/#!%{__python3}/d" \
+	#	${WORKDIR}/*.spec
 	
 	rpmbuild -bp $WORKDIR/*.spec --nodeps
 

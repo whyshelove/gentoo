@@ -4,8 +4,8 @@
 EAPI=7
 
 PYTHON_COMPAT=( python3_{8..10} )
-inherit cmake llvm.org multilib-minimal pax-utils python-any-r1 \
-	toolchain-funcs rhel-a
+inherit cmake llvm.rhel multilib-minimal pax-utils python-any-r1 \
+	toolchain-funcs
 
 DESCRIPTION="Low Level Virtual Machine"
 HOMEPAGE="https://llvm.org/"
@@ -13,9 +13,7 @@ HOMEPAGE="https://llvm.org/"
 # Those are in lib/Targets, without explicit CMakeLists.txt mention
 ALL_LLVM_EXPERIMENTAL_TARGETS=( ARC CSKY VE )
 # Keep in sync with CMakeLists.txt
-ALL_LLVM_TARGETS=( AArch64 AMDGPU ARM AVR BPF Hexagon Lanai Mips MSP430
-	NVPTX PowerPC RISCV Sparc SystemZ WebAssembly X86 XCore
-	"${ALL_LLVM_EXPERIMENTAL_TARGETS[@]}" )
+ALL_LLVM_TARGETS=( X86 AMDGPU PowerPC NVPTX SystemZ AArch64 ARM Mips BPF WebAssembly )
 ALL_LLVM_TARGETS=( "${ALL_LLVM_TARGETS[@]/#/llvm_targets_}" )
 
 # Additional licenses:
@@ -68,8 +66,8 @@ PDEPEND="sys-devel/llvm-common
 
 LLVM_COMPONENTS=( llvm )
 LLVM_MANPAGES=pregenerated
-#LLVM_PATCHSET=12.0.1
-llvm.org_set_globals
+LLVM_PATCHSET=12.0.1
+llvm.rhel_set_globals
 
 python_check_deps() {
 	use doc || return 0
@@ -170,8 +168,6 @@ check_distribution_components() {
 	fi
 }
 
-S="${WORKDIR}/${P}.src"
-
 src_prepare() {
 	# disable use of SDK on OSX, bug #568758
 	sed -i -e 's/xcrun/false/' utils/lit/lit/util.py || die
@@ -182,7 +178,7 @@ src_prepare() {
 	# Verify that the live ebuild is up-to-date
 	check_live_ebuild
 
-	llvm.org_src_prepare
+	llvm.rhel_src_prepare
 }
 
 # Is LLVM being linked against libc++?
@@ -332,9 +328,22 @@ multilib_src_configure() {
 		ffi_cflags=$($(tc-getPKG_CONFIG) --cflags-only-I libffi)
 		ffi_ldflags=$($(tc-getPKG_CONFIG) --libs-only-L libffi)
 	fi
-
+	append-ldflags '-Wl,--build-id=md5'
 	local libdir=$(get_libdir)
 	local mycmakeargs=(
+		-DLLVM_PARALLEL_LINK_JOBS=1
+		-DCMAKE_SKIP_RPATH:BOOL=ON
+		-DLLVM_DYLIB_EXPORT_ALL:BOOL=ON
+		-DLLVM_BUILD_EXTERNAL_COMPILER_RT:BOOL=ON
+		-DLLVM_INSTALL_TOOLCHAIN_ONLY:BOOL=OFF
+		-DLLVM_ENABLE_ZLIB:BOOL=ON
+		-DLLVM_USE_PERF:BOOL=ON
+		-DLLVM_BUILD_RUNTIME:BOOL=ON
+		-DLLVM_INCLUDE_TOOLS:BOOL=ON
+		-DLLVM_BUILD_TOOLS:BOOL=ON
+		-DLLVM_INCLUDE_UTILS:BOOL=ON
+		-DLLVM_INCLUDE_TESTS:BOOL=ON
+
 		# disable appending VCS revision to the version to improve
 		# direct cache hit ratio
 		-DLLVM_APPEND_VC_REV=OFF
@@ -348,8 +357,8 @@ multilib_src_configure() {
 
 		# cheap hack: LLVM combines both anyway, and the only difference
 		# is that the former list is explicitly verified at cmake time
-		-DLLVM_TARGETS_TO_BUILD=""
-		-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD="${LLVM_TARGETS// /;}"
+		-DLLVM_TARGETS_TO_BUILD="${LLVM_TARGETS// /;}"
+		-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=""
 		-DLLVM_BUILD_TESTS=$(usex test)
 
 		-DLLVM_ENABLE_FFI=$(usex libffi)
