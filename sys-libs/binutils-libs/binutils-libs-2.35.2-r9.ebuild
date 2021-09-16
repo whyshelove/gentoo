@@ -6,7 +6,7 @@ EAPI=7
 PATCH_VER=1
 PATCH_DEV=dilfridge
 
-inherit libtool toolchain-funcs multilib-minimal rhel
+inherit libtool toolchain-funcs multilib-minimal rhel9
 
 MY_PN="binutils"
 MY_P="${MY_PN}-${PV}"

@@ -9,7 +9,7 @@ DESCRIPTION="Tools necessary to build programs"
 HOMEPAGE="https://sourceware.org/binutils/"
 LICENSE="GPL-3+"
 
-IUSE="+cxx doc +gold multitarget +nls static-libs test"
+IUSE="+plugins doc +gold multitarget +nls static-libs test"
 
 case ${PV} in
 	8888)
@@ -117,7 +117,7 @@ src_configure() {
 	local myconf=()
 
 	# enable gold (installed as ld.gold) and ld's plugin architecture
-	if use cxx ; then
+	if use plugins ; then
 		myconf+=( --enable-ld)
 		myconf+=( --enable-plugins )
 	fi

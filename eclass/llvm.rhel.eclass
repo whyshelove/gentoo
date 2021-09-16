@@ -119,7 +119,7 @@ llvm.rhel_set_globals() {
 			EGIT_BRANCH="release/${PV%%.*}.x"
 	elif [[ ${_LLVM_SOURCE_TYPE} == rpm ]]; then
 		case ${PN} in
-		    llvm) MODHASH==918+ed335b90 ;;
+		    llvm) MODHASH=918+ed335b90 ;;
 		    clang|libomp|compiler-rt) MODHASH=892+54d791e1 ;;
 		    *)  ;;
 		esac
