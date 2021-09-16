@@ -13,9 +13,7 @@ HOMEPAGE="https://llvm.org/"
 # Those are in lib/Targets, without explicit CMakeLists.txt mention
 ALL_LLVM_EXPERIMENTAL_TARGETS=( ARC CSKY VE )
 # Keep in sync with CMakeLists.txt
-ALL_LLVM_TARGETS=( AArch64 AMDGPU ARM AVR BPF Hexagon Lanai Mips MSP430
-	NVPTX PowerPC RISCV Sparc SystemZ WebAssembly X86 XCore
-	"${ALL_LLVM_EXPERIMENTAL_TARGETS[@]}" )
+ALL_LLVM_TARGETS=( X86 AMDGPU PowerPC NVPTX SystemZ AArch64 ARM Mips BPF WebAssembly )
 ALL_LLVM_TARGETS=( "${ALL_LLVM_TARGETS[@]/#/llvm_targets_}" )
 
 # Additional licenses:
@@ -346,6 +344,7 @@ multilib_src_configure() {
 		-DLLVM_INCLUDE_TOOLS:BOOL=ON
 		-DLLVM_BUILD_TOOLS:BOOL=ON
 		-DLLVM_INCLUDE_UTILS:BOOL=ON
+		-DLLVM_INCLUDE_TESTS:BOOL=ON
 
 		# disable appending VCS revision to the version to improve
 		# direct cache hit ratio
@@ -360,8 +359,8 @@ multilib_src_configure() {
 
 		# cheap hack: LLVM combines both anyway, and the only difference
 		# is that the former list is explicitly verified at cmake time
-		-DLLVM_TARGETS_TO_BUILD=""
-		-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD="${LLVM_TARGETS// /;}"
+		-DLLVM_TARGETS_TO_BUILD="${LLVM_TARGETS// /;}"
+		-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=""
 		-DLLVM_BUILD_TESTS=$(usex test)
 
 		-DLLVM_ENABLE_FFI=$(usex libffi)

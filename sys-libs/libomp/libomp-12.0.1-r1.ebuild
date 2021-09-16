@@ -5,14 +5,14 @@ EAPI=7
 
 CMAKE_ECLASS=cmake
 PYTHON_COMPAT=( python3_{8..10} )
-inherit cmake-multilib linux-info llvm.org python-any-r1
+inherit cmake-multilib linux-info llvm.rhel python-any-r1
 
 DESCRIPTION="OpenMP runtime library for LLVM/clang compiler"
 HOMEPAGE="https://openmp.llvm.org"
 
 LICENSE="Apache-2.0-with-LLVM-exceptions || ( UoI-NCSA MIT )"
 SLOT="0"
-KEYWORDS=""
+KEYWORDS="amd64 arm arm64 ~ppc ppc64 ~riscv x86 ~amd64-linux ~x64-macos"
 IUSE="cuda hwloc kernel_linux offload ompt test"
 # CUDA works only with the x86_64 ABI
 REQUIRED_USE="offload? ( cuda? ( abi_x86_64 ) )"
@@ -38,7 +38,8 @@ BDEPEND="dev-lang/perl
 	)"
 
 LLVM_COMPONENTS=( openmp llvm/include )
-llvm.org_set_globals
+LLVM_PATCHSET=12.0.1
+llvm.rhel_set_globals
 
 python_check_deps() {
 	has_version "dev-python/lit[${PYTHON_USEDEP}]"
@@ -103,4 +104,11 @@ multilib_src_test() {
 	local -x LIT_PRESERVES_TMP=1
 
 	cmake_build check-libomp
+}
+
+src_install() {
+	local _cmake_args=( "${@}" )
+
+	multilib-minimal_src_install
+	rm -rf "${ED}"/usr/lib
 }

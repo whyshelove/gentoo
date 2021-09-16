@@ -120,8 +120,7 @@ llvm.rhel_set_globals() {
 	elif [[ ${_LLVM_SOURCE_TYPE} == rpm ]]; then
 		case ${PN} in
 		    llvm) MODHASH==918+ed335b90 ;;
-		    clang) MODHASH=892+54d791e1 ;;
-		    compiler-rt) MODHASH=892+54d791e1 ;;
+		    clang|libomp|compiler-rt) MODHASH=892+54d791e1 ;;
 		    *)  ;;
 		esac
 
@@ -194,8 +193,9 @@ llvm.rhel_src_unpack() {
 		default_src_unpack
 	else
 		rhel_src_unpack ${A}
-		mv ${P}.src ${PN}
+		[ -d ${P}.src ] && mv ${P}.src ${PN}
 		[[ ${PN} == clang ]] && mv clang-tools-extra-${PV}.src clang-tools-extra
+		[[ ${PN} == libomp ]] && mv openmp-${PV}.src openmp
 	fi
 
 	if [[ -n ${LLVM_PATCHSET} ]]; then
