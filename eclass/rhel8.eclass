@@ -37,6 +37,7 @@ else
 			lxml ) MY_PF=python-${P}-${MY_PR} ;;
 			ninja) MY_PF=${P/-/-build-}-${MY_PR} ;;
 			shadow ) MY_PF=${P/-/-utils-}-${MY_PR} ;;
+			binutils-libs ) MY_PF=${P/-libs}-${MY_PR} ;;
 			webkit-gtk ) MY_PF=${P/-gtk/2gtk3}-${MY_PR} ;;
 			libpcre* ) MY_P=${P/lib}; MY_PF=${MY_P}-${MY_PR} ;;
 			libnsl ) MY_P=${P/-/2-}; MY_PF=${MY_P}-${MY_PR} ;;
