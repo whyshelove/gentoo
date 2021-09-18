@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit unpacker rhel
+inherit unpacker rhel9
 
 SRC_URI="${REPO_BIN}/centos-stream-release-9.0-1.0.12.${DIST}.noarch.rpm"
 SRC_URI="${SRC_URI} ${REPO_BIN}/rootfiles-8.1-30.${DIST}.noarch.rpm"
@@ -19,7 +19,7 @@ done
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64"
+KEYWORDS="amd64 arm64"
 IUSE="+binary"
 
 RDEPEND="app-arch/rpm[lua,python]"
