@@ -9,12 +9,12 @@ PYTHON_REQ_USE=xml
 XORG_MULTILIB=yes
 XORG_DOC=doc
 
-inherit python-any-r1 xorg-3 rhel8-a
+inherit python-any-r1 xorg-3 autotools rhel8-a
 
 DESCRIPTION="X C-language Bindings library"
 HOMEPAGE="https://xcb.freedesktop.org/ https://gitlab.freedesktop.org/xorg/lib/libxcb"
 
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+KEYWORDS="~alpha ~amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 IUSE="doc selinux test +xkb"
 RESTRICT="!test? ( test )"
 SLOT="0/1.12"
@@ -44,10 +44,15 @@ pkg_setup() {
 	xorg-3_pkg_setup
 }
 
+src_prepare() {
+	default
+	eautoreconf -v -f --install
+}
+
 src_configure() {
 	XORG_CONFIGURE_OPTIONS=(
 		$(use_enable doc devel-docs)
-		$(use_enable selinux)
+		--enable-selinux
 		$(use_enable xkb)
 		--enable-xinput
 		--disable-xprint
