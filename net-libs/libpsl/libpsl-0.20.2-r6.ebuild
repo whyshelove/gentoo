@@ -13,7 +13,7 @@ HOMEPAGE="https://github.com/rockdaboot/libpsl"
 LICENSE="MIT"
 SLOT="0"
 
-KEYWORDS="amd64 ~arm64 ~hppa ~ia64 ~ppc ~ppc64 ~s390 ~sparc ~x86"
+KEYWORDS="amd64 arm64 ~hppa ~ia64 ~ppc ~ppc64 ~s390 ~sparc ~x86"
 IUSE="+icu +idn +man gtk-doc"
 
 RDEPEND="

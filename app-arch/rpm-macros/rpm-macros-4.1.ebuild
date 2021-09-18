@@ -7,7 +7,7 @@ inherit unpacker rhel8
 
 SRC_URI=""
 
-for macro in centos-stream-release-8.5-2 rootfiles-8.1-22 ;
+for macro in centos-stream-release-8.5-3 rootfiles-8.1-22 ;
 do
 SRC_URI="${SRC_URI} ${REPO_BIN}/${macro}.${DIST}.noarch.rpm"
 done
@@ -26,7 +26,7 @@ done
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64"
+KEYWORDS="amd64 arm64"
 IUSE="+binary"
 
 RDEPEND="app-arch/rpm[lua,python]"

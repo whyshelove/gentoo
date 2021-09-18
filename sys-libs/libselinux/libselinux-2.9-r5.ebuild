@@ -16,7 +16,7 @@ DESCRIPTION="SELinux userland library"
 HOMEPAGE="https://github.com/SELinuxProject/selinux/wiki"
 
 if [[ ${PV} != *8888 ]]; then
-	KEYWORDS="amd64 ~arm ~arm64 ~mips x86"
+	KEYWORDS="amd64 ~arm arm64 ~mips x86"
 	S="${WORKDIR}/${MY_P}"
 fi
 

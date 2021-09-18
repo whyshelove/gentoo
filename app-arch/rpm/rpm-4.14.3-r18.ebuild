@@ -96,7 +96,7 @@ src_configure() {
 		$(use_with lua) \
 		$(use_with caps cap) \
 		$(use_with acl) \
-		PYTHON=${EPYTHON} \
+		PYTHON=${PYTHON} \
 		$(use_enable zstd zstd $(usex zstd yes no))
 }
 

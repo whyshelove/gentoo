@@ -9,7 +9,7 @@ PYTHON_REQ_USE=xml
 XORG_MULTILIB=yes
 XORG_DOC=doc
 
-inherit python-any-r1 xorg-3 rhel-a
+inherit python-any-r1 xorg-3 rhel8-a
 
 DESCRIPTION="X C-language Bindings library"
 HOMEPAGE="https://xcb.freedesktop.org/ https://gitlab.freedesktop.org/xorg/lib/libxcb"
