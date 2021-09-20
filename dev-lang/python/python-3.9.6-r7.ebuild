@@ -5,12 +5,12 @@ EAPI="7"
 WANT_LIBTOOL="none"
 
 inherit autotools check-reqs flag-o-matic multiprocessing pax-utils \
-	python-utils-r1 toolchain-funcs rhel
+	python-utils-r1 toolchain-funcs rhel9
 
 MY_PV=${PV/_rc/rc}
 MY_P="Python-${MY_PV%_p*}"
 PYVER=$(ver_cut 1-2)
-PATCHSET="python-gentoo-patches-${MY_PV}"
+PATCHSET="python-gentoo-patches-3.9.6_p2"
 DESCRIPTION="An interpreted, interactive, object-oriented programming language"
 HOMEPAGE="https://www.python.org/"
 SRC_URI="${SRC_URI} https://dev.gentoo.org/~mgorny/dist/python/${PATCHSET}.tar.xz"
