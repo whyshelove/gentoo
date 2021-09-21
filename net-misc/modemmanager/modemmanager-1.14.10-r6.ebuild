@@ -4,7 +4,7 @@
 EAPI=7
 VALA_USE_DEPEND="vapigen"
 
-inherit gnome2 readme.gentoo-r1 systemd toolchain-funcs udev vala rhel
+inherit gnome2 readme.gentoo-r1 systemd toolchain-funcs udev vala rhel9
 
 DESCRIPTION="Modem and mobile broadband management libraries"
 HOMEPAGE="https://www.freedesktop.org/wiki/Software/ModemManager/"
