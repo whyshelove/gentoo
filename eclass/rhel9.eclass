@@ -12,7 +12,6 @@ _RHEL9_ECLASS=1
 inherit rhel
 
 MIRROR="https://odcs.stream.centos.org/production/latest-CentOS-Stream"
-DIST="el9"
 RELEASE="compose"
 REPO_URI="${MIRROR}/${RELEASE}/${REPO:-BaseOS}/source/tree/Packages"
 
@@ -56,6 +55,6 @@ if [ -z ${MY_PF} ] ; then
 
 	fi
 fi
-SRC_URI="${REPO_URI}/${MY_PF}.${DIST}.src.rpm"
+SRC_URI="${REPO_URI}/${MY_PF}.${DIST:-el9}.src.rpm"
 
 fi

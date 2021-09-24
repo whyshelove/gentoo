@@ -17,7 +17,6 @@ if [[ ${PV} == *8888 ]]; then
 else
 	inherit rhel
 	if [ -z ${MIRROR} ] ; then MIRROR="https://vault.centos.org"; fi
-	DIST="el8"
 	RELEASE="8-stream"
 	REPO_URI="${MIRROR}/${RELEASE}/${REPO:-BaseOS}/Source/SPackages"
 
@@ -69,7 +68,7 @@ else
 			*) MY_PF=${P}-${MY_PR} ;;
 		esac
 	fi
-	SRC_URI="${REPO_URI}/${MY_PF}.${DIST}.src.rpm"
+	SRC_URI="${REPO_URI}/${MY_PF}.${DIST:-el8}.src.rpm"
 fi
 
 fi
