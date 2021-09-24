@@ -7,7 +7,7 @@ inherit unpacker rhel8
 
 SRC_URI=""
 
-for macro in centos-stream-release-8.5-3 rootfiles-8.1-22 ;
+for macro in centos-stream-release-8.6-1 rootfiles-8.1-22 ;
 do
 SRC_URI="${SRC_URI} ${REPO_BIN}/${macro}.${DIST}.noarch.rpm"
 done
