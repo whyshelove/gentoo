@@ -64,7 +64,7 @@ else
 			edk2-ovmf ) MY_PF=${P}git${GITCOMMIT}-${MY_PR} ;;
 			ipxe ) MY_PF=${P}-${MY_PR}.${GIT_REV} ;;
 			vte ) MY_PF=${P/-/291-}-${MY_PR} ;;
-			rhel-kernel ) MY_P=${P/rhel-}; MY_PF=${MY_P}-${MY_PR}; MY_KVP=${PVR/r}.${DIST} ;;
+			rhel-kernel ) MY_P=${P/rhel-}; MY_PF=${MY_P}-${MY_PR}; MY_KVP=${PVR/r}.${DIST:-el8} ;;
 			*) MY_PF=${P}-${MY_PR} ;;
 		esac
 	fi

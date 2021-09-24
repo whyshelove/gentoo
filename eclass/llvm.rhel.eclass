@@ -119,12 +119,12 @@ llvm.rhel_set_globals() {
 			EGIT_BRANCH="release/${PV%%.*}.x"
 	elif [[ ${_LLVM_SOURCE_TYPE} == rpm ]]; then
 		case ${PN} in
-		    llvm) MODHASH=918+ed335b90 ;;
-		    clang|libomp|compiler-rt) MODHASH=892+54d791e1 ;;
+		    llvm) COMMIT=918+ed335b90 ;;
+		    clang|libomp|compiler-rt) COMMIT=892+54d791e1 ;;
 		    *)  ;;
 		esac
 
-		SRC_URI="${REPO_URI}/${MY_PF}.module_el8.5.0+${MODHASH}.src.rpm"
+		SRC_URI="${REPO_URI}/${MY_PF}.module_el8.5.0+${COMMIT}.src.rpm"
 	else
 		die "Invalid _LLVM_SOURCE_TYPE: ${LLVM_SOURCE_TYPE}"
 	fi
