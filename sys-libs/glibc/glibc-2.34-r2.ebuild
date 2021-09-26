@@ -7,7 +7,7 @@ PYTHON_COMPAT=( python3_{7,8,9,10} )
 TMPFILES_OPTIONAL=1
 
 inherit python-any-r1 prefix preserve-libs toolchain-funcs flag-o-matic gnuconfig \
-	multilib systemd multiprocessing tmpfiles rhel
+	multilib systemd multiprocessing tmpfiles rhel9
 
 DESCRIPTION="GNU libc C library"
 HOMEPAGE="https://www.gnu.org/software/libc/"
@@ -17,7 +17,7 @@ SLOT="2.2"
 EMULTILIB_PKG="true"
 
 # Gentoo patchset (ignored for live ebuilds)
-PATCH_VER=2
+PATCH_VER=3
 PATCH_DEV=dilfridge
 
 if [[ ${PV} == 9999* ]]; then
