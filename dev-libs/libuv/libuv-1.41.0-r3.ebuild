@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools multilib-minimal rhel-a
+inherit autotools multilib-minimal rhel9-a
 
 DESCRIPTION="Cross-platform asychronous I/O"
 HOMEPAGE="https://github.com/libuv/libuv"
