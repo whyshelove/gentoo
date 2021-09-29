@@ -16,7 +16,7 @@ if [[ ${PV} == *8888 ]]; then
 	S="${WORKDIR}/${P}"
 else
 	inherit rhel
- MIRROR="https://vault.centos.org"
+	if [ -z ${MIRROR} ] ; then MIRROR="https://vault.centos.org"; fi
 	RELEASE="8-stream"
 	REPO_URI="${MIRROR}/${RELEASE}/${REPO:-BaseOS}/Source/SPackages"
 
