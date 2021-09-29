@@ -4,7 +4,7 @@
 EAPI=7
 
 PYTHON_COMPAT=( python3_{6..10} pypy3 )
-
+DIST=module_el8.6.0+940+9e7326fe
 inherit distutils-r1 optfeature toolchain-funcs rhel8-a
 
 DESCRIPTION="A Pythonic binding for the libxml2 and libxslt libraries"

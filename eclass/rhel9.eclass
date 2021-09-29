@@ -55,6 +55,6 @@ if [ -z ${MY_PF} ] ; then
 
 	fi
 fi
-SRC_URI="${REPO_URI}/${MY_PF}.${DIST:-el9}.src.rpm"
+SRC_URI="${REPO_URI}/${MY_PF}.${DIST:=el9}.src.rpm"
 
 fi
