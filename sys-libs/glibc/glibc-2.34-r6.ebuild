@@ -772,7 +772,7 @@ src_prepare() {
 		fi
 		einfo "Applying Gentoo Glibc Patchset ${patchsetname}"
 		rm -r "${WORKDIR}"/patches/0004-Add-C.UTF-8-locale.patch
-		eapply "${WORKDIR}"/patches
+		#eapply "${WORKDIR}"/patches
 		einfo "Done."
 	fi
 
