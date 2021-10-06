@@ -74,7 +74,8 @@ src_configure() {
 	fi
 
 	local myeconfargs=(
-		--disable-internal-argon2
+		--enable-fips
+		--enable-internal-sse-argon2
 		--enable-shared
 		--sbindir=/sbin
 		# for later use
