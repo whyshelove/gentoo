@@ -5,7 +5,7 @@ EAPI=7
 
 CONTAINERD_COMMIT=5b46e404f6b9f661a205e28d59c982d3634148f8
 EGO_PN="github.com/containerd/${PN}"
-inherit golang-vcs-snapshot toolchain-funcs
+inherit golang-vcs-snapshot
 
 DESCRIPTION="A daemon to control runC"
 HOMEPAGE="https://containerd.io/"
@@ -13,7 +13,7 @@ SRC_URI="https://github.com/containerd/containerd/archive/v${PV}.tar.gz -> ${P}.
 
 LICENSE="Apache-2.0"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~x86"
+KEYWORDS="amd64 ~arm arm64 ppc64 ~x86"
 IUSE="apparmor btrfs device-mapper +cri hardened +seccomp selinux test"
 
 DEPEND="
