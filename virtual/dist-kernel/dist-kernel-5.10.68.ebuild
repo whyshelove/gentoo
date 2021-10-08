@@ -13,7 +13,7 @@ KEYWORDS="amd64 ~arm arm64 ppc64 x86"
 
 RDEPEND="
 	|| (
-		~sys-kernel/rhel-kernel-${PV}
+		~sys-kernel/rhel-kernel
 		~sys-kernel/gentoo-kernel-${PV}
 		~sys-kernel/gentoo-kernel-bin-${PV}
 		~sys-kernel/vanilla-kernel-${PV}
