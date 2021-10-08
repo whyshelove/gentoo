@@ -9,7 +9,7 @@ if [[ ${PV} == 9999 ]] ; then
 	EGIT_REPO_URI+="https://github.com/dracutdevs/dracut"
 else
 	KEYWORDS="~alpha amd64 arm arm64 ~ia64 ~mips ppc ppc64 sparc x86"
-	SRC_URI="${REPO_URI}/${MY_PF}.git20210811.${DIST}.src.rpm"
+	SRC_URI="${REPO_URI}/${MY_PF}.git20210920.${DIST}.src.rpm"
 fi
 
 DESCRIPTION="Generic initramfs generation tool"
