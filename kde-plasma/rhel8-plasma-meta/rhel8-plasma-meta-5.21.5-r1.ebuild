@@ -3,7 +3,7 @@
 
 EAPI=7
 
-DESCRIPTION="Merge this to pull in all Plasma 5 packages"
+DESCRIPTION="Merge this to pull in all Plasma 5 packages on rhel8"
 HOMEPAGE="https://kde.org/plasma-desktop/"
 
 LICENSE="metapackage"
