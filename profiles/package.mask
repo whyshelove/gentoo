@@ -296,16 +296,6 @@ dev-python/oauth2
 # Masked until dev-libs/openssl-3.0* is unmasked
 =dev-libs/gost-engine-3.0*
 
-# Andreas Sturmlechner <asturm@gentoo.org> (2021-09-07)
-# EAPI-5, dead upstream, last (and only) version added in 2011
-# Bug 644344; Removal on 2021-10-07.
-net-libs/gsnmp
-
-# Andreas Sturmlechner <asturm@gentoo.org> (2021-09-07)
-# EAPI-5, dead upstream, last bump in 2012
-# Bug 644344; Removal on 2021-10-07.
-net-analyzer/scli
-
 # Ionen Wolkens <ionen@gentoo.org> (2021-09-03)
 # Currently may not function with kde-plasma/kwin (black screen),
 # so keeping masked for testing due to being a primary consumer.
@@ -394,12 +384,6 @@ games-puzzle/gnudoku
 # Mask gcc-6 branch (ended upstream support). Please switch
 # to a fresher gcc branch.
 <sys-devel/gcc-7
-
-# Sam James <sam@gentoo.org> (2021-05-07)
-# Masked for testing. Two major releases ahead of last packaged version.
-# Please report bugs but this is experimental for now.
-# bug #731266
->=net-mail/cyrus-imapd-3.4.0
 
 # Eray Aslan <eras@gentoo.org> (2021-04-29)
 # Mask experimental software
