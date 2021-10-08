@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 	<maintainer type="project">
 		<email>chromium@gentoo.org</email>
@@ -17,6 +17,7 @@
 		<flag name="screencast">Enable support for remote desktop and screen cast using <pkg>media-video/pipewire</pkg></flag>
 		<flag name="suid">Build the SUID sandbox, which is only needed on CONFIG_USER_NS=n kernels</flag>
 		<flag name="system-ffmpeg">Use system ffmpeg instead of the bundled one</flag>
+		<flag name="system-harfbuzz">Use system harfbuzz instead of the bundled one.</flag>
 		<flag name="system-icu">Use system icu instead of the bundled one</flag>
 		<flag name="widevine">Unsupported closed-source DRM capability (required by Netflix VOD)</flag>
 	</use>
