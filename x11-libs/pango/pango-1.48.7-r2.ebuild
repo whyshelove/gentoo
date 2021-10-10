@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic gnome2-utils meson-multilib toolchain-funcs xdg rhel-a
+inherit flag-o-matic gnome2-utils meson-multilib toolchain-funcs xdg rhel9-a
 
 DESCRIPTION="Internationalized text layout and rendering library"
 HOMEPAGE="https://www.pango.org/ https://gitlab.gnome.org/GNOME/pango"
