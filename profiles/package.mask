@@ -33,6 +33,41 @@
 
 #--- END OF EXAMPLES ---
 
+# Joonas Niilola <juippis@gentoo.org> (2021-10-10)
+# Development stopped by upstream. Switch to its actively developed
+# fork, x11-misc/picom. Bug #817338. Removal in ~30 days.
+x11-misc/compton
+
+# Joonas Niilola <juippis@gentoo.org> (2021-10-10)
+# LiveOnlyPackage with no maintainer. Upstream has multiple releases.
+# Bug #817320. Removal in ~30 days.
+dev-vcs/gti
+
+# Sam James <sam@gentoo.org> (2021-10-10)
+# Needs upstream build system fixes (currently in progress).
+# Python toggles don't work correctly right now.
+# Masking this development release for now.
+=media-libs/gexiv2-0.13.0
+
+# Patrice Clement <monsieurp@gentoo.org> (2021-10-09)
+# Obsolete and unmaintained. Please switch to app-text/htmltidy.
+# Bug #564884. Masked for removal in 30 days.
+app-text/tidy-html5
+
+# Ionen Wolkens <ionen@gentoo.org> (2021-10-09)
+# Vulkan beta driver branch aimed at Vulkan developers for testing
+# new features. Beside vulkan, it is typically behind the main branch
+# and may be buggier or less secure. Only unmask if really wanted.
+x11-drivers/nvidia-drivers:0/vulkan
+
+# Gnome Team <gnome@gentoo.org> (2021-10-09)
+# GNOME 41 mask, bug #812986
+>=gnome-extra/evolution-data-server-3.41
+>=mail-client/evolution-3.41
+>=gnome-extra/evolution-ews-3.41
+>=gnome-extra/gnome-calendar-41.0
+>=gnome-extra/gnome-contacts-41.0
+
 # Fabian Groffen <grobian@gentoo.org> (2021-10-03)
 # Masked for erratic behaviour
 # https://bugs.exim.org/show_bug.cgi?id=2813
@@ -173,12 +208,6 @@ dev-python/flake8-import-order
 # to a fresher gnat-gpl branch.
 <dev-lang/gnat-gpl-2019
 
-# Sam James <sam@gentoo.org> (2021-09-18)
-# Drops an unstable API which some projects were using
-# including Chromium. Masked to avoid runtime breakage.
-# bug #813705, bug #813711.
-=media-libs/harfbuzz-3.0.0
-
 # Andreas K. Hüttel <dilfridge@gentoo.org> (2021-09-18)
 # sys-devel/automake version 1.11 is EOL and is only useful for testing
 # old de-ANSI-fication/ansi2knr/AM_C_PROTOTYPES code. Please uninstall.
@@ -267,10 +296,11 @@ dev-python/txgithub
 =dev-libs/gost-engine-3.0*
 
 # Ionen Wolkens <ionen@gentoo.org> (2021-09-03)
-# Currently may not function with kde-plasma/kwin (black screen),
-# so keeping masked for testing due to being a primary consumer.
-# Should be safe to unmask if you are using x11-wm/mutter instead.
->=gui-libs/egl-wayland-1.1.8
+# Known to break kde-plasma/kwin (black screen), and several
+# other applications on wayland with current drivers.
+# https://github.com/NVIDIA/egl-wayland/issues/40
+# https://github.com/NVIDIA/egl-wayland/issues/41
+~gui-libs/egl-wayland-1.1.8
 
 # Alexey Sokolov <alexey+gentoo@asokolov.org> (2021-08-30)
 # Homepage dead, uses gtk2, fails to build, https://bugs.gentoo.org/711344
