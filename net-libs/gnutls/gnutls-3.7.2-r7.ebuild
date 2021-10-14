@@ -3,14 +3,14 @@
 
 EAPI=7
 
-inherit libtool multilib-minimal rhel
+inherit libtool multilib-minimal rhel9
 
 DESCRIPTION="A secure communications library implementing the SSL, TLS and DTLS protocols"
 HOMEPAGE="https://www.gnutls.org/"
 
 LICENSE="GPL-3 LGPL-2.1+"
 SLOT="0/30" # libgnutls.so number
-KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 IUSE="+cxx dane doc examples guile +idn nls +openssl +pkcs11 seccomp sslv2 sslv3 static-libs test test-full +tls-heartbeat tools valgrind"
 
 REQUIRED_USE="
@@ -138,6 +138,7 @@ multilib_src_configure() {
 multilib_src_install_all() {
 	einstalldocs
 	find "${ED}" -type f -name '*.la' -delete || die
+
 	if use examples; then
 		docinto examples
 		dodoc doc/examples/*.c

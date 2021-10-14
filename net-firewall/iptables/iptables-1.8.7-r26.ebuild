@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib systemd toolchain-funcs autotools flag-o-matic usr-ldscript rhel
+inherit multilib systemd toolchain-funcs autotools flag-o-matic usr-ldscript rhel9
 
 DESCRIPTION="Linux kernel (2.4+) firewall, NAT and packet mangling tools"
 HOMEPAGE="https://www.netfilter.org/projects/iptables/"
@@ -125,20 +125,20 @@ src_install() {
 	dodir ${legacy_actions}/{iptables,ip6tables}
 
 	# Remove /etc/ethertypes (now part of setup)
-	rm -f ${buildroot}${_sysconfdir}/ethertypes
+	rm -f ${ED}${_sysconfdir}/ethertypes
 
 	# extra sources for arptables
 	insinto ${_libexecdir}/ && insopts -m0755
 	doins -r ${WORKDIR}/{arptables-nft-helper,ebtables-helper}
 
-	touch ${buildroot}${_sysconfdir}/sysconfig/{arptables,ebtables}
+	touch ${ED}${_sysconfdir}/sysconfig/{arptables,ebtables}
 
 	# prepare for alternatives
-	touch ${buildroot}${_libexecdir}/arptables-helper
-	touch ${buildroot}${_mandir}/man8/arptables.8
-	touch ${buildroot}${_mandir}/man8/arptables-save.8
-	touch ${buildroot}${_mandir}/man8/arptables-restore.8
-	touch ${buildroot}${_mandir}/man8/ebtables.8
+	touch ${ED}${_libexecdir}/arptables-helper
+	touch ${ED}${_mandir}/man8/arptables.8
+	touch ${ED}${_mandir}/man8/arptables-save.8
+	touch ${ED}${_mandir}/man8/arptables-restore.8
+	touch ${ED}${_mandir}/man8/ebtables.8
 
 	# all the iptables binaries are in /sbin, so might as well
 	# put these small files in with them
@@ -201,8 +201,10 @@ pkg_postinst() {
 }
 
 pkg_prerm() {
-	elog "Unsetting iptables symlinks before removal"
-	eselect iptables unset
+	if [[ -z ${REPLACED_BY_VERSION} ]]; then
+		elog "Unsetting iptables symlinks before removal"
+		eselect iptables unset
+	fi
 
 	if ! has_version 'net-firewall/ebtables'; then
 		elog "Unsetting ebtables symlinks before removal"

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools flag-o-matic linux-info udev rhel
+inherit autotools flag-o-matic linux-info udev rhel9
 
 DESCRIPTION="An interface for filesystems implemented in userspace"
 HOMEPAGE="https://github.com/libfuse/libfuse"
@@ -19,7 +19,6 @@ RDEPEND=">=sys-fs/fuse-common-3.3.0-r1"
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-2.9.9-avoid-calling-umount.patch
-	"${FILESDIR}"/${PN}-2.9.9-closefrom-glibc-2-34.patch
 )
 
 pkg_setup() {

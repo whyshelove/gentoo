@@ -16,7 +16,7 @@ RDEPEND="
 	sys-devel/gcc
 	clang? (
 		sys-devel/clang
-		sys-devel/llvm
+		sys-devel/llvm[gold]
 		sys-apps/gawk
 	)
 "
@@ -48,7 +48,11 @@ src_configure() {
 		ln -s /usr/lib/llvm/12/include/* .
 
 		myconf+=( --with-clang --with-llvm )
-		ANNOBIN_CLANG_PLUGIN_DIR=$(clang --print-search-dirs | gawk -e'BEGIN { FS = ":" } /libraries/ { print gensub(" =","",1,$2) } END { }')
+
+		local llvm_version=$(llvm-config --version) || die
+
+		clang_plugin_dir=/usr/lib/clang/${llvm_version}
+		llvm_plugin_dir=/usr/lib/llvm/${llvm_version}
 	fi
 
 	econf "${myconf[@]}"
@@ -83,7 +87,14 @@ src_compile() {
 }
 
 src_install() {
-	emake DESTDIR="${D}" install PLUGIN_INSTALL_DIR="${D}"${ANNOBIN_CLANG_PLUGIN_DIR}
+	emake DESTDIR="${D}" install PLUGIN_INSTALL_DIR="${D}"${llvm_plugin_dir}
+
+	if use clang ; then
+		# Move the clang plugin to a seperate directory.
+		dodir ${clang_plugin_dir}
+		mv "${ED}"${llvm_plugin_dir}/annobin-for-clang.so "${ED}"${clang_plugin_dir}
+	fi
+
 	rm -f "${ED}"${_infodir}/dir
 	tree ${ED}
 }
