@@ -16,7 +16,7 @@ RDEPEND="
 	sys-devel/gcc
 	clang? (
 		sys-devel/clang
-		sys-devel/llvm
+		sys-devel/llvm[gold]
 		sys-apps/gawk
 	)
 "
