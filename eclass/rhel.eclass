@@ -52,6 +52,7 @@ if [ -z ${MY_PF} ] ; then
 	else
 		case ${PN} in
 			tiff | db | appstream-glib ) MY_PF=lib${P}-${MY_PR} ;;
+			docbook-xsl-stylesheets ) MY_PF=docbook-style-xsl-${PV}-${MY_PR} ;;
 			ghostscript-gpl ) MY_PF=${P/-gpl}-${MY_PR} ;;
 			wayland-scanner ) MY_PF=${P/-scanner}-${MY_PR} ;;
 			libsdl* ) MY_P=${P/lib}; MY_PF=${MY_P^^}-${MY_PR} ;;

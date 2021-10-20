@@ -3,20 +3,11 @@
 
 EAPI=7
 
-inherit prefix sgml-catalog-r1
+inherit prefix sgml-catalog-r1 rhel9-a
 
 DESCRIPTION="Base ISO character entities and utilities for SGML"
 HOMEPAGE="https://www.iso.org/standard/16387.html"
-if [[ ${PV} == *8888 ]]; then
-	inherit git-r3
-	EGIT_REPO_URI="${CENTOS_GIT_REPO_URI}/${PN}.git"
-	S="${WORKDIR}/${PN}"
-else
-	inherit rpm
-	MY_PR=${PVR##*r}
-	MY_PF=${P}-${MY_PR}
-	SRC_URI="${APPSTREAM}/${MY_PF}${DIST}.src.rpm"
-fi
+
 
 # install-catalog is GPL
 LICENSE="FDL-1.1+ GPL-2"
