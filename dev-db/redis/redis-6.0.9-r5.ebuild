@@ -15,7 +15,7 @@ inherit autotools flag-o-matic lua-single systemd toolchain-funcs tmpfiles rhel8
 
 DESCRIPTION="A persistent caching system, key-value and data structures database"
 HOMEPAGE="https://redis.io"
-SRC_URI="${REPO_URI}/${MY_PF}.module_el8.4.0+788+86a4d8e8.src.rpm"
+SRC_URI="${REPO_URI}/${MY_PF}.module_el8.4.0+956+a52e9aa4.src.rpm"
 
 LICENSE="BSD"
 KEYWORDS="amd64 arm arm64 ~hppa ppc ppc64 ~sparc x86 ~amd64-linux ~x86-linux ~x86-solaris"
