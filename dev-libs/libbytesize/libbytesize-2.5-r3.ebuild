@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{7..9} )
 
-inherit autotools python-r1 rhel-a
+inherit autotools python-r1 rhel9-a
 
 DESCRIPTION="Tiny library providing a C \"class\" for working with arbitrary big sizes in bytes"
 HOMEPAGE="https://github.com/storaged-project/libbytesize"

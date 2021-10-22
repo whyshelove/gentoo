@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit multilib-minimal rhel
+inherit multilib-minimal rhel9
 
 MY_PV=${PV/_rc/-rc}
 MY_P=${PN}-${MY_PV}
