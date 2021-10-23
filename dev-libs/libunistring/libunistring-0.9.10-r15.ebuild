@@ -3,15 +3,11 @@
 
 EAPI=7
 
-inherit multilib-minimal libtool rhel
+inherit multilib-minimal libtool rhel9
 
 DESCRIPTION="Library for manipulating Unicode and C strings according to Unicode standard"
 HOMEPAGE="https://www.gnu.org/software/libunistring/"
-if [[ ${PV} == *8888 ]]; then
-	inherit git-r3
-	EGIT_REPO_URI="${CENTOS_GIT_REPO_URI}/${PN}.git"
-	S="${WORKDIR}/${PN}"
-fi
+
 
 LICENSE="|| ( LGPL-3+ GPL-2+ ) || ( FDL-1.2 GPL-3+ )"
 SLOT="0/2"

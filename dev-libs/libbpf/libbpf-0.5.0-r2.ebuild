@@ -20,7 +20,7 @@ HOMEPAGE="https://github.com/libbpf/libbpf"
 
 LICENSE="GPL-2 LGPL-2.1 BSD-2"
 SLOT="0/${PV}"
-IUSE="static-libs"
+IUSE="+static-libs"
 
 DEPEND="
 	sys-kernel/linux-headers
@@ -37,6 +37,7 @@ src_compile() {
 		prefix="${EPREFIX}/usr"
 		DESTDIR="${D}"
 		LIBSUBDIR="$(get_libdir)"
+		LIBDIR=/${_libdir}
 		CC="$(tc-getCC)"
 		AR="$(tc-getAR)"
 		V=1

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic multilib toolchain-funcs multilib-minimal rhel-a
+inherit flag-o-matic multilib toolchain-funcs multilib-minimal rhel9-a
 
 NSPR_VER="4.31"
 RTM_NAME="NSS_${PV//./_}_RTM"

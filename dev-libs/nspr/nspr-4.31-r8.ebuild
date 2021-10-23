@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools toolchain-funcs multilib-minimal rhel-a
+inherit autotools toolchain-funcs multilib-minimal rhel9-a
 
 MIN_PV="$(ver_cut 2)"
 
@@ -12,7 +12,7 @@ HOMEPAGE="https://www.mozilla.org/projects/nspr/"
 
 LICENSE="|| ( MPL-2.0 GPL-2 LGPL-2.1 )"
 SLOT="0"
-KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~x64-macos ~x64-solaris ~x86-solaris"
+KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~x64-macos ~x64-solaris ~x86-solaris"
 IUSE="debug elibc_musl"
 
 MULTILIB_CHOST_TOOLS=(
