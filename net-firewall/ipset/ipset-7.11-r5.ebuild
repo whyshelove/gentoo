@@ -7,7 +7,6 @@ inherit autotools linux-info linux-mod systemd rhel9
 
 DESCRIPTION="IPset tool for iptables, successor to ippool"
 HOMEPAGE="https://ipset.netfilter.org/"
-#SRC_URI="https://ipset.netfilter.org/${P}.tar.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"

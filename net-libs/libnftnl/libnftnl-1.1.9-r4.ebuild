@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit linux-info usr-ldscript rhel
+inherit linux-info usr-ldscript rhel9
 
 DESCRIPTION="Netlink API to the in-kernel nf_tables subsystem"
 HOMEPAGE="https://netfilter.org/projects/nftables/"

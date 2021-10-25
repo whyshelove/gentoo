@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{7..9} )
 
-inherit autotools bash-completion-r1 multilib python-r1 rhel
+inherit autotools bash-completion-r1 multilib python-r1 rhel9
 
 if [[ ${PV} == 9999* ]]; then
 	EGIT_REPO_URI="https://git.kernel.org/pub/scm/utils/kernel/${PN}/${PN}.git"
