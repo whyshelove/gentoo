@@ -3,7 +3,7 @@
 
 EAPI="7"
 
-inherit toolchain-funcs multilib-minimal rhel
+inherit toolchain-funcs multilib-minimal rhel9
 
 MY_PV="${PV//_/-}"
 MY_P="${PN}-${MY_PV}"
@@ -11,10 +11,8 @@ MY_P="${PN}-${MY_PV}"
 DESCRIPTION="SELinux binary policy representation library"
 HOMEPAGE="https://github.com/SELinuxProject/selinux/wiki"
 
-if [[ ${PV} != *8888 ]]; then
-	KEYWORDS="amd64 ~arm ~arm64 ~mips ~riscv ~x86"
-	S="${WORKDIR}/${MY_P}"
-fi
+KEYWORDS="amd64 ~arm~arm64 ~mips ~riscv ~x86"
+S="${WORKDIR}/${MY_P}"
 
 LICENSE="GPL-2"
 SLOT="0/2"

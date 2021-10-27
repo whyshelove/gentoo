@@ -3,39 +3,38 @@
 
 EAPI=7
 
+inherit user-info flag-o-matic autotools pam systemd toolchain-funcs
+
 # Make it more portable between straight releases
 # and _p? releases.
 PARCH=${P/_}
 
 MY_PR=${PVR##*r}
 MY_PF=${PARCH}-${MY_PR}
-
-inherit user-info flag-o-matic autotools pam systemd toolchain-funcs rhel
-
+inherit rhel9
 # PV to USE for HPN patches
 #HPN_PV="${PV^^}"
 HPN_PV="8.5_P1"
 
 DESCRIPTION="Port of OpenBSD's free SSH release"
 HOMEPAGE="https://www.openssh.com/"
-if [[ ${PV} != *8888 ]]; then
-	SRC_URI="${REPO_URI}/${MY_PF}${DIST}.1.src.rpm"
-	S="${WORKDIR}/${PARCH}"
-fi
+
+S="${WORKDIR}/${PARCH}"
 
 LICENSE="BSD GPL-2"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 # Probably want to drop ssl defaulting to on in a future version.
 IUSE="abi_mips_n32 audit bindist debug hpn kerberos kernel_linux ldns libedit livecd pam +pie +scp sctp security-key selinux +ssl static test X X509 xmss"
 
 RESTRICT="!test? ( test )"
 
 REQUIRED_USE="
+	hpn? ( ssl )
 	ldns? ( ssl )
 	pie? ( !static )
 	static? ( !kerberos !pam )
-	X509? ( !sctp !security-key ssl !xmss )
+	X509? ( !sctp ssl !xmss )
 	xmss? ( ssl  )
 	test? ( ssl )
 "
@@ -128,9 +127,6 @@ src_prepare() {
 	eapply "${FILESDIR}"/${PN}-8.0_p1-fix-putty-tests.patch
 	eapply "${FILESDIR}"/${PN}-8.0_p1-deny-shmget-shmat-shmdt-in-preauth-privsep-child.patch
 
-	# workaround for https://bugs.gentoo.org/734984
-	use X509 || eapply "${FILESDIR}"/${PN}-8.3_p1-sha2-include.patch
-
 	[[ -d ${WORKDIR}/patches ]] && eapply "${WORKDIR}"/patches
 
 	local PATCHSET_VERSION_MACROS=()
@@ -178,7 +174,7 @@ src_prepare() {
 		cp $(printf -- "${DISTDIR}/%s\n" "${HPN_PATCHES[@]}") "${hpn_patchdir}" || die
 		pushd "${hpn_patchdir}" &>/dev/null || die
 		eapply "${FILESDIR}"/${P}-hpn-${HPN_VER}-glue.patch
-		use X509 && eapply "${FILESDIR}"/${PN}-8.6_p1-hpn-${HPN_VER}-X509-glue.patch
+		use X509 && eapply "${FILESDIR}"/${PN}-8.7_p1-hpn-${HPN_VER}-X509-glue.patch
 		use sctp && eapply "${FILESDIR}"/${PN}-8.5_p1-hpn-${HPN_VER}-sctp-glue.patch
 		popd &>/dev/null || die
 
@@ -286,7 +282,6 @@ src_configure() {
 	local myconf=(
 		--with-ldflags="${LDFLAGS}"
 		--disable-strip
-		--without-zlib-version-check
 		--with-pid-dir="${EPREFIX}"$(usex kernel_linux '' '/var')/run
 		--sysconfdir="${EPREFIX}"/etc/ssh
 		--libexecdir="${EPREFIX}"/usr/$(get_libdir)/openssh
@@ -483,6 +478,7 @@ pkg_preinst() {
 pkg_postinst() {
 	systemd_post sshd.service sshd.socket
 	systemd_user_post ssh-agent.service
+
 	local old_ver
 	for old_ver in ${REPLACING_VERSIONS}; do
 		if ver_test "${old_ver}" -lt "5.8_p1"; then
