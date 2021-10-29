@@ -27,7 +27,6 @@ src_configure() {
 
 	local myeconfargs=(
 		--enable-compile-warnings=yes
-		--enable-shared
 		$(use_enable static-libs static)
 		--disable-rdrand
 	)
