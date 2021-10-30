@@ -3,11 +3,10 @@
 
 EAPI="6"
 
-inherit flag-o-matic toolchain-funcs rhel
+inherit flag-o-matic toolchain-funcs rhel9
 
 DESCRIPTION="Handy console-based calculator utility"
 HOMEPAGE="https://www.gnu.org/software/bc/bc.html"
-#SRC_URI="mirror://gnu/bc/${P}.tar.gz"
 
 LICENSE="GPL-2 LGPL-2.1"
 SLOT="0"

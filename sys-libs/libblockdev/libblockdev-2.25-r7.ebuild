@@ -4,17 +4,12 @@
 EAPI=7
 
 PYTHON_COMPAT=( python3_{7..9} )
-inherit autotools python-single-r1 xdg-utils rhel-a
+inherit autotools python-single-r1 xdg-utils rhel9-a
 
 DESCRIPTION="A library for manipulating block devices"
 HOMEPAGE="https://github.com/storaged-project/libblockdev"
-if [[ "${PV}" == *8888 ]] ; then
-	BDEPEND="
-		sys-devel/autoconf-archive
-	"
-else
-	KEYWORDS="~alpha amd64 ~arm ~arm64 ~ia64 ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86"
-fi
+
+KEYWORDS="~alpha amd64 ~arm arm64 ~ia64 ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86"
 LICENSE="LGPL-2+"
 SLOT="0"
 IUSE="bcache +cryptsetup device-mapper dmraid escrow gtk-doc introspection lvm kbd test +tools vdo"

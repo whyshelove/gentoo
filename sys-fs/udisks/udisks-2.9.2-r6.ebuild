@@ -9,7 +9,7 @@ HOMEPAGE="https://www.freedesktop.org/wiki/Software/udisks"
 
 LICENSE="LGPL-2+ GPL-2+"
 SLOT="2"
-KEYWORDS="~alpha amd64 ~arm ~arm64 ~ia64 ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86"
+KEYWORDS="~alpha amd64 ~arm arm64 ~ia64 ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86"
 IUSE="acl +daemon debug elogind +introspection lvm nls selinux systemd vdo zram"
 
 REQUIRED_USE="

@@ -3,12 +3,10 @@
 
 EAPI=7
 
-inherit flag-o-matic verify-sig autotools rhel 
+inherit flag-o-matic verify-sig autotools rhel9
 
 DESCRIPTION="Create, destroy, resize, check, copy partitions and file systems"
 HOMEPAGE="https://www.gnu.org/software/parted/"
-#SRC_URI="mirror://gnu/${PN}/${P}.tar.xz
-#	verify-sig? ( mirror://gnu/${PN}/${P}.tar.xz.sig )"
 
 LICENSE="GPL-3"
 SLOT="0"
