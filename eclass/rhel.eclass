@@ -63,6 +63,7 @@ if [ -z ${MY_PF} ] ; then
 			libnl | glib | openjpeg | lcms | gnupg | grub | udisks | geoclue \
 			| udisks | lcms | openjpeg | glib | librsvg | gstreamer | gtksourceview \
 			| gtk) MY_P=${P/-/$(ver_cut 1)-}; MY_PF=${MY_P}-${MY_PR} ;;
+			mpc | talloc | tdb | tevent | ldb ) MY_PF=lib${P}-${MY_PR} ;;
 			libusb ) MY_PF=${P/-/x-}-${MY_PR} ;;
 			sysprof-capture ) MY_PF=${P/-capture}-${MY_PR} ;;
 			procps ) MY_P=${P/-/-ng-}; MY_PF=${MY_P}-${MY_PR} ;;
