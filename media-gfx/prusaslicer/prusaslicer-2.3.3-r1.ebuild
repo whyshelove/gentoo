@@ -22,9 +22,10 @@ IUSE="gui test"
 REQUIRED_USE="test? ( gui )"
 RESTRICT="!test? ( test )"
 
+# Please check if works with newer TBB on next release, bug #820785
 RDEPEND="
 	dev-cpp/eigen:3
-	dev-cpp/tbb:=
+	<dev-cpp/tbb-2021.4.0:=
 	>=dev-libs/boost-1.73.0:=[nls,threads(+)]
 	dev-libs/cereal
 	dev-libs/expat
@@ -66,6 +67,8 @@ src_prepare() {
 }
 
 src_configure() {
+	CMAKE_BUILD_TYPE="Release"
+
 	use gui && setup-wxwidgets
 
 	local mycmakeargs=(
@@ -75,6 +78,7 @@ src_configure() {
 		-DSLIC3R_GUI=$(usex gui)
 		-DSLIC3R_PCH=OFF
 		-DSLIC3R_WX_STABLE=ON
+		-Wno-dev
 	)
 
 	cmake_src_configure
