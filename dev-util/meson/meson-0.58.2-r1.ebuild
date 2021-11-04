@@ -2,13 +2,11 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-PYTHON_COMPAT=( python3_{7,8,9} )
+PYTHON_COMPAT=( python3_{7,8,9,10} )
 
-if [[ ${PV} != *8888 ]]; then
-	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-fi
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 
-inherit distutils-r1 toolchain-funcs rhel-c
+inherit distutils-r1 toolchain-funcs rhel9-c
 
 DESCRIPTION="Open source build system"
 HOMEPAGE="https://mesonbuild.com/"
@@ -28,14 +26,10 @@ DEPEND="
 		virtual/pkgconfig
 	)
 "
+
 PATCHES=(
-	${WORKDIR}/meson-gcc11.patch
+	"${FILESDIR}/meson-mcompile-treat-load-average-as-a-float.patch"
 )
-
-
-src_unpack() {
-	rpm_unpack ${A} && unpack ${WORKDIR}/*.tar.*
-}
 
 python_prepare_all() {
 	local disable_unittests=(
@@ -74,11 +68,6 @@ src_test() {
 }
 
 python_test() {
-	# Remove Boost tests for now, because it requires Python 2
-	rm -rf "test cases/frameworks/1 boost"
-	# Remove MPI tests for now because it is complicated to run
-	rm -rf "test cases/frameworks/17 mpi"
-	export MESON_PRINT_TEST_OUTPUT=1
 	(
 		# test_meson_installed
 		unset PYTHONDONTWRITEBYTECODE
@@ -88,6 +77,13 @@ python_test() {
 
 		# 'test cases/unit/73 summary' expects 80 columns
 		export COLUMNS=80
+
+		# If JAVA_HOME is not set, meson looks for javac in PATH.
+		# If javac is in /usr/bin, meson assumes /usr/include is a valid
+		# JDK include path. Setting JAVA_HOME works around this broken
+		# autodection. If no JDK is installed, we should end up with an empty
+		# value in JAVA_HOME, and the tests should get skipped.
+		export JAVA_HOME=$(java-config -O 2>/dev/null)
 
 		${EPYTHON} -u run_tests.py
 	) || die "Testing failed with ${EPYTHON}"
@@ -100,6 +96,7 @@ python_install_all() {
 	doins -r data/syntax-highlighting/vim/{ftdetect,indent,syntax}
 	insinto /usr/share/zsh/site-functions
 	doins data/shell-completions/zsh/_meson
+
 
 	insinto ${rpmmacrodir}/
 	doins data/macros.${PN}
