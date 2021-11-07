@@ -3,28 +3,28 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7..9} )
+PYTHON_COMPAT=( python3_{8..10} )
 
-inherit autotools multilib multilib-minimal toolchain-funcs python-r1 linux-info systemd usr-ldscript rhel
+inherit autotools multilib-minimal toolchain-funcs python-r1 linux-info systemd usr-ldscript rhel9
 
 DESCRIPTION="Userspace utilities for storing and processing auditing records"
 HOMEPAGE="https://people.redhat.com/sgrubb/audit/"
 
 LICENSE="GPL-2+ LGPL-2.1+"
 SLOT="0"
-KEYWORDS="amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
-IUSE="gssapi ldap python static-libs"
+KEYWORDS="~alpha amd64 arm ~arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86"
+IUSE="gssapi ldap python static-libs test"
 
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
-# Testcases are pretty useless as they are built for RedHat users/groups and kernels.
-RESTRICT="test"
+RESTRICT="!test? ( test )"
 
 RDEPEND="gssapi? ( virtual/krb5 )
 	ldap? ( net-nds/openldap )
 	sys-libs/libcap-ng
 	python? ( ${PYTHON_DEPS} )"
 DEPEND="${RDEPEND}
-	>=sys-kernel/linux-headers-2.6.34" # This is linux specific.
+	>=sys-kernel/linux-headers-2.6.34
+	test? ( dev-libs/check )"
 BDEPEND="python? ( dev-lang/swig:0 )"
 
 CONFIG_CHECK="~AUDIT"
@@ -54,6 +54,7 @@ multilib_src_configure() {
 		--without-python
 		--without-python3
 	)
+
 	ECONF_SOURCE=${S} econf "${myeconfargs[@]}"
 
 	if multilib_is_native_abi && use python; then
@@ -148,7 +149,7 @@ pkg_postinst() {
 lockdown_perms() {
 	# Upstream wants these to have restrictive perms.
 	# Should not || die as not all paths may exist.
-	local basedir="$1"
+	local basedir="${1}"
 	chmod 0750 "${basedir}"/sbin/au{ditctl,ditd,report,search,trace} 2>/dev/null
 	chmod 0750 "${basedir}"/var/log/audit 2>/dev/null
 	chmod 0640 "${basedir}"/etc/audit/{auditd.conf,audit*.rules*} 2>/dev/null
