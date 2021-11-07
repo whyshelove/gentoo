@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic rhel
+inherit flag-o-matic rhel9
 if [[ ${PV} == *8888 ]]; then
 	inherit autotools
 else
