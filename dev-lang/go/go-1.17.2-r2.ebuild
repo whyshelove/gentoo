@@ -7,8 +7,9 @@ export CBUILD=${CBUILD:-${CHOST}}
 export CTARGET=${CTARGET:-${CHOST}}
 
 MY_PV=${PV/_/}
+DIST=module_el8.6.0+963+7827afaa
 
-inherit toolchain-funcs
+inherit toolchain-funcs rhel8-a
 
 case ${PV}  in
 *9999*)
@@ -16,8 +17,8 @@ case ${PV}  in
 	inherit git-r3
 	;;
 *)
-	SRC_URI="https://storage.googleapis.com/golang/go${MY_PV}.src.tar.gz "
-	S="${WORKDIR}"/go
+	MY_PR=1
+	S="${WORKDIR}"/go-${P}-${MY_PR}-openssl-fips
 	case ${PV} in
 	*_beta*|*_rc*) ;;
 	*)
@@ -185,13 +186,13 @@ src_install() {
 
 pkg_postinst() {
 	[[ -z ${REPLACING_VERSIONS} ]] && return
-	einfo "After ${CATEGORY}/${PN} is updated it is recommended to rebuild"
-	einfo "all packages compiled with previous versions of ${CATEGORY}/${PN}"
-	einfo "due to the static linking nature of go."
-	einfo "If this is not done, the packages compiled with the older"
-	einfo "version of the compiler will not be updated until they are"
-	einfo "updated individually, which could mean they will have"
-	einfo "vulnerabilities."
-	einfo "Run 'emerge @golang-rebuild' to rebuild all 'go' packages"
-	einfo "See https://bugs.gentoo.org/752153 for more info"
+	elog "After ${CATEGORY}/${PN} is updated it is recommended to rebuild"
+	elog "all packages compiled with previous versions of ${CATEGORY}/${PN}"
+	elog "due to the static linking nature of go."
+	elog "If this is not done, the packages compiled with the older"
+	elog "version of the compiler will not be updated until they are"
+	elog "updated individually, which could mean they will have"
+	elog "vulnerabilities."
+	elog "Run 'emerge @golang-rebuild' to rebuild all 'go' packages"
+	elog "See https://bugs.gentoo.org/752153 for more info"
 }
