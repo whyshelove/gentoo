@@ -3,7 +3,7 @@
 
 EAPI=8
 
-KDE_ORG_COMMIT=c2ea67ecefe049f6e9bb8f910d7f9c60319d8619
+KDE_ORG_COMMIT=c9fde86b0a2440133bc08f4811b6ca793be47f0a
 QT5_MODULE="qtbase"
 inherit qt5-build rhel-a
 
