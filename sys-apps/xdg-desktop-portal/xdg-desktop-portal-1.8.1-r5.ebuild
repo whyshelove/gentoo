@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit systemd rhel-a
+inherit systemd rhel9-a
 
 DESCRIPTION="Desktop integration portal"
 HOMEPAGE="https://flatpak.org/ https://github.com/flatpak/xdg-desktop-portal"

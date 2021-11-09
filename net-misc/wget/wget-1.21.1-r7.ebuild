@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{7..9} )
 
-inherit flag-o-matic python-any-r1 toolchain-funcs rhel-a
+inherit flag-o-matic python-any-r1 toolchain-funcs rhel9-a
 
 DESCRIPTION="Network utility to retrieve files from the WWW"
 HOMEPAGE="https://www.gnu.org/software/wget/"

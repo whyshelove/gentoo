@@ -3,11 +3,10 @@
 
 EAPI=7
 
-inherit multilib-minimal rhel-c
+inherit multilib-minimal rhel9-c
 
 DESCRIPTION="Implementation for atomic memory update operations"
 HOMEPAGE="https://github.com/ivmai/libatomic_ops/"
-#SRC_URI="https://github.com/ivmai/${PN}/releases/download/v${PV}/${P}.tar.gz"
 
 LICENSE="MIT boehm-gc GPL-2+"
 SLOT="0"

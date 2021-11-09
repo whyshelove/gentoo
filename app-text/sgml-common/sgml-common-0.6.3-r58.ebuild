@@ -8,7 +8,6 @@ inherit prefix sgml-catalog-r1 rhel9-a
 DESCRIPTION="Base ISO character entities and utilities for SGML"
 HOMEPAGE="https://www.iso.org/standard/16387.html"
 
-
 # install-catalog is GPL
 LICENSE="FDL-1.1+ GPL-2"
 SLOT="0"

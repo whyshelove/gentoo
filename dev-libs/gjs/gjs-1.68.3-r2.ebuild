@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit gnome.org meson virtualx rhel-a
+inherit gnome.org meson virtualx rhel9-a
 
 DESCRIPTION="Javascript bindings for GNOME"
 HOMEPAGE="https://wiki.gnome.org/Projects/Gjs"

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic multilib-minimal usr-ldscript rhel
+inherit flag-o-matic multilib-minimal usr-ldscript rhel9
 
 DESCRIPTION="Standard informational utilities and process-handling tools"
 HOMEPAGE="http://procps-ng.sourceforge.net/ https://gitlab.com/procps-ng/procps"

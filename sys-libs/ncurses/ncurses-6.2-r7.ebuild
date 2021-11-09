@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit toolchain-funcs multilib multilib-minimal preserve-libs usr-ldscript rhel
+inherit toolchain-funcs multilib multilib-minimal preserve-libs usr-ldscript rhel9
 
 DATE=20210508
 DESCRIPTION="console display library"
