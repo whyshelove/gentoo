@@ -11,8 +11,8 @@ _RHEL9_ECLASS=1
 
 inherit rhel
 
-MIRROR="https://odcs.stream.centos.org/production/latest-CentOS-Stream"
-RELEASE="compose"
+MIRROR="http://mirror.stream.centos.org"
+RELEASE="9-stream"
 REPO_URI="${MIRROR}/${RELEASE}/${REPO:-BaseOS}/source/tree/Packages"
 
 if [ -z ${MY_PF} ] ; then
