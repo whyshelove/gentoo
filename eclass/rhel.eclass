@@ -21,9 +21,9 @@ if [[ ${PV} == *8888 ]]; then
 	S="${WORKDIR}/${PN}"
 fi
 
-if [ -z ${MIRROR} ] ; then MIRROR="https://odcs.stream.centos.org/production/latest-CentOS-Stream"; fi
+if [ -z ${MIRROR} ] ; then MIRROR="http://mirror.stream.centos.org"; fi
 DIST="el9"
-RELEASE="compose"
+RELEASE="9-stream"
 REPO_URI="${MIRROR}/${RELEASE}/${REPO:-BaseOS}/source/tree/Packages"
 
 if [ -z ${MIRROR_BIN} ] ; then MIRROR_BIN="${MIRROR}"; fi
