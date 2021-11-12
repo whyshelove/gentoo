@@ -10,9 +10,9 @@ SRC_URI="${SRC_URI} ${REPO_BIN}/rootfiles-8.1-30.${DIST}.noarch.rpm"
 
 REPO_BIN="${MIRROR_BIN}/${RELEASE}/AppStream/x86_64/os/Packages"
 
-for macro in efi-srpm-macros-4-7 kernel-rpm-macros-185-7.el9 perl-srpm-macros-1-40 redhat-rpm-config-188-1 \
-	python-qt5-rpm-macros-5.15.0-9 python-rpm-macros-3.9-41 python-srpm-macros-3.9-41 python3-rpm-macros-3.9-41 \
-	go-srpm-macros-3.0.9-7 qt5-rpm-macros-5.15.2-8 rust-srpm-macros-17-3 ;
+for macro in efi-srpm-macros-4-9 kernel-rpm-macros-185-7.el9 perl-srpm-macros-1-41 redhat-rpm-config-188-1 \
+	python-qt5-rpm-macros-5.15.0-10 python-rpm-macros-3.9-43 python-srpm-macros-3.9-43 python3-rpm-macros-3.9-43 \
+	go-srpm-macros-3.0.9-8 qt5-rpm-macros-5.15.2-9 rust-srpm-macros-17-4 ;
 do
 SRC_URI="${SRC_URI} ${REPO_BIN}/${macro}.${DIST}.noarch.rpm"
 done

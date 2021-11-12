@@ -7,8 +7,6 @@
 # @SUPPORTED_EAPIS: 5 6 7 8
 # @BLURB: convenience class for extracting Red Hat Enterprise Linux Series RPMs
 
-EXPORT_FUNCTIONS src_unpack
-
 if [[ -z ${_RHEL_ECLASS} ]] ; then
 _RHEL_ECLASS=1
 
@@ -22,7 +20,6 @@ if [[ ${PV} == *8888 ]]; then
 fi
 
 if [ -z ${MIRROR} ] ; then MIRROR="http://mirror.stream.centos.org"; fi
-DIST="el9"
 RELEASE="9-stream"
 REPO_URI="${MIRROR}/${RELEASE}/${REPO:-BaseOS}/source/tree/Packages"
 
@@ -103,7 +100,7 @@ if [ -z ${MY_PF} ] ; then
 fi
 
 [ ${CATEGORY} != "dev-qt" ] && SRC_URI=""
-SRC_URI="${SRC_URI} ${REPO_URI}/${MY_PF}.${DIST}.src.rpm"
+SRC_URI="${SRC_URI} ${REPO_URI}/${MY_PF}.${DIST:=el9}.src.rpm"
 
 rpm_clean() {
 	# delete everything
@@ -217,3 +214,5 @@ rhel_bin_install() {
 }
 
 fi
+
+EXPORT_FUNCTIONS src_unpack
