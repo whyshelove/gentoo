@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit gnome.org gnome2-utils meson virtualx xdg rhel-a
+inherit gnome.org gnome2-utils meson virtualx xdg rhel9-a
 
 DESCRIPTION="GTK is a multi-platform toolkit for creating graphical user interfaces"
 HOMEPAGE="https://www.gtk.org/ https://gitlab.gnome.org/GNOME/gtk/"
