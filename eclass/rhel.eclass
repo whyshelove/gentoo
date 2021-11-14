@@ -6,8 +6,6 @@
 # @SUPPORTED_EAPIS: 5 6 7 8
 # @BLURB: convenience class for extracting Red Hat Enterprise Linux Series RPMs
 
-EXPORT_FUNCTIONS src_unpack
-
 if [[ -z ${_RHEL_ECLASS} ]] ; then
 _RHEL_ECLASS=1
 
@@ -114,3 +112,5 @@ rhel_bin_install() {
 }
 
 fi
+
+EXPORT_FUNCTIONS src_unpack

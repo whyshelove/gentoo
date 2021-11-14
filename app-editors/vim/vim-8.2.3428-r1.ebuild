@@ -16,7 +16,7 @@ if [[ ${PV} == 9999* ]] ; then
 else
 	SRC_URI="https://github.com/vim/vim/archive/v${PV}.tar.gz -> ${P}.tar.gz
 		https://dev.gentoo.org/~zlogene/distfiles/app-editors/vim/vim-8.2.0360-gentoo-patches.tar.xz"
-	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+	KEYWORDS="~alpha amd64 ~arm arm64 hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 fi
 
 DESCRIPTION="Vim, an improved vi-style text editor"
@@ -24,7 +24,7 @@ HOMEPAGE="https://vim.sourceforge.io/ https://github.com/vim/vim"
 
 SLOT="0"
 LICENSE="vim"
-IUSE="X acl cscope debug gpm lua ipv6 minimal nls perl python racket ruby selinux sound tcl terminal vim-pager"
+IUSE="X acl crypt cscope debug gpm lua minimal nls perl python racket ruby selinux sound tcl terminal vim-pager"
 REQUIRED_USE="
 	lua? ( ${LUA_REQUIRED_USE} )
 	python? ( ${PYTHON_REQUIRED_USE} )
@@ -36,6 +36,7 @@ RDEPEND="
 	>=sys-libs/ncurses-5.2-r2:0=
 	nls? ( virtual/libintl )
 	acl? ( kernel_linux? ( sys-apps/acl ) )
+	crypt? ( dev-libs/libsodium:= )
 	cscope? ( dev-util/cscope )
 	gpm? ( >=sys-libs/gpm-1.19.3 )
 	lua? ( ${LUA_DEPS}
@@ -200,6 +201,7 @@ src_configure() {
 			--with-features=huge
 			$(use_enable sound canberra)
 			$(use_enable acl)
+			$(use_enable crypt libsodium)
 			$(use_enable cscope)
 			$(use_enable gpm)
 			$(use_enable nls)
@@ -225,12 +227,6 @@ src_configure() {
 				--enable-luainterp
 				$(use_with lua_single_target_luajit luajit)
 				--with-lua-prefix="${EPREFIX}/usr"
-			)
-		fi
-
-		if ! use ipv6; then
-			myconf+=(
-				vim_cv_ipv6_networking=no
 			)
 		fi
 
@@ -273,6 +269,22 @@ src_test() {
 
 	# Don't let vim talk to X
 	unset DISPLAY
+
+	# See https://github.com/vim/vim/blob/f08b0eb8691ff09f98bc4beef986ece1c521655f/src/testdir/runtest.vim#L5
+	# for more information on test variables we can use.
+	# Note that certain variables need vim-compatible regex (not PCRE), see e.g.
+	# http://www.softpanorama.org/Editors/Vimorama/vim_regular_expressions.shtml.
+	#
+	# Skipped tests:
+	# - Test_expand_star_star
+	# Hangs because of a recursive symlink in /usr/include/nodejs (bug #616680)
+	# - Test_exrc
+	# Looks in wrong location? (bug #742710)
+	# - Test_job_tty_in_out
+	# Fragile and depends on TERM(?)
+	# - Test_spelldump_bang
+	# Hangs.
+	export TEST_SKIP_PAT='\(Test_expand_star_star\|Test_exrc\|Test_job_tty_in_out\|Test_spelldump_bang\)'
 
 	emake -j1 -C src/testdir nongui
 }
