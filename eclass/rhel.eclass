@@ -63,6 +63,7 @@ if [ -z ${MY_PF} ] ; then
 			mpc | talloc | tdb | tevent | ldb ) MY_PF=lib${P}-${MY_PR} ;;
 			libusb ) MY_PF=${P/-/x-}-${MY_PR} ;;
 			sysprof-capture ) MY_PF=${P/-capture}-${MY_PR} ;;
+			e2fsprogs-libs ) MY_PF=${P/-libs}-${MY_PR} ;;
 			procps ) MY_P=${P/-/-ng-}; MY_PF=${MY_P}-${MY_PR} ;;
 			thin-provisioning-tools ) MY_PF=device-mapper-persistent-data-${PV}-${MY_PR} ;;
 			iproute2 ) MY_PF=${P/2}-${MY_PR} ;;

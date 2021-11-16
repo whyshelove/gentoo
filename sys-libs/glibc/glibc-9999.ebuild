@@ -1197,13 +1197,13 @@ run_locale_gen() {
 		root="$2"
 	fi
 
-	local locale_list="${root}/etc/locale.gen"
+	local locale_list="${root%/}/etc/locale.gen"
 
 	pushd "${ED}"/$(get_libdir) >/dev/null
 
 	if [[ -z $(locale-gen --list --config "${locale_list}") ]] ; then
 		[[ -z ${inplace} ]] && ewarn "Generating all locales; edit /etc/locale.gen to save time/space"
-		locale_list="${root}/usr/share/i18n/SUPPORTED"
+		locale_list="${root%/}/usr/share/i18n/SUPPORTED"
 	fi
 
 	set -- locale-gen ${inplace} --jobs $(makeopts_jobs) --config "${locale_list}" \
@@ -1538,6 +1538,12 @@ pkg_postinst() {
 
 	if ! is_crosscompile && [[ -z ${ROOT} ]] ; then
 		use compile-locales || run_locale_gen "${EROOT}/"
+	fi
+
+	if systemd_is_booted && [[ -z ${ROOT} ]] ; then
+		# We need to restart systemd when upgrading from < 2.34
+		# bug #823756
+		systemctl daemon-reexec
 	fi
 
 	# Check for sanity of /etc/nsswitch.conf, take 2
