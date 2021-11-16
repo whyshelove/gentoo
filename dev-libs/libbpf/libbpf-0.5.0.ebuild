@@ -19,7 +19,7 @@ HOMEPAGE="https://github.com/libbpf/libbpf"
 
 LICENSE="GPL-2 LGPL-2.1 BSD-2"
 SLOT="0/${PV}"
-IUSE="static-libs"
+IUSE="+static-libs"
 
 DEPEND="
 	sys-kernel/linux-headers

@@ -29,4 +29,5 @@ BDEPEND=""
 src_install() {
 	rhel_bin_install
 	rm -rf $D/etc/{os-release,issue}
+	rm -rf $D/usr/lib/os-release
 }

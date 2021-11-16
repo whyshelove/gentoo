@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{7,8,9} )
 PYTHON_REQ_USE='xml(+)'
-inherit meson-multilib python-any-r1 virtualx rhel-a
+inherit meson-multilib python-any-r1 virtualx rhel9-a
 
 if [[ ${PV} = 8888* ]]; then
 	EGIT_REPO_URI="${EGIT_REPO_URI}https://github.com/anholt/${PN}.git"
