@@ -8,7 +8,6 @@ inherit linux-info systemd toolchain-funcs udev rhel8
 DESCRIPTION="Device mapper target autoconfig"
 HOMEPAGE="http://christophe.varoqui.free.fr/"
 
-
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~alpha amd64 ~arm arm64 ~ia64 ppc ppc64 x86"

@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-
+DIST=2.1.el8_5
 inherit rhel-kernel-build
 
 DESCRIPTION="Linux kernel built with Gentoo patches"
