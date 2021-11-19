@@ -5,7 +5,7 @@ EAPI=7
 
 XORG_PACKAGE_NAME=libxfont
 XORG_DOC=doc
-inherit xorg-3 autotools rhel-a
+inherit xorg-3 autotools rhel9-a
 
 DESCRIPTION="X.Org Xfont library"
 

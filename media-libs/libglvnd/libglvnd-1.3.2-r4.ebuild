@@ -12,7 +12,7 @@ fi
 PYTHON_COMPAT=( python3_{7..9} )
 VIRTUALX_REQUIRED=manual
 
-inherit ${GIT_ECLASS} meson-multilib python-any-r1 virtualx rhel-a
+inherit ${GIT_ECLASS} meson-multilib python-any-r1 virtualx rhel9-a
 
 DESCRIPTION="The GL Vendor-Neutral Dispatch library"
 HOMEPAGE="https://gitlab.freedesktop.org/glvnd/libglvnd"

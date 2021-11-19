@@ -7,7 +7,7 @@ PYTHON_COMPAT=( python3_{7..9} )
 MY_PN="${PN/xorg-/xorg}"
 MY_P="${MY_PN}-${PV}"
 
-inherit ${GIT_ECLASS} meson python-any-r1 rhel-a
+inherit ${GIT_ECLASS} meson python-any-r1 rhel9-a
 
 DESCRIPTION="X.Org combined protocol headers"
 HOMEPAGE="https://gitlab.freedesktop.org/xorg/proto/xorgproto"
