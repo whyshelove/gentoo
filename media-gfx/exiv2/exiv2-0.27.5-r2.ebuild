@@ -3,19 +3,25 @@
 
 EAPI=7
 
-KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~s390 sparc ~x86 ~amd64-linux ~x86-linux ~x64-solaris ~x86-solaris"
-S="${WORKDIR}/${P}-Source"
+if [[ ${PV} = *9999 ]]; then
+	EGIT_REPO_URI="https://github.com/Exiv2/exiv2.git"
+	inherit git-r3
+else
+	KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~x64-solaris ~x86-solaris"
+	S="${WORKDIR}/${P}-Source"
+fi
 
 CMAKE_ECLASS=cmake
-PYTHON_COMPAT=( python3_{7,8,9} )
+PYTHON_COMPAT=( python3_{8..10} )
 inherit cmake-multilib python-any-r1 rhel9-a
 
 DESCRIPTION="EXIF, IPTC and XMP metadata C++ library and command line utility"
 HOMEPAGE="https://www.exiv2.org/"
 
 LICENSE="GPL-2"
-SLOT="0/27"
-IUSE="doc examples nls +png test webready +xmp"
+# In 0.27.5, ABI seemed to be broken for bmff functions
+SLOT="0/27.5"
+IUSE="+bmff doc examples nls +png test webready +xmp"
 RESTRICT="!test? ( test )"
 
 BDEPEND="
@@ -28,24 +34,20 @@ BDEPEND="
 	)
 	nls? ( sys-devel/gettext )
 "
-DEPEND="
+RDEPEND="
 	>=virtual/libiconv-0-r1[${MULTILIB_USEDEP}]
 	nls? ( >=virtual/libintl-0-r1[${MULTILIB_USEDEP}] )
 	png? ( sys-libs/zlib[${MULTILIB_USEDEP}] )
-	test? ( dev-cpp/gtest )
 	webready? (
-		>net-libs/libssh-0.9.1[${MULTILIB_USEDEP}]
+		>net-libs/libssh-0.9.1[sftp,${MULTILIB_USEDEP}]
 		net-misc/curl[${MULTILIB_USEDEP}]
 	)
 	xmp? ( dev-libs/expat[${MULTILIB_USEDEP}] )
 "
-RDEPEND="${DEPEND}"
+DEPEND="${DEPEND}
+	test? ( dev-cpp/gtest )"
 
 DOCS=( README.md doc/ChangeLog doc/cmd.txt )
-
-PATCHES=(
-	"${FILESDIR}"/${PN}-0.27.4-gtest-1.11.patch
-)
 
 pkg_setup() {
 	use doc && python-any-r1_pkg_setup
@@ -72,6 +74,7 @@ multilib_src_configure() {
 		-DEXIV2_ENABLE_SSH=$(usex webready)
 		-DEXIV2_ENABLE_WEBREADY=$(usex webready)
 		-DEXIV2_ENABLE_XMP=$(usex xmp)
+		-DEXIV2_ENABLE_BMFF=$(usex bmff)
 		$(multilib_is_native_abi || echo -DEXIV2_BUILD_EXIV2_COMMAND=NO)
 		$(multilib_is_native_abi && echo -DEXIV2_BUILD_DOC=$(usex doc))
 		$(multilib_is_native_abi && echo -DEXIV2_BUILD_UNIT_TESTS=$(usex test))

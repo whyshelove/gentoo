@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools multilib-minimal readme.gentoo-r1 rhel-a
+inherit autotools multilib-minimal readme.gentoo-r1 rhel9-a
 
 DESCRIPTION="A library for configuring and customizing font access"
 HOMEPAGE="https://fontconfig.org/"
