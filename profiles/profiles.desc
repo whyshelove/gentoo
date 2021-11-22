@@ -35,7 +35,9 @@ amd64		default/linux/amd64/17.1/no-multilib			stable
 amd64		default/linux/amd64/17.1/no-multilib/hardened		stable
 amd64		default/linux/amd64/17.1/no-multilib/hardened/selinux	stable
 amd64		default/linux/amd64/17.1/no-multilib/systemd		dev
+amd64		default/linux/amd64/17.1/no-multilib/systemd/selinux	exp
 amd64		default/linux/amd64/17.1/systemd			stable
+amd64		default/linux/amd64/17.1/systemd/selinux		exp
 
 # AMD64 Profiles
 # @MAINTAINER: amd64@gentoo.org
@@ -82,13 +84,17 @@ arm		default/linux/arm/17.0/armv5te/desktop/plasma	dev
 arm		default/linux/arm/17.0/armv5te/developer	exp
 arm		default/linux/arm/17.0/armv5te/systemd		dev
 arm		default/linux/arm/17.0/armv6j			stable
+arm		default/linux/arm/17.0/armv6j/hardened		exp
+arm		default/linux/arm/17.0/armv7a/hardened/selinux	exp
 arm		default/linux/arm/17.0/armv6j/desktop		dev
 arm		default/linux/arm/17.0/armv6j/desktop/gnome	dev
 arm		default/linux/arm/17.0/armv6j/desktop/plasma	dev
 arm		default/linux/arm/17.0/armv6j/developer		exp
+arm		default/linux/arm/17.0/armv6j/selinux		exp
 arm		default/linux/arm/17.0/armv6j/systemd		dev
 arm		default/linux/arm/17.0/armv7a			stable
 arm		default/linux/arm/17.0/armv7a/hardened		exp
+arm		default/linux/arm/17.0/armv7a/hardened/selinux	dev
 arm		default/linux/arm/17.0/armv7a/desktop		dev
 arm		default/linux/arm/17.0/armv7a/desktop/gnome	dev
 arm		default/linux/arm/17.0/armv7a/desktop/plasma	dev
@@ -99,6 +105,7 @@ arm		default/linux/arm/17.0/armv7a/systemd		dev
 # @MAINTAINER: arm64@gentoo.org
 arm64		default/linux/arm64/17.0			stable
 arm64		default/linux/arm64/17.0/hardened		exp
+arm64		default/linux/arm64/17.0/hardened/selinux	dev
 arm64		default/linux/arm64/17.0/desktop		stable
 arm64		default/linux/arm64/17.0/desktop/gnome		stable
 arm64		default/linux/arm64/17.0/desktop/gnome/systemd	stable
@@ -107,6 +114,7 @@ arm64		default/linux/arm64/17.0/desktop/plasma/systemd stable
 arm64		default/linux/arm64/17.0/desktop/systemd	stable
 arm64		default/linux/arm64/17.0/developer		exp
 arm64		default/linux/arm64/17.0/systemd		stable
+arm64		default/linux/arm64/17.0/systemd/selinux	exp
 
 # ARM64 Profiles (big-endian)
 # @MAINTAINER: steev@gentoo.org, slyfox@gentoo.org
@@ -260,10 +268,13 @@ amd64		default/linux/amd64/17.0/musl/hardened			exp
 amd64		default/linux/amd64/17.0/musl/hardened/selinux		exp
 arm		default/linux/arm/17.0/musl/armv6j			exp
 arm		default/linux/arm/17.0/musl/armv6j/hardened		exp
+arm		default/linux/arm/17.0/musl/armv6j/hardened/selinux	exp
 arm		default/linux/arm/17.0/musl/armv7a			exp
 arm		default/linux/arm/17.0/musl/armv7a/hardened		exp
+arm		default/linux/arm/17.0/musl/armv7a/hardened/selinux	exp
 arm64		default/linux/arm64/17.0/musl				exp
 arm64		default/linux/arm64/17.0/musl/hardened			exp
+arm64		default/linux/arm64/17.0/musl/hardened/selinux		exp
 mips		default/linux/musl/mips					exp
 mips		hardened/linux/musl/mips				exp
 mips		default/linux/musl/mips/mipsel				exp
