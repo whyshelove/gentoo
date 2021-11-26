@@ -4,11 +4,10 @@
 EAPI=7
 
 HASH=0ee50652091363ab0d17e335e5e74fbe # don't forget to update on version bumps
-inherit meson xdg-utils rhel
+inherit meson xdg-utils rhel9
 
 DESCRIPTION="The Shared MIME-info Database specification"
 HOMEPAGE="https://gitlab.freedesktop.org/xdg/shared-mime-info"
-#SRC_URI="https://gitlab.freedesktop.org/xdg/${PN}/uploads/${HASH}/${P}.tar.xz"
 
 LICENSE="GPL-2"
 SLOT="0"

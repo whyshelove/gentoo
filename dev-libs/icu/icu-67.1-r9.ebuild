@@ -4,11 +4,10 @@
 EAPI=7
 
 PYTHON_COMPAT=( python3_{7..9} )
-inherit autotools flag-o-matic multilib-minimal python-any-r1 toolchain-funcs rhel
+inherit autotools flag-o-matic multilib-minimal python-any-r1 toolchain-funcs rhel9
 
 DESCRIPTION="International Components for Unicode"
 HOMEPAGE="http://site.icu-project.org/"
-#SRC_URI="https://github.com/unicode-org/icu/releases/download/release-${PV//./-}/icu4c-${PV//./_}-src.tgz"
 
 LICENSE="BSD"
 

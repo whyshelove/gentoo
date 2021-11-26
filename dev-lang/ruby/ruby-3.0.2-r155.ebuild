@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools flag-o-matic multilib rhel-a
+inherit autotools flag-o-matic multilib rhel9-a
 
 MY_P="${PN}-$(ver_cut 1-3)"
 S=${WORKDIR}/${MY_P}
