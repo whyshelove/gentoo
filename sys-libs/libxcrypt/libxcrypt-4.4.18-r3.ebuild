@@ -3,7 +3,7 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{6..9} )
+PYTHON_COMPAT=( python3_{8..10} )
 # NEED_BOOTSTRAP is for developers to quickly generate a tarball
 # for publishing to the tree.
 NEED_BOOTSTRAP="yes"
@@ -20,7 +20,10 @@ REQUIRED_USE="split-usr? ( system )"
 RESTRICT="!test? ( test )"
 
 DEPEND="system? (
-		elibc_glibc? ( sys-libs/glibc[-crypt(+)] )
+		elibc_glibc? (
+			sys-libs/glibc[-crypt(+)]
+			!sys-libs/glibc[crypt(+)]
+		)
 		!sys-libs/musl
 	)"
 RDEPEND="${DEPEND}"

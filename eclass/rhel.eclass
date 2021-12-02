@@ -80,7 +80,7 @@ if [ -z ${MY_PF} ] ; then
 			xz-utils ) MY_P="${PN/-utils}-${PV/_}"; MY_PF=${MY_P}-${MY_PR} ;;
 			glib-utils ) MY_P="${PN/-utils}2-${PV}"; MY_PF=${MY_P}-${MY_PR} ;;	
 			python ) MY_P=${P%_p*}; MY_PF=${MY_P/-/3.$(ver_cut 2)-}-${MY_PR} ;;
-			nspr ) MY_P=nss-3.67.0; MY_PF=${MY_P}-${MY_PR}; S="${WORKDIR}/${MY_P/.0}";;
+			nspr ) MY_P=nss-3.71.0; MY_PF=${MY_P}-${MY_PR}; S="${WORKDIR}/${MY_P/.0}";;
 			qtgui | qtcore | qtwidgets | qtdbus | qtnetwork | qttest | qtxml \
 			| linguist-tools | qtsql | qtconcurrent | qdbus | qtpaths \
 			| qtprintsupport | designer ) MY_P="qt5-${QT5_MODULE}-${PV}"; MY_PF=${MY_P}-${MY_PR} ;;
