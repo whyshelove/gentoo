@@ -6,7 +6,7 @@
 
 DESCRIPTION="The GNU Compiler Collection"
 HOMEPAGE="https://gcc.gnu.org/"
-
+DIST=el8_5
 inherit flag-o-matic gnuconfig libtool multilib pax-utils toolchain-funcs prefix rhel8
 
 FEATURES=${FEATURES/multilib-strict/}

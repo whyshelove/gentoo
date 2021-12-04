@@ -31,7 +31,7 @@ fi
 
 LICENSE="ISC"
 SLOT="0/23"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86"
 IUSE="+asm minimal static-libs +urandom"
 
 CPU_USE=( cpu_flags_x86_{aes,sse4_1} )
@@ -79,14 +79,9 @@ multilib_src_configure() {
 	)
 
 	# --disable-pie is needed on x86, see bug #512734
+	# TODO: Check if still needed?
 	if [[ "${MULTILIB_ABI_FLAG}" == "abi_x86_32" ]] ; then
 		myeconfargs+=( --disable-pie )
-
-		# --disable-ssp is needed on musl x86
-		# TODO: Check if still needed? bug #747346
-		if use elibc_musl ; then
-			myeconfargs+=( --disable-ssp )
-		fi
 	fi
 
 	ECONF_SOURCE="${S}" econf "${myeconfargs[@]}"
