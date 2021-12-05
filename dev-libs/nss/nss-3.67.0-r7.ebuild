@@ -2,21 +2,21 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
+DIST=el8_5
+inherit flag-o-matic multilib toolchain-funcs multilib-minimal rhel8-a
 
-inherit flag-o-matic multilib toolchain-funcs multilib-minimal
-
-NSPR_VER="4.32"
+NSPR_VER="4.29"
 RTM_NAME="NSS_${PV//./_}_RTM"
 
 DESCRIPTION="Mozilla's Network Security Services library that implements PKI support"
 HOMEPAGE="https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS"
-SRC_URI="https://archive.mozilla.org/pub/security/nss/releases/${RTM_NAME}/src/${P}.tar.gz
+SRC_URI+="
 	cacert? ( https://dev.gentoo.org/~whissi/dist/ca-certificates/nss-cacert-class1-class3-r2.patch )"
 
 LICENSE="|| ( MPL-2.0 GPL-2 LGPL-2.1 )"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~x64-solaris ~x86-solaris"
-IUSE="cacert utils cpu_flags_ppc_altivec cpu_flags_ppc_vsx"
+KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~x64-solaris ~x86-solaris"
+IUSE="cacert utils"
 # pkg-config called by nss-config -> virtual/pkgconfig in RDEPEND
 RDEPEND="
 	>=dev-libs/nspr-${NSPR_VER}[${MULTILIB_USEDEP}]
@@ -25,11 +25,10 @@ RDEPEND="
 	virtual/pkgconfig
 "
 DEPEND="${RDEPEND}"
-BDEPEND="dev-lang/perl"
 
 RESTRICT="test"
 
-S="${WORKDIR}/${P}/${PN}"
+S="${WORKDIR}/${P/.0}/${PN}"
 
 MULTILIB_CHOST_TOOLS=(
 	/usr/bin/nss-config
@@ -169,15 +168,6 @@ multilib_src_compile() {
 		export CC_IS_CLANG=1
 	fi
 
-	# explicitly disable altivec/vsx if not requested
-	# https://bugs.gentoo.org/789114
-	case ${ARCH} in
-		ppc*)
-			use cpu_flags_ppc_altivec || export NSS_DISABLE_ALTIVEC=1
-			use cpu_flags_ppc_vsx || export NSS_DISABLE_CRYPTO_VSX=1
-			;;
-	esac
-
 	local d
 
 	# Build the host tools first.
@@ -195,6 +185,27 @@ multilib_src_compile() {
 		XCFLAGS="${CFLAGS} ${CPPFLAGS}" \
 		NSPR_LIB_DIR="${T}/fakedir" \
 		emake -j1 "${makeargs[@]}" -C ${d} OS_TEST="$(nssarch)"
+	done
+
+	# Set up our package files
+	mkdir -p ./dist/pkgconfig
+
+	cat ${WORKDIR}/setup-nsssysinit.sh > ./dist/pkgconfig/setup-nsssysinit.sh
+	chmod 755 ./dist/pkgconfig/setup-nsssysinit.sh
+
+	cp ./nss/lib/ckfw/nssck.api ./dist/private/nss/
+
+	date +"%e %B %Y" | tr -d '\n' > date.xml
+	echo -n 3.53.1 > version.xml
+
+	cp  ${WORKDIR}/*.xml .
+
+	for m in nss-config.xml setup-nsssysinit.xml pkcs11.txt.xml; do
+  	  xmlto man ${m}
+	done
+
+	for m in cert8.db.xml cert9.db.xml key3.db.xml key4.db.xml secmod.db.xml; do
+  	  xmlto man ${m}
 	done
 }
 
