@@ -9,7 +9,7 @@
 # (This mask is undone in musl profiles where the transition is not yet being
 # made.)
 # bug #699422.
-virtual/libcrypt:0/1
+#virtual/libcrypt:0/1
 
 # Andreas K. Hüttel <dilfridge@gentoo.org> (2021-07-06)
 # No longer maintained upstream; please see the 2021-07-15-opentmpfiles-deprecation
