@@ -7,14 +7,14 @@ PYTHON_COMPAT=( python3_{8..10} )
 # NEED_BOOTSTRAP is for developers to quickly generate a tarball
 # for publishing to the tree.
 NEED_BOOTSTRAP="yes"
-inherit multibuild python-any-r1 multilib-minimal flag-o-matic autotools rhel9
+inherit multibuild multilib python-any-r1 toolchain-funcs multilib-minimal flag-o-matic autotools rhel9
 
 DESCRIPTION="Extended crypt library for descrypt, md5crypt, bcrypt, and others"
 HOMEPAGE="https://github.com/besser82/libxcrypt"
 
 LICENSE="LGPL-2.1+ public-domain BSD BSD-2"
 SLOT="0/1"
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 ~sparc x86"
 IUSE="+compat split-usr static-libs +system test"
 REQUIRED_USE="split-usr? ( system )"
 RESTRICT="!test? ( test )"
@@ -25,7 +25,8 @@ DEPEND="system? (
 			!sys-libs/glibc[crypt(+)]
 		)
 		!sys-libs/musl
-	)"
+	)
+"
 RDEPEND="${DEPEND}"
 BDEPEND="dev-lang/perl
 	sys-apps/findutils
@@ -33,6 +34,17 @@ BDEPEND="dev-lang/perl
 
 python_check_deps() {
 	has_version -b "dev-python/passlib[${PYTHON_USEDEP}]"
+}
+
+pkg_pretend() {
+	if has "distcc" ${FEATURES} ; then
+		ewarn "Please verify all distcc nodes are using the same versions of GCC (>= 10) and Binutils!"
+		ewarn "Older/mismatched versions of GCC may lead to a misbehaving library: bug #823179."
+
+		if [[ ${BUILD_TYPE} != "binary" ]] && tc-is-gcc && [[ $(gcc-major-version) -lt 10 ]] ; then
+			die "libxcrypt is known to fail to build or be broken at runtime with < GCC 10 (bug #823179)!"
+		fi
+	fi
 }
 
 pkg_setup() {
@@ -51,8 +63,8 @@ src_prepare() {
 	#
 	# There are two circular dependencies to be aware of:
 	# 1)
-	# 	if we're bootstrapping configure and makefiles:
-	# 		libxcrypt -> automake -> perl -> libxcrypt
+	#	if we're bootstrapping configure and makefiles:
+	#		libxcrypt -> automake -> perl -> libxcrypt
 	#
 	#   mitigation:
 	#		toolchain@ manually runs `make dist` after running autoconf + `./configure`
@@ -90,6 +102,10 @@ src_prepare() {
 }
 
 src_configure() {
+	# Avoid possible "illegal instruction" errors with gold
+	# bug #821496
+	tc-ld-disable-gold
+
 	multibuild_foreach_variant multilib-minimal_src_configure
 }
 
@@ -108,14 +124,14 @@ multilib_src_configure() {
 		--disable-valgrind
 		--enable-hashes=all
 		--disable-werror
-		--libdir=$(get_xclibdir)
-		--with-pkgconfigdir=/usr/$(get_libdir)/pkgconfig
+		--libdir="${EPREFIX}"$(get_xclibdir)
+		--with-pkgconfigdir="${EPREFIX}/usr/$(get_libdir)/pkgconfig"
 		--includedir="${EPREFIX}/usr/include/$(usex system '' 'xcrypt')"
 	)
 
 	case "${MULTIBUILD_ID}" in
 		xcrypt_compat-*)
-			myconf+=(  
+			myconf+=(
 				--disable-static
 				--disable-xcrypt-compat-files
 				--enable-obsolete-api=glibc
@@ -161,8 +177,8 @@ src_install() {
 	) || die "failglob error"
 
 	# Remove useless stuff from installation
-	find "${D}"/usr/share/doc/${PF} -type l -delete || die
-	find "${D}" -name '*.la' -delete || die
+	find "${ED}"/usr/share/doc/${PF} -type l -delete || die
+	find "${ED}" -name '*.la' -delete || die
 }
 
 multilib_src_install() {
@@ -171,7 +187,7 @@ multilib_src_install() {
 	# Don't install the libcrypt.so symlink for the "compat" version
 	case "${MULTIBUILD_ID}" in
 		xcrypt_compat-*)
-			rm "${D}"$(get_xclibdir)/libcrypt$(get_libname) \
+			rm "${ED}"$(get_xclibdir)/libcrypt$(get_libname) \
 				|| die "failed to remove extra compat libraries"
 		;;
 		xcrypt_nocompat-*)
@@ -185,7 +201,7 @@ multilib_src_install() {
 
 						if [[ -n ${static_libs[*]} ]]; then
 							dodir "/usr/$(get_xclibdir)"
-							mv "${static_libs[@]}" "${D}/usr/$(get_xclibdir)" \
+							mv "${static_libs[@]}" "${ED}/usr/$(get_xclibdir)" \
 								|| die "Moving static libs failed"
 						fi
 					fi

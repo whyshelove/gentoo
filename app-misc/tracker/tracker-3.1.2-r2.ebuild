@@ -5,14 +5,14 @@ EAPI=7
 PYTHON_COMPAT=( python3_{7..9} )
 VALA_MIN_API_VERSION="0.40"
 
-inherit bash-completion-r1 gnome.org gnome2-utils linux-info meson python-any-r1 systemd vala xdg rhel-a
+inherit bash-completion-r1 gnome.org gnome2-utils linux-info meson python-any-r1 systemd vala xdg rhel9-a
 
 DESCRIPTION="A tagging metadata database, search tool and indexer"
 HOMEPAGE="https://wiki.gnome.org/Projects/Tracker"
 
 LICENSE="GPL-2+ LGPL-2.1+"
 SLOT="3/0" # libtracker-sparql-3.0 soname version
-KEYWORDS="~alpha amd64 ~arm arm64 ~ia64 ~ppc ~ppc64 ~sparc x86"
+KEYWORDS="~alpha amd64 ~arm arm64 ~ia64 ~ppc ~ppc64 ~riscv ~sparc x86"
 IUSE="gtk-doc +miners stemmer test"
 RESTRICT="!test? ( test )"
 
@@ -27,7 +27,7 @@ RDEPEND="
 	>=net-libs/libsoup-2.40.1:2.4
 	>=dev-libs/libxml2-2.7
 	>=dev-db/sqlite-3.29.0
-	stemmer? ( dev-libs/snowball-stemmer )
+	stemmer? ( dev-libs/snowball-stemmer:= )
 "
 DEPEND="${RDEPEND}"
 BDEPEND="

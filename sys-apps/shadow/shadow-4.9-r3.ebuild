@@ -3,16 +3,15 @@
 
 EAPI=7
 
-inherit autotools pam
+inherit autotools pam  flag-o-matic rhel9
 
 DESCRIPTION="Utilities to deal with user accounts"
 HOMEPAGE="https://github.com/shadow-maint/shadow"
-SRC_URI="https://github.com/shadow-maint/shadow/releases/download/v${PV}/${P}.tar.xz"
 
 LICENSE="BSD GPL-2"
 SLOT="0"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
-IUSE="acl audit bcrypt cracklib nls pam selinux skey split-usr +su xattr"
+IUSE="acl +audit bcrypt cracklib nls pam selinux skey split-usr +su xattr"
 # Taken from the man/Makefile.am file.
 LANGS=( cs da de es fi fr hu id it ja ko pl pt_BR ru sv tr zh_CN zh_TW )
 
@@ -40,7 +39,7 @@ DEPEND="${COMMON_DEPEND}
 	>=sys-kernel/linux-headers-4.14
 "
 RDEPEND="${COMMON_DEPEND}
-	!<sys-apps/man-pages-5.11-r1
+	!<sys-apps/man-pages-5.10-r1
 	!=sys-apps/man-pages-5.12-r0
 	!=sys-apps/man-pages-5.12-r1
 	nls? (
@@ -52,14 +51,6 @@ RDEPEND="${COMMON_DEPEND}
 	su? ( !sys-apps/util-linux[su(-)] )
 "
 
-PATCHES=(
-	"${FILESDIR}/${PN}-4.1.3-dots-in-usernames.patch"
-	"${FILESDIR}/${P}-libsubid_pam_linking.patch"
-	"${FILESDIR}/${P}-libsubid_oot_build.patch"
-	"${FILESDIR}/shadow-4.9-libcrack.patch"
-	"${FILESDIR}/shadow-4.9-SHA-rounds.patch"
-)
-
 src_prepare() {
 	default
 	eautoreconf
@@ -67,10 +58,17 @@ src_prepare() {
 }
 
 src_configure() {
+	append-cflags -fpie
+	export LDFLAGS="-pie -Wl,-z,relro -Wl,-z,now"
+
 	local myeconfargs=(
+		--enable-shared
+     		--enable-shadowgrp
+		--enable-man
+		--with-sha-crypt
 		--disable-account-tools-setuid
 		--with-btrfs
-		--without-group-name-max-length
+		--with-group-name-max-length=32
 		--without-tcb
 		$(use_enable nls)
 		$(use_with acl)
@@ -114,7 +112,7 @@ set_login_opt() {
 }
 
 src_install() {
-	emake DESTDIR="${D}" suidperms=4711 install
+	emake DESTDIR="${D}" suidperms=4711  gnulocaledir="${D}"${_datadir}/locale MKINSTALLDIRS=`pwd`/mkinstalldirs install
 
 	# 4.9 regression: https://github.com/shadow-maint/shadow/issues/389
 	emake DESTDIR="${D}" -C man install
@@ -122,6 +120,8 @@ src_install() {
 	find "${ED}" -name '*.la' -type f -delete || die
 
 	insinto /etc
+	newins ${WORKDIR}/shadow-utils.login.defs login.defs
+
 	if ! use pam ; then
 		insopts -m0600
 		doins etc/login.access etc/limits
@@ -130,7 +130,7 @@ src_install() {
 	# needed for 'useradd -D'
 	insinto /etc/default
 	insopts -m0600
-	doins "${FILESDIR}"/default/useradd
+	newins ${WORKDIR}/shadow-utils.useradd useradd
 
 	if use split-usr ; then
 		# move passwd to / to help recover broke systems #64441
@@ -141,6 +141,11 @@ src_install() {
 		mv "${ED}"/usr/bin/passwd "${ED}"/bin/ || die
 		dosym ../../bin/passwd /usr/bin/passwd
 	fi
+
+	# Move header files to its own folder
+	insinto ${_includedir}/shadow && doins libsubid/subid.h
+
+	dosym useradd ${_sbindir}/adduser
 
 	cd "${S}" || die
 	insinto /etc
@@ -222,6 +227,45 @@ src_install() {
 	newdoc README README.download
 	cd doc || die
 	dodoc HOWTO README* WISHLIST *.txt
+
+	# Remove binaries we don't use.
+	rm ${ED}${_bindir}/{chfn,chsh,expiry,passwd,faillog}
+
+	rm ${ED}${_sysconfdir}/{'login.access',limits}
+
+	rm ${ED}${_sbindir}/logoutd
+	rm ${ED}${_mandir}/man1/chfn.*
+	rm ${ED}${_mandir}/*/man1/chfn.*
+	rm ${ED}${_mandir}/man1/chsh.*
+	rm ${ED}${_mandir}/*/man1/chsh.*
+	rm ${ED}${_mandir}/man1/expiry.*
+	rm ${ED}${_mandir}/*/man1/expiry.*
+	rm ${ED}${_mandir}/man1/groups.*
+	rm ${ED}${_mandir}/*/man1/groups.*
+	rm ${ED}${_mandir}/man1/login.*
+	rm ${ED}${_mandir}/*/man1/login.*
+	rm ${ED}${_mandir}/man1/passwd.*
+	rm ${ED}${_mandir}/*/man1/passwd.*
+	rm ${ED}${_mandir}/man1/su.*
+	rm ${ED}${_mandir}/*/man1/su.*
+	rm ${ED}${_mandir}/man5/limits.*
+	rm ${ED}${_mandir}/*/man5/limits.*
+	rm ${ED}${_mandir}/man5/login.access.*
+	rm ${ED}${_mandir}/*/man5/login.access.*
+	rm ${ED}${_mandir}/man5/passwd.*
+	rm ${ED}${_mandir}/*/man5/passwd.*
+	rm ${ED}${_mandir}/man5/porttime.*
+	rm ${ED}${_mandir}/*/man5/porttime.*
+	rm ${ED}${_mandir}/man5/suauth.*
+	rm ${ED}${_mandir}/*/man5/suauth.*
+	rm ${ED}${_mandir}/man8/logoutd.*
+	rm ${ED}${_mandir}/*/man8/logoutd.*
+	rm ${ED}${_mandir}/man8/nologin.*
+	rm ${ED}${_mandir}/*/man8/nologin.*
+	rm ${ED}${_mandir}/man5/faillog.*
+	rm ${ED}${_mandir}/*/man5/faillog.*
+	rm ${ED}${_mandir}/man8/faillog.*
+	rm ${ED}${_mandir}/*/man8/faillog.*
 }
 
 pkg_preinst() {
