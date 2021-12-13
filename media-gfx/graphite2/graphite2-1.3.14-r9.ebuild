@@ -5,12 +5,11 @@ EAPI=7
 
 CMAKE_ECLASS=cmake
 GENTOO_DEPEND_ON_PERL="no"
-PYTHON_COMPAT=( python3_{7,8,9} )
+PYTHON_COMPAT=( python3_{6,8,9} )
 inherit perl-module python-any-r1 cmake-multilib rhel9-a
 
 DESCRIPTION="Library providing rendering capabilities for complex non-Roman writing systems"
 HOMEPAGE="https://scripts.sil.org/cms/scripts/page.php?site_id=projects&item_id=graphite_home"
-#SRC_URI="mirror://sourceforge/silgraphite/${PN}/${P}.tgz"
 
 LICENSE="LGPL-2.1"
 SLOT="0"

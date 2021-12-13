@@ -41,7 +41,7 @@ else
 			libpcre* ) MY_P=${P/lib}; MY_PF=${MY_P}-${MY_PR} ;;
 			libnsl ) MY_P=${P/-/2-}; MY_PF=${MY_P}-${MY_PR} ;;
 			xorg-proto ) MY_PF=${PN/-/-x11-}-devel-${PV}-${MY_PR} ;;
-			xorg-server ) MY_PF=${P/-/-x11-}-2 ;;
+			xorg-server ) MY_PF=${P/-/-x11-}-${MY_PR} ;;
 			gtk+ ) MY_P=${P/+/$(ver_cut 1)}; MY_PF=${MY_P}-${MY_PR} ;;
 			xz-utils ) MY_P="${PN/-utils}-${PV/_}"; MY_PF=${MY_P}-${MY_PR} ;;
 			python ) MY_PR=${PVR##*p}; MY_P=${P%_p*}; MY_PF=${MY_P/-/3$(ver_cut 2)-}-${MY_PR} ;;

@@ -7,7 +7,6 @@ inherit multilib-minimal flag-o-matic rhel9-a
 
 DESCRIPTION="free lossless audio encoder and decoder"
 HOMEPAGE="https://xiph.org/flac/"
-#SRC_URI="https://downloads.xiph.org/releases/${PN}/${P}.tar.xz"
 
 LICENSE="BSD FDL-1.2 GPL-2 LGPL-2.1"
 SLOT="0"

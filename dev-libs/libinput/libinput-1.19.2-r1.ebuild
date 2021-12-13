@@ -1,8 +1,8 @@
 # Copyright 2014-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
-PYTHON_COMPAT=( python3_{6,8,9} )
+EAPI=8
+PYTHON_COMPAT=( python3_{8..10} )
 
 inherit meson python-any-r1 udev rhel9-a
 
@@ -12,7 +12,7 @@ HOMEPAGE="https://www.freedesktop.org/wiki/Software/libinput/ https://gitlab.fre
 LICENSE="MIT"
 SLOT="0/10"
 [[ "$(ver_cut 3)" -gt 900 ]] || \
-KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ~ppc ~ppc64 ~riscv ~s390 sparc ~x86"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ppc ppc64 ~riscv ~s390 sparc x86"
 IUSE="doc input_devices_wacom test"
 RESTRICT="!test? ( test )"
 
@@ -31,8 +31,8 @@ BDEPEND="
 "
 #	test? ( dev-util/valgrind )
 RDEPEND="
-	input_devices_wacom? ( >=dev-libs/libwacom-0.20 )
-	>=dev-libs/libevdev-1.3
+	input_devices_wacom? ( >=dev-libs/libwacom-0.27 )
+	>=dev-libs/libevdev-1.9.902
 	>=sys-libs/mtdev-1.1
 	virtual/libudev:=
 	virtual/udev
@@ -41,10 +41,10 @@ DEPEND="${RDEPEND}
 	test? ( >=dev-libs/check-0.9.10 )"
 
 python_check_deps() {
-	has_version "dev-python/commonmark[${PYTHON_USEDEP}]" && \
-	has_version "dev-python/recommonmark[${PYTHON_USEDEP}]" && \
-	has_version "dev-python/sphinx[${PYTHON_USEDEP}]" && \
-	has_version ">=dev-python/sphinx_rtd_theme-0.2.4[${PYTHON_USEDEP}]"
+	has_version -b "dev-python/commonmark[${PYTHON_USEDEP}]" && \
+	has_version -b "dev-python/recommonmark[${PYTHON_USEDEP}]" && \
+	has_version -b "dev-python/sphinx[${PYTHON_USEDEP}]" && \
+	has_version -b ">=dev-python/sphinx_rtd_theme-0.2.4[${PYTHON_USEDEP}]"
 }
 
 pkg_setup() {

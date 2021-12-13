@@ -7,7 +7,6 @@ inherit multilib-minimal rhel9-a
 
 DESCRIPTION="The Ogg media file format library"
 HOMEPAGE="https://xiph.org/ogg/"
-#SRC_URI="https://downloads.xiph.org/releases/ogg/${P}.tar.xz"
 
 LICENSE="BSD"
 SLOT="0"

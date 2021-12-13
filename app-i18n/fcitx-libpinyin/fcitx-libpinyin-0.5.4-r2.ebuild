@@ -16,7 +16,7 @@ HOMEPAGE="https://fcitx-im.org/ https://github.com/fcitx/fcitx-libpinyin"
 if [[ "${PV}" =~ (^|\.)9999$ ]]; then
 	SRC_URI="https://download.fcitx-im.org/data/model.text.20161206.tar.gz -> fcitx-data-model.text.20161206.tar.gz"
 else
-	SRC_URI="https://download-ib01.fedoraproject.org/pub/fedora/linux/releases/34/Everything/source/tree/Packages/f/fcitx-libpinyin-0.5.4-1.fc34.src.rpm"
+	SRC_URI="https://download-ib01.fedoraproject.org/pub/fedora/linux/releases/35/Everything/source/tree/Packages/f/fcitx-libpinyin-0.5.4-2.fc35.src.rpm"
 fi
 
 LICENSE="GPL-2+ GPL-3+"

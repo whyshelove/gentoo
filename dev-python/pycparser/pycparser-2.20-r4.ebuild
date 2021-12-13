@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{7..10} pypy3 )
 
-inherit distutils-r1 rhel-a
+inherit distutils-r1 rhel8-a
 
 DESCRIPTION="C parser and AST generator written in Python"
 HOMEPAGE="https://github.com/eliben/pycparser"

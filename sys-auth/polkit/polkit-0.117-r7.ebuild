@@ -7,11 +7,10 @@ inherit autotools pam pax-utils systemd xdg-utils rhel9
 
 DESCRIPTION="Policy framework for controlling privileges for system-wide services"
 HOMEPAGE="https://www.freedesktop.org/wiki/Software/polkit https://gitlab.freedesktop.org/polkit/polkit"
-#SRC_URI="https://www.freedesktop.org/software/${PN}/releases/${P}.tar.gz"
 
 LICENSE="LGPL-2"
 SLOT="0"
-KEYWORDS="amd64 arm ~arm64 ~mips ppc64 ~riscv ~s390 x86"
+KEYWORDS="amd64 arm arm64 ~mips ppc64 ~riscv ~s390 x86"
 IUSE="elogind examples gtk +introspection kde nls pam selinux systemd test"
 RESTRICT="!test? ( test )"
 

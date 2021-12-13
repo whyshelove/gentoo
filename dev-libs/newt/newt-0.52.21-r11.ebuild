@@ -3,7 +3,7 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{6..10} )
 
 inherit autotools python-r1 toolchain-funcs rhel9
 

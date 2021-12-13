@@ -3,7 +3,7 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{8..9} pypy3 )
+PYTHON_COMPAT=( python3_{6..9} pypy3 )
 
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
