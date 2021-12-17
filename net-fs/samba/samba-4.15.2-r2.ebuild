@@ -3,9 +3,9 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{8..9} )
+PYTHON_COMPAT=( python3_{6..9} )
 PYTHON_REQ_USE="threads(+),xml(+)"
-inherit python-single-r1 waf-utils multilib-minimal linux-info systemd pam tmpfiles
+inherit python-single-r1 waf-utils multilib-minimal linux-info systemd pam tmpfiles rhel8
 
 DESCRIPTION="Samba Suite Version 4"
 HOMEPAGE="https://samba.org/"
@@ -15,8 +15,7 @@ MY_P="${PN}-${MY_PV}"
 if [[ ${PV} = *_rc* ]]; then
 	SRC_URI="mirror://samba/rc/${MY_P}.tar.gz"
 else
-	SRC_URI="mirror://samba/stable/${MY_P}.tar.gz"
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~ppc ~ppc64 ~riscv ~sparc ~x86"
+	KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~ppc ~ppc64 ~riscv ~sparc ~x86"
 fi
 S="${WORKDIR}/${MY_P}"
 
@@ -64,9 +63,8 @@ COMMON_DEPEND="
 	dev-libs/popt[${MULTILIB_USEDEP}]
 	dev-perl/Parse-Yapp
 	>=net-libs/gnutls-3.4.7[${MULTILIB_USEDEP}]
-	net-libs/libnsl:=[${MULTILIB_USEDEP}]
 	sys-libs/e2fsprogs-libs[${MULTILIB_USEDEP}]
-	>=sys-libs/ldb-2.4.0[ldap(+)?,${MULTILIB_USEDEP}]
+	>=sys-libs/ldb-2.4.1[ldap(+)?,${MULTILIB_USEDEP}]
 	<sys-libs/ldb-2.5.0[ldap(+)?,${MULTILIB_USEDEP}]
 	sys-libs/libcap[${MULTILIB_USEDEP}]
 	sys-libs/liburing:=[${MULTILIB_USEDEP}]
@@ -88,7 +86,7 @@ COMMON_DEPEND="
 			net-dns/bind-tools[gssapi]
 		)
 	")
-	!alpha? ( !sparc? ( !riscv? ( sys-libs/libunwind:= ) ) )
+	!alpha? ( !sparc? ( sys-libs/libunwind:= ) )
 	acl? ( virtual/acl )
 	ceph? ( sys-cluster/ceph )
 	cluster? ( net-libs/rpcsvc-proto )
@@ -97,7 +95,7 @@ COMMON_DEPEND="
 	dmapi? ( sys-apps/dmapi )
 	fam? ( virtual/fam )
 	gpg? ( app-crypt/gpgme )
-	json? ( dev-libs/jansson )
+	json? ( dev-libs/jansson:= )
 	ldap? ( net-nds/openldap[${MULTILIB_USEDEP}] )
 	pam? ( sys-libs/pam )
 	python? (
@@ -194,7 +192,7 @@ multilib_src_configure() {
 	if ! use system-heimdal && ! use system-mitkrb5 ; then
 		bundled_libs="heimbase,heimntlm,hdb,kdc,krb5,wind,gssapi,hcrypto,hx509,roken,asn1,com_err,NONE"
 	fi
-
+	_systemd_extra="Environment=KRB5CCNAME=FILE:/run/samba/krb5cc_samba"
 	local myconf=(
 		--enable-fhs
 		--sysconfdir="${EPREFIX}/etc"
@@ -208,6 +206,16 @@ multilib_src_configure() {
 		--nopyc
 		--nopyo
 		--without-winexe
+		--with-sockets-dir=/run/samba
+		--with-lockdir=/var/lib/samba/lock
+		--with-statedir=/var/lib/samba
+		--with-cachedir=/var/lib/samba
+		--with-pie
+		--with-relro
+		--systemd-smb-extra=${_systemd_extra}
+		--systemd-nmb-extra=${_systemd_extra}
+		--systemd-winbind-extra=${_systemd_extra}
+		--systemd-samba-extra=${_systemd_extra}
 		$(multilib_native_use_with acl acl-support)
 		$(multilib_native_usex addc '' '--without-ad-dc')
 		$(multilib_native_use_with ads)
@@ -270,7 +278,8 @@ multilib_src_install() {
 
 		# create symlink for cups (bug #552310)
 		if use cups ; then
-			dosym ../../../bin/smbspool /usr/libexec/cups/backend/smb
+			dosym ../../../bin/smbspool \
+				/usr/libexec/cups/backend/smb
 		fi
 
 		# install example config file
@@ -291,7 +300,10 @@ multilib_src_install() {
 		newconfd "${CONFDIR}/samba4.confd" samba
 
 		dotmpfiles "${FILESDIR}"/samba.conf
-		use addc || rm "${D}/$(systemd_get_systemunitdir)/samba.service" || die
+		if ! use addc ; then
+			rm "${D}/$(systemd_get_systemunitdir)/samba.service" \
+				|| die
+		fi
 
 		# Preserve functionality for old gentoo-specific unit names
 		dosym nmb.service "$(systemd_get_systemunitdir)/nmbd.service"

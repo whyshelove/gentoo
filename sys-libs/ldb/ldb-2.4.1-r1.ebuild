@@ -3,17 +3,16 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7..9} )
+PYTHON_COMPAT=( python3_{6..9} )
 PYTHON_REQ_USE="threads(+)"
-inherit python-single-r1 waf-utils multilib-minimal
+inherit python-single-r1 waf-utils multilib-minimal rhel8
 
 DESCRIPTION="LDAP-like embedded database"
 HOMEPAGE="https://ldb.samba.org"
-SRC_URI="https://samba.org/ftp/pub/${PN}/${P}.tar.gz"
 
 LICENSE="LGPL-3"
 SLOT="0/${PV}"
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~s390 sparc x86"
+KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
 IUSE="doc ldap +lmdb python test"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
@@ -25,9 +24,9 @@ RDEPEND="
 	!elibc_FreeBSD? ( dev-libs/libbsd[${MULTILIB_USEDEP}] )
 	dev-libs/popt[${MULTILIB_USEDEP}]
 	>=dev-util/cmocka-1.1.3[${MULTILIB_USEDEP}]
-	>=sys-libs/talloc-2.3.1[${MULTILIB_USEDEP}]
-	>=sys-libs/tdb-1.4.3[${MULTILIB_USEDEP}]
-	>=sys-libs/tevent-0.10.2[${MULTILIB_USEDEP}]
+	>=sys-libs/talloc-2.3.3[${MULTILIB_USEDEP}]
+	>=sys-libs/tdb-1.4.4[${MULTILIB_USEDEP}]
+	>=sys-libs/tevent-0.11.0[${MULTILIB_USEDEP}]
 	ldap? ( net-nds/openldap )
 	lmdb? ( >=dev-db/lmdb-0.9.16[${MULTILIB_USEDEP}] )
 	python? (
@@ -37,7 +36,9 @@ RDEPEND="
 		sys-libs/tevent[python,${PYTHON_SINGLE_USEDEP}]
 	)
 "
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	virtual/libcrypt
+"
 BDEPEND="${PYTHON_DEPS}
 	dev-libs/libxslt
 	virtual/pkgconfig
@@ -72,8 +73,8 @@ multilib_src_configure() {
 		$(usex lmdb '' --without-ldb-lmdb)
 		--disable-rpath
 		--disable-rpath-install --bundled-libraries=NONE
-		--with-modulesdir="${EPREFIX}"/usr/$(get_libdir)/samba
-		--builtin-libraries=NONE
+		--with-modulesdir="${EPREFIX}"/usr/$(get_libdir)/ldb/modules
+		--builtin-libraries=replace
 	)
 	if ! multilib_is_native_abi; then
 		myconf+=( --disable-python )

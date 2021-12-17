@@ -3,17 +3,16 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7..9} )
+PYTHON_COMPAT=( python3_{6..9} )
 PYTHON_REQ_USE="threads(+)"
-inherit waf-utils python-single-r1 multilib-minimal
+inherit waf-utils python-single-r1 multilib-minimal rhel8
 
 DESCRIPTION="Samba talloc library"
 HOMEPAGE="https://talloc.samba.org/"
-SRC_URI="https://www.samba.org/ftp/${PN}/${P}.tar.gz"
 
 LICENSE="GPL-3 LGPL-3+ LGPL-2"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~x64-macos ~sparc-solaris ~x64-solaris"
+KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~x64-macos ~sparc-solaris ~x64-solaris"
 IUSE="compat +python"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
@@ -47,7 +46,7 @@ pkg_setup() {
 	# try to turn off distcc and ccache for people that have a problem with it
 	export DISTCC_DISABLE=1
 	export CCACHE_DISABLE=1
-
+	export python_LDFLAGS=""
 	python-single-r1_pkg_setup
 }
 
@@ -67,6 +66,10 @@ src_prepare() {
 
 multilib_src_configure() {
 	local extra_opts=(
+		--disable-rpath
+		--disable-rpath-install
+		--bundled-libraries=NONE
+		--builtin-libraries=replace
 		$(usex compat --enable-talloc-compat1 '')
 		$(multilib_native_usex python '' --disable-python)
 		$([[ ${CHOST} == *-solaris* ]] && echo '--disable-symbol-versions')

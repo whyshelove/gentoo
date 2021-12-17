@@ -3,17 +3,16 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{6..9} )
 PYTHON_REQ_USE="threads(+)"
-inherit waf-utils multilib-minimal python-single-r1
+inherit waf-utils multilib-minimal python-single-r1 rhel8
 
 DESCRIPTION="Samba tevent library"
 HOMEPAGE="https://tevent.samba.org/"
-SRC_URI="https://samba.org/ftp/tevent/${P}.tar.gz"
-
+SRC_URI="${REPO_URI}/lib${P}-0.${DIST}.src.rpm"
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~x86-linux"
+KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~x86-linux"
 IUSE="elibc_glibc python"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
@@ -55,7 +54,8 @@ src_prepare() {
 multilib_src_configure() {
 	waf-utils_src_configure \
 		--bundled-libraries=NONE \
-		--builtin-libraries=NONE \
+		--builtin-libraries=replace \
+		--disable-rpath \
 		$(multilib_native_usex python '' '--disable-python')
 }
 

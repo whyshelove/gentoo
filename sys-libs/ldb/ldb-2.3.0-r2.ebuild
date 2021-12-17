@@ -116,3 +116,4 @@ pkg_postinst() {
 		ewarn "See https://bugs.gentoo.org/404281"
 	fi
 }
+

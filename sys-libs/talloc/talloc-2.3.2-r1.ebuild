@@ -66,7 +66,7 @@ src_prepare() {
 
 multilib_src_configure() {
 	local extra_opts=(
-		--disable-rpath \
+		--disable-rpath
 		--disable-rpath-install
 		--bundled-libraries=NONE
 		--builtin-libraries=replace

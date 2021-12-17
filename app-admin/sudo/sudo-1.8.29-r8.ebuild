@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-DIST=el8_4.1
+#DIST=el8_4.1
 inherit pam multilib libtool systemd tmpfiles toolchain-funcs autotools rhel8
 
 MY_P="${P/_/}"
