@@ -211,11 +211,6 @@ src_prepare() {
 
 	[[ -d "${WORKDIR}"/patches ]] && PATCHES+=( "${WORKDIR}"/patches )
 
-	# Add local patches here
-	PATCHES+=(
-		"${FILESDIR}/249-libudev-static.patch"
-	)
-
 	if ! use vanilla; then
 		PATCHES+=(
 			"${FILESDIR}/gentoo-generator-path-r2.patch"
