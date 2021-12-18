@@ -5,14 +5,12 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{7,8,9} )
 
-inherit meson-multilib python-any-r1 rhel-a
+inherit meson-multilib python-any-r1 rhel9-a
 
 DESCRIPTION="Handler library for evdev events"
 HOMEPAGE="https://www.freedesktop.org/wiki/Software/libevdev/ https://gitlab.freedesktop.org/libevdev/libevdev"
 
-if [[ ${PV} != 8888* ]] ; then
-	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86"
-fi
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86"
 
 LICENSE="MIT"
 SLOT="0"

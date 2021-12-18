@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools libtool multilib-minimal rhel-a
+inherit autotools libtool multilib-minimal rhel9-a
 
 DESCRIPTION="A library to encapsulate CD-ROM reading and control"
 HOMEPAGE="https://www.gnu.org/software/libcdio/"

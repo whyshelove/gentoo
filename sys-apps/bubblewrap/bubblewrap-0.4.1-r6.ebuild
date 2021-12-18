@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit bash-completion-r1 linux-info rhel
+inherit bash-completion-r1 linux-info rhel9
 
 DESCRIPTION="Unprivileged sandboxing tool, namespaces-powered chroot-like solution"
 HOMEPAGE="https://github.com/containers/bubblewrap/"

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit gstreamer-meson pax-utils rhel-a
+inherit gstreamer-meson pax-utils rhel9-a
 
 DESCRIPTION="Open source multimedia framework"
 HOMEPAGE="https://gstreamer.freedesktop.org/"

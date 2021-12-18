@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib-minimal rhel
+inherit multilib-minimal rhel9
 
 DESCRIPTION="Multi-platform library designed to allow a developer to create robust software"
 HOMEPAGE="http://www.jedsoft.org/slang/"

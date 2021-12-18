@@ -5,7 +5,7 @@ EAPI=7
 
 XORG_MULTILIB=yes
 XORG_EAUTORECONF=yes
-inherit xorg-3 rhel
+inherit xorg-3 rhel9
 
 DESCRIPTION="Library providing generic access to the PCI bus and devices"
 KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~sparc-solaris ~x64-solaris ~x86-solaris"

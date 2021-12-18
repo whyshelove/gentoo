@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit rhel-a
+inherit rhel9-a
 
 DESCRIPTION="Data files for poppler to support uncommon encodings without xpdfrc"
 HOMEPAGE="https://poppler.freedesktop.org/"

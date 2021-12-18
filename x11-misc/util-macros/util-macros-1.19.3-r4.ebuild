@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit rhel-c
+inherit rhel9-c
 
 DESCRIPTION="X.Org autotools utility macros"
 HOMEPAGE="https://www.x.org/wiki/ https://gitlab.freedesktop.org/xorg/util/macros"

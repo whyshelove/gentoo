@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit gnome.org gnome2-utils meson xdg vala rhel-a
+inherit gnome.org gnome2-utils meson xdg vala rhel9-a
 
 DESCRIPTION="NetworkManager GUI library"
 HOMEPAGE="https://wiki.gnome.org/Projects/NetworkManager"

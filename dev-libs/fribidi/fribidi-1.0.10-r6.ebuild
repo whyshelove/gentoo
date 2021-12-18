@@ -7,7 +7,6 @@ inherit multilib-minimal toolchain-funcs autotools flag-o-matic rhel9-a
 
 DESCRIPTION="A free implementation of the unicode bidirectional algorithm"
 HOMEPAGE="https://fribidi.org/"
-#SRC_URI="https://github.com/fribidi/fribidi/releases/download/v${PV}/${P}.tar.xz"
 
 LICENSE="LGPL-2.1+"
 SLOT="0"

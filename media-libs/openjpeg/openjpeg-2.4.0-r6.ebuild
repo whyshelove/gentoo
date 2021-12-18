@@ -4,7 +4,7 @@
 EAPI=7
 
 CMAKE_ECLASS=cmake
-inherit cmake-multilib flag-o-matic rhel-a
+inherit cmake-multilib flag-o-matic rhel9-a
 
 # Make sure that test data are not newer than release;
 # otherwise we will see "Found-But-No-Test" test failures!

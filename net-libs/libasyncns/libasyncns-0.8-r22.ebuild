@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools flag-o-matic multilib-minimal rhel-a
+inherit autotools flag-o-matic multilib-minimal rhel9-a
 
 DESCRIPTION="C library for executing name service queries asynchronously"
 HOMEPAGE="http://0pointer.de/lennart/projects/libasyncns/"

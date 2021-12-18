@@ -4,7 +4,7 @@
 EAPI=7
 VALA_USE_DEPEND="vapigen"
 
-inherit bash-completion-r1 meson-multilib systemd udev vala rhel-a
+inherit bash-completion-r1 meson-multilib systemd udev vala rhel9-a
 
 DESCRIPTION="System service to accurately color manage input and output devices"
 HOMEPAGE="https://www.freedesktop.org/software/colord/"

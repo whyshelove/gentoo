@@ -6,7 +6,7 @@ PYTHON_COMPAT=( python3_{7..9} )
 VALA_USE_DEPEND="vapigen"
 VALA_MIN_API_VERSION="0.32"
 
-inherit gnome.org meson python-any-r1 vala xdg rhel-a
+inherit gnome.org meson python-any-r1 vala xdg rhel9-a
 
 DESCRIPTION="Library providing a virtual terminal emulator widget"
 HOMEPAGE="https://wiki.gnome.org/Apps/Terminal/VTE"

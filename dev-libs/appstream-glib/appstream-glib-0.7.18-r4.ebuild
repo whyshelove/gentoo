@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit xdg meson rhel-a
+inherit xdg meson rhel9-a
 
 DESCRIPTION="Provides GObjects and helper methods to read and write AppStream metadata"
 HOMEPAGE="https://people.freedesktop.org/~hughsient/appstream-glib/"

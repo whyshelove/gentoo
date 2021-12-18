@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit systemd rhel-a
+inherit systemd rhel9-a
 
 MY_PV="${PV//_pre*}"
 MY_P="${PN}-${MY_PV}"

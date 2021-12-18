@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit xorg-3 rhel-a
+inherit xorg-3 rhel9-a
 
 DESCRIPTION="Application startup notification and feedback library"
 HOMEPAGE="https://www.freedesktop.org/wiki/Software/startup-notification"

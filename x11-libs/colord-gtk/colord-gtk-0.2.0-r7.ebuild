@@ -4,7 +4,7 @@
 EAPI=7
 VALA_USE_DEPEND="vapigen"
 
-inherit meson vala rhel-a
+inherit meson vala rhel9-a
 
 DESCRIPTION="GTK support library for colord"
 HOMEPAGE="https://www.freedesktop.org/software/colord/"

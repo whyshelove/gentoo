@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit rhel-a
+inherit rhel9-a
 
 DESCRIPTION="ALTLinux hyphenation library"
 HOMEPAGE="http://hunspell.github.io/"

@@ -3,11 +3,10 @@
 
 EAPI=7
 
-inherit rhel-a
+inherit rhel9-a
 
 DESCRIPTION="Command-line tool for structural, content-preserving transformation of PDF files"
 HOMEPAGE="http://qpdf.sourceforge.net/"
-#SRC_URI="mirror://sourceforge/qpdf/${P}.tar.gz"
 
 LICENSE="|| ( Apache-2.0 Artistic-2 )"
 # subslot = libqpdf soname version

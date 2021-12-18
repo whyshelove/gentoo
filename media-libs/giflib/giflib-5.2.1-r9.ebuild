@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib-minimal toolchain-funcs rhel-a
+inherit multilib-minimal toolchain-funcs rhel9-a
 
 DESCRIPTION="Library to handle, display and manipulate GIF images"
 HOMEPAGE="https://sourceforge.net/projects/giflib/"

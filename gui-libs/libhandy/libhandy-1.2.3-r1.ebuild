@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit gnome.org meson xdg vala virtualx rhel-a
+inherit gnome.org meson xdg vala virtualx rhel9-a
 
 DESCRIPTION="Building blocks for modern adaptive GNOME apps"
 HOMEPAGE="https://gitlab.gnome.org/GNOME/libhandy/"

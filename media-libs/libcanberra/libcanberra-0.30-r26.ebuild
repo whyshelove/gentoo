@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit multilib-minimal systemd rhel-a
+inherit multilib-minimal systemd rhel9-a
 
 DESCRIPTION="Portable sound event library"
 HOMEPAGE="http://0pointer.de/lennart/projects/libcanberra/"

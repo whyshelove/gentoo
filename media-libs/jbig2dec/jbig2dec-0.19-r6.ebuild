@@ -3,9 +3,9 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7,8,9} )
+PYTHON_COMPAT=( python3_{6,8,9} )
 
-inherit autotools python-any-r1 rhel-a
+inherit autotools python-any-r1 rhel9-a
 
 DESCRIPTION="A decoder implementation of the JBIG2 image compression format"
 HOMEPAGE="https://jbig2dec.com/"

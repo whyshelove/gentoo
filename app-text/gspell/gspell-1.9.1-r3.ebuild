@@ -4,7 +4,7 @@
 EAPI=7
 VALA_USE_DEPEND="vapigen"
 
-inherit gnome2 vala virtualx rhel-a
+inherit gnome2 vala virtualx rhel9-a
 
 DESCRIPTION="Spell check library for GTK+ applications"
 HOMEPAGE="https://wiki.gnome.org/Projects/gspell"

@@ -7,7 +7,7 @@ VALA_USE_DEPEND="vapigen"
 PYTHON_COMPAT=( python3_{7,8,9} )
 PYTHON_REQ_USE="xml(+)"
 
-inherit meson-multilib python-any-r1 vala rhel
+inherit meson-multilib python-any-r1 vala rhel9
 
 DESCRIPTION="GObject wrapper for libusb"
 HOMEPAGE="https://github.com/hughsie/libgusb"

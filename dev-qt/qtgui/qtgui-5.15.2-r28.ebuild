@@ -5,10 +5,10 @@ EAPI=8
 
 KDE_ORG_COMMIT=c9fde86b0a2440133bc08f4811b6ca793be47f0a
 QT5_MODULE="qtbase"
-inherit qt5-build rhel-a
+inherit qt5-build rhel9-a
 
 DESCRIPTION="The GUI module and platform plugins for the Qt5 framework"
-SLOT=5/$(ver_cut 1-3) # bug 707658
+SLOT=5/${QT5_PV} # bug 707658
 
 if [[ ${QT5_BUILD_TYPE} == release ]]; then
 	KEYWORDS="amd64 ~arm arm64 ~hppa ~ppc ~ppc64 ~riscv ~sparc ~x86"
@@ -17,7 +17,7 @@ fi
 IUSE="accessibility dbus egl eglfs evdev +gif gles2-only ibus jpeg
 	+libinput linuxfb +png tslib tuio +udev vnc vulkan wayland +X"
 REQUIRED_USE="
-	|| ( eglfs X )
+	|| ( eglfs linuxfb vnc X )
 	accessibility? ( dbus X )
 	eglfs? ( egl )
 	ibus? ( dbus )
@@ -27,38 +27,37 @@ REQUIRED_USE="
 
 RDEPEND="
 	dev-libs/glib:2
-	~dev-qt/qtcore-${PV}:5=
+	=dev-qt/qtcore-${QT5_PV}*:5=
 	dev-util/gtk-update-icon-cache
 	media-libs/fontconfig
-	>=media-libs/freetype-2.6.1:2
-	>=media-libs/harfbuzz-1.6.0:=
+	media-libs/freetype:2
+	media-libs/harfbuzz:=
 	sys-libs/zlib:=
-	dbus? ( ~dev-qt/qtdbus-${PV} )
-	egl? ( media-libs/mesa[egl] )
+	dbus? ( =dev-qt/qtdbus-${QT5_PV}* )
 	eglfs? (
-		media-libs/mesa[gbm]
+		media-libs/mesa[gbm(+)]
 		x11-libs/libdrm
 	)
 	evdev? ( sys-libs/mtdev )
-	gles2-only? ( media-libs/mesa[gles2] )
-	!gles2-only? ( virtual/opengl )
-	jpeg? ( virtual/jpeg:0 )
+	jpeg? ( virtual/jpeg )
+	gles2-only? ( media-libs/libglvnd )
+	!gles2-only? ( media-libs/libglvnd[X] )
 	libinput? (
 		dev-libs/libinput:=
-		>=x11-libs/libxkbcommon-0.5.0
+		x11-libs/libxkbcommon
 	)
-	png? ( media-libs/libpng:0= )
+	png? ( media-libs/libpng:= )
 	tslib? ( >=x11-libs/tslib-1.21 )
-	tuio? ( ~dev-qt/qtnetwork-${PV} )
+	tuio? ( =dev-qt/qtnetwork-${QT5_PV}* )
 	udev? ( virtual/libudev:= )
-	vnc? ( ~dev-qt/qtnetwork-${PV} )
+	vnc? ( =dev-qt/qtnetwork-${QT5_PV}* )
 	vulkan? ( dev-util/vulkan-headers )
 	X? (
 		x11-libs/libICE
 		x11-libs/libSM
 		x11-libs/libX11
-		>=x11-libs/libxcb-1.12:=[xkb]
-		>=x11-libs/libxkbcommon-0.5.0[X]
+		x11-libs/libxcb:=[xkb]
+		x11-libs/libxkbcommon[X]
 		x11-libs/xcb-util-image
 		x11-libs/xcb-util-keysyms
 		x11-libs/xcb-util-renderutil
@@ -67,11 +66,12 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}
 	evdev? ( sys-kernel/linux-headers )
+	linuxfb? ( sys-kernel/linux-headers )
 	udev? ( sys-kernel/linux-headers )
 "
 PDEPEND="
 	ibus? ( app-i18n/ibus )
-	wayland? ( ~dev-qt/qtwayland-${PV} )
+	wayland? ( =dev-qt/qtwayland-${QT5_PV}* )
 "
 
 QT5_TARGET_SUBDIRS=(
@@ -155,20 +155,20 @@ src_prepare() {
 
 src_configure() {
 	local myconf=(
+		$(usev dbus -dbus-linked)
 		-gtk
 		-no-reduce-relocations
 		-no-rpath
 		-no-feature-relocatable
 		-no-use-gold-linker
-		$(usex dbus -dbus-linked '')
 		$(qt_use egl)
 		$(qt_use eglfs)
-		$(usex eglfs '-gbm -kms' '')
+		$(usev eglfs '-gbm -kms')
 		$(qt_use evdev)
 		$(qt_use evdev mtdev)
 		-fontconfig
 		-system-freetype
-		$(usex gif '' -no-gif)
+		$(usev !gif -no-gif)
 		-gui
 		-system-harfbuzz
 		$(qt_use jpeg libjpeg system)
@@ -180,7 +180,7 @@ src_configure() {
 		$(qt_use udev libudev)
 		$(qt_use vulkan)
 		$(qt_use X xcb)
-		$(usex X '-xcb-xlib' '')
+		$(usev X '-xcb-xlib')
 	)
 	if use libinput || use X; then
 		myconf+=( -xkbcommon )

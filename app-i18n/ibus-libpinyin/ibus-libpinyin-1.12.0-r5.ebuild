@@ -5,7 +5,7 @@ EAPI="7"
 LUA_COMPAT=(lua{5-1,5-2,5-3})
 PYTHON_COMPAT=(python{3_8,3_9})
 
-inherit autotools gnome2-utils lua-single python-single-r1 rhel-a
+inherit autotools gnome2-utils lua-single python-single-r1 rhel9-a
 
 DESCRIPTION="Intelligent Pinyin and Bopomofo input methods based on LibPinyin for IBus"
 HOMEPAGE="https://github.com/libpinyin/ibus-libpinyin https://sourceforge.net/projects/libpinyin/"

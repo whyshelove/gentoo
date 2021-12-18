@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit rhel-a
+inherit rhel9-a
 
 DESCRIPTION="Default freedesktop.org sound theme following the XDG theming specification"
 HOMEPAGE="https://www.freedesktop.org/wiki/Specifications/sound-theme-spec"

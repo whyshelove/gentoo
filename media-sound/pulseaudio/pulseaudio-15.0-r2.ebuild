@@ -6,7 +6,7 @@ EAPI="7"
 MY_PV="${PV/_pre*}"
 MY_P="${PN}-${MY_PV}"
 
-inherit bash-completion-r1 gnome2-utils meson-multilib optfeature systemd tmpfiles udev rhel-a
+inherit bash-completion-r1 gnome2-utils meson-multilib optfeature systemd tmpfiles udev rhel9-a
 
 DESCRIPTION="A networked sound server with an advanced plugin system"
 HOMEPAGE="https://www.freedesktop.org/wiki/Software/PulseAudio/"

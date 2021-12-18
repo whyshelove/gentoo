@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit gnome.org gnome2-utils meson udev virtualx xdg rhel-a
+inherit gnome.org gnome2-utils meson udev virtualx xdg rhel9-a
 
 DESCRIPTION="GNOME compositing window manager based on Clutter"
 HOMEPAGE="https://gitlab.gnome.org/GNOME/mutter/"
@@ -17,7 +17,7 @@ REQUIRED_USE="
 	test? ( wayland )"
 RESTRICT="!test? ( test )"
 
-KEYWORDS="amd64 ~arm arm64 ~ppc64 ~x86"
+KEYWORDS="amd64 ~arm arm64 ~ppc64 ~riscv x86"
 
 # gnome-settings-daemon is build checked, but used at runtime only for org.gnome.settings-daemon.peripherals.keyboard gschema
 # xorg-server is needed at build and runtime with USE=wayland for Xwayland
@@ -54,13 +54,13 @@ DEPEND="
 	>=dev-libs/atk-2.5.3[introspection?]
 	>=media-libs/libcanberra-0.26
 	sys-apps/dbus
-	media-libs/mesa[X(+),egl]
+	media-libs/mesa[X(+),egl(+)]
 	sysprof? ( >=dev-util/sysprof-capture-3.40.1:4 )
 	wayland? (
 		>=dev-libs/wayland-protocols-1.19
 		>=dev-libs/wayland-1.18.0
 		x11-libs/libdrm:=
-		>=media-libs/mesa-17.3[egl,gbm,wayland,gles2]
+		>=media-libs/mesa-17.3[egl(+),gbm(+),wayland,gles2]
 		>=dev-libs/libinput-1.15.0
 		systemd? ( sys-apps/systemd )
 		elogind? ( sys-auth/elogind )
@@ -92,10 +92,7 @@ BDEPEND="
 	test? ( app-text/docbook-xml-dtd:4.5 )
 	wayland? (
 		>=sys-kernel/linux-headers-4.4
-		|| (
-			x11-libs/libxcvt
-			<x11-base/xorg-server-1.20.11-r3[xorg,-minimal]
-		)
+		x11-libs/libxcvt
 	)
 "
 
@@ -151,6 +148,7 @@ src_configure() {
 }
 
 src_test() {
+	gnome2_environment_reset # Avoid dconf that looks at XDG_DATA_DIRS, which can sandbox fail if flatpak is installed
 	glib-compile-schemas "${BUILD_DIR}"/data
 	GSETTINGS_SCHEMA_DIR="${BUILD_DIR}"/data virtx meson_src_test
 }

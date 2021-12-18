@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-PYTHON_COMPAT=( python{3_7,3_8,3_9} )
+
+PYTHON_COMPAT=( python3_{8..10} )
 VALA_MIN_API_VERSION="0.34"
 VALA_MAX_API_VERSION="0.50"
 VALA_USE_DEPEND="vapigen"
@@ -20,7 +21,7 @@ SRC_URI+="
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-KEYWORDS="~alpha amd64 ~arm ~arm64 ~ia64 ~ppc ~ppc64 ~riscv ~sparc ~x86"
+KEYWORDS="~alpha amd64 ~arm arm64 ~ia64 ~ppc ~ppc64 ~riscv ~sparc ~x86"
 IUSE="+X +emoji +gtk +gtk2 +introspection kde nls +python test +unicode vala wayland"
 RESTRICT="!test? ( test )"
 REQUIRED_USE="emoji? ( gtk )

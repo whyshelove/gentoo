@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools libtool multilib-minimal rhel-a
+inherit autotools libtool multilib-minimal rhel9-a
 
 DESCRIPTION="HTTP and WebDAV client library"
 HOMEPAGE="https://notroj.github.io/neon/"

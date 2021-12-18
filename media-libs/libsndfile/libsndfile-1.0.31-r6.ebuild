@@ -3,7 +3,7 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{8..9} pypy3 )
+PYTHON_COMPAT=( python3_{8..10} pypy3 )
 
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
@@ -11,7 +11,7 @@ if [[ ${PV} == *9999 ]]; then
 else
 	KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~x64-solaris ~x86-solaris"
 fi
-inherit python-any-r1 multilib-minimal autotools rhel-a
+inherit python-any-r1 multilib-minimal autotools rhel9-a
 
 DESCRIPTION="C library for reading and writing files containing sampled sound"
 HOMEPAGE="https://libsndfile.github.io/libsndfile/"

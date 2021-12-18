@@ -3,11 +3,10 @@
 
 EAPI=7
 
-inherit rhel-a
+inherit rhel9-a
 
 DESCRIPTION="X.Org bitmaps data"
 HOMEPAGE="https://www.x.org/wiki/"
-#SRC_URI="https://www.x.org/releases/individual/data/${P}.tar.bz2"
 
 LICENSE="MIT"
 SLOT="0"

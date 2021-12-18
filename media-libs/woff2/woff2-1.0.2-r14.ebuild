@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit cmake-utils rhel-a
+inherit cmake-utils rhel9-a
 
 DESCRIPTION="Encode/decode WOFF2 font format"
 HOMEPAGE="https://github.com/google/woff2"

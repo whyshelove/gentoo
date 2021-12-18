@@ -6,7 +6,7 @@ PYTHON_COMPAT=( python3_{7..9} )
 PYTHON_REQ_USE="xml(+)"
 VALA_USE_DEPEND="vapigen"
 
-inherit meson python-any-r1 systemd vala xdg rhel-a
+inherit meson python-any-r1 systemd vala xdg rhel9-a
 
 DESCRIPTION="A location information D-Bus service"
 HOMEPAGE="https://gitlab.freedesktop.org/geoclue/geoclue/wikis/home"

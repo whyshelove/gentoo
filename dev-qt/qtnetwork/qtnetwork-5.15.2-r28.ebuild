@@ -3,17 +3,17 @@
 
 EAPI=8
 
-KDE_ORG_COMMIT=a4f9e56975fa6ab4a1f63a9b34a4d77b1cfe4acd
+KDE_ORG_COMMIT=c9fde86b0a2440133bc08f4811b6ca793be47f0a
 QT5_MODULE="qtbase"
 inherit qt5-build rhel9-a
 
 DESCRIPTION="Network abstraction library for the Qt5 framework"
 
 if [[ ${QT5_BUILD_TYPE} == release ]]; then
-	KEYWORDS="amd64 arm arm64 ~hppa ~ppc ~ppc64 ~riscv ~sparc x86"
+	KEYWORDS="amd64 arm arm64 ~hppa ppc ppc64 ~riscv ~sparc x86"
 fi
 
-IUSE="bindist connman gssapi libproxy networkmanager sctp +ssl"
+IUSE="connman gssapi libproxy networkmanager sctp +ssl"
 
 DEPEND="
 	=dev-qt/qtcore-${QT5_PV}*:5=
@@ -23,7 +23,7 @@ DEPEND="
 	libproxy? ( net-libs/libproxy )
 	networkmanager? ( =dev-qt/qtdbus-${QT5_PV}* )
 	sctp? ( kernel_linux? ( net-misc/lksctp-tools ) )
-	ssl? ( >=dev-libs/openssl-1.1.1:0=[bindist(-)=] )
+	ssl? ( >=dev-libs/openssl-1.1.1:0= )
 "
 RDEPEND="${DEPEND}
 	connman? ( net-misc/connman )

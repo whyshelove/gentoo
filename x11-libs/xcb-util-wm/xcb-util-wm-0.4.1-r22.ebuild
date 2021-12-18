@@ -4,7 +4,7 @@
 EAPI=7
 
 XORG_MULTILIB=yes
-inherit xorg-3 rhel-a
+inherit xorg-3 rhel9-a
 
 DESCRIPTION="X C-language Bindings sample implementations"
 HOMEPAGE="https://xcb.freedesktop.org/ https://gitlab.freedesktop.org/xorg/lib/libxcb-wm"

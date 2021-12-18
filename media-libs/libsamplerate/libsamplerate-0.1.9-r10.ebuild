@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib-minimal rhel-a
+inherit multilib-minimal rhel9-a
 
 DESCRIPTION="Secret Rabbit Code (aka libsamplerate) is a Sample Rate Converter for audio"
 HOMEPAGE="https://libsndfile.github.io/libsamplerate/"

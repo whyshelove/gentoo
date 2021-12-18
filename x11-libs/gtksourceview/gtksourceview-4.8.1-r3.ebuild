@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit gnome.org meson vala virtualx xdg rhel-a
+inherit gnome.org meson vala virtualx xdg rhel9-a
 
 DESCRIPTION="A text widget implementing syntax highlighting and other features"
 HOMEPAGE="https://wiki.gnome.org/Projects/GtkSourceView"

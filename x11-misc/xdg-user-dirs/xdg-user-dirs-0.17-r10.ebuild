@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools rhel-a
+inherit autotools rhel9-a
 
 DESCRIPTION="Tool to help manage 'well known' user directories"
 HOMEPAGE="https://www.freedesktop.org/wiki/Software/xdg-user-dirs"

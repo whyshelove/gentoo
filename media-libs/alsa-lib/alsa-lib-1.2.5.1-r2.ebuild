@@ -4,14 +4,14 @@
 EAPI=7
 
 PYTHON_COMPAT=( python3_{7,8,9} )
-inherit autotools multilib-minimal python-single-r1 rhel-a
+inherit autotools multilib-minimal python-single-r1 rhel9-a
 
 DESCRIPTION="Advanced Linux Sound Architecture Library"
 HOMEPAGE="https://alsa-project.org/wiki/Main_Page"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv sparc x86 ~amd64-linux ~x86-linux"
 IUSE="alisp debug doc elibc_uclibc python +thread-safety"
 
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"

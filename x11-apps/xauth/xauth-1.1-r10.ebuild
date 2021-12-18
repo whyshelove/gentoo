@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit xorg-3 rhel-a
+inherit xorg-3 rhel9-a
 
 if [[ ${PV} == 8888* ]]; then
 	SRC_URI=""

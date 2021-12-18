@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools flag-o-matic multilib-minimal rhel-a
+inherit autotools flag-o-matic multilib-minimal rhel9-a
 
 MY_P=${P/_}
 MY_P=${MY_P/_p/.}
