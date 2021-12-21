@@ -8,7 +8,6 @@ inherit autotools rhel9
 DESCRIPTION="Supporting tools for IMA and EVM"
 HOMEPAGE="http://linux-ima.sourceforge.net"
 
-
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 ~x86"

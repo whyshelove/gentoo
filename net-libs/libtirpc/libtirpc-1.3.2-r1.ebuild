@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib-minimal usr-ldscript rhel
+inherit multilib-minimal usr-ldscript rhel9
 
 DESCRIPTION="Transport Independent RPC library (SunRPC replacement)"
 HOMEPAGE="https://sourceforge.net/projects/libtirpc/"

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic rhel
+inherit flag-o-matic rhel9
 
 DESCRIPTION="Excellent text file viewer"
 HOMEPAGE="http://www.greenwoodsoftware.com/less/"

@@ -7,7 +7,7 @@
 
 EAPI=7
 
-inherit flag-o-matic toolchain-funcs rhel
+inherit flag-o-matic toolchain-funcs rhel9
 
 DESCRIPTION="The GNU info program and utilities"
 HOMEPAGE="https://www.gnu.org/software/texinfo/"

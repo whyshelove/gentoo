@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit toolchain-funcs rhel-c
+inherit toolchain-funcs rhel9-c
 
 DESCRIPTION="Simplified Wrapper and Interface Generator"
 HOMEPAGE="http://www.swig.org/ https://github.com/swig/swig"

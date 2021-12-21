@@ -3,17 +3,15 @@
 
 EAPI=7
 
-inherit flag-o-matic rhel-a
+inherit flag-o-matic rhel9-a
 
 PATCH_TAR="${PN}-3.7.6-patches-01.tar.xz"
 
 DESCRIPTION="A general-purpose (yacc-compatible) parser generator"
 HOMEPAGE="https://www.gnu.org/software/bison/"
-if [[ ${PV} != *8888 ]]; then
-	SRC_URI="${SRC_URI}
+SRC_URI="${SRC_URI}
 	https://dev.gentoo.org/~whissi/dist/bison/${PATCH_TAR}
 	https://dev.gentoo.org/~polynomial-c/dist/bison/${PATCH_TAR}"
-fi
 
 LICENSE="GPL-2"
 SLOT="0"

@@ -9,7 +9,7 @@ MY_PF=xorg-x11-${PN}-devel-${PV}-${MY_PR}
 XORG_PACKAGE_NAME="lib${PN}"
 # this package just installs some .c and .h files, no libraries
 XORG_DOC=doc
-inherit xorg-3 rhel-c
+inherit xorg-3 rhel9-c
 
 DESCRIPTION="X.Org xtrans library"
 KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"

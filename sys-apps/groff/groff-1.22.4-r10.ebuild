@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit toolchain-funcs rhel
+inherit toolchain-funcs rhel9
 
 MY_P="${P/_/.}"
 

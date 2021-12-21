@@ -3,13 +3,11 @@
 
 EAPI=7
 
-inherit toolchain-autoconf rhel-a
+inherit toolchain-autoconf rhel9-a
 
-if [[ ${PV} != *8888 ]]; then
-	SRC_URI="${SRC_URI}
-		https://dev.gentoo.org/~polynomial-c/dist/${P}-runstatedir_patches.tar.xz"
-	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-fi
+SRC_URI="${SRC_URI}
+	https://dev.gentoo.org/~polynomial-c/dist/${P}-runstatedir_patches.tar.xz"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 
 DESCRIPTION="Used to create autoconfiguration files"
 HOMEPAGE="https://www.gnu.org/software/autoconf/autoconf.html"
@@ -23,7 +21,7 @@ BDEPEND=">=sys-devel/m4-1.4.16
 RDEPEND="${BDEPEND}
 	!~sys-devel/${P}:2.5
 	>=sys-devel/autoconf-wrapper-13"
-[[ ${PV} == "8888" ]] && BDEPEND+=" >=sys-apps/texinfo-4.3"
+[[ ${PV} == "9999" ]] && BDEPEND+=" >=sys-apps/texinfo-4.3"
 PDEPEND="emacs? ( app-emacs/autoconf-mode )"
 
 PATCHES=(

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools flag-o-matic rhel
+inherit autotools flag-o-matic rhel9
 
 DESCRIPTION="A file archival tool which can also read and write tar files"
 HOMEPAGE="https://www.gnu.org/software/cpio/cpio.html"

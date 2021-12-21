@@ -3,14 +3,14 @@
 
 EAPI=7
 
-inherit autotools linux-info tmpfiles udev rhel
+inherit autotools linux-info tmpfiles udev rhel9
 
 DESCRIPTION="TCG Trusted Platform Module 2.0 Software Stack"
 HOMEPAGE="https://github.com/tpm2-software/tpm2-tss"
 
 LICENSE="BSD-2"
 SLOT="0"
-KEYWORDS="amd64 ~arm ~arm64 ~ppc64 ~x86"
+KEYWORDS="amd64 ~arm arm64 ~ppc64 ~x86"
 IUSE="doc +fapi  +openssl mbedtls static-libs test"
 
 RESTRICT="!test? ( test )"

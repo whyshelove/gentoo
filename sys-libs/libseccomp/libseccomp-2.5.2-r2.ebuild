@@ -3,26 +3,27 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7..9} )
+PYTHON_COMPAT=( python3_{8..9} )
 DISTUTILS_OPTIONAL=1
-DISTUTILS_USE_SETUPTOOLS=no
 
 inherit distutils-r1 multilib-minimal rhel9
 
 DESCRIPTION="high level interface to Linux seccomp filter"
 HOMEPAGE="https://github.com/seccomp/libseccomp"
 
-KEYWORDS="-* amd64 arm arm64 hppa ~mips ppc ppc64 ~riscv ~s390 x86 ~amd64-linux ~x86-linux"
+if [[ ${PV} == *9999 ]] ; then
+	EGIT_REPO_URI="https://github.com/seccomp/libseccomp.git"
+	PRERELEASE="2.6.0"
+	inherit autotools git-r3
+else
+	KEYWORDS="-* amd64 arm arm64 hppa ~mips ppc ppc64 ~riscv ~s390 x86 ~amd64-linux ~x86-linux"
+fi
 
 LICENSE="LGPL-2.1"
 SLOT="0"
 IUSE="python static-libs"
 
-REQUIRED_USE="
-	python? (
-		static-libs
-		${PYTHON_REQUIRED_USE}
-	)"
+REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 
 DEPEND="python? ( ${PYTHON_DEPS} )"
 RDEPEND="${DEPEND}"
@@ -35,6 +36,9 @@ BDEPEND="${DEPEND}
 DEPEND="${DEPEND} >=sys-kernel/linux-headers-4.3"
 
 src_prepare() {
+	local PATCHES=(
+		"${FILESDIR}/libseccomp-python-shared.patch"
+	)
 	default
 	if [[ "${PV}" == *9999 ]] ; then
 		sed -i -e "s/0.0.0/${PRERELEASE}/" configure.ac
@@ -50,16 +54,24 @@ multilib_src_configure() {
 	ECONF_SOURCE="${S}" econf "${myeconfargs[@]}"
 }
 
+do_python() {
+	# setup.py reads VERSION_RELEASE from the environment
+	local -x VERSION_RELEASE=${PRERELEASE-${PV}}
+	pushd "${BUILD_DIR}/src/python" >/dev/null || die
+	"$@"
+	popd >/dev/null || die
+}
+
 multilib_src_compile() {
 	emake
 
 	if multilib_is_native_abi && use python ; then
-		cd "${S}/src/python" || die
-		sed -i -e "s/=.*VERSION_RELEASE.*,/=\"${PRERELEASE}\",/" \
-			-e "/extra_objects/s,\.\.,${OLDPWD}/src," \
-			setup.py || die
-		local -x CPPFLAGS="-I${OLDPWD}/include -I../../include"
-		distutils-r1_src_compile
+		# setup.py expects libseccomp.so to live in "../.libs"
+		# Copy the python files to the right place for this.
+		rm -r "${BUILD_DIR}/src/python" || die
+		cp -r "${S}/src/python" "${BUILD_DIR}/src/python" || die
+		local -x CPPFLAGS="-I\"${BUILD_DIR}/include\" -I\"${S}/include\" ${CPPFLAGS}"
+		do_python distutils-r1_src_compile
 	fi
 }
 
@@ -67,8 +79,7 @@ multilib_src_install() {
 	emake DESTDIR="${D}" install
 
 	if multilib_is_native_abi && use python ; then
-		cd "${S}/src/python" || die
-		distutils-r1_src_install
+		do_python distutils-r1_src_install
 	fi
 }
 

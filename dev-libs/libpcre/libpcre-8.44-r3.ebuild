@@ -2,16 +2,13 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-
-inherit libtool multilib-minimal preserve-libs usr-ldscript rhel
+DIST=el9.3
+inherit libtool multilib-minimal preserve-libs usr-ldscript rhel9
 
 DESCRIPTION="Perl-compatible regular expression library"
 HOMEPAGE="http://www.pcre.org/"
+S="${WORKDIR}/${MY_P}"
 
-if [[ ${PV} != *8888 ]]; then
-	SRC_URI="${REPO_URI}/${MY_PF}${DIST}.2.src.rpm"
-	S="${WORKDIR}/${MY_P}"
-fi
 LICENSE="BSD"
 SLOT="3"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris ~x86-winnt"

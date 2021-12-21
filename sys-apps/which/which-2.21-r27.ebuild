@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic toolchain-funcs rhel
+inherit flag-o-matic toolchain-funcs rhel9
 
 DESCRIPTION="Prints out location of specified executables that are in your path"
 HOMEPAGE="https://carlowood.github.io/which/"

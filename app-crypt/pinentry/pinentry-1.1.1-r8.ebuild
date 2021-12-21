@@ -3,14 +3,14 @@
 
 EAPI=7
 
-inherit autotools flag-o-matic qmake-utils toolchain-funcs rhel-a
+inherit autotools flag-o-matic qmake-utils toolchain-funcs rhel9-a
 
 DESCRIPTION="Simple passphrase entry dialogs which utilize the Assuan protocol"
 HOMEPAGE="https://gnupg.org/aegypten2"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 IUSE="caps efl emacs gnome-keyring gtk ncurses qt5"
 
 DEPEND="
@@ -29,7 +29,7 @@ DEPEND="
 	)
 "
 RDEPEND="${DEPEND}
-	gtk? ( app-crypt/gcr )
+	gtk? ( app-crypt/gcr[gtk] )
 "
 BDEPEND="
 	sys-devel/gettext

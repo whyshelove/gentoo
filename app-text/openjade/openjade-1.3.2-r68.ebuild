@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit autotools flag-o-matic sgml-catalog-r1 toolchain-funcs rhel-a
+inherit autotools flag-o-matic sgml-catalog-r1 toolchain-funcs rhel9-a
 
 DESCRIPTION="Jade is an implementation of DSSSL for formatting SGML and XML documents"
 HOMEPAGE="http://openjade.sourceforge.net"

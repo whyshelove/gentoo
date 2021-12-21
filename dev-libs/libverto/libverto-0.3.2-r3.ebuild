@@ -3,14 +3,14 @@
 
 EAPI=7
 
-inherit autotools multilib-minimal rhel
+inherit autotools multilib-minimal rhel9
 
 DESCRIPTION="Main event loop abstraction library"
 HOMEPAGE="https://github.com/latchset/libverto/"
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
 IUSE="glib +libev libevent +threads"
 REQUIRED_USE="|| ( glib libev libevent )"
 

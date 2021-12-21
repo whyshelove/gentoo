@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit toolchain-funcs rhel
+inherit toolchain-funcs rhel9
 
 DESCRIPTION="GNU awk pattern-matching language"
 HOMEPAGE="https://www.gnu.org/software/gawk/gawk.html"

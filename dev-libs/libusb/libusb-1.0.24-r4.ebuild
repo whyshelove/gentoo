@@ -7,7 +7,6 @@ inherit multilib-minimal usr-ldscript rhel9
 DESCRIPTION="Userspace access to USB devices"
 HOMEPAGE="https://libusb.info/ https://github.com/libusb/libusb"
 
-
 LICENSE="LGPL-2.1"
 SLOT="1"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos"
@@ -42,8 +41,12 @@ multilib_src_compile() {
 multilib_src_test() {
 	emake check
 
-	# noinst_PROGRAMS from tests/Makefile.am
-	tests/stress || die
+	if [[ -e /dev/bus/usb ]]; then
+		tests/stress || die
+	else
+		# https://bugs.gentoo.org/824266
+		ewarn "/dev/bus/usb does not exist, skipping stress test"
+	fi
 }
 
 multilib_src_install() {

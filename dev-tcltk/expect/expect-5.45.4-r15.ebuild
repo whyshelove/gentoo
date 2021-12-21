@@ -3,7 +3,7 @@
 
 EAPI=6
 
-inherit autotools epatch rhel-a
+inherit autotools epatch rhel9-a
 
 MY_P="${PN}${PV}"
 DESCRIPTION="tool for automating interactive applications"

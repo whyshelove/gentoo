@@ -12,13 +12,11 @@ EAPI="7"
 
 PLOCALES="de fr ja pt_BR tr uk zh_CN"
 
-inherit fcaps flag-o-matic meson plocale systemd toolchain-funcs rhel
+inherit fcaps flag-o-matic meson plocale systemd toolchain-funcs rhel9
 
-if [[ ${PV} != *8888 ]]; then
-	SRC_URI="${SRC_URI}
-		https://dev.gentoo.org/~whissi/dist/iputils/${PN}-manpages-${PV}.tar.xz"
-	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
-fi
+SRC_URI="${SRC_URI}
+	https://dev.gentoo.org/~whissi/dist/iputils/${PN}-manpages-${PV}.tar.xz"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
 
 DESCRIPTION="Network monitoring tools including ping and ping6"
 HOMEPAGE="https://wiki.linuxfoundation.org/networking/iputils"

@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=5
-inherit epatch flag-o-matic autotools rhel-a
+inherit epatch flag-o-matic autotools rhel9-a
 
 MY_P=${P/opensp/OpenSP}
 

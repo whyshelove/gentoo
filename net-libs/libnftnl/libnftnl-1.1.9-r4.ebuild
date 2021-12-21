@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit linux-info usr-ldscript rhel9
+inherit autotools linux-info usr-ldscript rhel9
 
 DESCRIPTION="Netlink API to the in-kernel nf_tables subsystem"
 HOMEPAGE="https://netfilter.org/projects/nftables/"
@@ -26,6 +26,11 @@ pkg_setup() {
 	else
 		eerror "This package requires kernel version 3.13 or newer to work properly."
 	fi
+}
+
+src_prepare() {
+	default
+	[[ ${PV} =~ ^[9]{4,}$ ]] && eautoreconf
 }
 
 src_configure() {

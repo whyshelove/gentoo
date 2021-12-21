@@ -3,7 +3,7 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7,8,9} )
+PYTHON_COMPAT=( python3_{7..10} )
 inherit meson python-any-r1 rhel9-a
 
 DESCRIPTION="X keyboard configuration database"

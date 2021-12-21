@@ -1,26 +1,28 @@
 # Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{7..9} )
+PYTHON_COMPAT=( python3_{8..10} pypy3 )
 
-inherit linux-info python-single-r1 rhel9-a
+inherit autotools linux-info python-single-r1 rhel9-a
 
 DESCRIPTION="A linux trace/probe tool"
-HOMEPAGE="https://www.sourceware.org/systemtap/"
+HOMEPAGE="https://www.sourceware.org/systemtap"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 ~ia64 ~mips ppc ppc64 ~s390 sparc x86"
+KEYWORDS="~alpha amd64 ~arm arm64 ~ia64 ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
 IUSE="libvirt selinux sqlite +ssl test zeroconf debuginfod crash py3probes dracut bpf"
-RESTRICT="!test? ( test )"
 
-RDEPEND=">=dev-libs/elfutils-0.142
+CDEPEND="
+	${PYTHON_DEPS}
+
+	>=dev-libs/elfutils-0.142
 	dev-libs/json-c:=
 	sys-libs/ncurses:0=
 	sys-libs/readline:0=
-	${PYTHON_DEPS}
+
 	libvirt? ( >=app-emulation/libvirt-1.0.2 )
 	selinux? ( sys-libs/libselinux )
 	sqlite? ( dev-db/sqlite:3 )
@@ -30,23 +32,22 @@ RDEPEND=">=dev-libs/elfutils-0.142
 	)
 	zeroconf? ( net-dns/avahi )
 "
-DEPEND="${RDEPEND}
+DEPEND="
+	${CDEPEND}
 	app-arch/cpio
 	app-text/xmlto
-	$(python_gen_cond_dep '
-		dev-python/setuptools[${PYTHON_USEDEP}]
-	')
+	$(python_gen_cond_dep 'dev-python/setuptools[${PYTHON_USEDEP}]')
 	>=sys-devel/gettext-0.18.2
+
 	libvirt? ( dev-libs/libxml2 )
 "
-RDEPEND="${RDEPEND}
+RDEPEND="
+	${CDEPEND}
 	acct-group/stapdev
 	acct-group/stapsys
 	acct-group/stapusr
 "
 BDEPEND="test? ( dev-util/dejagnu )"
-
-REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 CONFIG_CHECK="~KPROBES ~RELAY ~DEBUG_FS"
 ERROR_KPROBES="${PN} requires support for KProbes Instrumentation (KPROBES) - this can be enabled in 'Instrumentation Support -> Kprobes'."
@@ -54,9 +55,10 @@ ERROR_RELAY="${PN} works with support for user space relay support (RELAY) - thi
 ERROR_DEBUG_FS="${PN} works best with support for Debug Filesystem (DEBUG_FS) - this can be enabled in 'Kernel hacking -> Debug Filesystem'."
 
 DOCS="AUTHORS HACKING NEWS README"
-
+REQUIRED_USE="${PYTHON_REQUIRED_USE}"
+RESTRICT="!test? ( test )"
 PATCHES=(
-	"${FILESDIR}"/${PN}-3.1-ia64.patch
+	"${FILESDIR}/${PN}-3.1-ia64.patch"
 )
 
 pkg_setup() {
@@ -68,7 +70,7 @@ src_prepare() {
 	python_fix_shebang .
 
 	sed -i \
-		-e 's:-Werror::g' \
+		-e 's|-Werror||g' \
 		configure.ac \
 		Makefile.am \
 		stapbpf/Makefile.am \
@@ -84,6 +86,7 @@ src_prepare() {
 		|| die "Failed to clean up sources"
 
 	default
+	eautoreconf
 }
 
 src_configure() {
@@ -109,8 +112,7 @@ src_configure() {
 		$(use_with ssl nss)
 		$(use_with selinux)
 	)
-	PYTHON3="${PYTHON}" \
-	econf "${myeconfargs[@]}"
+	PYTHON3="${PYTHON}" econf "${myeconfargs[@]}"
 }
 
 src_install() {

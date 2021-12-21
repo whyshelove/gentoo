@@ -3,10 +3,7 @@
 
 EAPI=7
 
-MY_PR=${PVR##*r}
-MY_PF=lib${P}-${MY_PR}
-
-inherit multilib-minimal rhel-a
+inherit multilib-minimal rhel9-a
 
 DESCRIPTION="A library for multiprecision complex arithmetic with exact rounding"
 HOMEPAGE="http://mpc.multiprecision.org/"

@@ -3,15 +3,16 @@
 
 EAPI=7
 
-inherit libtool rhel
+inherit libtool rhel9
 
 DESCRIPTION="IPC library used by GnuPG and GPGME"
 HOMEPAGE="https://www.gnupg.org/related_software/libassuan/index.en.html"
 
 LICENSE="GPL-3 LGPL-2.1"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 
+# Note: On each bump, update dep bounds on each version from configure.ac!
 RDEPEND=">=dev-libs/libgpg-error-1.17"
 DEPEND="${RDEPEND}"
 

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit pam rhel
+inherit pam rhel9
 
 if [[ ${PV} == *8888 ]]; then
 	inherit autotools

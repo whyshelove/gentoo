@@ -3,12 +3,10 @@
 
 EAPI=7
 
-if [[ ${PV} != *8888 ]]; then
-	MY_PR=${PVR##*r}
-	MY_PF=${P}.0-${MY_PR}
-fi
+MY_PR=${PVR##*r}
+MY_PF=${P/_p/.}-${MY_PR}
 
-inherit flag-o-matic toolchain-funcs prefix rhel
+inherit flag-o-matic toolchain-funcs prefix rhel9
 
 # Official patchlevel
 # See ftp://ftp.cwru.edu/pub/bash/bash-5.0-patches/
@@ -62,7 +60,7 @@ pkg_setup() {
 
 src_prepare() {
 	# Include official patches
-	[[ ${PLEVEL} -gt 0 ]] && eapply -p0 $(patches -s)
+	#[[ ${PLEVEL} -gt 0 ]] && eapply -p0 $(patches -s)
 
 	# Clean out local libs so we know we use system ones w/releases.
 

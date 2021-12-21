@@ -3,15 +3,14 @@
 
 EAPI=7
 
+DATE=20210508
+DIST=${DATE}.el9
+
 inherit toolchain-funcs multilib multilib-minimal preserve-libs usr-ldscript rhel9
 
-DATE=20210508
 DESCRIPTION="console display library"
 HOMEPAGE="https://www.gnu.org/software/ncurses/ https://invisible-island.net/ncurses/"
-if [[ ${PV} != *8888 ]]; then
-	SRC_URI="${REPO_URI}/${MY_PF}.${DATE}${DIST}.src.rpm"
-	S="${WORKDIR}/${P}-${DATE}"
-fi
+S="${WORKDIR}/${P}-${DATE}"
 
 LICENSE="MIT"
 # The subslot reflects the SONAME.

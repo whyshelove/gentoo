@@ -48,7 +48,8 @@ if [ -z ${MY_PF} ] ; then
 		[[ ${PN} == Locale-gettext ]] && MY_PF=perl-${PN/Locale-}-${DIST_VERSION}-${MY_PR}
 	else
 		case ${PN} in
-			tiff | db | appstream-glib ) MY_PF=lib${P}-${MY_PR} ;;
+			tiff | db | appstream-glib | mpc \
+			| talloc | tdb | tevent | ldb ) MY_PF=lib${P}-${MY_PR} ;;
 			docbook-xsl-stylesheets ) MY_PF=docbook-style-xsl-${PV}-${MY_PR} ;;
 			ghostscript-gpl ) MY_PF=${P/-gpl}-${MY_PR} ;;
 			wayland-scanner ) MY_PF=${P/-scanner}-${MY_PR} ;;
@@ -60,7 +61,6 @@ if [ -z ${MY_PF} ] ; then
 			libnl | glib | openjpeg | lcms | gnupg | grub | udisks | geoclue \
 			| udisks | lcms | openjpeg | glib | librsvg | gstreamer | gtksourceview \
 			| gtk) MY_P=${P/-/$(ver_cut 1)-}; MY_PF=${MY_P}-${MY_PR} ;;
-			mpc | talloc | tdb | tevent | ldb ) MY_PF=lib${P}-${MY_PR} ;;
 			libusb ) MY_PF=${P/-/x-}-${MY_PR} ;;
 			sysprof-capture ) MY_PF=${P/-capture}-${MY_PR} ;;
 			e2fsprogs-libs ) MY_PF=${P/-libs}-${MY_PR} ;;

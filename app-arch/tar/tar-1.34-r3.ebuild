@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit rhel
+inherit rhel9
 
 DESCRIPTION="Use this to make tarballs :)"
 HOMEPAGE="https://www.gnu.org/software/tar/"

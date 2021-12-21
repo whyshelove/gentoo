@@ -5,11 +5,10 @@ EAPI=7
 
 PLOCALES="da de eo es fr fur hu ja nb nl pl pt_BR ru sr sv uk vi zh_CN zh_TW"
 
-inherit plocale toolchain-funcs rhel
+inherit plocale toolchain-funcs rhel9
 
 DESCRIPTION="Convert DOS or MAC text files to UNIX format or vice versa"
 HOMEPAGE="http://www.xs4all.nl/~waterlan/dos2unix.html https://sourceforge.net/projects/dos2unix/"
-
 
 LICENSE="BSD-2"
 SLOT="0"

@@ -3,14 +3,14 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7,8,9} )
+PYTHON_COMPAT=( python3_{8..10} )
 PYTHON_REQ_USE=xml
 
 XORG_TARBALL_SUFFIX="xz"
 XORG_MULTILIB=yes
 XORG_DOC=doc
 
-inherit python-any-r1 xorg-3 rhel-a
+inherit python-any-r1 xorg-3 rhel9-a
 
 DESCRIPTION="X C-language Bindings library"
 HOMEPAGE="https://xcb.freedesktop.org/ https://gitlab.freedesktop.org/xorg/lib/libxcb"

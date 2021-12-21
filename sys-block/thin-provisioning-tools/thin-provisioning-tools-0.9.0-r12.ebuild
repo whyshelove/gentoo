@@ -3,14 +3,12 @@
 
 EAPI=7
 
-inherit autotools flag-o-matic rhel
+inherit autotools flag-o-matic rhel9
 
 DESCRIPTION="A suite of tools for thin provisioning on Linux"
 HOMEPAGE="https://github.com/jthornber/thin-provisioning-tools"
 
-if [[ ${PV} != *8888 ]]; then
-	KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
-fi
+KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
 
 LICENSE="GPL-3"
 SLOT="0"

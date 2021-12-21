@@ -3,16 +3,14 @@
 
 EAPI=7
 
-inherit rhel
+inherit rhel9
 
 GENTOO_PATCH=2
 
 DESCRIPTION="A somewhat comprehensive collection of Linux man pages"
 HOMEPAGE="https://www.kernel.org/doc/man-pages/"
-if [[ ${PV} != *8888 ]]; then
-	SRC_URI="${SRC_URI}
+SRC_URI="${SRC_URI}
 	https://dev.gentoo.org/~cardoe/files/man-pages-gentoo-${GENTOO_PATCH}.tar.bz2"
-fi
 
 LICENSE="man-pages GPL-2+ BSD"
 SLOT="0"

@@ -3,7 +3,7 @@
 
 EAPI="7"
 
-inherit flag-o-matic rhel-a
+inherit flag-o-matic rhel9-a
 
 DESCRIPTION="Utility to apply diffs to files"
 HOMEPAGE="https://www.gnu.org/software/patch/patch.html"

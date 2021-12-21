@@ -3,14 +3,9 @@
 
 EAPI="7"
 
-inherit flag-o-matic libtool toolchain-funcs multilib-minimal usr-ldscript rhel
+inherit flag-o-matic libtool toolchain-funcs multilib-minimal usr-ldscript rhel9
 
-if [[ ${PV} == *8888 ]]; then
-	inherit autotools
-else
-	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
-fi
-
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
 DESCRIPTION="Extended attributes tools"
 HOMEPAGE="https://savannah.nongnu.org/projects/attr"
 LICENSE="LGPL-2.1"

@@ -6,7 +6,7 @@
 
 EAPI=7
 
-inherit toolchain-funcs multilib-minimal usr-ldscript flag-o-matic rhel
+inherit toolchain-funcs multilib-minimal usr-ldscript flag-o-matic rhel9
 
 DESCRIPTION="A high-quality data compressor used extensively by Gentoo Linux"
 HOMEPAGE="https://sourceware.org/bzip2/"

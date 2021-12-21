@@ -3,16 +3,12 @@
 
 EAPI=7
 
-inherit systemd prefix rhel
+inherit systemd prefix rhel9
 
 DESCRIPTION="a man replacement that utilizes berkdb instead of flat files"
 HOMEPAGE="http://www.nongnu.org/man-db/"
 
-if [[ ${PV} == *8888 ]]; then
-	inherit autotools
-else
-	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
-fi
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
 
 LICENSE="GPL-3"
 SLOT="0"

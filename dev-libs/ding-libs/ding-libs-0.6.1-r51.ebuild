@@ -8,7 +8,6 @@ inherit multilib-minimal autotools rhel9
 DESCRIPTION="set of utility libraries (mostly used by sssd)"
 HOMEPAGE="https://pagure.io/SSSD/ding-libs"
 
-
 LICENSE="LGPL-3 GPL-3"
 SLOT="0"
 KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux"

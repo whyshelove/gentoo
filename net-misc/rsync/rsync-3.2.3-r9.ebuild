@@ -3,19 +3,20 @@
 
 EAPI=7
 
-inherit prefix systemd toolchain-funcs rhel
+if [[ ${PV} != 3.2.3 ]]; then
+	# Make sure we revert the autotools hackery applied in 3.2.3.
+	die "Please use rsync-9999.ebuild as a basis for version bumps"
+fi
+
+WANT_LIBTOOL=none
+
+inherit autotools prefix systemd rhel9
 
 DESCRIPTION="File transfer program to keep remote files into sync"
 HOMEPAGE="https://rsync.samba.org/"
-
-if [[ ${PV} == *8888 ]]; then
-	PYTHON_COMPAT=( python3_{6,7,8} )
-	inherit autotools python-any-r1
-else
-	SRC_DIR="src"
-	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-	S="${WORKDIR}/${P/_/}"
-fi
+SRC_DIR="src"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+S="${WORKDIR}/${P/_/}"
 
 LICENSE="GPL-3"
 SLOT="0"
@@ -32,25 +33,10 @@ RDEPEND="acl? ( virtual/acl )
 	iconv? ( virtual/libiconv )"
 DEPEND="${RDEPEND}"
 
-if [[ "${PV}" == *9999 ]] ; then
-	BDEPEND="${PYTHON_DEPS}
-		$(python_gen_any_dep '
-			dev-python/commonmark[${PYTHON_USEDEP}]
-		')"
-fi
-
-# Only required for live ebuild
-python_check_deps() {
-	has_version "dev-python/commonmark[${PYTHON_USEDEP}]"
-}
-
 src_prepare() {
 	default
-	if [[ "${PV}" == *9999 ]] ; then
-		eaclocal -I m4
-		eautoconf -o configure.sh
-		eautoheader && touch config.h.in
-	fi
+	eautoconf -o configure.sh
+	touch config.h.in || die
 }
 
 src_configure() {
@@ -67,11 +53,6 @@ src_configure() {
 		$(use_enable xxhash)
 		$(use_enable zstd)
 	)
-
-	if tc-is-cross-compiler; then
-		# configure check is broken when cross-compiling.
-		myeconfargs+=( --disable-simd )
-	fi
 
 	econf "${myeconfargs[@]}"
 }
@@ -139,8 +120,4 @@ pkg_postinst() {
 		ewarn "For syncing the portage tree, add:"
 		ewarn "PORTAGE_RSYNC_EXTRA_OPTS=\"--new-compress\" to make.conf"
 	fi
-}
-
-pkg_postrm() {
-	systemd_postun_with_restart rsyncd.service
 }

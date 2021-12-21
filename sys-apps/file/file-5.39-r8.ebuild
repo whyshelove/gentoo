@@ -6,13 +6,9 @@ EAPI=7
 PYTHON_COMPAT=( python3_{8..10} )
 DISTUTILS_OPTIONAL=1
 
-inherit distutils-r1 libtool toolchain-funcs multilib-minimal flag-o-matic rhel
+inherit distutils-r1 libtool toolchain-funcs multilib-minimal flag-o-matic rhel9
 
-if [[ ${PV} == *8888 ]]; then
-	inherit autotools
-else
-	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-fi
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 
 DESCRIPTION="identify a file's format by scanning binary data for patterns"
 HOMEPAGE="https://www.darwinsys.com/file/"
