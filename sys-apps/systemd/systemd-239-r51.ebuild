@@ -3,11 +3,11 @@
 
 EAPI=7
 
-if [[ ${PV} != *8888 ]]; then
-	KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~riscv sparc x86"
-fi
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~riscv sparc x86"
 
 PYTHON_COMPAT=( python3_{6..9} )
+
+DIST=el8_5.2
 
 inherit bash-completion-r1 linux-info meson-multilib pam python-any-r1 systemd toolchain-funcs udev usr-ldscript rhel8
 

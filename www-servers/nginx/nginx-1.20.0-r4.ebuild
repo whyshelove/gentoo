@@ -170,7 +170,7 @@ inherit autotools lua-single ssl-cert toolchain-funcs perl-module flag-o-matic u
 
 DESCRIPTION="Robust, small and high performance http and reverse proxy server"
 HOMEPAGE="https://nginx.org"
-SRC_URI="${REPO_URI}/${MY_PF}.module_el8.6.0+927+27be7f27.src.rpm
+SRC_URI="${REPO_URI}/${MY_PF}.module_el8.6.0+1049+d9a22e7c.src.rpm
 	${DEVEL_KIT_MODULE_URI} -> ${DEVEL_KIT_MODULE_P}.tar.gz
 	nginx_modules_http_auth_ldap? ( ${HTTP_LDAP_MODULE_URI} -> ${HTTP_LDAP_MODULE_P}.tar.gz )
 	nginx_modules_http_auth_pam? ( ${HTTP_AUTH_PAM_MODULE_URI} -> ${HTTP_AUTH_PAM_MODULE_P}.tar.gz )

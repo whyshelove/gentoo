@@ -38,7 +38,7 @@ BDEPEND="
 "
 
 _target_cpu=$(rhel-kernel-install_get_qemu_arch)
-KVERREL=${MY_KVP}.${_target_cpu}
+KVERREL=${MY_KVP/_*}.${_target_cpu}
 S=${WORKDIR}/${MY_PF}.${DIST}/linux-${KVERREL}
 
 rhel-kernel-build_pkg_setup() {
