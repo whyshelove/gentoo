@@ -6,12 +6,12 @@ EAPI=7
 DIST_AUTHOR=REHSACK
 DIST_VERSION=0.319
 
-inherit perl-module rhel-c
+inherit perl-module rhel9-c
 
 DESCRIPTION="A module to implement some of AutoConf macros in pure perl"
 
 SLOT="0"
-KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ppc ppc64 ~riscv sparc x86"
+KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ppc ppc64 ~riscv sparc x86"
 IUSE="test"
 RESTRICT="!test? ( test )"
 

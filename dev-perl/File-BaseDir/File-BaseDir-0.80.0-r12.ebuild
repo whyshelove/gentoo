@@ -5,7 +5,7 @@ EAPI=7
 
 DIST_AUTHOR=KIMRYAN
 DIST_VERSION=0.08
-inherit perl-module rhel-c
+inherit perl-module rhel9-c
 
 DESCRIPTION="Use the Freedesktop.org base directory specification"
 

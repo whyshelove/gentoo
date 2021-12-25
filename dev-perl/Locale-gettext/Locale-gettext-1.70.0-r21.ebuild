@@ -6,7 +6,7 @@ EAPI=6
 DIST_NAME=gettext
 DIST_AUTHOR=PVANDRY
 DIST_VERSION=1.07
-inherit perl-module rhel-c
+inherit perl-module rhel9-c
 
 DESCRIPTION="A Perl module for accessing the GNU locale utilities"
 

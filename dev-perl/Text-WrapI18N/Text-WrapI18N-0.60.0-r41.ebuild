@@ -5,7 +5,7 @@ EAPI=5
 
 MODULE_AUTHOR=KUBOTA
 MODULE_VERSION=0.06
-inherit perl-module rhel-c
+inherit perl-module rhel9-c
 
 DESCRIPTION="Internationalized substitute of Text::Wrap"
 

@@ -10,12 +10,10 @@
 
 EAPI="7"
 
-inherit fcaps flag-o-matic toolchain-funcs rhel
+inherit fcaps flag-o-matic toolchain-funcs rhel8
 
-if [[ ${PV} != *8888 ]]; then
-	S="${WORKDIR}/${PN}-s${PV}"
-	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
-fi
+S="${WORKDIR}/${PN}-s${PV}"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
 
 DESCRIPTION="Network monitoring tools including ping and ping6"
 HOMEPAGE="https://wiki.linuxfoundation.org/networking/iputils"

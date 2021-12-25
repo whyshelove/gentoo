@@ -5,7 +5,7 @@ EAPI=6
 
 DIST_AUTHOR=ETHER
 DIST_VERSION=0.26
-inherit perl-module rhel-c
+inherit perl-module rhel9-c
 
 DESCRIPTION="(Re)name a sub"
 

@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{7..10} pypy3 )
 
-inherit distutils-r1 rhel-c
+inherit distutils-r1 rhel9-c
 
 DESCRIPTION="Measures number of Terminal column cells of wide-character codes"
 HOMEPAGE="https://pypi.org/project/wcwidth/ https://github.com/jquast/wcwidth"

@@ -31,7 +31,7 @@ SRC_URI+="
 "
 
 LICENSE="MIT"
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv sparc x86 ~x64-macos"
+KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86 ~x64-macos"
 SLOT="0"
 IUSE="test vanilla"
 RESTRICT="!test? ( test )"
@@ -53,6 +53,9 @@ BDEPEND="
 "
 
 python_prepare_all() {
+	local PATCHES=(
+		"${FILESDIR}/${PN}-21.1-no-coverage.patch"
+	)
 	if ! use vanilla; then
 		PATCHES+=( "${FILESDIR}/pip-20.0.2-disable-system-install.patch" )
 	fi

@@ -8,7 +8,6 @@ inherit distutils-r1 rhel9
 
 DESCRIPTION="Get a public suffix for a domain name using the Public Suffix List."
 HOMEPAGE="https://github.com/nexB/python-publicsuffix2"
-#SRC_URI="mirror://pypi/${PN:0:1}/${PN}2/${PN}2-${PV}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0"

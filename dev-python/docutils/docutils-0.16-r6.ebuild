@@ -5,12 +5,10 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{8..10} pypy3 )
 
-inherit distutils-r1 rhel-c
+inherit distutils-r1 rhel9-c
 
 DESCRIPTION="Python Documentation Utilities"
 HOMEPAGE="https://docutils.sourceforge.io/ https://pypi.org/project/docutils/"
-#SRC_URI="mirror://sourceforge/${PN}/${P}.tar.gz"
-#SRC_URI="mirror://pypi/${PN:0:1}/${PN}/${P}.tar.gz"
 
 LICENSE="BSD-2 GPL-3 public-domain"
 SLOT="0"

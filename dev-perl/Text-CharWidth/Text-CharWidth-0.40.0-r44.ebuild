@@ -5,7 +5,7 @@ EAPI=5
 
 MODULE_AUTHOR=KUBOTA
 MODULE_VERSION=0.04
-inherit perl-module rhel-c
+inherit perl-module rhel9-c
 
 DESCRIPTION="Get number of occupied columns of a string on terminal"
 

@@ -10,7 +10,6 @@ DESCRIPTION="YAML parser and emitter for Python"
 HOMEPAGE="https://pyyaml.org/wiki/PyYAML
 	https://pypi.org/project/PyYAML/
 	https://github.com/yaml/pyyaml"
-#SRC_URI="https://github.com/yaml/pyyaml/archive/${PV}.tar.gz -> ${P}.gh.tar.gz"
 
 LICENSE="MIT"
 SLOT="0"

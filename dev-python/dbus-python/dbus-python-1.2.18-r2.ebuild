@@ -10,7 +10,6 @@ inherit autotools python-r1 rhel9
 
 DESCRIPTION="Python bindings for the D-Bus messagebus"
 HOMEPAGE="https://www.freedesktop.org/wiki/Software/DBusBindings/ https://dbus.freedesktop.org/doc/dbus-python/"
-#SRC_URI="https://dbus.freedesktop.org/releases/${PN}/${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0"

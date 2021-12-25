@@ -13,7 +13,7 @@ HOMEPAGE="http://urwid.org/ https://pypi.org/project/urwid/ https://github.com/u
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-KEYWORDS="amd64 ~arm ~arm64 ~ia64 ~mips ppc ppc64 ~sparc x86 ~amd64-linux ~x86-linux"
+KEYWORDS="amd64 ~arm arm64 ~ia64 ~mips ppc ppc64 ~sparc x86 ~amd64-linux ~x86-linux"
 IUSE="examples"
 
 distutils_enable_sphinx docs

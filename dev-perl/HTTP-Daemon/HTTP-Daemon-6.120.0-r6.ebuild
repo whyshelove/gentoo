@@ -5,7 +5,7 @@ EAPI=7
 
 DIST_AUTHOR=OALDERS
 DIST_VERSION=6.12
-inherit perl-module rhel-c
+inherit perl-module rhel9-c
 
 DESCRIPTION="Base class for simple HTTP servers"
 

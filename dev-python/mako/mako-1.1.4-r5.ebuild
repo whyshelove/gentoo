@@ -9,7 +9,6 @@ inherit distutils-r1 optfeature rhel9-a
 MY_P=${P^}
 DESCRIPTION="A Python templating language"
 HOMEPAGE="https://www.makotemplates.org/ https://pypi.org/project/Mako/"
-#SRC_URI="mirror://pypi/${MY_P:0:1}/${PN^}/${MY_P}.tar.gz"
 S="${WORKDIR}/${PN}-rel_${PV//./_}"
 
 LICENSE="MIT"

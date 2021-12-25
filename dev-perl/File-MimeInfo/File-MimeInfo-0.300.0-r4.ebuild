@@ -5,12 +5,12 @@ EAPI=7
 
 DIST_AUTHOR=MICHIELB
 DIST_VERSION=0.30
-inherit perl-module rhel-c
+inherit perl-module rhel9-c
 
 DESCRIPTION="Determine file type"
 
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~sparc-solaris"
+KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~sparc-solaris"
 IUSE="test"
 RESTRICT="!test? ( test )"
 

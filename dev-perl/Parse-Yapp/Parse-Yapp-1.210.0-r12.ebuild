@@ -6,7 +6,7 @@ EAPI=6
 DIST_AUTHOR=WBRASWELL
 DIST_VERSION=1.21
 DIST_EXAMPLES=( "Calc.yp" "YappParse.yp" )
-inherit perl-module rhel-c
+inherit perl-module rhel9-c
 
 DESCRIPTION="Compiles yacc-like LALR grammars to generate Perl OO parser modules"
 

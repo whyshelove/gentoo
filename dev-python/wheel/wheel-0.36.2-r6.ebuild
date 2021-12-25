@@ -4,7 +4,7 @@
 EAPI=7
 
 PYTHON_COMPAT=( python3_{7..10} pypy3 )
-inherit distutils-r1 rhel-c
+inherit distutils-r1 rhel9-c
 
 DESCRIPTION="A built-package format for Python"
 HOMEPAGE="https://pypi.org/project/wheel/"

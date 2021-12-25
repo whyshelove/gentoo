@@ -5,7 +5,7 @@ EAPI=6
 
 DIST_AUTHOR=ETHER
 DIST_VERSION=1.73
-inherit perl-module rhel-c
+inherit perl-module rhel9-c
 
 DESCRIPTION="Read/Write YAML files with as little code as possible"
 

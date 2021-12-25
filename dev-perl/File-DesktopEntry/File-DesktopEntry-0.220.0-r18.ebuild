@@ -5,7 +5,7 @@ EAPI=6
 
 DIST_AUTHOR=MICHIELB
 DIST_VERSION=0.22
-inherit perl-module rhel-c
+inherit perl-module rhel9-c
 
 DESCRIPTION="Object to handle .desktop files"
 

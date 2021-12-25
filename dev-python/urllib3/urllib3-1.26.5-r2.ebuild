@@ -10,7 +10,6 @@ inherit distutils-r1 rhel9
 
 DESCRIPTION="HTTP library with thread-safe connection pooling, file post, and more"
 HOMEPAGE="https://github.com/urllib3/urllib3"
-#SRC_URI="mirror://pypi/${PN:0:1}/${PN}/${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0"

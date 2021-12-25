@@ -10,7 +10,6 @@ inherit distutils-r1 rhel9-a
 
 DESCRIPTION="A Python module to deal with freedesktop.org specifications"
 HOMEPAGE="https://freedesktop.org/wiki/Software/pyxdg https://cgit.freedesktop.org/xdg/pyxdg/"
-#SRC_URI="https://github.com/takluyver/${PN}/archive/rel-${PV}.tar.gz -> ${MY_P}.tar.gz"
 #S="${WORKDIR}/${MY_P}"
 
 LICENSE="LGPL-2"

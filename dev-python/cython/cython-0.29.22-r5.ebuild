@@ -7,12 +7,11 @@ DISTUTILS_USE_SETUPTOOLS=rdepend
 PYTHON_COMPAT=( python3_{7..9} pypy3 )
 PYTHON_REQ_USE="threads(+)"
 
-inherit distutils-r1 toolchain-funcs elisp-common rhel-c
+inherit distutils-r1 toolchain-funcs elisp-common rhel9-c
 
 DESCRIPTION="A Python to C compiler"
 HOMEPAGE="https://cython.org https://pypi.org/project/Cython/
 	https://github.com/cython/cython"
-#SRC_URI="https://github.com/cython/cython/archive/${PV}.tar.gz -> ${P}.gh.tar.gz"
 
 LICENSE="Apache-2.0"
 SLOT="0"

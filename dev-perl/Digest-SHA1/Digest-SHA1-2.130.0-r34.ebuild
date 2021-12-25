@@ -5,7 +5,7 @@ EAPI=7
 
 DIST_AUTHOR=GAAS
 DIST_VERSION=2.13
-inherit perl-module rhel-c
+inherit perl-module rhel9-c
 
 DESCRIPTION="NIST SHA message digest algorithm"
 

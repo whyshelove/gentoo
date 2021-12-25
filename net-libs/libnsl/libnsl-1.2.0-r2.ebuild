@@ -3,13 +3,12 @@
 
 EAPI=7
 
+DIST=20180605git4a062cf.el8
+
 inherit multilib-minimal rhel8
 
 DESCRIPTION="Public client interface for NIS(YP) and NIS+ in a IPv6 ready version"
 HOMEPAGE="https://github.com/thkukuk/libnsl"
-if [[ ${PV} != *8888 ]]; then
-	SRC_URI="${BASEOS}/${MY_PF}.20180605git4a062cf${DIST}.src.rpm"
-fi
 
 SLOT="0/2"
 LICENSE="LGPL-2.1+"

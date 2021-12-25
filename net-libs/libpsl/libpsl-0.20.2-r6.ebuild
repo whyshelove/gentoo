@@ -5,11 +5,11 @@ EAPI=7
 
 PYTHON_COMPAT=(python3_{6,8,9})
 
-inherit multilib-minimal python-any-r1 rhel
+inherit multilib-minimal python-any-r1 rhel8
 
 DESCRIPTION="C library for the Public Suffix List"
 HOMEPAGE="https://github.com/rockdaboot/libpsl"
-#SRC_URI="https://github.com/rockdaboot/${PN}/releases/download/${P}/${P}.tar.gz"
+
 LICENSE="MIT"
 SLOT="0"
 

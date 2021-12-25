@@ -5,7 +5,7 @@ EAPI=7
 
 DIST_AUTHOR=MAREKR
 DIST_VERSION=1.63
-inherit perl-module rhel-c
+inherit perl-module rhel9-c
 
 DESCRIPTION="POD filters and translators"
 

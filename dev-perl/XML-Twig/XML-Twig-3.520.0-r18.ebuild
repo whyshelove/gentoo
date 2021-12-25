@@ -5,7 +5,7 @@ EAPI=6
 
 DIST_AUTHOR=MIROD
 DIST_VERSION=3.52
-inherit perl-module rhel-c
+inherit perl-module rhel9-c
 
 DESCRIPTION="Process huge XML documents in tree mode"
 

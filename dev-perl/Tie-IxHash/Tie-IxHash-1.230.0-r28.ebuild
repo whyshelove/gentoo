@@ -5,7 +5,7 @@ EAPI=5
 
 MODULE_AUTHOR=CHORNY
 MODULE_VERSION=1.23
-inherit perl-module rhel-c
+inherit perl-module rhel9-c
 
 DESCRIPTION="Ordered associative arrays for Perl"
 

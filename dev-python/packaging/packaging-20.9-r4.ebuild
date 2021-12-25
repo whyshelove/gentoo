@@ -11,7 +11,6 @@ DESCRIPTION="Core utilities for Python packages"
 HOMEPAGE="
 	https://github.com/pypa/packaging/
 	https://pypi.org/project/packaging/"
-#SRC_URI="https://github.com/pypa/packaging/archive/${PV}.tar.gz -> ${P}.gh.tar.gz"
 
 SLOT="0"
 LICENSE="|| ( Apache-2.0 BSD-2 )"
