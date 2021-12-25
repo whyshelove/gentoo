@@ -7,7 +7,6 @@ inherit flag-o-matic gnome2-utils meson-multilib toolchain-funcs xdg rhel9-a
 
 DESCRIPTION="Internationalized text layout and rendering library"
 HOMEPAGE="https://www.pango.org/ https://gitlab.gnome.org/GNOME/pango"
-#SRC_URI="http://ftp.gnome.org/pub/GNOME/sources/pango/$(ver_cut 1-2)/${P}.tar.xz"
 
 LICENSE="LGPL-2+"
 SLOT="0"

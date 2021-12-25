@@ -13,7 +13,7 @@ SRC_URI+=" verify-sig? ( mirror://gnu/${PN}/${P}.tar.bz2.sig )"
 
 LICENSE="GPL-3+"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~x86 ~amd64-linux ~x86-linux ~x64-macos"
+KEYWORDS="amd64 arm arm64 ~ppc64 x86 ~amd64-linux ~x86-linux ~x64-macos"
 
 RDEPEND="dev-lang/perl:=
 	dev-perl/Devel-Size
@@ -22,7 +22,7 @@ RDEPEND="dev-lang/perl:=
 	virtual/perl-File-Temp
 	virtual/perl-IO"
 DEPEND="${RDEPEND}"
-BDEPEND="verify-sig? ( >=app-crypt/openpgp-keys-oletange-20210423 )"
+BDEPEND="verify-sig? ( >=sec-keys/openpgp-keys-oletange-20210423 )"
 
 src_configure() {
 	econf --docdir="${EPREFIX}"/usr/share/doc/${PF}/html
