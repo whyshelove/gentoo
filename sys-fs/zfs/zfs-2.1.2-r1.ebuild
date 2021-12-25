@@ -62,7 +62,7 @@ BDEPEND="virtual/awk
 "
 
 if [[ ${PV} != "9999" ]] ; then
-	BDEPEND+=" verify-sig? ( app-crypt/openpgp-keys-openzfs )"
+	BDEPEND+=" verify-sig? ( sec-keys/openpgp-keys-openzfs )"
 fi
 
 # awk is used for some scripts, completions, and the Dracut module
@@ -104,6 +104,7 @@ RESTRICT="test"
 PATCHES=(
 	"${FILESDIR}/2.1.2-scrub-timers.patch"
 	"${FILESDIR}/2.1.2-openrc-vendor.patch"
+	"${FILESDIR}/2.1.2-musl-tests.patch"
 )
 
 pkg_pretend() {
@@ -270,7 +271,7 @@ pkg_postinst() {
 		if ! has_version sys-kernel/genkernel && ! has_version sys-kernel/dracut; then
 			elog "Root on zfs requires an initramfs to boot"
 			elog "The following packages provide one and are tested on a regular basis:"
-			elog "  sys-kernel/dracut"
+			elog "  sys-kernel/dracut ( preferred, module maintained by zfs developers )"
 			elog "  sys-kernel/genkernel"
 		fi
 	fi
