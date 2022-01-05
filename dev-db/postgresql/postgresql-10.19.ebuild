@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -20,7 +20,7 @@ LICENSE="POSTGRESQL GPL-2"
 DESCRIPTION="PostgreSQL RDBMS"
 HOMEPAGE="https://www.postgresql.org/"
 
-IUSE="debug doc icu kerberos kernel_linux ldap nls pam perl
+IUSE="debug doc icu kerberos ldap nls pam perl
 	  python +readline selinux +server systemd ssl static-libs tcl
 	  threads uuid xml zlib"
 
@@ -50,8 +50,8 @@ zlib? ( sys-libs/zlib )
 # uuid flags -- depend on sys-apps/util-linux for Linux libcs, or if no
 # supported libc in use depend on dev-libs/ossp-uuid. For BSD systems,
 # the libc includes UUID functions.
-UTIL_LINUX_LIBC=( elibc_{glibc,uclibc,musl} )
-BSD_LIBC=( elibc_{Free,Net,Open}BSD )
+UTIL_LINUX_LIBC=( elibc_{glibc,musl} )
+BSD_LIBC=( elibc_{Net,Open}BSD )
 
 nest_usedep() {
 	local front back
@@ -63,7 +63,6 @@ nest_usedep() {
 	echo "${front}${1}${back}"
 }
 
-IUSE+=" ${UTIL_LINUX_LIBC[@]} ${BSD_LIBC[@]}"
 CDEPEND+="
 uuid? (
 	${UTIL_LINUX_LIBC[@]/%/? ( sys-apps/util-linux )}
