@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -11,7 +11,7 @@ SRC_URI="https://www.libarchive.org/downloads/${P}.tar.gz"
 LICENSE="BSD BSD-2 BSD-4 public-domain"
 SLOT="0/13"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-IUSE="acl blake2 +bzip2 +e2fsprogs expat +iconv kernel_linux lz4 +lzma lzo nettle static-libs xattr +zlib zstd"
+IUSE="acl blake2 +bzip2 +e2fsprogs expat +iconv lz4 +lzma lzo nettle static-libs xattr +zlib zstd"
 
 RDEPEND="
 	acl? ( virtual/acl[${MULTILIB_USEDEP}] )
@@ -112,16 +112,6 @@ multilib_src_test() {
 multilib_src_install() {
 	if multilib_is_native_abi ; then
 		emake DESTDIR="${D}" install
-
-		# Create symlinks for FreeBSD
-		if ! use prefix && [[ ${CHOST} == *-freebsd* ]]; then
-			# Exclude cat for the time being #589876
-			for bin in cpio tar; do
-				dosym bsd${bin} /usr/bin/${bin}
-				echo '.so bsd${bin}.1' > "${T}"/${bin}.1
-				doman "${T}"/${bin}.1
-			done
-		fi
 	else
 		local install_targets=(
 			install-includeHEADERS

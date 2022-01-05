@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -25,9 +25,7 @@ IUSE="caps gnutls ipv6 pam ldap samba sasl kerberos nis radius ssl snmp selinux 
 	ecap esi ssl-crtd \
 	mysql postgres sqlite systemd \
 	perl qos tproxy \
-	+htcp +wccp +wccpv2 \
-	pf-transparent ipf-transparent kqueue \
-	elibc_uclibc kernel_linux"
+	+htcp +wccp +wccpv2"
 
 RESTRICT="!test? ( test )"
 
@@ -121,7 +119,7 @@ src_configure() {
 	use ldap && basic_modules+=",SMB_LM,LDAP"
 	use pam && basic_modules+=",PAM"
 	use sasl && basic_modules+=",SASL"
-	use nis && ! use elibc_uclibc && basic_modules+=",NIS"
+	use nis && basic_modules+=",NIS"
 	use radius && basic_modules+=",RADIUS"
 	if use mysql || use postgres || use sqlite ; then
 		basic_modules+=",DB"
@@ -158,15 +156,6 @@ src_configure() {
 	if use kernel_linux ; then
 		transparent+=" --enable-linux-netfilter"
 		use qos && transparent+=" --enable-zph-qos --with-netfilter-conntrack"
-	fi
-
-	if use kernel_FreeBSD || use kernel_OpenBSD || use kernel_NetBSD ; then
-		transparent+=" $(use_enable kqueue)"
-		if use pf-transparent; then
-			transparent+=" --enable-pf-transparent"
-		elif use ipf-transparent; then
-			transparent+=" --enable-ipf-transparent"
-		fi
 	fi
 
 	tc-export_build_env BUILD_CXX
