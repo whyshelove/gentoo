@@ -1,19 +1,16 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{7,8,9} )
+PYTHON_COMPAT=( python3_{8..10} )
 inherit autotools multilib-minimal python-single-r1
-
-# When COMMIT is defined, this ebuild turns from a release into a snapshot ebuild:
-COMMIT="abe805ed6c7f38e48002e575535afd1f673b9bcd"
-# Also set SNAPSHOT_PV to match the correct PV, so that the ebuild can detect a naive rename:
-SNAPSHOT_PV="1.2.5_p20210604"
 
 DESCRIPTION="Advanced Linux Sound Architecture Library"
 HOMEPAGE="https://alsa-project.org/wiki/Main_Page"
-if [[ -n ${COMMIT} ]]; then
+if [[ ${PV} == *_p* ]] ; then
+	# Please set correct commit ID for a snapshot release!!!
+	COMMIT="abe805ed6c7f38e48002e575535afd1f673b9bcd"
 	SRC_URI="https://git.alsa-project.org/?p=${PN}.git;a=snapshot;h=${COMMIT};sf=tgz -> ${P}.tar.gz"
 	S="${WORKDIR}"/${PN}-${COMMIT:0:7}
 else
@@ -23,8 +20,8 @@ fi
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86 ~amd64-linux ~x86-linux"
-IUSE="alisp debug doc elibc_uclibc python +thread-safety"
+KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86 ~amd64-linux ~x86-linux"
+IUSE="alisp debug doc python +thread-safety"
 
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 
@@ -39,24 +36,12 @@ PATCHES=(
 	"${FILESDIR}/${PN}-1.1.6-missing_files.patch" # bug #652422
 )
 
-pkg_pretend() {
-	if [[ -n ${COMMIT} && -z ${SNAPSHOT_PV} || -z ${COMMIT} && -n ${SNAPSHOT_PV} ]]; then
-		eerror "Please either set both COMMIT and SNAPSHOT_PV or neither!"
-	elif [[ -n ${SNAPSHOT_PV} && ${PV} != ${SNAPSHOT_PV} ]]; then
-		eerror "Rename of snapshot ebuild detected - please check COMMIT & SNAPSHOT_PV!"
-	fi
-}
-
 pkg_setup() {
 	use python && python-single-r1_pkg_setup
 }
 
 src_prepare() {
 	find . -name Makefile.am -exec sed -i -e '/CFLAGS/s:-g -O2::' {} + || die
-	# https://bugs.gentoo.org/509886
-	if use elibc_uclibc ; then
-		sed -i -e 's:oldapi queue_timer:queue_timer:' test/Makefile.am || die
-	fi
 	# https://bugs.gentoo.org/545950
 	sed -i -e '5s:^$:\nAM_CPPFLAGS = -I$(top_srcdir)/include:' test/lsb/Makefile.am || die
 	default
@@ -76,7 +61,6 @@ multilib_src_configure() {
 		$(use_enable alisp)
 		$(use_enable thread-safety)
 		$(use_with debug)
-		$(usex elibc_uclibc --without-versioned '')
 	)
 
 	ECONF_SOURCE="${S}" econf "${myeconfargs[@]}"

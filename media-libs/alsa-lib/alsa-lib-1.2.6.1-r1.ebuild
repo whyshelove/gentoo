@@ -1,32 +1,28 @@
 # Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{7,8,9} )
-inherit autotools multilib-minimal python-single-r1
+PYTHON_COMPAT=( python3_{6,8,9} )
+inherit autotools multilib-minimal python-single-r1 rhel8-a
 
 DESCRIPTION="Advanced Linux Sound Architecture Library"
 HOMEPAGE="https://alsa-project.org/wiki/Main_Page"
-SRC_URI="https://www.alsa-project.org/files/pub/lib/${P}.tar.bz2"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv sparc x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86 ~amd64-linux ~x86-linux"
 IUSE="alisp debug doc python +thread-safety"
 
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 
 BDEPEND="doc? ( >=app-doc/doxygen-1.2.6 )"
 RDEPEND="python? ( ${PYTHON_DEPS} )
-	media-libs/alsa-topology-conf
-	media-libs/alsa-ucm-conf
 "
 DEPEND="${RDEPEND}"
 
 PATCHES=(
 	"${FILESDIR}/${PN}-1.1.6-missing_files.patch" # bug #652422
-	"${FILESDIR}/${PN}-1.2.4-musl.patch" # bug #792570
 )
 
 pkg_setup() {
@@ -49,6 +45,7 @@ multilib_src_configure() {
 		--enable-rawmidi
 		--enable-seq
 		--enable-shared
+		--with-plugindir=${_libdir}/alsa-lib
 		# enable Python only on final ABI
 		$(multilib_native_use_enable python)
 		$(use_enable alisp)
@@ -60,6 +57,10 @@ multilib_src_configure() {
 }
 
 multilib_src_compile() {
+	# Remove useless /usr/lib64 rpath on 64bit archs
+	sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
+	sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
+
 	emake
 
 	if multilib_is_native_abi && use doc; then
@@ -72,6 +73,25 @@ multilib_src_compile() {
 multilib_src_install() {
 	multilib_is_native_abi && use doc && local HTML_DOCS=( doc/doxygen/html/. )
 	default
+
+	# Install global configuration files
+	insopts -m0755
+	insinto /etc/
+	doins "${WORKDIR}"/asound.conf
+
+	# Install the modprobe files for ALSA
+	insopts -m0755
+	insinto ${_prefix}/lib/modprobe.d/
+	newins "${WORKDIR}"/modprobe-dist-alsa.conf dist-alsa.conf
+
+	dodir ${_datadir}/alsa/{ucm,ucm2,topology}
+
+	# Unpack UCMs
+	tar xvjf ${WORKDIR}/alsa-ucm-conf-${PV}.tar.bz2 -C ${ED}${_datadir}/alsa --strip-components=1 "*/ucm" "*/ucm2"
+	patch -d ${ED}${_datadir}/alsa -p1 < ${WORKDIR}/alsa-ucm-git.patch
+
+	# Unpack topologies
+	tar xvjf ${WORKDIR}/alsa-topology-conf-${PV}.tar.bz2 -C ${ED}${_datadir}/alsa --strip-components=1 "*/topology"
 }
 
 multilib_src_install_all() {
