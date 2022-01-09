@@ -10,6 +10,10 @@ HOMEPAGE="https://www.enlightenment.org"
 SRC_URI="https://download.enlightenment.org/rel/apps/${PN}/${P}.tar.xz"
 
 LICENSE="BSD-2"
+
+# Historically enlightenment was slotted to separate e16 from e17. e16 is now
+# packaged as x11-wm/e16, but the slot is kept because it's more complicated to
+# reset it rather than just to keep it.
 SLOT="0.17/${PV%%_*}"
 KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~riscv ~x86"
 IUSE="acpi bluetooth connman doc exif geolocation nls pam policykit systemd udisks wayland xwayland"
@@ -101,10 +105,13 @@ pkg_postinst() {
 
 	optfeature_header "Additional programs to complement the full EFL suite:"
 	optfeature "efl-based pinentry interface" app-crypt/pinentry[efl]
+	optfeature "an efl-based text editor" app-editors/ecrire
 	optfeature "better monitor backlight and brightness controls" app-misc/ddcutil
 	optfeature "office file thumbnails" app-office/libreoffice app-office/libreoffice-bin
 	optfeature "an EFL-based IDE" dev-util/edi
+	optfeature "image viewer" media-gfx/entice
 	optfeature "image viewer" media-gfx/ephoto
+	optfeature "a media player" media-video/rage
 	optfeature "ConnMan user interface for Enlightenment" net-misc/econnman
 	optfeature "system and process monitor" sys-process/evisum
 	optfeature "feature rich terminal emulator" x11-terms/terminology
