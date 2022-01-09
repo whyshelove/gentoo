@@ -151,7 +151,6 @@ multilib_src_configure() {
 
 	# Add linker versions to the symbols. Easier to do, and safer than header file
 	# mumbo jumbo.
-	append-ldflags -Wl,--default-symver
 
 	if multilib_is_native_abi && use java ; then
 		myconf+=(
