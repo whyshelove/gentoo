@@ -5,7 +5,7 @@ EAPI=7
 
 inherit unpacker rhel9
 
-SRC_URI="${REPO_BIN}/centos-stream-release-9.0-6.${DIST}.noarch.rpm"
+SRC_URI="${REPO_BIN}/centos-stream-release-9.0-8.${DIST}.noarch.rpm"
 SRC_URI="${SRC_URI} ${REPO_BIN}/rootfiles-8.1-30.${DIST}.noarch.rpm"
 
 REPO_BIN="${MIRROR_BIN}/${RELEASE}/AppStream/x86_64/os/Packages"

@@ -1,19 +1,22 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
 EGIT_REPO_URI="https://gitlab.freedesktop.org/mesa/drm.git"
+PYTHON_COMPAT=( python3_{8..10} )
 
-if [[ ${PV} = 8888* ]]; then
+if [[ ${PV} = 9999* ]]; then
 	GIT_ECLASS="git-r3"
 fi
 
-inherit ${GIT_ECLASS} meson-multilib rhel9-a
+inherit ${GIT_ECLASS} python-any-r1 meson-multilib rhel9-a
 
 DESCRIPTION="X.Org libdrm library"
 HOMEPAGE="https://dri.freedesktop.org/ https://gitlab.freedesktop.org/mesa/drm"
-if [[ ${PV} != 8888* ]]; then
+if [[ ${PV} = 9999* ]]; then
+	SRC_URI=""
+else
 	KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux"
 fi
 
@@ -31,6 +34,12 @@ RDEPEND="
 	video_cards_intel? ( >=x11-libs/libpciaccess-0.13.1-r1:=[${MULTILIB_USEDEP}] )"
 DEPEND="${RDEPEND}
 	valgrind? ( dev-util/valgrind )"
+BDEPEND="${PYTHON_DEPS}
+	$(python_gen_any_dep 'dev-python/docutils[${PYTHON_USEDEP}]')"
+
+python_check_deps() {
+	has_version -b "dev-python/docutils[${PYTHON_USEDEP}]"
+}
 
 multilib_src_configure() {
 	local emesonargs=(

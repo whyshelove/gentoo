@@ -146,15 +146,15 @@ srcrhel_unpack() {
 	# no .src.rpm files, then nothing to do
 	[[ "$* " != *".src.rpm " ]] && return 0
 
-	FIND_FILE="${WORKDIR}/*.spec"
-	FIND_STR="pypi_source"
-	if [ `grep -c "$FIND_STR" $FIND_FILE` -ne '0' ] ;then
-		echo -e "The spec File Has\c"
-		echo -e "\033[33m $FIND_STR \033[0m\c"
-		echo "Skipp rpm build through %prep..."
-		unpack ${WORKDIR}/*.tar.*
-		return 0
-	fi
+#	FIND_FILE="${WORKDIR}/*.spec"
+#	FIND_STR="pypi_source"
+#	if [ `grep -c "$FIND_STR" $FIND_FILE` -ne '0' ] ;then
+#		echo -e "The spec File Has\c"
+#		echo -e "\033[33m $FIND_STR \033[0m\c"
+#		echo "Skipp rpm build through %prep..."
+#		unpack ${WORKDIR}/*.tar.*
+#		return 0
+#	fi
 
 	eshopts_push -s nullglob
 
