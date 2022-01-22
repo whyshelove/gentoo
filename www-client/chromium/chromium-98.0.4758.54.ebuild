@@ -1,4 +1,4 @@
-# Copyright 2009-2021 Gentoo Authors
+# Copyright 2009-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -15,14 +15,12 @@ DESCRIPTION="Open-source version of Google Chrome web browser"
 HOMEPAGE="https://chromium.org/"
 PATCHSET="4"
 PATCHSET_NAME="chromium-$(ver_cut 1)-patchset-${PATCHSET}"
-PPC64LE_PATCHSET="1"
 SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/${P}.tar.xz
-	https://github.com/stha09/chromium-patches/releases/download/${PATCHSET_NAME}/${PATCHSET_NAME}.tar.xz
-	ppc64? ( https://dev.gentoo.org/~gyakovlev/distfiles/${PN}-$(ver_cut 1)-ppc64le-${PPC64LE_PATCHSET}.tar.xz )"
+	https://github.com/stha09/chromium-patches/releases/download/${PATCHSET_NAME}/${PATCHSET_NAME}.tar.xz"
 
 LICENSE="BSD"
-SLOT="0/stable"
-KEYWORDS="amd64 arm64 ~x86"
+SLOT="0/beta"
+KEYWORDS="~amd64 ~arm64 ~x86"
 IUSE="component-build cups cpu_flags_arm_neon debug +hangouts headless +js-type-check kerberos +official pic +proprietary-codecs pulseaudio screencast selinux +suid +system-ffmpeg +system-harfbuzz +system-icu +system-png vaapi wayland widevine"
 REQUIRED_USE="
 	component-build? ( !suid )
@@ -89,7 +87,7 @@ COMMON_DEPEND="
 		x11-libs/gtk+:3[X]
 		wayland? (
 			dev-libs/wayland:=
-			screencast? ( media-video/pipewire:0/0.3 )
+			screencast? ( media-video/pipewire:= )
 			x11-libs/gtk+:3[wayland,X]
 			x11-libs/libdrm:=
 		)
@@ -232,14 +230,14 @@ src_prepare() {
 	local PATCHES=(
 		"${WORKDIR}/patches"
 		"${FILESDIR}/chromium-93-InkDropHost-crash.patch"
-		"${FILESDIR}/chromium-96-EnumTable-crash.patch"
-		"${FILESDIR}/chromium-96-freetype-unbundle.patch"
+		"${FILESDIR}/chromium-97-fix-tag-dragging-i3.patch"
+		"${FILESDIR}/chromium-97-arm-tflite-cast.patch"
+		"${FILESDIR}/chromium-98-EnumTable-crash.patch"
+		"${FILESDIR}/chromium-98-system-libdrm.patch"
 		"${FILESDIR}/chromium-glibc-2.34.patch"
 		"${FILESDIR}/chromium-use-oauth2-client-switches-as-default.patch"
 		"${FILESDIR}/chromium-shim_headers.patch"
 	)
-
-	use ppc64 && PATCHES+=( "${WORKDIR}/${PN}-ppc64le" )
 
 	default
 
@@ -750,12 +748,6 @@ src_configure() {
 		popd > /dev/null || die
 	fi
 
-	# Chromium relies on this, but was disabled in >=clang-10, crbug.com/1042470
-	append-cxxflags $(test-flags-CXX -flax-vector-conversions=all)
-
-	# highway/libjxl fail on ppc64 without extra patches, disable for now.
-	use ppc64 && myconf_gn+=" enable_jxl_decoder=false"
-
 	# Disable unknown warning message from clang.
 	tc-is-clang && append-flags -Wno-unknown-warning-option
 
@@ -794,6 +786,8 @@ src_configure() {
 		myconf_gn+=" is_cfi=false"
 		# Disable PGO, because profile data is only compatible with >=clang-11
 		myconf_gn+=" chrome_pgo_phase=0"
+		# Don't add symbols to build
+		myconf_gn+=" symbol_level=0"
 	fi
 
 	einfo "Configuring Chromium..."
@@ -908,7 +902,6 @@ src_install() {
 	fi
 
 	doins -r out/Release/locales
-	doins -r out/Release/resources
 	doins -r out/Release/MEIPreload
 
 	# Install vk_swiftshader_icd.json; bug #827861
