@@ -1,14 +1,17 @@
-# Copyright 2011-2021 Gentoo Authors
+# Copyright 2011-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 PYTHON_COMPAT=( python3_{8..10} )
 
+# Avoid QA warnings
+TMPFILES_OPTIONAL=1
+
 if [[ ${PV} == 9999 ]]; then
 	EGIT_REPO_URI="https://github.com/systemd/systemd.git"
 	inherit git-r3
 else
-	KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86"
+	KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~riscv sparc x86"
 fi
 
 inherit bash-completion-r1 linux-info meson-multilib pam python-any-r1 systemd toolchain-funcs udev usr-ldscript rhel9
@@ -18,7 +21,7 @@ HOMEPAGE="https://www.freedesktop.org/wiki/Software/systemd"
 
 LICENSE="GPL-2 LGPL-2.1 MIT public-domain"
 SLOT="0/2"
-IUSE="acl apparmor audit build cgroup-hybrid cryptsetup curl dns-over-tls elfutils +gcrypt gnuefi homed http +hwdb idn importd +kmod +lz4 lzma nat pam pcre pkcs11 policykit pwquality qrcode repart +resolvconf +seccomp selinux split-usr static-libs +sysv-utils test tpm vanilla xkb +zstd"
+IUSE="acl apparmor audit build cgroup-hybrid cryptsetup curl dns-over-tls elfutils fido2 +gcrypt gnuefi homed http idn importd +kmod +lz4 lzma nat pam pcre pkcs11 policykit pwquality qrcode repart +resolvconf +seccomp selinux split-usr +sysv-utils test tpm vanilla xkb +zstd"
 
 REQUIRED_USE="
 	homed? ( cryptsetup pam )
@@ -41,6 +44,7 @@ COMMON_DEPEND=">=sys-apps/util-linux-2.30:0=[${MULTILIB_USEDEP}]
 	curl? ( net-misc/curl:0= )
 	dns-over-tls? ( >=net-libs/gnutls-3.6.0:0= )
 	elfutils? ( >=dev-libs/elfutils-0.158:0= )
+	fido2? ( dev-libs/libfido2:0= )
 	gcrypt? ( >=dev-libs/libgcrypt-1.4.5:0=[${MULTILIB_USEDEP}] )
 	homed? ( ${OPENSSL_DEP} )
 	http? (
@@ -123,7 +127,6 @@ RDEPEND="${COMMON_DEPEND}
 
 # sys-apps/dbus: the daemon only (+ build-time lib dep for tests)
 PDEPEND=">=sys-apps/dbus-1.9.8[systemd]
-	hwdb? ( sys-apps/hwids[systemd(+),udev] )
 	>=sys-fs/udev-init-scripts-34
 	policykit? ( sys-auth/polkit )
 	!vanilla? ( sys-apps/gentoo-systemd-integration )"
@@ -164,7 +167,7 @@ pkg_pretend() {
 		fi
 
 		local CONFIG_CHECK="~AUTOFS4_FS ~BLK_DEV_BSG ~CGROUPS
-			~CHECKPOINT_RESTORE ~DEVTMPFS ~EPOLL ~FANOTIFY ~FHANDLE
+			~DEVTMPFS ~EPOLL ~FANOTIFY ~FHANDLE
 			~INOTIFY_USER ~IPV6 ~NET ~NET_NS ~PROC_FS ~SIGNALFD ~SYSFS
 			~TIMERFD ~TMPFS_XATTR ~UNIX ~USER_NS
 			~CRYPTO_HMAC ~CRYPTO_SHA256 ~CRYPTO_USER_API_HASH
@@ -176,6 +179,12 @@ pkg_pretend() {
 		kernel_is -lt 3 7 && CONFIG_CHECK+=" ~HOTPLUG"
 		kernel_is -lt 4 7 && CONFIG_CHECK+=" ~DEVPTS_MULTIPLE_INSTANCES"
 		kernel_is -ge 4 10 && CONFIG_CHECK+=" ~CGROUP_BPF"
+
+		if kernel_is -lt 5 10 20; then
+			CONFIG_CHECK+=" ~CHECKPOINT_RESTORE"
+		else
+			CONFIG_CHECK+=" ~KCMP"
+		fi
 
 		if linux_config_exists; then
 			local uevent_helper_path=$(linux_chkconfig_string UEVENT_HELPER_PATH)
@@ -198,11 +207,6 @@ pkg_pretend() {
 
 pkg_setup() {
 	:
-}
-
-src_unpack() {
-	rhel_src_unpack ${A}
-	[[ ${PV} != 9999 ]] || git-r3_src_unpack
 }
 
 src_prepare() {
@@ -256,13 +260,13 @@ multilib_src_configure() {
 		$(meson_native_use_bool curl libcurl)
 		$(meson_native_use_bool dns-over-tls dns-over-tls)
 		$(meson_native_use_bool elfutils)
+		$(meson_native_use_bool fido2 libfido2)
 		$(meson_use gcrypt)
 		$(meson_native_use_bool gnuefi gnu-efi)
 		-Defi-includedir="${ESYSROOT}/usr/include/efi"
 		-Defi-ld="$(tc-getLD)"
 		-Defi-libdir="${ESYSROOT}/usr/$(get_libdir)"
 		$(meson_native_use_bool homed)
-		$(meson_native_use_bool hwdb)
 		$(meson_native_use_bool http microhttpd)
 		$(meson_native_use_bool idn)
 		$(meson_native_use_bool importd)
@@ -289,6 +293,7 @@ multilib_src_configure() {
 		# Breaks screen, tmux, etc.
 		-Ddefault-kill-user-processes=false
 		-Dcreate-log-dirs=false
+
 		-Dmode=release
         	-Dsysvinit-path=/etc/rc.d/init.d
 #        	-Drc-local=/etc/rc.d/rc.local
@@ -307,6 +312,7 @@ multilib_src_configure() {
         	-Dnobody-group=nobody
 		-Db_lto=false
 		-Dnetworkd=false
+
 		# multilib options
 		$(meson_native_true backlight)
 		$(meson_native_true binfmt)
@@ -327,9 +333,6 @@ multilib_src_configure() {
 		$(meson_native_true timesyncd)
 		$(meson_native_true tmpfiles)
 		$(meson_native_true vconsole)
-
-		# static-libs
-		$(meson_use static-libs static-libudev)
 	)
 
 	meson_src_configure "${myconf[@]}"
@@ -434,6 +437,7 @@ multilib_src_install_all() {
 		rm -f "${ED}${rootprefix}"/sbin/resolvconf || die
 	fi
 
+	rm "${ED}"/etc/init.d/README || die
 	rm "${ED}${rootprefix}"/lib/systemd/system-generators/systemd-sysv-generator || die
 
 	if ! use sysv-utils; then
@@ -455,9 +459,7 @@ multilib_src_install_all() {
 	keepdir /etc/systemd/{network,system,user}
 	keepdir /etc/udev/rules.d
 
-	if use hwdb; then
-		keepdir /etc/udev/hwdb.d
-	fi
+	keepdir /etc/udev/hwdb.d
 
 	keepdir "${rootprefix}"/lib/systemd/{system-sleep,system-shutdown}
 	keepdir /usr/lib/{binfmt.d,modules-load.d}
@@ -466,14 +468,10 @@ multilib_src_install_all() {
 	keepdir /var/log/journal /var/{cache,log}/private
 
 	# Symlink /etc/sysctl.conf for easy migration.
-	dosym ../sysctl.conf /etc/sysctl.d/99-sysctl.conf
+	dosym ../../../etc/sysctl.conf /usr/lib/sysctl.d/99-sysctl.conf
 
 	if use pam; then
 		newpamd "${FILESDIR}"/systemd-user.pam systemd-user
-	fi
-
-	if use hwdb; then
-		rm -r "${ED}${rootprefix}"/lib/udev/hwdb.d || die
 	fi
 
 	if use split-usr; then
@@ -552,9 +550,7 @@ pkg_postinst() {
 
 	# Keep this here in case the database format changes so it gets updated
 	# when required.
-	if use hwdb; then
-		systemd-hwdb --root="${ROOT}" update
-	fi
+	systemd-hwdb --root="${ROOT}" update
 
 	udev_reload || FAIL=1
 
@@ -572,12 +568,6 @@ pkg_postinst() {
 
 	if [[ -L ${EROOT}/var/lib/systemd/timesync ]]; then
 		rm "${EROOT}/var/lib/systemd/timesync"
-	fi
-
-	if [[ -z ${ROOT} && -d /run/systemd/system ]]; then
-		ebegin "Reexecuting system manager"
-		systemctl daemon-reexec
-		eend $?
 	fi
 
 	if [[ ${FAIL} ]]; then

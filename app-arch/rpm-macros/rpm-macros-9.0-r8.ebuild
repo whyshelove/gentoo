@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -12,7 +12,7 @@ REPO_BIN="${MIRROR_BIN}/${RELEASE}/AppStream/x86_64/os/Packages"
 
 for macro in efi-srpm-macros-4-9 kernel-rpm-macros-185-7.el9 perl-srpm-macros-1-41 redhat-rpm-config-188-1 \
 	python-qt5-rpm-macros-5.15.0-10 python-rpm-macros-3.9-43 python-srpm-macros-3.9-43 python3-rpm-macros-3.9-43 \
-	go-srpm-macros-3.0.9-8 qt5-rpm-macros-5.15.2-9 rust-srpm-macros-17-4 ;
+	go-srpm-macros-3.0.9-9 qt5-rpm-macros-5.15.2-9 rust-srpm-macros-17-4 ;
 do
 SRC_URI="${SRC_URI} ${REPO_BIN}/${macro}.${DIST}.noarch.rpm"
 done
