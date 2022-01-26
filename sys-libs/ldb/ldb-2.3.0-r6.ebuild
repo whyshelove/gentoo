@@ -21,7 +21,7 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}
 RESTRICT="!test? ( test )"
 
 RDEPEND="
-	!elibc_FreeBSD? ( dev-libs/libbsd[${MULTILIB_USEDEP}] )
+	dev-libs/libbsd[${MULTILIB_USEDEP}]
 	dev-libs/popt[${MULTILIB_USEDEP}]
 	>=dev-util/cmocka-1.1.3[${MULTILIB_USEDEP}]
 	>=sys-libs/talloc-2.3.2[${MULTILIB_USEDEP}]
