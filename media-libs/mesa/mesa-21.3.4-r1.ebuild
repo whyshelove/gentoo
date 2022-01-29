@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -6,8 +6,6 @@ EAPI=7
 PYTHON_COMPAT=( python3_{6,8,9} )
 
 inherit llvm meson-multilib python-any-r1 linux-info rhel8-a
-
-OPENGL_DIR="xorg-x11"
 
 MY_P="${P/_/-}"
 
@@ -18,7 +16,7 @@ if [[ ${PV} == 9999 ]]; then
 	EGIT_REPO_URI="https://gitlab.freedesktop.org/mesa/mesa.git"
 	inherit git-r3
 else
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~sparc-solaris ~x64-solaris ~x86-solaris"
+	KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~sparc-solaris ~x64-solaris ~x86-solaris"
 fi
 
 LICENSE="MIT"
@@ -34,7 +32,7 @@ for card in ${VIDEO_CARDS}; do
 done
 
 IUSE="${IUSE_VIDEO_CARDS}
-	+classic cpu_flags_x86_sse2 d3d9 debug +egl +gbm +gallium gles1 +gles2 +llvm
+	+classic cpu_flags_x86_sse2 d3d9 debug +gallium gles1 +gles2 +llvm
 	lm-sensors opencl osmesa selinux test unwind vaapi valgrind vdpau vulkan
 	vulkan-overlay wayland +X xa xvmc zink +zstd"
 
@@ -222,7 +220,7 @@ BDEPEND="
 	sys-devel/flex
 	virtual/pkgconfig
 	$(python_gen_any_dep ">=dev-python/mako-0.8.0[\${PYTHON_USEDEP}]")
-	wayland? ( dev-util/wayland-scanner[${MULTILIB_USEDEP}] )
+	wayland? ( dev-util/wayland-scanner )
 "
 
 S="${WORKDIR}/${MY_P}"

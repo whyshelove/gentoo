@@ -1,36 +1,33 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7..9} )
+PYTHON_COMPAT=( python3_{6..9} )
 
-inherit autotools multilib multilib-minimal toolchain-funcs python-r1 linux-info systemd usr-ldscript
+inherit autotools multilib-minimal toolchain-funcs python-r1 linux-info systemd usr-ldscript rhel8
 
 DESCRIPTION="Userspace utilities for storing and processing auditing records"
 HOMEPAGE="https://people.redhat.com/sgrubb/audit/"
-SRC_URI="https://people.redhat.com/sgrubb/audit/${P}.tar.gz"
 
 LICENSE="GPL-2+ LGPL-2.1+"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
-IUSE="gssapi ldap python static-libs"
+KEYWORDS="amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86"
+IUSE="gssapi ldap python static-libs test"
 
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
-# Testcases are pretty useless as they are built for RedHat users/groups and kernels.
-RESTRICT="test"
+RESTRICT="!test? ( test )"
 
 RDEPEND="gssapi? ( virtual/krb5 )
 	ldap? ( net-nds/openldap )
 	sys-libs/libcap-ng
 	python? ( ${PYTHON_DEPS} )"
 DEPEND="${RDEPEND}
-	>=sys-kernel/linux-headers-2.6.34" # This is linux specific.
+	>=sys-kernel/linux-headers-2.6.34
+	test? ( dev-libs/check )"
 BDEPEND="python? ( dev-lang/swig:0 )"
 
 CONFIG_CHECK="~AUDIT"
-
-PATCHES=( "${FILESDIR}"/${P}-slibtool.patch )
 
 src_prepare() {
 	# audisp-remote moved in multilib_src_install_all
@@ -48,14 +45,20 @@ src_prepare() {
 multilib_src_configure() {
 	local -a myeconfargs=(
 		--sbindir="${EPREFIX}/sbin"
+		--libdir="${EPREFIX}/usr/lib64"
 		$(use_enable gssapi gssapi-krb5)
 		$(use_enable ldap zos-remote)
 		$(use_enable static-libs static)
 		--enable-systemd
+		--with-arm
+		--with-aarch64
+		--with-libcap-ng=yes
+		--enable-zos-remote
 		--without-golang
 		--without-python
 		--without-python3
 	)
+
 	ECONF_SOURCE=${S} econf "${myeconfargs[@]}"
 
 	if multilib_is_native_abi && use python; then
@@ -150,7 +153,7 @@ pkg_postinst() {
 lockdown_perms() {
 	# Upstream wants these to have restrictive perms.
 	# Should not || die as not all paths may exist.
-	local basedir="$1"
+	local basedir="${1}"
 	chmod 0750 "${basedir}"/sbin/au{ditctl,ditd,report,search,trace} 2>/dev/null
 	chmod 0750 "${basedir}"/var/log/audit 2>/dev/null
 	chmod 0640 "${basedir}"/etc/audit/{auditd.conf,audit*.rules*} 2>/dev/null

@@ -1,7 +1,8 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
+DIST=el8_5
 inherit libtool multilib-minimal toolchain-funcs rhel8
 
 DESCRIPTION="Multi-format archive and compression library"
