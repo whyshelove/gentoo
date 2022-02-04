@@ -1,18 +1,17 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-inherit multilib-minimal toolchain-funcs pam usr-ldscript
+inherit multilib-minimal toolchain-funcs pam usr-ldscript rhel8
 
 DESCRIPTION="POSIX 1003.1e capabilities"
 HOMEPAGE="https://sites.google.com/site/fullycapable/"
-SRC_URI="https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/${P}.tar.xz"
 
 # it's available under either of the licenses
 LICENSE="|| ( GPL-2 BSD )"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
 IUSE="pam static-libs"
 
 # While the build system optionally uses gperf, we don't DEPEND on it because
@@ -27,8 +26,6 @@ DEPEND="${RDEPEND}
 RESTRICT="test"
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-2.50-build-system-fixes.patch
-	"${FILESDIR}"/${PN}-2.38-no_perl.patch
 	"${FILESDIR}"/${PN}-2.25-ignore-RAISE_SETFCAP-install-failures.patch
 	"${FILESDIR}"/${PN}-2.21-include.patch
 )
@@ -40,6 +37,11 @@ src_prepare() {
 
 run_emake() {
 	local args=(
+		LIBDIR=${_libdir}
+		SBINDIR=${_sbindir}
+     		INCDIR=${_includedir}
+		MANDIR=${_mandir}
+		PKGCONFIGDIR=${_libdir}/pkgconfig/
 		exec_prefix="${EPREFIX}"
 		lib_prefix="${EPREFIX}/usr"
 		lib="$(get_libdir)"
@@ -66,7 +68,7 @@ multilib_src_compile() {
 
 multilib_src_install() {
 	# no configure, needs explicit install line #444724#c3
-	run_emake DESTDIR="${D}" install
+	run_emake DESTDIR="${D}" RAISE_SETFCAP=no install
 
 	gen_usr_ldscript -a cap
 	gen_usr_ldscript -a psx

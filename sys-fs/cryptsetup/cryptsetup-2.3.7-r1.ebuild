@@ -1,13 +1,12 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-inherit autotools linux-info tmpfiles
+inherit autotools linux-info tmpfiles rhel8
 
 DESCRIPTION="Tool to setup encrypted devices with dm-crypt"
 HOMEPAGE="https://gitlab.com/cryptsetup/cryptsetup/blob/master/README.md"
-SRC_URI="https://www.kernel.org/pub/linux/utils/${PN}/v$(ver_cut 1-2)/${P/_/-}.tar.xz"
 
 LICENSE="GPL-2+"
 SLOT="0/12" # libcryptsetup.so version
@@ -18,7 +17,7 @@ CRYPTO_BACKENDS="gcrypt kernel nettle +openssl"
 # and it's missing ripemd160 support so it can't provide full backward compatibility
 IUSE="${CRYPTO_BACKENDS} +argon2 nls pwquality reencrypt static static-libs +udev urandom"
 REQUIRED_USE="^^ ( ${CRYPTO_BACKENDS//+/} )
-	static? ( !gcrypt )" #496612
+	static? ( !gcrypt !udev )" #496612
 
 LIB_DEPEND="
 	dev-libs/json-c:=[static-libs(+)]
@@ -30,13 +29,13 @@ LIB_DEPEND="
 	nettle? ( >=dev-libs/nettle-2.4[static-libs(+)] )
 	openssl? ( dev-libs/openssl:0=[static-libs(+)] )
 	pwquality? ( dev-libs/libpwquality[static-libs(+)] )
-	sys-fs/lvm2[static-libs(+)]
-	udev? ( virtual/libudev[static-libs(-)] )"
+	sys-fs/lvm2[static-libs(+)]"
 # We have to always depend on ${LIB_DEPEND} rather than put behind
 # !static? () because we provide a shared library which links against
 # these other packages. #414665
 RDEPEND="static-libs? ( ${LIB_DEPEND} )
-	${LIB_DEPEND//\[static-libs\([+-]\)\]}"
+	${LIB_DEPEND//\[static-libs\([+-]\)\]}
+	udev? ( virtual/libudev:= )"
 DEPEND="${RDEPEND}
 	static? ( ${LIB_DEPEND} )"
 BDEPEND="
@@ -72,6 +71,8 @@ src_configure() {
 	local myeconfargs=(
 		--disable-internal-argon2
 		--enable-shared
+		--enable-fips
+		--enable-internal-sse-argon2
 		--sbindir=/sbin
 		# for later use
 		--with-default-luks-format=LUKS2
