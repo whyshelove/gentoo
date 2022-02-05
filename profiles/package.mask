@@ -33,6 +33,35 @@
 
 #--- END OF EXAMPLES ---
 
+# Sam James <sam@gentoo.org> (2022-01-31)
+# Fork of media-video/atomicparsley. media-video/atomicparsley now uses this
+# fork (wez), so just switch to that. No need for a separate package for the fork.
+# Removal on 2022-02-31. bug #668708.
+media-video/atomicparsley-wez
+
+# Michał Górny <mgorny@gentoo.org> (2022-01-30)
+# NIH package with no revdeps and an awful build system that can't work
+# with PEP 517 builders.  Last release in 2017.
+# Removal on 2022-03-01.  Bug #832366.
+dev-python/python-slip
+
+# Fabian Groffen <grobian@gentoo.org> (2022-01-29)
+# Fails to compile with GCC on macOS.  No revdeps.
+# Removal on 2022-02-28.  Bug #832309.
+dev-perl/Mac-Pasteboard
+
+# Michał Górny <mgorny@gentoo.org> (2022-01-29)
+# No maintainer.  No upstream activity since Dec 2019.
+# Tests not enabled.  No revdeps.
+# Removal on 2022-02-28.  Bug #832318.
+dev-python/django-pglocks
+
+# Volkmar W. Pogatzki <gentoo@pogatzki.net> (2022-01-27)
+# Java-library + java-virtual with no consumers.
+# Removal in 30 days.
+java-virtuals/script-api
+dev-java/jsr223
+
 # Volkmar W. Pogatzki <gentoo@pogatzki.net> (2022-01-23)
 # Java-libraries with no consumers and depending on virtual/{jdk,jre}-1.6
 # Removal in 30 days.
@@ -64,7 +93,7 @@ net-misc/npapi-sdk
 <dev-lang/rust-1.58.1
 <dev-lang/rust-bin-1.58.1
 <virtual/rust-1.58.1
-<=www-client/seamonkey-2.53.9.1-r1
+<www-client/seamonkey-2.53.10.2
 
 # Andreas K. Hüttel <dilfridge@gentoo.org> (2022-01-22)
 # Prelink support is being removed from glibc and was
@@ -105,7 +134,6 @@ dev-java/colt
 # Andreas Sturmlechner <asturm@gentoo.org> (2022-01-18)
 # KDE Release Service 5.23.90 (5.24 Beta) mask - pre-release version
 # See also: https://kde.org/announcements/plasma/5/5.23.90/
-# KDE Plasma Beta Review Day on 2022-01-20: https://tinyurl.com/kdereview
 ~kde-plasma/bluedevil-5.23.90
 ~kde-plasma/breeze-5.23.90
 ~kde-plasma/breeze-grub-5.23.90
@@ -296,11 +324,6 @@ net-analyzer/jmx2munin
 # Removal on 2021-02-10 bug #762958
 =app-misc/mime-types-9
 
-# Andreas Sturmlechner <asturm@gentoo.org> (2022-01-09)
-# No more revdeps after sys-cluster/mpe2 last-rites was initiated.
-# Removal on 2022-01-31, bug #547208
-sys-cluster/mpich2
-
 # Brian Evans <grknight@gentoo.org> (2022-01-07)
 # The main consumer, phpunit, does not initiate the new timer correctly
 # This is likely to cause issues in tests; Unmask if using for other purposes
@@ -310,29 +333,6 @@ sys-cluster/mpich2
 # Unmaintained, cmake warnings, QA notices, weird build error, no revdeps.
 # Removal on 2022-02-06. Bug #830727
 net-libs/jreen
-
-# Marco Scardovi <marco@scardovi.com> (2022-01-01)
-# Dead upstream (also sourceforge page is dead)
-# We are the only one who still supports it
-# Removing in 30 days. # Bug 830389
-sys-cluster/onesis
-
-# Florian Schmaus <flow@gentoo.org> (2022-01-04)
-# Outdated, unmaintained, and has multiple open bugs (bug #732582, bug
-# #739398, bug #756715). As discussed at
-# https://github.com/gentoo/gentoo/pull/23483#issuecomment-1004363556,
-# in its current form it is better maintained in the 'spring' overlay.
-# Removal after 2022-02-04. Bug #830588.
-games-util/springlobby
-
-# Ionen Wolkens <ionen@gentoo.org> (2022-01-03)
-# Obsolete, higan-purify is now provided by games-emulation/higan
-# as the icarus utility (bug #821121) and dev-games/higan-ananke
-# has no known uses without higan-purify (bug #821124). Further
-# stuck on gtk2 with dead HOMEPAGE / SRC_URI.
-# Removal after 2022-02-02.
-games-util/higan-purify
-dev-games/higan-ananke
 
 # Florian Schmaus <flow@gentoo.org> (2022-01-02)
 # Unmaintained, upstream gone, only packaged by
@@ -362,16 +362,6 @@ x11-plugins/purple-facebook
 <dev-util/nvidia-cuda-sdk-11
 <dev-util/nvidia-cuda-toolkit-11
 
-# Jonas Stein <jstein@gentoo.org> (2021-12-20)
-# Package is broken and obsolete.
-# Removal on 2022-02-01.  Bug #828875.
-x11-misc/3ddesktop
-
-# Jonas Stein <jstein@gentoo.org> (2021-12-20)
-# Package is broken and obsolete.
-# Removal on 2022-02-01.  Bug #464364.
-x11-misc/habak
-
 # Mart Raudsepp <leio@gentoo.org> (2021-12-18)
 # GNOME 42 mask
 >=gui-libs/libhandy-1.5.0
@@ -397,9 +387,8 @@ x11-misc/habak
 ~sci-libs/vtk-9.1.0
 
 # Volkmar W. Pogatzki <gentoo@pogatzki.net> (2021-12-12)
-# log4j-2.15.0 depends on masked >=virtual/{jdk,jre}-11
+# Needs masked >=virtual/{jdk,jre}-11
 >=dev-java/log4j-api-java9-2.15.0
->=dev-java/log4j-api-2.15.0
 
 # Conrad Kostecki <conikost@gentoo.org> (2021-12-04)
 # Masking newer versions for both packages,
@@ -578,11 +567,6 @@ net-libs/libsoup:3.0
 # Ulrich Müller <ulm@gentoo.org> (2021-04-20)
 # Version 3.15 is broken with Emacs 27.2.
 =app-emacs/mic-paren-3.15-r0
-
-# Volkmar W. Pogatzki <gentoo@pogatzki.net> (2021-04-18)
-# dev-java/xerces-2.12.1 depends on masked >=virtual/{jdk,jre}-11
-# https://bugs.gentoo.org/782697
->=dev-java/xerces-2.12.1
 
 # Sam James <sam@gentoo.org> (2021-03-30)
 # Seems to break dev-tex/culmus-latex

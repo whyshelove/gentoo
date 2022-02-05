@@ -53,9 +53,9 @@ dev-python/fonttools test
 dev-python/isort test
 dev-python/jsonschema test
 dev-python/nose test
+dev-python/numpydoc test
 dev-python/pytest-regressions test
 dev-python/requests test
-dev-python/setuptools test
 dev-python/sphinx test
 dev-python/urllib3 test
 

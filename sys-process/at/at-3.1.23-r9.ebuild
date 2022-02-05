@@ -12,10 +12,7 @@ if [[ ${PV} == *8888 ]]; then
 	EGIT_REPO_URI="${CENTOS_GIT_REPO_URI}/${PN}.git"
 	S="${WORKDIR}/${PN}"
 else
-	inherit rpm
-	MY_PR=${PVR##*r}
-	MY_PF=${P}-${MY_PR}
-	SRC_URI="${BASEOS}/${MY_PF}${DIST}.src.rpm"
+	inherit rhel9
 fi
 
 LICENSE="GPL-2"

@@ -11,7 +11,7 @@ SRC_URI="https://www.freedesktop.org/software/${PN}/releases/${P}.tar.gz"
 
 LICENSE="LGPL-2"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sparc ~x86"
+KEYWORDS="~alpha ~amd64 arm ~arm64 ~hppa ~ia64 ~mips ppc ~ppc64 ~s390 sparc ~x86"
 IUSE="elogind examples gtk +introspection kde nls pam selinux systemd test"
 RESTRICT="!test? ( test )"
 
@@ -62,7 +62,7 @@ PATCHES=(
 	"${FILESDIR}"/polkit-0.115-elogind.patch
 
 	"${FILESDIR}"/polkit-0.117-CVE-2021-3560.patch
-	"${FILESDIR}"/polkit-0.120-CVE-2021-4043.patch
+	"${FILESDIR}"/polkit-0.120-CVE-2021-4034.patch
 )
 
 QA_MULTILIB_PATHS="
