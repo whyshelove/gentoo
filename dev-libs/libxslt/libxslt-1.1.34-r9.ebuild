@@ -1,10 +1,10 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/danielveillard.asc
-inherit libtool multilib-minimal verify-sig rhel-a
+VERIFY_SIG_OPENPGP_KEY_PATH=${BROOT}/usr/share/openpgp-keys/danielveillard.asc
+inherit libtool multilib-minimal verify-sig rhel9-a
 
 # Note: Please bump this in sync with dev-libs/libxml2.
 DESCRIPTION="XSLT libraries and tools"
@@ -13,12 +13,12 @@ HOMEPAGE="http://www.xmlsoft.org/ https://gitlab.gnome.org/GNOME/libxslt"
 LICENSE="MIT"
 SLOT="0"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-IUSE="crypt debug examples static-libs elibc_Darwin"
+IUSE="crypt debug examples static-libs"
 
 BDEPEND=">=virtual/pkgconfig-1
-	verify-sig? ( app-crypt/openpgp-keys-danielveillard )"
+	verify-sig? ( sec-keys/openpgp-keys-danielveillard )"
 RDEPEND="
-	>=dev-libs/libxml2-2.9.10:2[${MULTILIB_USEDEP}]
+	>=dev-libs/libxml2-2.9.11:2[${MULTILIB_USEDEP}]
 	crypt? ( >=dev-libs/libgcrypt-1.5.3:0=[${MULTILIB_USEDEP}] )
 "
 DEPEND="${RDEPEND}"
@@ -38,7 +38,7 @@ src_prepare() {
 
 	# Prefix always needs elibtoolize if not eautoreconf'd.
 	elibtoolize
-	autoreconf -vfi
+	eautoreconf -vfi
 }
 
 multilib_src_configure() {
@@ -47,7 +47,6 @@ multilib_src_configure() {
 		--with-html-dir="${EPREFIX}"/usr/share/doc/${PF} \
 		--with-html-subdir=html \
 		--without-python \
-		--disable-silent-rules \
 		$(use_with crypt crypto) \
 		$(use_with debug) \
 		$(use_with debug mem-debug) \
