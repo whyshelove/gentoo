@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # Note: if your package uses the texi2dvi utility, it must depend on the
@@ -6,30 +6,30 @@
 # usable out-of-the-box because it requires the large tex packages.
 
 EAPI=7
-
-inherit flag-o-matic toolchain-funcs
+DIST=el8_5
+inherit flag-o-matic toolchain-funcs rhel8
 
 DESCRIPTION="The GNU info program and utilities"
 HOMEPAGE="https://www.gnu.org/software/texinfo/"
-SRC_URI="mirror://gnu/${PN}/${P}.tar.gz"
 
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-IUSE="nls +standalone static"
+IUSE="nls standalone static"
 
 RDEPEND="
 	!=app-text/tetex-2*
 	>=sys-libs/ncurses-5.2-r2:0=
 	standalone? ( dev-lang/perl )
-	!standalone?  ( dev-lang/perl:= )
+	!standalone?  (
+		dev-lang/perl:=
+		dev-perl/libintl-perl
+		dev-perl/Unicode-EastAsianWidth
+		dev-perl/Text-Unidecode
+	)
 	nls? ( virtual/libintl )"
 DEPEND="${RDEPEND}"
 BDEPEND="nls? ( >=sys-devel/gettext-0.19.6 )"
-
-PATCHES=(
-	"${FILESDIR}/${P}-undo-gnulib-nonnul.patch"
-)
 
 src_prepare() {
 	default
@@ -45,17 +45,39 @@ src_configure() {
 	local -x PERL_EXT_CC="$(tc-getCC)" PERL_EXT_CPPFLAGS="${CPPFLAGS}" PERL_EXT_CFLAGS="${CFLAGS}" PERL_EXT_LDFLAGS="${LDFLAGS}"
 
 	use static && append-ldflags -static
-	local myeconfargs=( $(use_enable nls) )
-
+	local myeconfargs
 	if use standalone ; then
-		myeconfargs+=(
+		myeconfargs=(
+			--without-external-libintl-perl
+			--without-external-Unicode-EastAsianWidth
+			--without-external-Text-Unidecode
+			$(use_enable nls)
 			--disable-perl-xs
 		)
 	else
-		myeconfargs+=(
-			--enable-perl-xs
+		myeconfargs=(
+			--with-external-libintl-perl
+			--with-external-Unicode-EastAsianWidth
+			--with-external-Text-Unidecode
+			$(use_enable nls)
+			--disable-perl-xs
 		)
 	fi
-
 	econf "${myeconfargs[@]}"
+}
+
+src_install() {
+	default
+
+	dodir ${_datadir}/texmf/tex/texinfo /sbin
+	insinto ${_datadir}/texmf/tex/texinfo/
+	doins -r doc/texinfo.tex doc/txi-**.tex
+
+	mv ${D}${_bindir}/install-info ${D}/sbin
+
+	dosbin contrib/fix-info-dir
+
+	dodir ${_rpmconfigdir}/macros.d/
+	insinto ${_rpmconfigdir}/macros.d
+	doins "${WORKDIR}"/macros.info
 }
