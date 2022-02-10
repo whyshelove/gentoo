@@ -1,13 +1,11 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-
+DIST=module_el8.6.0+926+8bef8ae7
 inherit meson rhel8-a
 
 KEYWORDS="amd64 arm64 ~ppc ppc64 x86"
-
-SRC_URI="${REPO_URI}/${MY_PF}.module_el8.5.0+877+1c30e0c9.src.rpm"
 DESCRIPTION="A TCP-IP emulator used to provide virtual networking services."
 HOMEPAGE="https://gitlab.freedesktop.org/slirp/libslirp"
 

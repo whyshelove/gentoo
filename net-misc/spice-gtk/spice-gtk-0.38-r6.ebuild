@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -43,7 +43,7 @@ RDEPEND="
 	sasl? ( dev-libs/cyrus-sasl )
 	smartcard? ( app-emulation/qemu[smartcard] )
 	usbredir? (
-		sys-apps/hwids
+		sys-apps/hwdata
 		>=sys-apps/usbredir-0.4.2
 		virtual/libusb:1
 		policykit? (
@@ -53,7 +53,7 @@ RDEPEND="
 	)
 	webdav? (
 		net-libs/phodav:2.0
-		>=net-libs/libsoup-2.49.91 )
+		>=net-libs/libsoup-2.49.91:2.4 )
 "
 # TODO: spice-gtk has an automagic dependency on x11-libs/libva without a
 # configure knob. The package is relatively lightweight so we just depend

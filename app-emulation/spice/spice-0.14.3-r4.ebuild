@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -8,7 +8,6 @@ inherit autotools python-any-r1 readme.gentoo-r1 xdg-utils rhel8-a
 
 DESCRIPTION="SPICE server"
 HOMEPAGE="https://www.spice-space.org/"
-
 
 LICENSE="LGPL-2.1"
 SLOT="0"
@@ -20,14 +19,14 @@ RESTRICT="!test? ( test )"
 # the libspice-server only uses the headers of libcacard
 RDEPEND="
 	dev-lang/orc[static-libs(+)?]
-	>=dev-libs/glib-2.22:2[static-libs(+)?]
+	>=dev-libs/glib-2.38:2[static-libs(+)?]
 	media-libs/opus[static-libs(+)?]
 	sys-libs/zlib[static-libs(+)?]
 	virtual/jpeg:0=[static-libs(+)?]
 	>=x11-libs/pixman-0.17.7[static-libs(+)?]
 	dev-libs/openssl:0=[static-libs(+)?]
 	lz4? ( app-arch/lz4:0=[static-libs(+)?] )
-	smartcard? ( >=app-emulation/libcacard-0.1.2 )
+	smartcard? ( >=app-emulation/libcacard-2.5.1 )
 	sasl? ( dev-libs/cyrus-sasl[static-libs(+)?] )
 	gstreamer? (
 		media-libs/gstreamer:1.0

@@ -4,13 +4,14 @@
 EAPI=7
 PYTHON_COMPAT=( python3_{7..9} )
 VALA_USE_DEPEND="vapigen"
-VALA_MIN_API_VERSION="0.32"
+VALA_MIN_API_VERSION="0.48"
 
 inherit gnome.org meson python-any-r1 vala xdg
 
 DESCRIPTION="Library providing a virtual terminal emulator widget"
 HOMEPAGE="https://wiki.gnome.org/Apps/Terminal/VTE"
 
+# Once SIXEL support ships (0.66 or later), might need xterm license (but code might be considered upgraded to LGPL-3+)
 LICENSE="LGPL-3+ GPL-3+"
 SLOT="2.91"
 IUSE="+crypt debug gtk-doc +icu +introspection systemd +vala vanilla"
@@ -22,7 +23,7 @@ SRC_URI="https://gitlab.gnome.org/GNOME/${PN}/-/archive/${PV}/${P}.tar.bz2"
 SRC_URI="${SRC_URI} !vanilla? ( https://dev.gentoo.org/~mattst88/distfiles/${PN}-0.64.1-command-notify.patch.xz )"
 
 RDEPEND="
-	>=x11-libs/gtk+-3.24.14:3[introspection?]
+	>=x11-libs/gtk+-3.24.22:3[introspection?]
 	>=dev-libs/fribidi-1.0.0
 	>=dev-libs/glib-2.52:2
 	crypt?  ( >=net-libs/gnutls-3.2.7:0= )

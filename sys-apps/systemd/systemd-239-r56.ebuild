@@ -110,7 +110,6 @@ RDEPEND="${COMMON_DEPEND}
 
 # sys-apps/dbus: the daemon only (+ build-time lib dep for tests)
 PDEPEND=">=sys-apps/dbus-1.9.8[systemd]
-	hwdb? ( >=sys-apps/hwids-20150417[udev] )
 	>=sys-fs/udev-init-scripts-34
 	policykit? ( sys-auth/polkit )
 	!vanilla? ( sys-apps/gentoo-systemd-integration )"
@@ -545,7 +544,7 @@ pkg_postinst() {
 
 	# Keep this here in case the database format changes so it gets updated
 	# when required. Despite that this file is owned by sys-apps/hwids.
-	if has_version "sys-apps/hwids[udev]"; then
+	if has_version "sys-apps/hwdata"; then
 		udevadm hwdb --update --root="${EROOT}"
 	fi
 

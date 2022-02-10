@@ -9,7 +9,7 @@ DESCRIPTION="serial graphics adapter bios option rom for x86"
 HOMEPAGE="https://code.google.com/p/sgabios/"
 # downloaded from
 # https://git.qemu.org/?p=sgabios.git;a=tree;h=a85446adb0e07ccd5211619a6f215bcfc3c5ab29;hb=23d474943dcd55d0550a3d20b3d30e9040a4f15b
-GIT_VER="git-3.module_el8.5.0+746+bbd5d70c"
+GIT_VER="git-3.module_el8.6.0+983+a7505f3f"
 SRC_URI="
 	!binary? ( ${REPO_URI}/${P}${GIT_VER}.src.rpm )
 	binary? ( ${REPO_BIN}/${P/-/-bin-}${GIT_VER}.noarch.rpm )"
@@ -38,7 +38,7 @@ src_compile() {
 }
 
 src_install() {
-	rhel_bin_install && return
+	use binary && rhel_bin_install && return
 
 	insinto /usr/share/sgabios
 	doins sgabios.bin

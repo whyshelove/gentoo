@@ -27,7 +27,7 @@ DEPEND="
 "
 RDEPEND="
 	${DEPEND}
-	sys-apps/hwids
+	sys-apps/hwdata
 "
 BDEPEND="kmod? ( virtual/pkgconfig )"
 

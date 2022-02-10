@@ -1,16 +1,14 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
 PYTHON_COMPAT=( python{3_6,3_8,3_9} )
-
+DIST=1.el8
 inherit python-single-r1 systemd udev multilib-minimal rhel8
 
 DESCRIPTION="PC/SC Architecture smartcard middleware library"
 HOMEPAGE="https://pcsclite.apdu.fr https://github.com/LudovicRousseau/PCSC"
-
-SRC_URI="${REPO_URI}/${MY_PF}.1.${DIST}.src.rpm"
 
 # GPL-2 is there for the init script; everything else comes from
 # upstream.

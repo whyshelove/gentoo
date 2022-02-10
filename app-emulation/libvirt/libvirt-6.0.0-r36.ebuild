@@ -5,6 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{6,8,9} )
 
+DIST=module_el8.5.0+821+97472045
 inherit autotools out-of-source bash-completion-r1 eutils linux-info python-any-r1 readme.gentoo-r1 systemd rhel8-a
 
 if [[ ${PV} = *9999* ]]; then
@@ -14,7 +15,6 @@ if [[ ${PV} = *9999* ]]; then
 	KEYWORDS="amd64 x86"
 	SLOT="0"
 else
-	SRC_URI="${REPO_URI}/${MY_PF}.module_el8.5.0+821+97472045.src.rpm"
 	KEYWORDS="amd64 arm64 ~ppc64 x86"
 	SLOT="0/${PV}"
 fi

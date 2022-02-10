@@ -171,7 +171,7 @@ src_compile() {
 }
 
 src_install() {
-	rhel_bin_install && return
+	use binary && rhel_bin_install && return
 
 	insinto /usr/share/${PN}
 	doins ovmf/*

@@ -21,12 +21,12 @@ if [[ ${PV} == *9999* || -n "${EGIT_COMMIT}" ]] ; then
 	inherit git-r3
 else
 	KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~m68k ~mips ppc ppc64 ~s390 ~sparc x86"
-	GIT_VER="module_el8.5.0+746+bbd5d70c"
+	DIST=module_el8.5.0+746+bbd5d70c
 	MY_PB=${MY_PF/-/-bin-}
 	SRC_URI="
-		!binary? ( ${REPO_URI}/${MY_PF}.${GIT_VER}.src.rpm )
-		binary? ( ${REPO_BIN}/${MY_PB}.${GIT_VER}.noarch.rpm
-			${REPO_BIN}/${MY_PB/sea/seavga}.${GIT_VER}.noarch.rpm )"
+		!binary? ( ${REPO_URI}/${MY_PF}.${DIST}.src.rpm )
+		binary? ( ${REPO_BIN}/${MY_PB}.${DIST}.noarch.rpm
+			${REPO_BIN}/${MY_PB/sea/seavga}.${DIST}.noarch.rpm )"
 fi
 
 DESCRIPTION="Open Source implementation of a 16-bit x86 BIOS"
@@ -127,11 +127,11 @@ _emake() {
 }
 
 build_bios() {
-    _emake PYTHON=${EPYTHON} clean distclean
+    _emake PYTHON=${PYTHON} clean distclean
     cp $1 .config || die
-    _emake PYTHON=${EPYTHON} oldnoconfig
+    _emake PYTHON=${PYTHON} oldnoconfig
 
-    CHOST="${TARGET_CHOST}" _emake PYTHON=${EPYTHON} $4
+    CHOST="${TARGET_CHOST}" _emake PYTHON=${PYTHON} $4
 
     mv out/$2 ../$3 || die
 }
@@ -141,7 +141,7 @@ src_compile() {
 
 	local TARGET_CHOST=$(choose_target_chost)
 
-	 seabios
+	# seabios
 	build_bios ${WORKDIR}/config.seabios-128k bios.bin bios.bin
 	build_bios ${WORKDIR}/config.seabios-256k bios.bin bios-256k.bin
 
@@ -162,7 +162,7 @@ src_compile() {
 }
 
 src_install() {
-	rhel_bin_install && return
+	use binary && rhel_bin_install && return
 
 	insinto /usr/share/seabios
 	doins ../bios.bin

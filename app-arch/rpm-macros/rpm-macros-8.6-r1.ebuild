@@ -27,7 +27,7 @@ done
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm64"
-IUSE="+binary"
+IUSE=""
 
 RDEPEND="app-arch/rpm[lua,python]"
 DEPEND="${RDEPEND}"

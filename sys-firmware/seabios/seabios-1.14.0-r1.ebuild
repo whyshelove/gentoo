@@ -1,26 +1,33 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="7"
 
-PYTHON_COMPAT=( python3_{7..9} )
+PYTHON_COMPAT=( python3_{6..9} )
 
-inherit toolchain-funcs python-any-r1
+
+inherit toolchain-funcs python-any-r1 rhel8-a
 
 # SeaBIOS maintainers sometimes don't release stable tarballs or stable
 # binaries to generate the stable tarball the following is necessary:
 # git clone git://git.seabios.org/seabios.git && cd seabios
 # git archive --output seabios-${PV}.tar.gz --prefix seabios-${PV}/ rel-${PV}
 
+# To generate binary tarball you can run the following from fork tree:
+# cd .../seabios-1.14.0-r2/image/usr/share
+# $ tar cJf seabios-1.14.0-r2-bin.tar.xz *.bin
+
 if [[ ${PV} == *9999* || -n "${EGIT_COMMIT}" ]] ; then
 	EGIT_REPO_URI="git://git.seabios.org/seabios.git"
 	inherit git-r3
 else
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sparc ~x86"
-
+	KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 ~sparc x86"
+	DIST=module_el8.6.0+983+a7505f3f
+	MY_PB=${MY_PF/-/-bin-}
 	SRC_URI="
-		!binary? ( https://www.seabios.org/downloads/${P}.tar.gz )
-		binary? ( https://dev.gentoo.org/~tamiko/distfiles/${P}-bin.tar.xz )"
+		!binary? ( ${REPO_URI}/${MY_PF}.${DIST}.src.rpm )
+		binary? ( ${REPO_BIN}/${MY_PB}.${DIST}.noarch.rpm
+			${REPO_BIN}/${MY_PB/sea/seavga}.${DIST}.noarch.rpm )"
 fi
 
 DESCRIPTION="Open Source implementation of a 16-bit x86 BIOS"
@@ -28,7 +35,7 @@ HOMEPAGE="https://www.seabios.org/"
 
 LICENSE="LGPL-3 GPL-3"
 SLOT="0"
-IUSE="+binary debug +seavgabios"
+IUSE="binary debug +seavgabios"
 
 REQUIRED_USE="debug? ( !binary )"
 
@@ -86,37 +93,26 @@ pkg_setup() {
 }
 
 src_unpack() {
-	default
+	rhel_src_unpack ${A}
 
 	# This simplifies the logic between binary & source builds.
 	mkdir -p "${S}"
-}
-
-src_prepare() {
-	default
-
-	if ! use binary; then
-		eapply "${FILESDIR}"/${PN}-1.14.0-binutils-2.36.patch
-	fi
-
-	# Ensure precompiled iasl files are never used
-	find "${WORKDIR}" -name '*.hex' -delete || die
 }
 
 src_configure() {
 	use binary && return
 
 	tc-ld-disable-gold #438058
-
+	[[ $(tc-arch) == "amd64" ]] && export CFLAGS
 	if use debug ; then
-		echo "CONFIG_DEBUG_LEVEL=8" >.config
+		echo "CONFIG_DEBUG_LEVEL=1" >.config
 	fi
 	_emake config
 }
 
 _emake() {
 	LANG=C \
-	emake V=1 \
+	emake -j1 V=1 \
 		CPP="$(tc-getPROG CPP cpp)" \
 		CC="$(tc-getCC)" \
 		LD="$(tc-getLD)" \
@@ -131,38 +127,45 @@ _emake() {
 		"$@"
 }
 
+build_bios() {
+    _emake PYTHON=${PYTHON} clean distclean
+    cp $1 .config || die
+    _emake PYTHON=${PYTHON} oldnoconfig
+
+    CHOST="${TARGET_CHOST}" _emake PYTHON=${PYTHON} $4
+
+    mv out/$2 ../$3 || die
+}
+
 src_compile() {
 	use binary && return
 
 	local TARGET_CHOST=$(choose_target_chost)
 
-	cp "${FILESDIR}/seabios/config.seabios-256k" .config || die
-	_emake oldnoconfig
-	CHOST="${TARGET_CHOST}" _emake iasl
-	CHOST="${TARGET_CHOST}" _emake out/bios.bin
-	mv out/bios.bin ../bios-256k.bin || die
+	build_bios ${WORKDIR}/config.seabios-128k bios.bin bios.bin
+	build_bios ${WORKDIR}/config.seabios-256k bios.bin bios-256k.bin
 
 	if use seavgabios ; then
-		local config t targets=(
+		local config vgaconfigs=(
 			cirrus
-			isavga
 			qxl
 			stdvga
 			virtio
-			vmware
+			ramfb
+			bochs-display
 		)
-		for t in "${targets[@]}" ; do
-			_emake clean distclean
-			cp "${FILESDIR}/seavgabios/config.vga-${t}" .config || die
-			_emake oldnoconfig
-			CHOST="${TARGET_CHOST}" _emake out/vgabios.bin
-			cp out/vgabios.bin ../vgabios-${t}.bin || die
+		for config in "${vgaconfigs[@]}" ; do
+		    build_bios ${WORKDIR}/config.vga.${config} \
+			       vgabios.bin vgabios-${config}.bin out/vgabios.bin
 		done
 	fi
 }
 
 src_install() {
+	use binary && rhel_bin_install && return
+
 	insinto /usr/share/seabios
+	doins ../bios.bin
 	doins ../bios-256k.bin
 
 	if use seavgabios ; then

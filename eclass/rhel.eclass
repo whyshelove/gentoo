@@ -104,11 +104,9 @@ rhel_src_install() {
 # @FUNCTION: rhel_bin_install
 # @DESCRIPTION:
 rhel_bin_install() {
-	if use binary; then
-		rm -rf $S ${S_BASE} "${WORKDIR}/usr/lib/.build-id"
-		mv "${WORKDIR}"/* "${D}"/
-		tree "${ED}"
-	fi
+	rm -rf $S ${S_BASE} "${WORKDIR}/usr/lib/.build-id"
+	mv "${WORKDIR}"/* "${D}"/
+	tree "${ED}"
 }
 
 fi

@@ -4,10 +4,11 @@
 EAPI=7
 VALA_USE_DEPEND="vapigen"
 
-inherit meson udev vala xdg rhel8-a
+inherit meson udev vala xdg
 
 DESCRIPTION="GObject library for managing information about real and virtual OSes"
 HOMEPAGE="https://libosinfo.org/"
+SRC_URI="https://releases.pagure.org/libosinfo/${P}.tar.xz"
 
 LICENSE="GPL-2+ LGPL-2.1+"
 SLOT="0"
@@ -16,7 +17,7 @@ IUSE="gtk-doc +introspection +vala test"
 RESTRICT="!test? ( test )"
 REQUIRED_USE="vala? ( introspection )"
 
-KEYWORDS="~alpha amd64 ~arm arm64 ~ia64 ~ppc ~ppc64 ~sparc x86"
+KEYWORDS="~alpha amd64 ~arm arm64 ~ia64 ~ppc ~ppc64 ~riscv ~sparc x86"
 
 # Unsure about osinfo-db-tools rdep, but at least fedora does it too
 RDEPEND="
@@ -24,7 +25,7 @@ RDEPEND="
 	net-libs/libsoup:2.4
 	>=dev-libs/libxml2-2.6.0
 	>=dev-libs/libxslt-1.0.0
-	sys-apps/hwids[pci,usb]
+	sys-apps/hwdata
 	sys-apps/osinfo-db-tools
 	sys-apps/osinfo-db
 	introspection? ( >=dev-libs/gobject-introspection-1.56:= )
@@ -52,8 +53,8 @@ src_configure() {
 		$(meson_feature introspection enable-introspection)
 		$(meson_use test enable-tests)
 		$(meson_feature vala enable-vala)
-		-Dwith-pci-ids-path=/usr/share/misc/pci.ids
-		-Dwith-usb-ids-path=/usr/share/misc/usb.ids
+		-Dwith-pci-ids-path="${EPREFIX}"/usr/share/hwdata/pci.ids
+		-Dwith-usb-ids-path="${EPREFIX}"/usr/share/hwdata/usb.ids
 	)
 	meson_src_configure
 }

@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -43,7 +43,7 @@ REQUIRED_USE="
 # Dependencies needed by opengl library and plugin (enabled via USE gles2 and/or opengl)
 # dmabuf automagic from libdrm headers (drm_fourcc.h) and EGL, so ensure it with USE=egl (platform independent header used only, thus no MULTILIB_USEDEP); provides dmabuf based upload/download/eglimage options
 GL_DEPS="
-	>=media-libs/mesa-9.0[egl?,gbm?,gles2?,wayland?,${MULTILIB_USEDEP}]
+	>=media-libs/mesa-9.0[egl(+)?,gbm(+)?,gles2?,wayland?,${MULTILIB_USEDEP}]
 	egl? (
 		x11-libs/libdrm
 	)
@@ -53,6 +53,7 @@ GL_DEPS="
 	)
 	wayland? (
 		dev-libs/wayland[${MULTILIB_USEDEP}]
+		>=dev-libs/wayland-protocols-1.15
 	)
 
 	>=media-libs/graphene-1.4.0[${MULTILIB_USEDEP}]
