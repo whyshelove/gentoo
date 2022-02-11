@@ -5,7 +5,7 @@ EAPI=7
 DIST=7.1.el8_5
 inherit rhel-kernel-build
 
-DESCRIPTION="Linux kernel built with Gentoo patches"
+DESCRIPTION="kernel - The Linux kernel, based on version 4.18.0, heavily modified with backports"
 HOMEPAGE="https://www.kernel.org/"
 
 LICENSE="GPL-2"

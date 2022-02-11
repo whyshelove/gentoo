@@ -1,15 +1,15 @@
-# Copyright 2020-2021 Gentoo Authors
+# Copyright 2020-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
 inherit rhel-kernel-build
 
-DESCRIPTION="Linux kernel built with Gentoo patches"
+DESCRIPTION="kernel - The Linux kernel, based on version 4.18.0, heavily modified with backports"
 HOMEPAGE="https://www.kernel.org/"
 
 LICENSE="GPL-2"
-KEYWORDS="amd64 ~arm arm64 ~ppc64 x86"
+KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~x86"
 IUSE="test debug hardened signkernel signmodules zfcpdump +modules +up gcov realtime +zipmodules +ipaclones vdso perf tools bpf"
 REQUIRED_USE="debug? ( !gcov !up !vdso !ipaclones !perf )
 	    signkernel? ( ^^ ( amd64 arm64 ) )
