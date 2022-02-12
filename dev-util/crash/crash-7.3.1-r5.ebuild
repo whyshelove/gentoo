@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="7"
+EAPI=8
 
-inherit toolchain-funcs
+inherit toolchain-funcs rhel8-a
 
 if [[ ${PV} == "9999" ]] ; then
 	EGIT_REPO_URI="https://github.com/crash-utility/crash.git"
@@ -11,9 +11,7 @@ if [[ ${PV} == "9999" ]] ; then
 	EGIT_BRANCH="master"
 	inherit git-r3
 else
-	SRC_URI="https://github.com/crash-utility/${PN}/archive/${PV}.tar.gz -> ${P}.tar.gz
-		mirror://gnu/gdb/gdb-7.6.tar.gz"
-	KEYWORDS="-* ~alpha ~amd64 ~arm ~ia64 ~ppc64 ~s390 ~x86"
+	KEYWORDS="-* ~alpha amd64 arm64 ~arm ~ia64 ~ppc64 ~s390 ~x86"
 fi
 
 DESCRIPTION="Red Hat crash utility; used for analyzing kernel core dumps"
@@ -26,9 +24,15 @@ IUSE=""
 # make rules catch it and tests fail
 RESTRICT="test"
 
+DEPEND="sys-libs/ncurses
+	sys-libs/zlib
+	dev-libs/lzo
+	sys-devel/bison
+	app-arch/snappy"
+
 src_prepare() {
 	sed -i -e "s|ar -rs|\${AR} -rs|g" Makefile || die
-	ln -s "${DISTDIR}"/gdb-7.6.tar.gz . || die
+	ln -s "${WORKDIR}"/gdb-7.6.tar.gz . || die
 	default
 }
 
@@ -37,4 +41,11 @@ src_compile() {
 		CC="$(tc-getCC)" \
 		AR="$(tc-getAR)" \
 		CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
+}
+
+src_install() {
+	default
+
+	doman crash.8
+	doheader defs.h
 }

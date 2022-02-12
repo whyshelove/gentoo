@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -8,13 +8,15 @@ inherit autotools flag-o-matic linux-info udev
 DESCRIPTION="An interface for filesystems implemented in userspace"
 HOMEPAGE="https://github.com/libfuse/libfuse"
 SRC_URI="https://github.com/libfuse/libfuse/releases/download/${P}/${P}.tar.gz"
+# For bug #809920 to avoid a gettext dependency
+# extracted from sys-devel/gettext-0.21-r1
+SRC_URI+=" https://dev.gentoo.org/~sam/distfiles/${CATEGORY}/${PN}/iconv.m4.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
-IUSE="examples kernel_linux kernel_FreeBSD static-libs"
+IUSE="examples static-libs"
 
-PDEPEND="kernel_FreeBSD? ( sys-fs/fuse4bsd )"
 BDEPEND="virtual/pkgconfig"
 RDEPEND=">=sys-fs/fuse-common-3.3.0-r1"
 
@@ -38,6 +40,8 @@ pkg_setup() {
 src_prepare() {
 	default
 
+	# Can be dropped along with additional SRC_URI if dropping eautoreconf
+	cp "${WORKDIR}"/iconv.m4 m4/ || die
 	eautoreconf
 }
 
@@ -62,11 +66,6 @@ src_install() {
 	if use examples ; then
 		docinto examples
 		dodoc example/*
-	fi
-
-	if use kernel_FreeBSD ; then
-		insinto /usr/include/fuse
-		doins include/fuse_kernel.h
 	fi
 
 	find "${ED}" -name '*.la' -delete || die
