@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -8,9 +8,7 @@ inherit autotools multilib-minimal usr-ldscript rhel9
 
 DESCRIPTION="Stream-oriented XML parser library"
 HOMEPAGE="https://libexpat.github.io/"
-if [[ ${PV} != *8888 ]]; then
-	S=${WORKDIR}/libexpat-R_2_2_10/expat
-fi
+S=${WORKDIR}/libexpat-R_2_2_10/expat
 
 LICENSE="MIT"
 SLOT="0"

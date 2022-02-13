@@ -11,7 +11,7 @@ if [[ ${PV} == "9999" ]] ; then
 	EGIT_BRANCH="master"
 	inherit git-r3
 else
-	KEYWORDS="-* ~alpha ~amd64 ~arm ~ia64 ~ppc64 ~s390 ~x86"
+	KEYWORDS="-* ~alpha amd64 ~arm ~ia64 ~ppc64 ~s390 ~x86"
 fi
 
 DESCRIPTION="Red Hat crash utility; used for analyzing kernel core dumps"
