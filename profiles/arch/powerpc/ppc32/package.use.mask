@@ -1,14 +1,17 @@
 # Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
+# Sam James <sam@gentoo.org> (2022-02-10)
+# app-crypt/tpm2-tss is not keyworded here
+app-crypt/gnupg tpm
+
 # Joonas Niilola <juippis@gentoo.org> (2022-01-04)
 # Dependency not keyworded on this arch.
 dev-libs/efl heif
 
 # Sam James <sam@gentoo.org> (2021-12-31)
-# dev-lang/julia not keyworded here
 # sci-mathematics/polymake not keyworded here
-sci-mathematics/singular julia polymake
+sci-mathematics/singular polymake
 
 # Sam James <sam@gentoo.org> (2021-12-08)
 # Masks involving webkit-gtk; webkit-gtk was dekeyworded on ppc for a while.
