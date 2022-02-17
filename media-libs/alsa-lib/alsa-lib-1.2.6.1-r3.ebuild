@@ -1,18 +1,18 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{7,8,9} )
-inherit autotools multilib-minimal python-single-r1 rhel9-a
+PYTHON_COMPAT=( python3_{6,8,9} )
+inherit autotools multilib-minimal python-single-r1 rhel8-a
 
 DESCRIPTION="Advanced Linux Sound Architecture Library"
 HOMEPAGE="https://alsa-project.org/wiki/Main_Page"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv sparc x86 ~amd64-linux ~x86-linux"
-IUSE="alisp debug doc elibc_uclibc python +thread-safety"
+KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86 ~amd64-linux ~x86-linux"
+IUSE="alisp debug doc python +thread-safety"
 
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 
@@ -31,15 +31,10 @@ pkg_setup() {
 
 src_prepare() {
 	find . -name Makefile.am -exec sed -i -e '/CFLAGS/s:-g -O2::' {} + || die
-	# https://bugs.gentoo.org/509886
-	if use elibc_uclibc ; then
-		sed -i -e 's:oldapi queue_timer:queue_timer:' test/Makefile.am || die
-	fi
 	# https://bugs.gentoo.org/545950
 	sed -i -e '5s:^$:\nAM_CPPFLAGS = -I$(top_srcdir)/include:' test/lsb/Makefile.am || die
 	default
 	eautoreconf
-	install -p -m 644 "${WORKDIR}"/modprobe-dist-oss.conf .
 }
 
 multilib_src_configure() {
@@ -56,7 +51,6 @@ multilib_src_configure() {
 		$(use_enable alisp)
 		$(use_enable thread-safety)
 		$(use_with debug)
-		$(usex elibc_uclibc --without-versioned '')
 	)
 
 	ECONF_SOURCE="${S}" econf "${myeconfargs[@]}"
@@ -93,11 +87,11 @@ multilib_src_install() {
 	dodir ${_datadir}/alsa/{ucm,ucm2,topology}
 
 	# Unpack UCMs
-	tar xvjf ${WORKDIR}/alsa-ucm-conf-${PV}.tar.bz2 -C ${ED}${_datadir}/alsa --strip-components=1 "*/ucm" "*/ucm2"
-	patch -d ${ED}${_datadir}/alsa -p1 < ${WORKDIR}/alsa-git.patch
+	tar xvjf ${WORKDIR}/alsa-ucm-conf-1.2.6.3.tar.bz2 -C ${ED}${_datadir}/alsa --strip-components=1 "*/ucm" "*/ucm2"
+	patch -d ${ED}${_datadir}/alsa -p1 < ${WORKDIR}/alsa-ucm-git.patch
 
 	# Unpack topologies
-	tar xvjf ${WORKDIR}/alsa-topology-conf-${PV/.1}.tar.bz2 -C ${ED}${_datadir}/alsa --strip-components=1 "*/topology"
+	tar xvjf ${WORKDIR}/alsa-topology-conf-1.2.5.tar.bz2 -C ${ED}${_datadir}/alsa --strip-components=1 "*/topology"
 }
 
 multilib_src_install_all() {
