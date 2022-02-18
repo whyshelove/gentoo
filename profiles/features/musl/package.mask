@@ -1,6 +1,10 @@
 # Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
+# Ionen Wolkens <ionen@gentoo.org> (2022-02-17)
+# Binary package linked to glibc
+net-im/discord-bin
+
 # Conrad Kostecki <conikost@gentoo.org> (2022-02-12)
 # Binary package linked to glibc
 x11-misc/xflux
@@ -123,10 +127,6 @@ sci-electronics/labone
 # dev-db/oracle-instantclient package linked against glibc,
 # and the other packages depends on it.
 dev-db/oracle-instantclient
-dev-db/oracle-instantclient-basic
-dev-db/oracle-instantclient-jdbc
-dev-db/oracle-instantclient-odbc
-dev-db/oracle-instantclient-sqlplus
 dev-db/ocp
 dev-db/sqlcl-bin
 
@@ -138,6 +138,7 @@ net-im/rocketchat-desktop-bin
 net-im/whatsapp-desktop-bin
 sci-misc/jupyterlab-desktop-bin
 sci-misc/netlogo-bin
+sci-electronics/eagle
 
 # Ulrich Müller <ulm@gentoo.org> (2022-01-04)
 # Emacs 23 does not support x86_64-gentoo-linux-musl systems
