@@ -60,7 +60,7 @@ if [ -z ${MY_PF} ] ; then
 			xauth | xbitmaps | util-macros | xinit ) MY_PF=xorg-x11-${P}-${MY_PR} ;;
 			libnl | glib | openjpeg | lcms | gnupg | grub | udisks | geoclue \
 			| udisks | lcms | openjpeg | glib | librsvg | gstreamer | gtksourceview \
-			| gtk) MY_P=${P/-/$(ver_cut 1)-}; MY_PF=${MY_P}-${MY_PR} ;;
+			| gtk | gdk-pixbuf | librsvg ) MY_P=${P/-/$(ver_cut 1)-}; MY_PF=${MY_P}-${MY_PR} ;;
 			libusb ) MY_PF=${P/-/x-}-${MY_PR} ;;
 			sysprof-capture ) MY_PF=${P/-capture}-${MY_PR} ;;
 			e2fsprogs-libs ) MY_PF=${P/-libs}-${MY_PR} ;;
@@ -75,7 +75,6 @@ if [ -z ${MY_PF} ] ; then
 			libnsl ) MY_P=${P/-/2-}; MY_PF=${MY_P}-${MY_PR} ;;
 			libpcre* ) MY_P=${P/lib}; MY_PF=${MY_P}-${MY_PR} ;;
 			xorg-proto ) MY_PF=${PN/-/-x11-}-devel-${PV}-${MY_PR} ;;
-			gdk-pixbuf ) MY_PF=${P/gdk-pixbuf/gdk-pixbuf2}-${MY_PR} ;;
 			gtk+ ) MY_P=${P/+/$(ver_cut 1)}; MY_PF=${MY_P}-${MY_PR} ;;
 			xz-utils ) MY_P="${PN/-utils}-${PV/_}"; MY_PF=${MY_P}-${MY_PR} ;;
 			glib-utils ) MY_P="${PN/-utils}2-${PV}"; MY_PF=${MY_P}-${MY_PR} ;;	
