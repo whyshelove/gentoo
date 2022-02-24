@@ -1,10 +1,10 @@
-# Copyright 2021 Gentoo Authors
+# Copyright 2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-DIST=11.el8
+DIST=12.el8
 inherit rhel8
-S="${WORKDIR}/${P}-${PR/r}.11"
+S="${WORKDIR}/${P}-${PR/r}.12"
 DESCRIPTION="Hardware identification and configuration data"
 HOMEPAGE="https://github.com/vcrhonek/hwdata"
 
