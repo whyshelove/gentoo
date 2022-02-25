@@ -11,7 +11,6 @@ inherit autotools flag-o-matic lua-single perl-module python-single-r1 toolchain
 DESCRIPTION="Red Hat Package Management Utils"
 HOMEPAGE="https://rpm.org
 	https://github.com/rpm-software-management/rpm"
-#SRC_URI="http://ftp.rpm.org/releases/rpm-$(ver_cut 1-2).x/${P}.tar.bz2"
 
 LICENSE="GPL-2 LGPL-2"
 SLOT="0"

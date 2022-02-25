@@ -46,7 +46,7 @@ BDEPEND="
 	virtual/pkgconfig
 "
 
-S="${WORKDIR}/${PN/lvm/LVM}.${PV}"
+S="${WORKDIR}/${PN}-4a1f6173d29a7d7ecab14a9313000aa5f81170d0"
 
 PATCHES=(
 	# Gentoo specific modification(s):
@@ -201,7 +201,6 @@ src_compile() {
 		emake V=1 device-mapper
 	else
 		emake V=1
-		emake V=1 CC="$(tc-getCC)" -C scripts lvm2_activation_generator_systemd_red_hat
 	fi
 }
 

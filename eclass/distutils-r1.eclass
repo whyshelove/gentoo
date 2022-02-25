@@ -192,7 +192,7 @@ _distutils_set_globals() {
 				;;
 			setuptools)
 				bdep+='
-					>=dev-python/setuptools-60.5.0[${PYTHON_USEDEP}]
+					>=dev-python/setuptools-53.0.0[${PYTHON_USEDEP}]
 					dev-python/wheel[${PYTHON_USEDEP}]'
 				;;
 			standalone)
