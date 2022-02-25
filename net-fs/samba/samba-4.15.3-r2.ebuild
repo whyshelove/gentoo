@@ -16,13 +16,13 @@ if [[ ${PV} = *_rc* ]]; then
 	SRC_URI="mirror://samba/rc/${MY_P}.tar.gz"
 else
 	SRC_URI="mirror://samba/stable/${MY_P}.tar.gz"
-	KEYWORDS="~alpha amd64 arm ~arm64 ~hppa ~ia64 ~ppc ~ppc64 ~riscv sparc x86"
+	KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ppc ppc64 ~riscv sparc x86"
 fi
 S="${WORKDIR}/${MY_P}"
 
 LICENSE="GPL-3"
 SLOT="0"
-IUSE="acl addc ads ceph client cluster cpu_flags_x86_aes cups debug dmapi fam
+IUSE="acl addc ads ceph client cluster cpu_flags_x86_aes cups debug fam
 glusterfs gpg iprint json ldap pam profiling-data python quota +regedit selinux
 snapper spotlight syslog system-heimdal +system-mitkrb5 systemd test winbind
 zeroconf"
@@ -96,7 +96,6 @@ COMMON_DEPEND="
 	cluster? ( net-libs/rpcsvc-proto )
 	cups? ( net-print/cups )
 	debug? ( dev-util/lttng-ust )
-	dmapi? ( sys-apps/dmapi )
 	fam? ( virtual/fam )
 	gpg? ( app-crypt/gpgme:= )
 	json? ( dev-libs/jansson:= )
@@ -217,7 +216,7 @@ multilib_src_configure() {
 		$(multilib_native_use_enable ceph cephfs)
 		$(multilib_native_use_with cluster cluster-support)
 		$(multilib_native_use_enable cups)
-		$(multilib_native_use_with dmapi)
+		--without-dmapi
 		$(multilib_native_use_with fam)
 		$(multilib_native_use_enable glusterfs)
 		$(multilib_native_use_with gpg gpgme)

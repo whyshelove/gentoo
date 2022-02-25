@@ -1,6 +1,11 @@
 # Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
+# Adel Kara Slimane <adel.ks@zegrapher.com> (2022-01-11)
+# Mask AMF keyword on non-amd64 arches
+# It is unusable, for now, in other arches
+media-video/ffmpeg amf
+
 # Sam James <sam@gentoo.org> (2022-02-02)
 # sys-cluster/knem is not keyworded on arm64
 sys-cluster/openmpi openmpi_fabrics_knem
@@ -58,10 +63,6 @@ media-sound/easyeffects zamaudio
 # Supports 64-bit NEON
 # Note: libpng-compat 1.5.30 does NOT seem to.
 media-libs/libpng -cpu_flags_arm_neon
-
-# Mike Gilbert <floppym@gentoo.org> (2021-03-29)
-# Unmask TPM on supported archs.
-sys-apps/systemd -tpm
 
 # Sam James <sam@gentoo.org> (2021-03-20)
 # Supports both 'neon32' and 'neon64'
@@ -302,7 +303,6 @@ dev-cpp/eigen test
 mate-base/mate help
 mate-base/mate-applets-meta appindicator sensors
 mate-extra/caja-extensions gajim
-net-fs/samba dmapi
 sci-libs/gdal armadillo netcdf
 sys-fs/btrfs-progs reiserfs
 www-client/chromium widevine
