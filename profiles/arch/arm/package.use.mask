@@ -1,6 +1,11 @@
 # Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
+# Adel Kara Slimane <adel.ks@zegrapher.com> (2022-01-17)
+# Mask AMF keyword on non-amd64 arches
+# It is unusable, for now, in other arches
+media-video/ffmpeg amf
+
 # Sam James <sam@gentoo.org> (2022-01-15)
 # Deps not yet stable:
 # app-emulation/spice
@@ -43,10 +48,6 @@ media-sound/easyeffects zamaudio
 # Miroslav Šulc <fordfrog@gentoo.org> (2021-04-12)
 # no stable virtual/jdk on this arch
 media-libs/rubberband jni
-
-# Mike Gilbert <floppym@gentoo.org> (2021-03-29)
-# Unmask TPM on supported archs.
-sys-apps/systemd -tpm
 
 # Sam James <sam@gentoo.org> (2021-02-17)
 # Unmask dev-libs/libpcre2[jit] support on PHP
