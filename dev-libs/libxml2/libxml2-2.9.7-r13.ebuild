@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -10,9 +10,7 @@ inherit autotools flag-o-matic prefix python-r1 multilib-minimal rhel8
 
 DESCRIPTION="XML C parser and toolkit"
 HOMEPAGE="http://www.xmlsoft.org/ https://gitlab.gnome.org/GNOME/libxml2"
-if [[ ${PV} != *8888 ]]; then
-	S="${WORKDIR}/${PN}-${PV%_rc*}"
-fi
+S="${WORKDIR}/${PN}-${PV%_rc*}"
 
 LICENSE="MIT"
 SLOT="2"

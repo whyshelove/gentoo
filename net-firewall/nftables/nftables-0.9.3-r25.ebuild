@@ -1,15 +1,14 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7,8,9} )
+PYTHON_COMPAT=( python3_{6,8,9} )
 
-inherit autotools linux-info python-r1 systemd
+inherit autotools linux-info python-r1 systemd rhel8
 
 DESCRIPTION="Linux kernel (3.13+) firewall, NAT and packet mangling tools"
 HOMEPAGE="https://netfilter.org/projects/nftables/"
-SRC_URI="https://netfilter.org/projects/nftables/files/${P}.tar.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"
@@ -17,8 +16,8 @@ KEYWORDS="amd64 arm arm64 ~ia64 ppc ~ppc64 sparc x86"
 IUSE="debug doc +gmp json +modern-kernel python +readline static-libs xtables"
 
 RDEPEND="
-	>=net-libs/libmnl-1.0.4:0=
-	>=net-libs/libnftnl-1.1.9:0=
+	>=net-libs/libmnl-1.0.3:0=
+	>=net-libs/libnftnl-1.1.5:0=
 	gmp? ( dev-libs/gmp:0= )
 	json? ( dev-libs/jansson )
 	python? ( ${PYTHON_DEPS} )
@@ -74,7 +73,8 @@ src_prepare() {
 	sed '/^pkgsysconfdir/s@${sysconfdir}.*$@${docdir}/skels/osf@' \
 		-i files/osf/Makefile.am || die
 
-	eautoreconf
+	eautoreconf -fi
+	rm -Rf autom4te*.cache config.h.in~
 }
 
 src_configure() {
@@ -104,11 +104,12 @@ src_compile() {
 src_install() {
 	default
 
-	if ! use doc; then
-		pushd doc >/dev/null || die
-		doman *.?
-		popd >/dev/null || die
-	fi
+	insinto ${_sysconfdir}/sysconfig/
+	doins "${WORKDIR}"/${PN}.conf
+
+	rm ${ED}${_sysconfdir}/nftables/*.nft
+	insinto ${_sysconfdir}/nftables/
+	doins -r "${WORKDIR}"/{"main.nft","router.nft","nat.nft"}
 
 	local mksuffix="$(usex modern-kernel '-mk' '')"
 
@@ -118,7 +119,7 @@ src_install() {
 	newinitd "${FILESDIR}"/${PN}${mksuffix}.init-r1 ${PN}
 	keepdir /var/lib/nftables
 
-	systemd_dounit "${FILESDIR}"/systemd/${PN}-restore.service
+	systemd_dounit "${FILESDIR}"/systemd/${PN}-restore.service ${WORKDIR}/${PN}.service
 
 	if use python ; then
 		python_foreach_impl python_make install
@@ -131,7 +132,7 @@ src_install() {
 pkg_postinst() {
 	local save_file
 	save_file="${EROOT}/var/lib/nftables/rules-save"
-
+	systemd_post nftables.service
 	# In order for the nftables-restore systemd service to start
 	# the save_file must exist.
 	if [[ ! -f "${save_file}" ]]; then
