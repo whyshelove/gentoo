@@ -14,7 +14,7 @@ SRC_URI="mirror://pypi/${PN:0:1}/${PN}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~ia64 ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
+KEYWORDS="amd64 ~arm ~arm64 hppa ~ia64 ppc ~ppc64 ~riscv ~s390 ~sparc x86"
 
 RDEPEND="
 	dev-python/bleach[${PYTHON_USEDEP}]
@@ -33,15 +33,12 @@ RDEPEND="
 	dev-python/testpath[${PYTHON_USEDEP}]
 	www-servers/tornado[${PYTHON_USEDEP}]
 "
-# Skip inkscape on hppa b/c tests should skip it gracefully if not around
-# It's a heavy dependency.
 BDEPEND="
 	test? (
 		dev-python/pebble[${PYTHON_USEDEP}]
 		dev-python/ipykernel[${PYTHON_USEDEP}]
 		dev-python/ipywidgets[${PYTHON_USEDEP}]
 		>=dev-python/jupyter_client-4.2[${PYTHON_USEDEP}]
-		!hppa? ( media-gfx/inkscape )
 	)
 "
 

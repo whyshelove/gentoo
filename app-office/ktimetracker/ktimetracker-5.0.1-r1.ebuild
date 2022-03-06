@@ -8,6 +8,7 @@ ECM_TEST="true"
 KDE_ORG_CATEGORY="pim"
 KFMIN=5.82.0
 QTMIN=5.15.2
+VIRTUALX_REQUIRED="test"
 inherit ecm kde.org
 
 DESCRIPTION="Todo management and time tracker"
@@ -15,7 +16,7 @@ HOMEPAGE="https://userbase.kde.org/KTimeTracker"
 
 if [[ ${KDE_BUILD_TYPE} = release ]]; then
 	SRC_URI="mirror://kde/stable/${PN}/${PV}/src/${P}.tar.xz"
-	KEYWORDS="~amd64"
+	KEYWORDS="amd64"
 fi
 
 LICENSE="GPL-2+ handbook? ( FDL-1.2 )"
