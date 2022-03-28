@@ -38,7 +38,7 @@ SRC_URI="
 # swig: GPL-3+ BSD BSD-2
 LICENSE="BSD BSD-2 CC-BY-3.0 GPL-3+ MIT OFL-1.1 public-domain ZLIB"
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="amd64"
 IUSE="pyside2 qt5"
 REQUIRED_USE="doc? ( qt5 ) pyside2? ( qt5 ) qt5? ( ${PYTHON_REQUIRED_USE} )"
 
@@ -175,16 +175,8 @@ src_compile() {
 	docs_compile
 }
 
-pkg_preinst() {
-	use qt5 && xdg_pkg_preinst
-}
-
 pkg_postinst() {
-	use qt5 && xdg_pkg_postinst
+	xdg_pkg_postinst
 	optfeature "android remote contexts" dev-util/android-tools
 	optfeature "vulkan contexts" media-libs/vulkan-loader
-}
-
-pkg_postrm() {
-	use qt5 && xdg_pkg_postrm
 }

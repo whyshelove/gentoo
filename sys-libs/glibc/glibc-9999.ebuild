@@ -44,7 +44,7 @@ SRC_URI+=" https://gitweb.gentoo.org/proj/locale-gen.git/snapshot/locale-gen-${L
 SRC_URI+=" multilib-bootstrap? ( https://dev.gentoo.org/~dilfridge/distfiles/gcc-multilib-bootstrap-${GCC_BOOTSTRAP_VER}.tar.xz )"
 SRC_URI+=" systemd? ( https://gitweb.gentoo.org/proj/toolchain/glibc-systemd.git/snapshot/glibc-systemd-${GLIBC_SYSTEMD_VER}.tar.gz )"
 
-IUSE="audit caps cet +clone3 compile-locales +crypt custom-cflags doc gd headers-only +multiarch multilib multilib-bootstrap nscd profile selinux +ssp +static-libs suid systemd systemtap test vanilla"
+IUSE="audit caps cet compile-locales +crypt custom-cflags doc gd headers-only +multiarch multilib multilib-bootstrap nscd profile selinux +ssp +static-libs suid systemd systemtap test vanilla"
 
 # Minimum kernel version that glibc requires
 MIN_KERN_VER="3.2.0"
@@ -515,9 +515,11 @@ setup_env() {
 		# a good start into that direction.
 		# Also, if you're crosscompiling, let's assume you know what you are doing.
 		# Hopefully.
+		# Last, we need the settings of the *build* environment, not of the
+		# target environment...
 
-		local current_binutils_path=$(binutils-config -B)
-		local current_gcc_path=$(gcc-config -B)
+		local current_binutils_path=$(env ROOT="${BROOT}" binutils-config -B)
+		local current_gcc_path=$(env ROOT="${BROOT}" gcc-config -B)
 		einfo "Overriding clang configuration, since it won't work here"
 
 		export CC="${current_gcc_path}/gcc"
@@ -750,6 +752,14 @@ sanity_prechecks() {
 
 	# When we actually have to compile something...
 	if ! just_headers && [[ ${MERGE_TYPE} != "binary" ]] ; then
+		if [[ -d "${ESYSROOT}"/usr/lib/include ]] ; then
+			# bug #833620, bug #643302
+			eerror "Found ${ESYSROOT}/usr/lib/include directory!"
+			eerror "This is known to break glibc's build."
+			eerror "Please backup its contents then remove the directory."
+			die "Found directory (${ESYSROOT}/usr/lib/include) which will break build (bug #833620)!"
+		fi
+
 		if [[ ${CTARGET} == *-linux* ]] ; then
 			local run_kv build_kv want_kv
 
@@ -785,6 +795,7 @@ upgrade_warning() {
 				ewarn "After upgrading glibc, please restart all running processes."
 				ewarn "Be sure to include init (telinit u) or systemd (systemctl daemon-reexec)."
 				ewarn "Alternatively, reboot your system."
+				ewarn "(See bug #660556, bug #741116, bug #823756, etc)"
 				break
 			fi
 		done
@@ -848,14 +859,6 @@ src_prepare() {
 		einfo "Applying Gentoo Glibc Patchset ${patchsetname}"
 		eapply "${WORKDIR}"/patches
 		einfo "Done."
-	fi
-
-	if use clone3 ; then
-		append-cppflags -DGENTOO_USE_CLONE3
-	else
-		# See e.g. bug #827386, bug #819045.
-		elog "Disabling the clone3 syscall for compatibility with older Electron apps."
-		elog "Please re-enable this flag before filing bugs!"
 	fi
 
 	default

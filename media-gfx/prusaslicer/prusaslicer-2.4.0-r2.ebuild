@@ -15,7 +15,7 @@ SRC_URI="https://github.com/prusa3d/${MY_PN}/archive/version_${PV}.tar.gz -> ${P
 
 LICENSE="AGPL-3 Boost-1.0 GPL-2 LGPL-3 MIT"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="amd64 ~x86"
 IUSE="test"
 
 RESTRICT="!test? ( test )"
@@ -50,7 +50,7 @@ DEPEND="${RDEPEND}
 "
 
 PATCHES=(
-	"${FILESDIR}"/${PV}-fix-build-with-cereal-1.3.1.patch
+	"${FILESDIR}"/${P}-fix-build-with-cereal-1.3.1.patch
 )
 
 S="${WORKDIR}/${MY_PN}-version_${PV}"

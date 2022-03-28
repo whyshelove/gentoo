@@ -1,14 +1,18 @@
 # Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
+# Adel Kara Slimane <adel.ks@zegrapher.com> (2022-03-14)
+# Untested useflag on other arches, needs keywording
+media-video/ffmpeg vmaf
+
+# Sam James <sam@gentoo.org> (2022-03-06)
+# Unkeyworded dependencies
+net-mail/cyrus-imapd http
+
 # Adel Kara Slimane <adel.ks@zegrapher.com> (2022-02-17)
 # Mask AMF keyword on non-amd64 arches
 # It is unusable, for now, in other arches
 media-video/ffmpeg amf
-
-# Vadim Misbakh-Soloviov <mva@gentoo.org> (2021-12-09)
-# ts-cli requires rust to be built, and rust is unavailable here ATM.
-dev-libs/tree-sitter ts-cli
 
 # Daniel Pielmeier <billie@gentoo.org> (2021-11-07)
 # gnome-base/librsvg is not keyworded here, bug #807130
@@ -75,6 +79,7 @@ media-libs/rubberband jni
 # media-libs/libavif isn't keyworded here
 media-libs/gd avif heif
 net-libs/webkit-gtk avif
+media-gfx/graphicsmagick heif
 
 # Sam James <sam@gentoo.org> (2021-02-26)
 # dev-libs/efl not keyworded here
@@ -534,7 +539,6 @@ media-video/x264-encoder ffmpegsource
 # Alexey Shvetsov <alexxy@gentoo.org> (2011-08-31)
 # Mask numa use flag per bug #381313
 sys-apps/hwloc numa
-sys-cluster/openmpi numa
 
 # Pacho Ramos <pacho@gentoo.org> (2011-01-27)
 # missing keywords on needed plugins
