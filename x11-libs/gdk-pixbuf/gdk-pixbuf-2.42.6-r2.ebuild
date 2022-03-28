@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -10,8 +10,8 @@ HOMEPAGE="https://gitlab.gnome.org/GNOME/gdk-pixbuf"
 
 LICENSE="LGPL-2.1+"
 SLOT="2"
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-IUSE="gtk-doc +introspection jpeg tiff"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+IUSE="+introspection jpeg tiff"
 
 # TODO: For windows/darwin support: shared-mime-info conditional, native_windows_loaders option review
 DEPEND="
@@ -27,16 +27,12 @@ RDEPEND="${DEPEND}
 "
 BDEPEND="
 	app-text/docbook-xsl-stylesheets
+	app-text/docbook-xml-dtd:4.3
 	dev-libs/glib:2
 	dev-libs/libxslt
 	dev-util/glib-utils
-	gtk-doc? (
-		app-text/docbook-xml-dtd:4.3
-		dev-util/gi-docgen
-	)
 	>=sys-devel/gettext-0.19.8
 	virtual/pkgconfig
-	>=dev-util/meson-0.55.3
 "
 
 MULTILIB_CHOST_TOOLS=(
@@ -65,12 +61,12 @@ multilib_src_configure() {
 		-Dpng=true
 		$(meson_use tiff)
 		$(meson_use jpeg)
-		-Dbuiltin_loaders=png
+		-Dbuiltin_loaders=png,jpeg
 		-Drelocatable=false
 		#native_windows_loaders
 		-Dinstalled_tests=false
 		-Dgio_sniffing=true
-		$(meson_native_use_bool gtk-doc gtk_doc)
+		-Dgtk_doc=false
 		$(meson_native_use_feature introspection)
 		$(meson_native_true man)
 	)
@@ -79,11 +75,10 @@ multilib_src_configure() {
 }
 
 multilib_src_install_all() {
-	if use gtk-doc; then
-		mkdir "${ED}"/usr/share/doc/${PF}/html || die
-		mv "${ED}"/usr/share/doc/{${PN}/,${PF}/html/} || die
-		mv "${ED}"/usr/share/doc/{gdk-pixdata/,${PF}/html/} || die
-	fi
+	einstalldocs
+	insinto /usr/share/gtk-doc/html
+	doins -r "${S}"/docs/gdk-pixbuf
+	doins -r "${S}"/docs/gdk-pixdata
 }
 
 pkg_preinst() {

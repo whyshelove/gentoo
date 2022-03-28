@@ -407,7 +407,7 @@ toolchain-rhel_src_prepare() {
 	cd "${S}"
 
 	if ! use vanilla && [[ -n ${PATCH_VER} ]]; then
-		rm ${WORKDIR}/patch/{"06_all_ia64_note.GNU-stack.patch","23_all_EXTRA_OPTIONS-fstack-clash-protection.patch"}
+		rm ${WORKDIR}/patch/{"06_all_ia64_note.GNU-stack.patch","09_all_nopie-all-flags.patch","23_all_EXTRA_OPTIONS-fstack-clash-protection.patch"}
 		tc_apply_patches "Applying Gentoo patches ..." "${WORKDIR}"/patch/*.patch
 		BRANDING_GCC_PKGVERSION="${BRANDING_GCC_PKGVERSION} p${PATCH_VER}"
 	fi

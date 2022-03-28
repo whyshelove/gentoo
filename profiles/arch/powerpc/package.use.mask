@@ -1,6 +1,10 @@
 # Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
+# Adel Kara Slimane <adel.ks@zegrapher.com> (2022-03-14)
+# Untested useflag on other arches, needs keywording
+media-video/ffmpeg vmaf
+
 # Adel Kara Slimane <adel.ks@zegrapher.com> (2021-12-11)
 # Mask AMF keyword on non-amd64 arches
 # It is unusable, for now, in other arches
@@ -342,10 +346,6 @@ sys-cluster/openmpi openmpi_fabrics_knem openmpi_fabrics_ofed openmpi_rm_slurm o
 # Patrick McLean <chutzpah@gentoo.org> (2011-09-07)
 # missing keywords on dependencies
 media-video/x264-encoder ffmpegsource
-
-# Kacper Kowalik <xarthisius@gentoo.org> (2011-08-10)
-# mask cuda dep for opencv bug 365451
-media-libs/opencv cuda
 
 # Doug Goldstein <cardoe@gentoo.org> (2011-05-27)
 # app-emulation/spice, app-emulation/xen, and sys-cluster/ceph

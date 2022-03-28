@@ -17,8 +17,12 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	x11-base/xorg-proto"
 
+src_prepare() {
+	default
+	eautoreconf -v --install
+}
+
 src_configure() {
-	autoreconf -v --install || exit 1
 	local XORG_CONFIGURE_OPTIONS=(
 		$(use_enable doc specs)
 		$(use_with doc xmlto)

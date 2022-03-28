@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-USE_RUBY="ruby26 ruby27 ruby30"
+USE_RUBY="ruby26 ruby27 ruby30 ruby31"
 
 RUBY_FAKEGEM_EXTRADOC="CHANGELOG.md README.md"
 
@@ -24,7 +24,7 @@ KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc 
 SLOT="0"
 IUSE="test"
 
-ruby_add_bdepend "test? ( dev-ruby/bundler dev-ruby/test-unit )"
+ruby_add_bdepend "test? ( dev-ruby/bundler dev-ruby/rdoc dev-ruby/test-unit )"
 
 all_ruby_prepare() {
 	sed -i -e 's/git ls-files -z/find * -print0/' ${RUBY_FAKEGEM_GEMSPEC} || die
@@ -38,6 +38,11 @@ all_ruby_prepare() {
 
 	# Avoid setup tests since they require a lot of development dependencies.
 	rm -f test/rbs/test/runtime_test_test.rb || die
+
+	# Avoid tests requiring a network connection
+	rm -f test/rbs/collection/installer_test.rb test/rbs/collection/collections_test.rb test/rbs/collection/config_test.rb || die
+	sed -i -e '/def test_collection_/aomit "Requires network"' test/rbs/cli_test.rb || die
+	sed -i -e '/def test_loading_from_rbs_collection/aomit "Requires network"' test/rbs/environment_loader_test.rb || die
 
 	sed -i -e '/def test_paths/aomit "Different paths in Gentoo test environment"' test/rbs/cli_test.rb || die
 }
