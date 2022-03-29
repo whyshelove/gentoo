@@ -1,26 +1,25 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-inherit netsurf desktop
+inherit netsurf desktop toolchain-funcs
 
-DESCRIPTION="a free, open source web browser"
+DESCRIPTION="A free, open source web browser"
 HOMEPAGE="https://www.netsurf-browser.org/"
 SRC_URI="http://download.netsurf-browser.org/netsurf/releases/source/${P}-src.tar.gz"
 
 LICENSE="GPL-2 MIT"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~x86"
-IUSE="bmp +duktape fbcon truetype +gif +gtk gtk2 +javascript +jpeg mng
+KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~riscv ~x86"
+IUSE="bmp fbcon truetype +gif +gtk gtk2 +javascript +jpeg mng
 	+png +psl rosprite +svg +svgtiny +webp"
 
-REQUIRED_USE="|| ( fbcon gtk gtk2 )
-	duktape? ( javascript )"
+REQUIRED_USE="|| ( fbcon gtk gtk2 )"
 
 RDEPEND="
 	>=dev-libs/libcss-0.9
-	>=net-libs/libdom-0.3
+	>=net-libs/libdom-0.4.1-r1
 	>=net-libs/libhubbub-0.3
 	>=dev-libs/libnsutils-0.1.0
 	>=dev-libs/libutf8proc-2.4
@@ -38,8 +37,7 @@ RDEPEND="
 		x11-libs/gtk+:2 )
 	javascript? (
 		>=dev-libs/nsgenbind-0.7
-		duktape? ( dev-lang/duktape:= )
-		!duktape? ( dev-lang/spidermonkey:0= )
+		dev-lang/duktape:=
 	)
 	jpeg? ( >=virtual/jpeg-0-r2:0 )
 	mng? ( >=media-libs/libmng-1.0.10-r2 )
@@ -49,8 +47,9 @@ RDEPEND="
 	svg? ( svgtiny? ( >=media-libs/libsvgtiny-0.1.3-r1 )
 		!svgtiny? ( gnome-base/librsvg:2 ) )
 	webp? ( >=media-libs/libwebp-0.3.0 )"
+DEPEND="${RDEPEND}"
 BDEPEND="
-	duktape? ( app-editors/vim-core )
+	javascript? ( app-editors/vim-core )
 	dev-libs/check
 	dev-perl/HTML-Parser
 	>=dev-util/netsurf-buildsystem-1.7-r1
@@ -61,6 +60,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-3.9-conditionally-include-image-headers.patch"
 	"${FILESDIR}/${PN}-3.10-julia-libutf8proc-header-location.patch"
 	"${FILESDIR}/${PN}-3.10-disable-failing-tests.patch"
+	"${FILESDIR}/${PN}-3.10-gcc10-fno-common.patch"
 )
 
 DOCS=( README docs/using-framebuffer.md
@@ -83,9 +83,8 @@ _emake() {
 		NETSURF_USE_NSPSL=$(usex psl YES NO)
 		NETSURF_USE_MNG=$(usex mng YES NO)
 		NETSURF_USE_WEBP=$(usex webp YES NO)
-		NETSURF_USE_MOZJS=$(usex javascript $(usex duktape NO YES) NO)
 		NETSURF_USE_JS=NO
-		NETSURF_USE_DUKTAPE=$(usex javascript $(usex duktape YES NO) NO)
+		NETSURF_USE_DUKTAPE=$(usex javascript YES NO)
 		NETSURF_USE_NSSVG=$(usex svg $(usex svgtiny YES NO) NO)
 		NETSURF_USE_RSVG=$(usex svg $(usex svgtiny NO YES) NO)
 		NETSURF_USE_ROSPRITE=$(usex rosprite YES NO)
@@ -94,6 +93,7 @@ _emake() {
 		NETSURF_FB_FONTPATH="${EPREFIX}/usr/share/fonts/dejavu"
 		NETSURF_USE_VIDEO=NO
 	)
+
 	emake "${netsurf_makeconf[@]}" $@
 }
 
@@ -123,7 +123,7 @@ src_install() {
 		# See earlier comments about rsvg.h.
 		_emake NETSURF_USE_RSVG=NO TARGET=framebuffer DESTDIR="${D}" install
 		elog "framebuffer binary has been installed as netsurf-fb"
-		make_desktop_entry "${EPREFIX}"/usr/bin/netsurf-fb \
+		make_desktop_entry "${EPREFIX}/usr/bin/netsurf-fb %u" \
 						   NetSurf-framebuffer \
 						   netsurf \
 						   "Network;WebBrowser"
@@ -131,7 +131,7 @@ src_install() {
 	if use gtk2 ; then
 		_emake TARGET=gtk2 DESTDIR="${D}" install
 		elog "netsurf gtk2 version has been installed as netsurf-gtk2"
-		make_desktop_entry "${EPREFIX}"/usr/bin/netsurf-gtk2 \
+		make_desktop_entry "${EPREFIX}/usr/bin/netsurf-gtk2 %u" \
 						   NetSurf-gtk2 \
 						   netsurf \
 						   "Network;WebBrowser"
@@ -139,7 +139,7 @@ src_install() {
 	if use gtk ; then
 		_emake TARGET=gtk3 DESTDIR="${D}" install
 		elog "netsurf gtk3 version has been installed as netsurf-gtk3"
-		make_desktop_entry "${EPREFIX}"/usr/bin/netsurf-gtk3 \
+		make_desktop_entry "${EPREFIX}/usr/bin/netsurf-gtk3 %u" \
 						   NetSurf-gtk3 \
 						   netsurf \
 						   "Network;WebBrowser"

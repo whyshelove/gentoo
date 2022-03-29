@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_REQ_USE="sqlite"
 PYTHON_COMPAT=( python3_{6,8,9} )
-GITCOMMIT=e1999b264f1f
+GITCOMMIT=bb1bba3d77
 
 inherit python-any-r1 readme.gentoo-r1 rhel8-a
 

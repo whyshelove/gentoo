@@ -12,13 +12,13 @@ LICENSE="GPL-3+"
 SLOT="0"
 IUSE="test"
 RESTRICT="!test? ( test )"
-KEYWORDS="amd64 ~arm arm64 ~ppc ~ppc64 ~riscv x86"
+KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~riscv ~x86"
 
 DEPEND="
-	>=dev-libs/glib-2.64.0:2
+	>=dev-libs/glib-2.67.4:2
 	>=x11-libs/gtk+-3.24.0:3
 	>=dev-libs/nettle-3.4:=
-	>=net-libs/webkit-gtk-2.31.1:4=
+	>=net-libs/webkit-gtk-2.33.2:4=
 	>=x11-libs/cairo-1.2
 	>=app-crypt/gcr-3.5.5:=[gtk]
 	>=x11-libs/gdk-pixbuf-2.36.5:2
@@ -27,7 +27,7 @@ DEPEND="
 	>=dev-libs/json-glib-1.6
 	app-arch/libarchive:=
 	>=dev-libs/libdazzle-3.37.1
-	>=gui-libs/libhandy-1.1.0:1=
+	>=gui-libs/libhandy-1.5.0:1=
 	>=app-crypt/libsecret-0.19
 	>=net-libs/libsoup-2.48.0:2.4
 	>=dev-libs/libxml2-2.6.12:2
@@ -61,6 +61,7 @@ src_configure() {
 		-Dnetwork_tests=disabled
 		-Dtech_preview=false
 		$(meson_feature test unit_tests)
+		-Dsoup2=enabled
 	)
 	meson_src_configure
 }

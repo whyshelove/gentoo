@@ -19,8 +19,8 @@ SRC_URI="https://commondatastorage.googleapis.com/chromium-browser-official/${P}
 	https://github.com/stha09/chromium-patches/releases/download/${PATCHSET_NAME}/${PATCHSET_NAME}.tar.xz"
 
 LICENSE="BSD"
-SLOT="0/dev"
-KEYWORDS="~amd64 ~arm64 ~x86"
+SLOT="0/stable"
+KEYWORDS="~amd64 arm64 ~x86"
 IUSE="component-build cups cpu_flags_arm_neon debug gtk4 +hangouts headless +js-type-check kerberos libcxx +official pic +proprietary-codecs pulseaudio screencast selinux +suid +system-ffmpeg +system-harfbuzz +system-icu +system-png vaapi wayland widevine"
 REQUIRED_USE="
 	component-build? ( !suid !libcxx )
@@ -62,8 +62,9 @@ COMMON_SNAPSHOT_DEPEND="
 		dev-libs/glib:2
 		>=media-libs/alsa-lib-1.0.19:=
 		pulseaudio? ( media-sound/pulseaudio:= )
+		sys-apps/pciutils:=
 		kerberos? ( virtual/krb5 )
-		vaapi? ( >=x11-libs/libva-2.7:=[X,drm] )
+		vaapi? ( >=x11-libs/libva-2.7:=[X] )
 		x11-libs/libX11:=
 		x11-libs/libXext:=
 		x11-libs/libxcb:=
@@ -97,7 +98,6 @@ COMMON_DEPEND="
 		>=app-accessibility/at-spi2-core-2.26:2
 		>=dev-libs/atk-2.26
 		cups? ( >=net-print/cups-1.3.11:= )
-		sys-apps/pciutils:=
 		virtual/udev
 		x11-libs/cairo:=
 		x11-libs/pango:=
@@ -245,8 +245,9 @@ src_prepare() {
 		"${FILESDIR}/chromium-93-InkDropHost-crash.patch"
 		"${FILESDIR}/chromium-97-arm-tflite-cast.patch"
 		"${FILESDIR}/chromium-98-EnumTable-crash.patch"
+		"${FILESDIR}/chromium-98-system-libdrm.patch"
 		"${FILESDIR}/chromium-98-gtk4-build.patch"
-		"${FILESDIR}/chromium-100-FindByDottedPath-nullptr.patch"
+		"${FILESDIR}/chromium-glibc-2.34-r1.patch"
 		"${FILESDIR}/chromium-use-oauth2-client-switches-as-default.patch"
 		"${FILESDIR}/chromium-shim_headers.patch"
 		"${FILESDIR}/chromium-cross-compile.patch"
@@ -454,6 +455,7 @@ src_prepare() {
 		third_party/swiftshader/third_party/marl
 		third_party/swiftshader/third_party/subzero
 		third_party/swiftshader/third_party/SPIRV-Headers/include/spirv/unified1
+		third_party/tcmalloc
 		third_party/tensorflow-text
 		third_party/tflite
 		third_party/tflite/src/third_party/eigen3
@@ -579,7 +581,7 @@ src_configure() {
 		tc-export BUILD_{AR,CC,CXX,NM}
 		myconf_gn+=" host_toolchain=\"//build/toolchain/linux/unbundle:host\""
 		myconf_gn+=" v8_snapshot_toolchain=\"//build/toolchain/linux/unbundle:host\""
-		myconf_gn+=" pkg_config=\"$(tc-get_PKG_CONFIG)\""
+		myconf_gn+=" pkg_config=\"$(tc-getPKG_CONFIG)\""
 		myconf_gn+=" host_pkg_config=\"$(tc-getBUILD_PKG_CONFIG)\""
 
 		# setup cups-config, build system only uses --libs option
