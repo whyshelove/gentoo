@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -13,10 +13,9 @@ CYGWINPATCHES=(
 
 DESCRIPTION="Standard (de)compression library"
 HOMEPAGE="https://zlib.net/"
-if [[ ${PV} != *8888 ]]; then
-	SRC_URI="${SRC_URI}
+
+SRC_URI="${SRC_URI}
 	elibc_Cygwin? ( ${CYGWINPATCHES[*]} )"
-fi
 
 LICENSE="ZLIB"
 SLOT="0/1" # subslot = SONAME
