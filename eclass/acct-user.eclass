@@ -1,4 +1,4 @@
-# Copyright 2019-2021 Gentoo Authors
+# Copyright 2019-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: acct-user.eclass
@@ -141,7 +141,7 @@ readonly ACCT_USER_NAME
 # << Boilerplate ebuild variables >>
 : ${DESCRIPTION:="System user: ${ACCT_USER_NAME}"}
 : ${SLOT:=0}
-: ${KEYWORDS:=alpha amd64 arm arm64 hppa ia64 m68k ~mips ppc ppc64 ~riscv s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris}
+: ${KEYWORDS:=alpha amd64 arm arm64 hppa ia64 ~loong m68k ~mips ppc ppc64 ~riscv s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris}
 S=${WORKDIR}
 
 
@@ -178,7 +178,7 @@ acct-user_add_deps() {
 eislocked() {
 	[[ $# -eq 1 ]] || die "usage: ${FUNCNAME} <user>"
 
-	if [[ ${EUID} != 0 ]]; then
+	if [[ ${EUID} -ne 0 ]]; then
 		einfo "Insufficient privileges to execute ${FUNCNAME[0]}"
 		return 0
 	fi
@@ -195,8 +195,15 @@ eislocked() {
 	*)
 		# NB: 'no password' and 'locked' are indistinguishable
 		# but we also expire the account which is more clear
-		[[ $(getent shadow "$1" | cut -d: -f2) == '!'* ]] &&
-			[[ $(getent shadow "$1" | cut -d: -f8) == 1 ]]
+		local shadow
+		if [[ -n "${ROOT}" ]]; then
+			shadow=$(grep "^$1:" "${ROOT}/etc/shadow")
+		else
+			shadow=$(getent shadow "$1")
+		fi
+
+		[[ $( echo ${shadow} | cut -d: -f2) == '!'* ]] &&
+			[[ $(echo ${shadow} | cut -d: -f8) == 1 ]]
 		;;
 	esac
 }
@@ -215,7 +222,7 @@ eislocked() {
 elockuser() {
 	[[ $# -eq 1 ]] || die "usage: ${FUNCNAME} <user>"
 
-	if [[ ${EUID} != 0 ]]; then
+	if [[ ${EUID} -ne 0 ]]; then
 		einfo "Insufficient privileges to execute ${FUNCNAME[0]}"
 		return 0
 	fi
@@ -223,14 +230,22 @@ elockuser() {
 	eislocked "$1"
 	[[ $? -eq 0 ]] && return 0
 
+	local opts
+	[[ -n ${ROOT} ]] && opts=( --prefix "${ROOT}" )
+
 	case ${CHOST} in
 	*-freebsd*|*-dragonfly*)
-		pw lock "$1" || die "Locking account $1 failed"
-		pw user mod "$1" -e 1 || die "Expiring account $1 failed"
+		pw lock "${opts[@]}" "$1" || die "Locking account $1 failed"
+		pw user mod "${opts[@]}" "$1" -e 1 || die "Expiring account $1 failed"
 		;;
 
 	*-netbsd*)
-		usermod -e 1 -C yes "$1" || die "Locking account $1 failed"
+		if [[ -n "${ROOT}" ]]; then
+			ewarn "NetBSD's usermod does not support --prefix <dir> option."
+			ewarn "Please use: usermod ${opts[@]} -e 1 -C yes \"$1\" in a chroot"
+		else
+			usermod "${opts[@]}" -e 1 -C yes "$1" || die "Locking account $1 failed"
+		fi
 		;;
 
 	*-openbsd*)
@@ -238,7 +253,7 @@ elockuser() {
 		;;
 
 	*)
-		usermod -e 1 -L "$1" || die "Locking account $1 failed"
+		usermod "${opts[@]}" -e 1 -L "$1" || die "Locking account $1 failed"
 		;;
 	esac
 
@@ -258,7 +273,7 @@ elockuser() {
 eunlockuser() {
 	[[ $# -eq 1 ]] || die "usage: ${FUNCNAME} <user>"
 
-	if [[ ${EUID} != 0 ]]; then
+	if [[ ${EUID} -ne 0 ]]; then
 		einfo "Insufficient privileges to execute ${FUNCNAME[0]}"
 		return 0
 	fi
@@ -266,14 +281,22 @@ eunlockuser() {
 	eislocked "$1"
 	[[ $? -eq 1 ]] && return 0
 
+	local opts
+	[[ -n ${ROOT} ]] && opts=( --prefix "${ROOT}" )
+
 	case ${CHOST} in
 	*-freebsd*|*-dragonfly*)
-		pw user mod "$1" -e 0 || die "Unexpiring account $1 failed"
-		pw unlock "$1" || die "Unlocking account $1 failed"
+		pw user mod "${opts[@]}" "$1" -e 0 || die "Unexpiring account $1 failed"
+		pw unlock "${opts[@]}" "$1" || die "Unlocking account $1 failed"
 		;;
 
 	*-netbsd*)
-		usermod -e 0 -C no "$1" || die "Unlocking account $1 failed"
+		if [[ -n "${ROOT}" ]]; then
+			ewarn "NetBSD's usermod does not support --prefix <dir> option."
+			ewarn "Please use: \"usermod ${opts[@]} -e 0 -C no $1\" in a chroot"
+		else
+			usermod "${opts[@]}" -e 0 -C no "$1" || die "Unlocking account $1 failed"
+		fi
 		;;
 
 	*-openbsd*)
@@ -282,7 +305,7 @@ eunlockuser() {
 
 	*)
 		# silence warning if account does not have a password
-		usermod -e "" -U "$1" 2>/dev/null || die "Unlocking account $1 failed"
+		usermod "${opts[@]}" -e "" -U "$1" 2>/dev/null || die "Unlocking account $1 failed"
 		;;
 	esac
 
@@ -418,7 +441,13 @@ acct-user_pkg_preinst() {
 		# default ownership to user:group
 		if [[ -z ${_ACCT_USER_HOME_OWNER} ]]; then
 			local group_array=( ${_ACCT_USER_GROUPS} )
-			_ACCT_USER_HOME_OWNER=${ACCT_USER_NAME}:${group_array[0]}
+			if [[ -n "${ROOT}" ]]; then
+				local euid=$(egetent passwd ${ACCT_USER_NAME} | cut -d: -f3)
+				local egid=$(egetent passwd ${ACCT_USER_NAME} | cut -d: -f4)
+				_ACCT_USER_HOME_OWNER=${euid}:${egid}
+			else
+				_ACCT_USER_HOME_OWNER=${ACCT_USER_NAME}:${group_array[0]}
+			fi
 		fi
 		# Path might be missing due to INSTALL_MASK, etc.
 		# https://bugs.gentoo.org/691478
@@ -440,7 +469,7 @@ acct-user_pkg_preinst() {
 acct-user_pkg_postinst() {
 	debug-print-function ${FUNCNAME} "${@}"
 
-	if [[ ${EUID} != 0 ]]; then
+	if [[ ${EUID} -ne 0 ]]; then
 		einfo "Insufficient privileges to execute ${FUNCNAME[0]}"
 		return 0
 	fi
@@ -468,8 +497,13 @@ acct-user_pkg_postinst() {
 acct-user_pkg_prerm() {
 	debug-print-function ${FUNCNAME} "${@}"
 
-	if [[ ${EUID} != 0 ]]; then
+	if [[ ${EUID} -ne 0 ]]; then
 		einfo "Insufficient privileges to execute ${FUNCNAME[0]}"
+		return 0
+	fi
+
+	if [[ ${ACCT_USER_ID} -eq 0 ]]; then
+		elog "Refusing to lock out the superuser (UID 0)"
 		return 0
 	fi
 

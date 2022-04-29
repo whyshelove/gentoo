@@ -13,7 +13,7 @@ AUTOTOOLS_AUTO_DEPEND="no"
 DOCS_BUILDER="sphinx"
 DOCS_DIR="docs"
 PYTHON_COMPAT=( python3_{9,10} )
-inherit autotools cmake optfeature python-single-r1 docs xdg
+inherit autotools cmake optfeature python-single-r1 docs qmake-utils xdg
 
 DESCRIPTION="A stand-alone graphics debugging tool"
 HOMEPAGE="https://renderdoc.org https://github.com/baldurk/renderdoc"
@@ -38,7 +38,7 @@ SRC_URI="
 # swig: GPL-3+ BSD BSD-2
 LICENSE="BSD BSD-2 CC-BY-3.0 GPL-3+ MIT OFL-1.1 public-domain ZLIB"
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="amd64"
 IUSE="pyside2 qt5"
 REQUIRED_USE="doc? ( qt5 ) pyside2? ( qt5 ) qt5? ( ${PYTHON_REQUIRED_USE} )"
 
@@ -167,6 +167,10 @@ src_configure() {
 	use qt5 && mycmakeargs+=(
 		-DPython3_EXECUTABLE="${PYTHON}"
 		-DRENDERDOC_SWIG_PACKAGE="${DISTDIR}"/${MY_SWIG}.tar.gz
+
+		# Needed after qtchooser removal, bug #836474.
+		-DQMAKE_QT5_COMMAND="$(qt5_get_bindir)"/qmake
+
 		-DQRENDERDOC_ENABLE_PYSIDE2=$(usex pyside2)
 	)
 

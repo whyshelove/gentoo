@@ -15,7 +15,7 @@ SRC_URI="https://github.com/kevin1024/pytest-httpbin/archive/v${PV}.tar.gz -> ${
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~x64-macos"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~x64-macos"
 
 RDEPEND="
 	dev-python/httpbin[${PYTHON_USEDEP}]
@@ -29,6 +29,10 @@ BDEPEND="
 
 PATCHES=(
 	"${FILESDIR}"/pytest-httpbin-1.0.0-pypy3-hang.patch
+)
+
+EPYTEST_DESELECT=(
+	tests/test_server.py::test_redirect_location_is_https_for_secure_server
 )
 
 distutils_enable_tests pytest

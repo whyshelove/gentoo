@@ -3,7 +3,7 @@
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8,9} )
+PYTHON_COMPAT=( python3_{8..10} )
 
 inherit check-reqs cmake optfeature python-single-r1 xdg
 
@@ -29,10 +29,9 @@ fi
 # examples are licensed CC-BY-SA (without note of specific version)
 LICENSE="LGPL-2 CC-BY-SA-4.0"
 SLOT="0"
-IUSE="debug headless pcl test"
-RESTRICT="!test? ( test )"
+IUSE="debug designer headless test"
 
-FREECAD_EXPERIMENTAL_MODULES="cloud plot ship"
+FREECAD_EXPERIMENTAL_MODULES="cloud pcl plot ship"
 FREECAD_STABLE_MODULES="addonmgr fem idf image inspection material
 	openscad part-design path points raytracing robot show surface
 	techdraw tux"
@@ -44,6 +43,8 @@ for module in ${FREECAD_EXPERIMENTAL_MODULES}; do
 	IUSE="${IUSE} ${module}"
 done
 unset module
+
+RESTRICT="!test? ( test )"
 
 RDEPEND="
 	${PYTHON_DEPS}
@@ -134,7 +135,7 @@ CHECKREQS_DISK_BUILD="2G"
 pkg_setup() {
 	check-reqs_pkg_setup
 	python-single-r1_pkg_setup
-	[[ -z ${CASROOT} ]] && die "\${CASROOT} not set, plesae run eselect opencascade"
+	[[ -z ${CASROOT} ]] && die "\${CASROOT} not set, please run eselect opencascade"
 }
 
 src_prepare() {
@@ -156,6 +157,7 @@ src_configure() {
 		-DBUILD_CLOUD=$(usex cloud)
 		-DBUILD_COMPLETE=OFF					# deprecated
 		-DBUILD_DRAFT=ON
+		-DBUILD_DESIGNER_PLUGIN=$(usex designer)
 		-DBUILD_DRAWING=ON
 		-DBUILD_ENABLE_CXX_STD:STRING="C++17"	# needed for current git master
 		-DBUILD_FEM=$(usex fem)

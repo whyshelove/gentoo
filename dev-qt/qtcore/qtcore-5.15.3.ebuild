@@ -11,7 +11,7 @@ DESCRIPTION="Cross-platform application development framework"
 SLOT=5/${QT5_PV}
 
 if [[ ${QT5_BUILD_TYPE} == release ]]; then
-	KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~ppc ~ppc64 ~riscv ~sparc ~x86"
+	KEYWORDS="amd64 arm arm64 ~hppa ppc ppc64 ~riscv ~sparc x86"
 fi
 
 IUSE="icu old-kernel systemd"
@@ -41,6 +41,10 @@ QT5_GENTOO_PRIVATE_CONFIG=(
 	!:sql
 	!:testlib
 	!:xml
+)
+
+PATCHES=(
+	"${FILESDIR}"/${PN}-5.15.3-pthread.patch # bug 803470
 )
 
 pkg_pretend() {

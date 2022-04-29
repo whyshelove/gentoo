@@ -13,7 +13,7 @@ SRC_URI="https://github.com/SSSD/sssd/releases/download/${PV}/${P}.tar.gz"
 
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
+KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86"
 IUSE="acl doc +locator +netlink nfsv4 nls +man pac python samba selinux sudo systemd systemtap test valgrind"
 REQUIRED_USE="
 	pac? ( samba )
@@ -45,12 +45,7 @@ DEPEND="
 	acl? ( net-fs/cifs-utils[acl] )
 	locator? ( >=net-dns/c-ares-1.10.0-r1:=[${MULTILIB_USEDEP}] )
 	netlink? ( dev-libs/libnl:3 )
-	nfsv4? (
-		|| (
-			>=net-fs/nfs-utils-2.3.1-r2
-			net-libs/libnfsidmap
-		)
-	)
+	nfsv4? ( >=net-fs/nfs-utils-2.3.1-r2 )
 	pac? ( net-fs/samba )
 	python? ( ${PYTHON_DEPS} )
 	samba? ( >=net-fs/samba-4.10.2[winbind] )

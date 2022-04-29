@@ -300,15 +300,10 @@ llvm.org_src_unpack() {
 		grep -E -r -L "^Gentoo-Component:.*(${components[*]})" \
 			"${WORKDIR}/llvm-gentoo-patchset-${LLVM_PATCHSET}" |
 			xargs rm
-		assert
-
-		if ver_test -ge 13.0.1_rc3; then
-			# fail if no patches remain
-			if [[ ! -s ${WORKDIR}/llvm-gentoo-patchset-${LLVM_PATCHSET} ]]
-			then
-				die "No patches in the patchset apply to the package"
-			fi
-		fi
+		local status=( "${PIPESTATUS[@]}" )
+		[[ ${status[1]} -ne 0 ]] && die "rm failed"
+		[[ ${status[0]} -ne 0 ]] &&
+			die "No patches in the patchset apply to the package"
 	fi
 }
 
@@ -326,17 +321,19 @@ llvm.org_src_prepare() {
 		)
 	fi
 
+	pushd "${WORKDIR}" >/dev/null || die
 	if declare -f cmake_src_prepare >/dev/null; then
-		# cmake eclasses force ${S} for default_src_prepare
-		# but use ${CMAKE_USE_DIR} for everything else
-		CMAKE_USE_DIR=${S} \
-		S=${WORKDIR} \
+		CMAKE_USE_DIR=${S}
+		if [[ ${EAPI} == 7 ]]; then
+			# cmake eclasses force ${S} for default_src_prepare in EAPI 7
+			# but use ${CMAKE_USE_DIR} for everything else
+			local S=${WORKDIR}
+		fi
 		cmake_src_prepare
 	else
-		pushd "${WORKDIR}" >/dev/null || die
 		default_src_prepare
-		popd >/dev/null || die
 	fi
+	popd >/dev/null || die
 }
 
 
