@@ -5,7 +5,7 @@ EAPI=7
 
 MODULES_OPTIONAL_USE="driver"
 inherit desktop flag-o-matic linux-mod multilib readme.gentoo-r1 \
-	systemd toolchain-funcs unpacker
+	systemd toolchain-funcs unpacker user-info
 
 NV_KERNEL_MAX="5.15"
 NV_URI="https://download.nvidia.com/XFree86/"
@@ -23,7 +23,7 @@ S="${WORKDIR}"
 LICENSE="NVIDIA-r2 BSD BSD-2 GPL-2 MIT"
 SLOT="0/${PV%%.*}"
 KEYWORDS="-* amd64 x86"
-IUSE="+X abi_x86_32 abi_x86_64 +driver persistenced static-libs +tools"
+IUSE="+X abi_x86_32 abi_x86_64 +driver persistenced +static-libs +tools"
 
 COMMON_DEPEND="
 	acct-group/video
@@ -132,7 +132,8 @@ pkg_setup() {
 		ewarn "  <=sys-kernel/gentoo-kernel-${NV_KERNEL_MAX}.x"
 		ewarn "  <=sys-kernel/gentoo-sources-${NV_KERNEL_MAX}.x"
 		ewarn "You are free to try or use /etc/portage/patches, but support will"
-		ewarn "not be given and issues wait until NVIDIA releases a fixed version."
+		ewarn "not be given and issues wait until NVIDIA releases a fixed version"
+		ewarn "(Gentoo will not accept patches for this)."
 		ewarn
 		ewarn "Do _not_ file a bug report if run into issues."
 		ewarn
@@ -397,8 +398,8 @@ pkg_preinst() {
 	linux-mod_pkg_preinst
 
 	# set video group id based on live system (bug #491414)
-	local g=$(getent group video | cut -d: -f3)
-	[[ ${g} ]] || die "Failed to determine video group id"
+	local g=$(egetent group video | cut -d: -f3)
+	[[ ${g} =~ ^[0-9]+$ ]] || die "Failed to determine video group id (got '${g}')"
 	sed -i "s/@VIDEOGID@/${g}/" "${ED}"/etc/modprobe.d/nvidia.conf || die
 }
 

@@ -85,7 +85,7 @@ user_get_nologin() {
 # If -M is passed, enewuser does not create the home directory if it does not
 # exist.
 enewuser() {
-	if [[ ${EUID} != 0 ]] ; then
+	if [[ ${EUID} -ne 0 ]] ; then
 		ewarn "Insufficient privileges to execute ${FUNCNAME[0]}"
 		return 0
 	fi
@@ -116,6 +116,9 @@ enewuser() {
 
 	# options to pass to useradd
 	local opts=()
+
+	# handle for ROOT != /
+	[[ -n ${ROOT} ]] && opts+=( --prefix "${ROOT}" )
 
 	# handle uid
 	local euid=${1}; shift
@@ -207,13 +210,24 @@ enewuser() {
 		;;
 
 	*-netbsd*)
-		useradd "${opts[@]}" "${euser}" || die
+		if [[ -n "${ROOT}" ]]; then
+			ewarn "NetBSD's usermod does not support --prefix option."
+			ewarn "Please use: \"useradd ${opts[@]} ${euser}\" in a chroot"
+		else
+			useradd "${opts[@]}" "${euser}" || die
+		fi
 		;;
 
 	*-openbsd*)
-		# all ops the same, except the -g vs -g/-G ...
-		useradd -u ${euid} -s "${eshell}" \
-			-d "${ehome}" -g "${egroups}" "${euser}" || die
+		if [[ -n "${ROOT}" ]]; then
+			ewarn "OpenBSD's usermod does not support --prefix option."
+			ewarn "Please use: \"useradd ${opts[@]} ${euser}\" in a chroot"
+		else
+			# all ops the same, except the -g vs -g/-G ...
+			useradd -u ${euid} -s "${eshell}" \
+				-d "${ehome}" -g "${egroups}" "${euser}" || die
+		fi
+
 		;;
 
 	*)
@@ -224,6 +238,10 @@ enewuser() {
 	if [[ -n ${create_home} && ! -e ${ROOT}/${ehome} ]] ; then
 		elog " - Creating ${ehome} in ${ROOT}"
 		mkdir -p "${ROOT}/${ehome}"
+		# Use UID if we are in another ROOT than /
+		if [[ -n "${ROOT}" ]]; then
+			euser=$(egetent passwd ${euser} | cut -d: -f3)
+		fi
 		chown "${euser}" "${ROOT}/${ehome}"
 		chmod 755 "${ROOT}/${ehome}"
 	fi
@@ -240,7 +258,7 @@ enewuser() {
 # If -F is passed, enewgroup will always enforce specified GID and fail if it
 # can not be assigned.
 enewgroup() {
-	if [[ ${EUID} != 0 ]] ; then
+	if [[ ${EUID} -ne 0 ]] ; then
 		ewarn "Insufficient privileges to execute ${FUNCNAME[0]}"
 		return 0
 	fi
@@ -286,6 +304,10 @@ enewgroup() {
 	fi
 	elog " - Groupid: ${egid}"
 
+	# handle different ROOT
+	local opts
+	[[ -n ${ROOT} ]] && opts=( --prefix "${ROOT}" )
+
 	# handle extra
 	if [[ $# -gt 0 ]] ; then
 		die "extra arguments no longer supported; please file a bug"
@@ -306,24 +328,29 @@ enewgroup() {
 	case ${CHOST} in
 	*-freebsd*|*-dragonfly*)
 		_enewgroup_next_gid
-		pw groupadd "${egroup}" -g ${egid} || die
+		pw groupadd "${opts[@]}" "${egroup}" -g ${egid} || die
 		;;
 
 	*-netbsd*)
-		_enewgroup_next_gid
-		groupadd -g ${egid} "${egroup}" || die
+		if [[ -n "${ROOT}" ]]; then
+			ewarn "NetBSD's usermod does not support --prefix <dir> option."
+			ewarn "Please use: \"groupadd -g ${egid} ${opts[@]} ${egroup}\" in a chroot"
+		else
+			_enewgroup_next_gid
+			groupadd -g ${egid} "${opts[@]}" "${egroup}" || die
+		fi
 		;;
 
 	*)
-		local opts
 		if [[ ${egid} == *[!0-9]* ]] ; then
 			# Non numeric; let groupadd figure out a GID for us
-			opts=""
+			#
+			true # Do nothing but keep the previous comment.
 		else
-			opts="-g ${egid}"
+			opts+=( -g ${egid} )
 		fi
 		# We specify -r so that we get a GID in the system range from login.defs
-		groupadd -r ${opts} "${egroup}" || die
+		groupadd -r "${opts[@]}" "${egroup}" || die
 		;;
 	esac
 }
@@ -352,6 +379,10 @@ esethome() {
 		ewarn "User does not exist, cannot set home dir -- skipping."
 		return 1
 	fi
+
+	# Handle different ROOT
+	local opts
+	[[ -n ${ROOT} ]] && opts=( --prefix "${ROOT}" )
 
 	# handle homedir
 	local ehome=${1}; shift
@@ -383,15 +414,28 @@ esethome() {
 	# update the home directory
 	case ${CHOST} in
 	*-freebsd*|*-dragonfly*)
-		pw usermod "${euser}" -d "${ehome}" && return 0
+		pw usermod "${opts[@]}" "${euser}" -d "${ehome}" && return 0
 		[[ $? == 8 ]] && eerror "${euser} is in use, cannot update home"
 		eerror "There was an error when attempting to update the home directory for ${euser}"
 		eerror "Please update it manually on your system:"
 		eerror "\t pw usermod \"${euser}\" -d \"${ehome}\""
 		;;
 
+	*-netbsd*)
+		if [[ -n "${ROOT}" ]]; then
+			ewarn "NetBSD's usermod does not support --prefix <dir> option."
+			ewarn "Please use: \"usermod ${opts[@]} -d ${ehome} ${euser}\" in a chroot"
+		else
+			usermod "${opts[@]}" -d "${ehome}" "${euser}" && return 0
+			[[ $? == 8 ]] && eerror "${euser} is in use, cannot update home"
+			eerror "There was an error when attempting to update the home directory for ${euser}"
+			eerror "Please update it manually on your system (as root):"
+			eerror "\t usermod -d \"${ehome}\" \"${euser}\""
+		fi
+		;;
+
 	*)
-		usermod -d "${ehome}" "${euser}" && return 0
+		usermod "${opts[@]}" -d "${ehome}" "${euser}" && return 0
 		[[ $? == 8 ]] && eerror "${euser} is in use, cannot update home"
 		eerror "There was an error when attempting to update the home directory for ${euser}"
 		eerror "Please update it manually on your system (as root):"
@@ -422,6 +466,10 @@ esetshell() {
 		return 1
 	fi
 
+	# Handle different ROOT
+	local opts
+	[[ -n ${ROOT} ]] && opts=( --prefix "${ROOT}" )
+
 	# handle shell
 	local eshell=${1}; shift
 	if [[ -z ${eshell} ]] ; then
@@ -444,15 +492,28 @@ esetshell() {
 	# update the shell
 	case ${CHOST} in
 	*-freebsd*|*-dragonfly*)
-		pw usermod "${euser}" -s "${eshell}" && return 0
+		pw usermod "${opts[@]}" "${euser}" -s "${eshell}" && return 0
 		[[ $? == 8 ]] && eerror "${euser} is in use, cannot update shell"
 		eerror "There was an error when attempting to update the shell for ${euser}"
 		eerror "Please update it manually on your system:"
 		eerror "\t pw usermod \"${euser}\" -s \"${eshell}\""
 		;;
 
+	*-netbsd*)
+		if [[ -n "${ROOT}" ]]; then
+			ewarn "NetBSD's usermod does not support --prefix <dir> option."
+			ewarn "Please use: \"usermod ${opts[@]} -s ${eshell} ${euser}\" in a chroot"
+		else
+			usermod "${opts[@]}" -s "${eshell}" "${euser}" && return 0
+			[[ $? == 8 ]] && eerror "${euser} is in use, cannot update shell"
+			eerror "There was an error when attempting to update the shell for ${euser}"
+			eerror "Please update it manually on your system (as root):"
+			eerror "\t usermod -s \"${eshell}\" \"${euser}\""
+		fi
+		;;
+
 	*)
-		usermod -s "${eshell}" "${euser}" && return 0
+		usermod "${opts[@]}" -s "${eshell}" "${euser}" && return 0
 		[[ $? == 8 ]] && eerror "${euser} is in use, cannot update shell"
 		eerror "There was an error when attempting to update the shell for ${euser}"
 		eerror "Please update it manually on your system (as root):"
@@ -482,6 +543,10 @@ esetcomment() {
 		return 1
 	fi
 
+	# Handle different ROOT
+	local opts
+	[[ -n ${ROOT} ]] && opts=( --prefix "${ROOT}" )
+
 	# handle comment
 	local ecomment=${1}; shift
 	if [[ -z ${ecomment} ]] ; then
@@ -500,15 +565,28 @@ esetcomment() {
 	# update the comment
 	case ${CHOST} in
 	*-freebsd*|*-dragonfly*)
-		pw usermod "${euser}" -c "${ecomment}" && return 0
+		pw usermod "${opts[@]}" "${euser}" -c "${ecomment}" && return 0
 		[[ $? == 8 ]] && eerror "${euser} is in use, cannot update comment"
 		eerror "There was an error when attempting to update the comment for ${euser}"
 		eerror "Please update it manually on your system:"
 		eerror "\t pw usermod \"${euser}\" -c \"${ecomment}\""
 		;;
 
+	*-netbsd*)
+		if [[ -n "${ROOT}" ]]; then
+			ewarn "NetBSD's usermod does not support --prefix <dir> option."
+			ewarn "Please use: \"usermod ${opts[@]} -c ${ecomment} ${euser}\" in a chroot"
+		else
+			usermod "${opts[@]}" -c "${ecomment}" "${euser}" && return 0
+			[[ $? == 8 ]] && eerror "${euser} is in use, cannot update shell"
+			eerror "There was an error when attempting to update the shell for ${euser}"
+			eerror "Please update it manually on your system (as root):"
+			eerror "\t usermod -s \"${eshell}\" \"${euser}\""
+		fi
+		;;
+
 	*)
-		usermod -c "${ecomment}" "${euser}" && return 0
+		usermod "${opts[@]}" -c "${ecomment}" "${euser}" && return 0
 		[[ $? == 8 ]] && eerror "${euser} is in use, cannot update comment"
 		eerror "There was an error when attempting to update the comment for ${euser}"
 		eerror "Please update it manually on your system (as root):"
@@ -567,6 +645,9 @@ esetgroups() {
 	elog "Updating groups for user '${euser}' ..."
 	elog " - Groups: ${egroups}"
 
+	# Handle different ROOT
+	[[ -n ${ROOT} ]] && opts+=( --prefix "${ROOT}" )
+
 	# update the group
 	case ${CHOST} in
 	*-freebsd*|*-dragonfly*)
@@ -575,6 +656,19 @@ esetgroups() {
 		eerror "There was an error when attempting to update the groups for ${euser}"
 		eerror "Please update it manually on your system:"
 		eerror "\t pw usermod \"${euser}\" ${opts[*]}"
+		;;
+
+	*-netbsd*)
+		if [[ -n "${ROOT}" ]]; then
+			ewarn "NetBSD's usermod does not support --prefix <dir> option."
+			ewarn "Please use: \"usermod ${opts[@]} ${euser}\" in a chroot"
+		else
+			usermod "${opts[@]}" "${euser}" && return 0
+			[[ $? == 8 ]] && eerror "${euser} is in use, cannot update shell"
+			eerror "There was an error when attempting to update the shell for ${euser}"
+			eerror "Please update it manually on your system (as root):"
+			eerror "\t usermod -s \"${eshell}\" \"${euser}\""
+		fi
 		;;
 
 	*)

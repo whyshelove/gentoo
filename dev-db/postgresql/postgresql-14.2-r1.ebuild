@@ -7,7 +7,7 @@ PYTHON_COMPAT=( python3_{8,9,10} )
 
 inherit flag-o-matic linux-info multilib pam prefix python-single-r1 systemd tmpfiles
 
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 
 SLOT=$(ver_cut 1)
 
@@ -100,7 +100,7 @@ src_prepare() {
 	sed 's/@install_bin@/install -c/' -i src/Makefile.global.in || die
 
 	use server || eapply "${FILESDIR}/${PN}-14_rc1-no-server.patch"
-	use server && eapply "${FILESDIR}/postgres-llvm14.patch"
+	use llvm && eapply "${FILESDIR}/postgres-llvm14.patch"
 
 	if use pam ; then
 		sed "s/\(#define PGSQL_PAM_SERVICE \"postgresql\)/\1-${SLOT}/" \

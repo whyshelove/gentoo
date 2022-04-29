@@ -430,6 +430,9 @@ setup_flags() {
 	replace-flags -O0 -O1
 
 	filter-flags '-fstack-protector*'
+
+	# See end of bug #830454; we handle this via USE=cet
+	filter-flags '-fcf-protection='
 }
 
 use_multiarch() {
@@ -990,11 +993,6 @@ glibc_do_configure() {
 	# since the glibc build will re-run configure on itself
 	export libc_cv_rootsbindir="$(host_eprefix)/sbin"
 	export libc_cv_slibdir="$(host_eprefix)/$(get_libdir)"
-
-	# We take care of patching our binutils to use both hash styles,
-	# and many people like to force gnu hash style only, so disable
-	# this overriding check.  #347761
-	export libc_cv_hashstyle=no
 
 	local builddir=$(builddir nptl)
 	mkdir -p "${builddir}"

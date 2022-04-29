@@ -16,7 +16,7 @@ SRC_URI="https://archive.apache.org/dist/pdfbox/${PV}/${MY_P}-src.zip -> ${P}.zi
 
 LICENSE="BSD"
 SLOT="1.7"
-KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86 ~x64-macos"
+KEYWORDS="~amd64 ~arm64 ppc64 ~x86 ~x64-macos"
 
 RDEPEND="
 	>=virtual/jre-1.8:*"
@@ -42,6 +42,14 @@ src_prepare() {
 }
 
 src_test() {
+	# junit.framework.AssertionFailedError:
+	# No tests found in org.apache.fontbox.cff.Type1CharStringTest
+	rm src/test/java/org/apache/fontbox/cff/Type1CharStringTest.java || die
+
+	# junit.framework.AssertionFailedError:
+	# No tests found in org.apache.fontbox.cff.Type1FontUtilTest
+	rm src/test/java/org/apache/fontbox/cff/Type1FontUtilTest.java || die
+
 	java-pkg-2_src_test
 }
 

@@ -1,7 +1,7 @@
 # Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 PYTHON_COMPAT=( python3_{8..10} )
 
@@ -74,7 +74,7 @@ COMMONDEPEND="
 		appindicator? ( dev-libs/libindicate:3[gtk] )
 		libcanberra? (
 			!gtk2? ( media-libs/libcanberra[gtk3] )
-			gtk2? ( media-libs/libcanberra[gtk] )
+			gtk2? ( media-libs/libcanberra[gtk2] )
 		)
 		libnotify? ( x11-libs/libnotify )
 	)
@@ -124,7 +124,7 @@ pkg_setup() {
 }
 
 src_prepare() {
-	xdg_src_prepare
+	default
 	eautoreconf
 }
 

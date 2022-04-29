@@ -18,7 +18,7 @@ HOMEPAGE="https://github.com/petergoldstein/dalli"
 SRC_URI="https://github.com/petergoldstein/dalli/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~ppc ~ppc64 ~riscv ~x86"
+KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~ppc ~ppc64 ~riscv ~s390 ~x86"
 IUSE=""
 
 DEPEND+="${DEPEND} test? ( >=net-misc/memcached-1.5.4[ssl(-)] )"
@@ -35,4 +35,6 @@ all_ruby_prepare() {
 
 	sed -i -e '3igem "minitest", "~> 5.0"; require "dalli"' \
 		-e '/bundler/ s:^:#:' test/helper.rb || die
+
+	sed -i -e "s:/tmp:${T}:" test/utils/certificate_generator.rb || die
 }

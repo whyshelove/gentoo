@@ -14,7 +14,7 @@ if [[ ${PV} == *9999* ]]; then
 	inherit git-r3
 else
 	SRC_URI="https://github.com/KhronosGroup/${MY_PN}/archive/sdk-${PV}.0.tar.gz -> ${P}.tar.gz"
-	KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~riscv ~x86"
+	KEYWORDS="amd64 arm arm64 ppc ppc64 ~riscv x86"
 	S="${WORKDIR}"/${MY_PN}-sdk-${PV}.0
 fi
 
@@ -54,7 +54,6 @@ multilib_src_configure() {
 		-DBUILD_WSI_XCB_SUPPORT=$(usex X)
 		-DBUILD_WSI_XLIB_SUPPORT=$(usex X)
 		-DBUILD_TESTS=OFF
-		-DGLSLANG_INSTALL_DIR="${ESYSROOT}/usr"
 		-DCMAKE_INSTALL_INCLUDEDIR="${EPREFIX}/usr/include/"
 	)
 	cmake_src_configure

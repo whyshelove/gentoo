@@ -10,7 +10,7 @@ inherit autotools linux-info multilib-minimal python-single-r1 pam systemd toolc
 DESCRIPTION="System Security Services Daemon provides access to identity and authentication"
 HOMEPAGE="https://github.com/SSSD/sssd"
 SRC_URI="https://github.com/SSSD/sssd/releases/download/${PN}-${PV//./_}/${P}.tar.gz"
-KEYWORDS="amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sparc x86"
+KEYWORDS="amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~sparc x86"
 
 LICENSE="GPL-3"
 SLOT="0"
@@ -46,7 +46,7 @@ DEPEND="
 	)
 	acl? ( net-fs/cifs-utils[acl] )
 	netlink? ( dev-libs/libnl:3 )
-	nfsv4? ( || ( >=net-fs/nfs-utils-2.3.1-r2 net-libs/libnfsidmap ) )
+	nfsv4? ( >=net-fs/nfs-utils-2.3.1-r2 )
 	nls? ( >=sys-devel/gettext-0.18 )
 	pac? (
 		app-crypt/mit-krb5[${MULTILIB_USEDEP}]
