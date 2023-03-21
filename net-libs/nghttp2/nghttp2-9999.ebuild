@@ -1,26 +1,18 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
-
-# TODO: Add python support.
 
 EAPI=8
 
-inherit multilib-minimal
-
-if [[ ${PV} == 9999 ]] ; then
-	EGIT_REPO_URI="https://github.com/nghttp2/nghttp2.git"
-	inherit autotools git-r3
-else
-	SRC_URI="https://github.com/nghttp2/nghttp2/releases/download/v${PV}/${P}.tar.xz"
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-fi
+inherit cmake-multilib git-r3
 
 DESCRIPTION="HTTP/2 C Library"
 HOMEPAGE="https://nghttp2.org/"
+EGIT_REPO_URI="https://github.com/nghttp2/nghttp2.git"
 
 LICENSE="MIT"
-SLOT="0/1.14" # <C++>.<C> SONAMEs
-IUSE="cxx debug hpack-tools jemalloc static-libs test +threads utils xml"
+SLOT="0/1.14" # 1.<SONAME>
+KEYWORDS=""
+IUSE="debug hpack-tools jemalloc static-libs systemd test utils xml"
 
 RESTRICT="!test? ( test )"
 
@@ -28,10 +20,6 @@ SSL_DEPEND="
 	>=dev-libs/openssl-1.0.2:0=[-bindist(-),${MULTILIB_USEDEP}]
 "
 RDEPEND="
-	cxx? (
-		${SSL_DEPEND}
-		dev-libs/boost:=[${MULTILIB_USEDEP},threads(+)]
-	)
 	hpack-tools? ( >=dev-libs/jansson-2.5:= )
 	jemalloc? ( dev-libs/jemalloc:=[${MULTILIB_USEDEP}] )
 	utils? (
@@ -40,37 +28,31 @@ RDEPEND="
 		>=sys-libs/zlib-1.2.3[${MULTILIB_USEDEP}]
 		net-dns/c-ares:=[${MULTILIB_USEDEP}]
 	)
+	systemd? ( >=sys-apps/systemd-209 )
 	xml? ( >=dev-libs/libxml2-2.7.7:2[${MULTILIB_USEDEP}] )"
 DEPEND="${RDEPEND}
 	test? ( >=dev-util/cunit-2.1[${MULTILIB_USEDEP}] )"
 BDEPEND="virtual/pkgconfig"
 
-src_prepare() {
-	default
-	[[ ${PV} == 9999 ]] && eautoreconf
-}
-
 multilib_src_configure() {
-	local myeconfargs=(
-		--disable-examples
-		--disable-failmalloc
-		--disable-python-bindings
-		--disable-werror
-		--without-cython
-		$(use_enable cxx asio-lib)
-		$(use_enable debug)
-		$(multilib_native_use_enable hpack-tools)
-		$(use_enable static-libs static)
-		$(use_enable threads)
-		$(multilib_native_use_enable utils app)
-		$(multilib_native_use_with jemalloc)
-		$(multilib_native_use_with xml libxml2)
+	local mycmakeargs=(
+		-DENABLE_EXAMPLES=OFF
+		-DENABLE_FAILMALLOC=OFF
+		-DENABLE_WERROR=OFF
+		-DENABLE_THREADS=ON
+		-DENABLE_DEBUG=$(usex debug)
+		-DENABLE_HPACK_TOOLS=$(multilib_native_usex hpack-tools)
+		$(cmake_use_find_package hpack-tools Jansson)
+		-DWITH_JEMALLOC=$(multilib_native_usex jemalloc)
+		-DENABLE_STATIC_LIB=$(usex static-libs)
+		$(cmake_use_find_package systemd Systemd)
+		$(cmake_use_find_package test CUnit)
+		-DENABLE_APP=$(multilib_native_usex utils)
+		-DWITH_LIBXML2=$(multilib_native_usex xml)
 	)
-	ECONF_SOURCE="${S}" econf "${myeconfargs[@]}"
+	cmake_src_configure
 }
 
-multilib_src_install_all() {
-	if ! use static-libs ; then
-		find "${ED}"/usr -type f -name '*.la' -delete || die
-	fi
+multilib_src_test() {
+	eninja check
 }

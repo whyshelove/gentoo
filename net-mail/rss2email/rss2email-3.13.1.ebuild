@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..10} )
 
 inherit distutils-r1
 
@@ -13,7 +13,7 @@ SRC_URI="https://github.com/rss2email/rss2email/archive/v${PV}.tar.gz -> ${P}.ta
 
 LICENSE="|| ( GPL-2 GPL-3 )"
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="amd64 ~ppc64 x86"
 
 RDEPEND=">=dev-python/feedparser-6.0.5[${PYTHON_USEDEP}]
 	>=dev-python/html2text-2020.1.16[${PYTHON_USEDEP}]

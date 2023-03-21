@@ -1,8 +1,8 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-PYTHON_COMPAT=( python3_{7..9} )
+PYTHON_COMPAT=( python3_9 )
 
 inherit distutils-r1
 
@@ -34,7 +34,7 @@ src_compile() {
 }
 
 python_test() {
-	PYTHONPATH="$(ls -d ${BUILD_DIR}/lib*)" unit2 discover -s ephem
+	PYTHONPATH="$(ls -d "${BUILD_DIR}"/lib*)" unit2 discover -s ephem
 }
 
 src_install() {

@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7..10} )
+PYTHON_COMPAT=( python3_{9..10} )
 
 inherit autotools elisp-common python-single-r1 tmpfiles systemd
 
@@ -13,9 +13,9 @@ SRC_URI="https://download.gluster.org/pub/gluster/${PN}/$(ver_cut 1)/${PV}/${P}.
 
 LICENSE="|| ( GPL-2 LGPL-3+ )"
 SLOT="0/${PV%%.*}"
-KEYWORDS="amd64 ~arm ~arm64 ~ppc ppc64 ~riscv x86"
+KEYWORDS="amd64 ~arm ~arm64 ~loong ~ppc ppc64 ~riscv x86"
 
-IUSE="debug emacs +fuse +georeplication ipv6 +libtirpc rsyslog static-libs tcmalloc test +xml"
+IUSE="debug emacs +fuse +georeplication ipv6 +libtirpc rsyslog selinux static-libs tcmalloc test +xml"
 
 REQUIRED_USE="georeplication? ( ${PYTHON_REQUIRED_USE} xml )
 	ipv6? ( libtirpc )"
@@ -40,6 +40,7 @@ RDEPEND="
 	georeplication? ( ${PYTHON_DEPS} )
 	libtirpc? ( net-libs/libtirpc:= )
 	!libtirpc? ( elibc_glibc? ( sys-libs/glibc[rpc(-)] ) )
+	selinux? ( sec-policy/selinux-glusterfs )
 	tcmalloc? ( dev-util/google-perftools )
 	xml? ( dev-libs/libxml2 )
 "

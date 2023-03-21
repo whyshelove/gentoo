@@ -1,19 +1,23 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..11} )
 PYTHON_REQ_USE="sqlite"  # bug 572440
-WX_GTK_VER="3.0-gtk3"
 
-inherit autotools desktop python-single-r1 toolchain-funcs wxwidgets xdg
+inherit desktop python-single-r1 toolchain-funcs xdg
 
 DESCRIPTION="A free GIS with raster and vector functionality, as well as 3D vizualization"
 HOMEPAGE="https://grass.osgeo.org/"
 
 LICENSE="GPL-2"
-SLOT="0/8.1"
+
+if [[ ${PV} =~ "9999" ]]; then
+	SLOT="0/8.3"
+else
+	SLOT="0/$(ver_cut 1-2 ${PV})"
+fi
 
 GVERSION=${SLOT#*/}
 MY_PM="${PN}${GVERSION}"
@@ -26,13 +30,13 @@ else
 	MY_P="${P/_rc/RC}"
 	SRC_URI="https://grass.osgeo.org/${MY_PM}/source/${MY_P}.tar.gz"
 	if [[ ${PV} != *_rc* ]] ; then
-		KEYWORDS="~amd64 ~ppc ~x86"
+		KEYWORDS="~amd64 ~x86"
 	fi
 
 	S="${WORKDIR}/${MY_P}"
 fi
 
-IUSE="blas cxx fftw geos lapack liblas mysql netcdf nls odbc opencl opengl openmp png postgres readline sqlite threads tiff truetype X zstd"
+IUSE="blas bzip2 cxx fftw geos lapack las mysql netcdf nls odbc opencl opengl openmp pdal png postgres readline sqlite threads tiff truetype X zstd"
 REQUIRED_USE="
 	${PYTHON_REQUIRED_USE}
 	opengl? ( X )"
@@ -46,9 +50,8 @@ RDEPEND="
 	')
 	sci-libs/gdal:=
 	sys-libs/gdbm:=
-	sys-libs/ncurses:0=
+	sys-libs/ncurses:=
 	sci-libs/proj:=
-	sci-libs/xdrfile
 	sys-libs/zlib
 	media-libs/libglvnd
 	media-libs/glu
@@ -56,31 +59,33 @@ RDEPEND="
 		virtual/cblas[eselect-ldso(+)]
 		virtual/blas[eselect-ldso(+)]
 	)
+	bzip2? ( app-arch/bzip2:= )
 	fftw? ( sci-libs/fftw:3.0= )
 	geos? ( sci-libs/geos:= )
 	lapack? ( virtual/lapack[eselect-ldso(+)] )
-	liblas? ( sci-geosciences/liblas )
+	las? ( sci-geosciences/liblas )
 	mysql? ( dev-db/mysql-connector-c:= )
 	netcdf? ( sci-libs/netcdf:= )
 	odbc? ( dev-db/unixODBC )
 	opencl? ( virtual/opencl )
 	opengl? ( virtual/opengl )
-	png? ( media-libs/libpng:0= )
+	pdal? ( >=sci-libs/pdal-2.0.0:= )
+	png? ( media-libs/libpng:= )
 	postgres? ( >=dev-db/postgresql-8.4:= )
-	readline? ( sys-libs/readline:0= )
+	readline? ( sys-libs/readline:= )
 	sqlite? ( dev-db/sqlite:3 )
-	tiff? ( media-libs/tiff:0= )
+	tiff? ( media-libs/tiff:= )
 	truetype? ( media-libs/freetype:2 )
 	X? (
-		dev-python/wxpython:4.0
-		x11-libs/cairo[X,opengl?]
+		>=dev-python/wxpython-4.1:4.0
+		x11-libs/cairo[X]
 		x11-libs/libICE
 		x11-libs/libSM
 		x11-libs/libX11
 		x11-libs/libXext
 		x11-libs/libXt
 	)
-	zstd? ( app-arch/zstd )"
+	zstd? ( app-arch/zstd:= )"
 DEPEND="${RDEPEND}
 	X? ( x11-base/xorg-proto )"
 BDEPEND="
@@ -122,7 +127,11 @@ src_prepare() {
 	sed -e "s:= python3:= ${EPYTHON}:" -i "${S}/include/Make/Platform.make.in" || die
 
 	default
-	eautoreconf
+
+	# When patching the build system, avoid running autoheader here. The file
+	# config.in.h is maintained manually upstream. Changes to it may lead to
+	# undefined behavior. See bug #866554.
+	# AT_NOEAUTOHEADER=1 eautoreconf
 
 	ebegin "Fixing python shebangs"
 	python_fix_shebang -q "${S}"
@@ -143,11 +152,6 @@ src_prepare() {
 }
 
 src_configure() {
-	if use X; then
-		local WX_BUILD=yes
-		setup-wxwidgets
-	fi
-
 	addwrite /dev/dri/renderD128
 
 	local myeconfargs=(
@@ -179,8 +183,9 @@ src_configure() {
 		$(use_with threads pthread)
 		$(use_with openmp)
 		$(use_with opencl)
-		$(use_with liblas liblas "${EPREFIX}"/usr/bin/liblas-config)
-		$(use_with X wxwidgets "${WX_CONFIG}")
+		$(use_with bzip2 bzlib)
+		$(use_with pdal pdal "${EPREFIX}"/usr/bin/pdal-config)
+		$(use_with las liblas "${EPREFIX}"/usr/bin/liblas-config)
 		$(use_with netcdf netcdf "${EPREFIX}"/usr/bin/nc-config)
 		$(use_with geos geos "${EPREFIX}"/usr/bin/geos-config)
 		$(use_with X x)
@@ -253,8 +258,7 @@ os.environ\[\"GRASS_PYTHON\"\] = \"${EPYTHON}\":" \
 		-i "${ED}"${gisbase}/demolocation/.grassrc${GVERSION//.} || die
 
 	if use X; then
-		local GUI="-gui"
-		[[ ${WX_BUILD} == yes ]] && GUI="-wxpython"
+		local GUI="--gui"
 		make_desktop_entry "/usr/bin/grass ${GUI}" "${PN}" "${PN}-48x48" "Science;Education"
 		doicon -s 48 gui/icons/${PN}-48x48.png
 	fi

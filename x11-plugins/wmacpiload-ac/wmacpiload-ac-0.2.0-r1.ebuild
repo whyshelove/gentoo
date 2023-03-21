@@ -1,7 +1,9 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
+
+inherit autotools
 
 MY_P=${P/-ac}
 
@@ -11,7 +13,7 @@ SRC_URI="http://wmacpiload.tuxfamily.org/download/${MY_P}.tar.bz2"
 
 SLOT="0"
 LICENSE="GPL-2"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 x86"
 IUSE="debug"
 
 RDEPEND="x11-libs/libX11
@@ -29,6 +31,11 @@ PATCHES=(
 	"${FILESDIR}/${PN}-acpi-sys-temp-hwmon.patch"
 	"${FILESDIR}/${PN}-acpi-fix-battery-unit.patch"
 )
+
+src_prepare() {
+	default
+	eautoreconf
+}
 
 src_configure() {
 	econf $(use_enable debug)

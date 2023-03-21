@@ -1,17 +1,19 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-# Please bump with app-editors/vim-core and app-editors/gvim
+# Please bump with app-editors/vim-core and app-editors/vim
 
-VIM_VERSION="8.2"
-LUA_COMPAT=( lua5-1 luajit )
-PYTHON_COMPAT=( python3_{7..10} )
+VIM_VERSION="9.0"
+VIM_PATCHES_VERSION="9.0.1000"
+
+LUA_COMPAT=( lua5-{1..4} luajit )
+PYTHON_COMPAT=( python3_{9..11} )
 PYTHON_REQ_USE="threads(+)"
-USE_RUBY="ruby24 ruby25 ruby26 ruby27"
+USE_RUBY="ruby27 ruby30 ruby31"
 
-inherit vim-doc flag-o-matic xdg-utils bash-completion-r1 prefix lua-single python-single-r1 ruby-single
+inherit bash-completion-r1 flag-o-matic lua-single prefix python-single-r1 ruby-single toolchain-funcs vim-doc xdg-utils
 
 if [[ ${PV} == 9999* ]]; then
 	inherit git-r3
@@ -19,20 +21,21 @@ if [[ ${PV} == 9999* ]]; then
 	EGIT_CHECKOUT_DIR=${WORKDIR}/vim-${PV}
 else
 	SRC_URI="https://github.com/vim/vim/archive/v${PV}.tar.gz -> vim-${PV}.tar.gz
-		https://dev.gentoo.org/~zlogene/distfiles/app-editors/vim/vim-8.2.0360-gentoo-patches.tar.xz"
+		https://gitweb.gentoo.org/proj/vim-patches.git/snapshot/vim-patches-vim-${VIM_PATCHES_VERSION}-patches.tar.bz2"
 	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x86-solaris"
 fi
 S="${WORKDIR}"/vim-${PV}
 
 DESCRIPTION="GUI version of the Vim text editor"
-HOMEPAGE="https://vim.sourceforge.io/ https://github.com/vim/vim"
+HOMEPAGE="https://www.vim.org https://github.com/vim/vim"
 
 LICENSE="vim"
 SLOT="0"
-IUSE="acl aqua crypt cscope debug gtk gtk2 lua motif neXt netbeans nls perl python racket ruby selinux session sound tcl"
+IUSE="acl aqua crypt cscope debug lua minimal motif netbeans nls perl python racket ruby selinux session sound tcl"
 REQUIRED_USE="
 	lua? ( ${LUA_REQUIRED_USE} )
 	python? ( ${PYTHON_REQUIRED_USE} )
+	aqua? ( !motif )
 "
 
 RDEPEND="
@@ -45,22 +48,10 @@ RDEPEND="
 	x11-libs/libXt
 	acl? ( kernel_linux? ( sys-apps/acl ) )
 	!aqua? (
-		gtk? (
+		motif? ( >=x11-libs/motif-2.3:0 )
+		!motif? (
 			x11-libs/gtk+:3
 			x11-libs/libXft
-		)
-		!gtk? (
-			gtk2? (
-				>=x11-libs/gtk+-2.6:2
-				x11-libs/libXft
-			)
-			!gtk2? (
-				motif? ( >=x11-libs/motif-2.3:0 )
-				!motif? (
-					neXt? ( x11-libs/neXtaw )
-					!neXt? ( x11-libs/libXaw )
-				)
-			)
 		)
 	)
 	crypt? ( dev-libs/libsodium:= )
@@ -87,28 +78,37 @@ BDEPEND="
 	lua? ( ${LUA_DEPS} )
 	nls? ( sys-devel/gettext )
 "
+PDEPEND="!minimal? ( app-vim/gentoo-syntax )"
+
+if [[ ${PV} != 9999* ]]; then
+	# Gentoo patches to fix runtime issues, cross-compile errors, etc
+	PATCHES=(
+		"${WORKDIR}/vim-patches-vim-${VIM_PATCHES_VERSION}-patches"
+	)
+fi
 
 # various failures (bugs #630042 and #682320)
 RESTRICT="test"
+
+# platform-specific checks (bug #898450):
+# - acl()     -- Solaris
+# - statacl() -- AIX
+QA_CONFIG_IMPL_DECL_SKIP=(
+	'acl'
+	'statacl'
+)
 
 pkg_setup() {
 	# people with broken alphabets run into trouble. bug 82186.
 	unset LANG LC_ALL
 	export LC_COLLATE="C"
 
-	# Gnome sandbox silliness. bug #114475.
-	mkdir -p "${T}"/home || die
-	export HOME="${T}"/home
-
 	use lua && lua-single_pkg_setup
 	use python && python-single-r1_pkg_setup
 }
 
 src_prepare() {
-	if [[ ${PV} != 9999* ]]; then
-		# Gentoo patches to fix runtime issues, cross-compile errors, etc
-		eapply "${WORKDIR}"/patches/
-	fi
+	default
 
 	# Fixup a script to use awk instead of nawk
 	sed -i -e \
@@ -160,11 +160,24 @@ src_prepare() {
 		"s:\\\$(PERLLIB)/ExtUtils/xsubpp:${EPREFIX}/usr/bin/xsubpp:" \
 		"${S}"/src/Makefile || die 'sed for ExtUtils-ParseXS failed'
 
-	eapply_user
+	# Fix bug 18245: Prevent "make" from the following chain:
+	# (1) Notice configure.ac is newer than auto/configure
+	# (2) Rebuild auto/configure
+	# (3) Notice auto/configure is newer than auto/config.mk
+	# (4) Run ./configure (with wrong args) to remake auto/config.mk
+	sed -i -e \
+		's# auto/config\.mk:#:#' src/Makefile || die "Makefile sed failed"
+	rm -v src/auto/configure || die "rm failed"
+
+	# --with-features=huge forces on cscope even if we --disable it. We need
+	# to sed this out to avoid screwiness. (1 Sep 2004 ciaranm)
+	if ! use cscope; then
+		sed -i -e \
+			'/# define FEAT_CSCOPE/d' src/feature.h || die "couldn't disable cscope"
+	fi
 }
 
 src_configure() {
-	local myconf=()
 
 	# Fix bug 37354: Disallow -funroll-all-loops on amd64
 	# Bug 57859 suggests that we want to do this for all archs
@@ -175,14 +188,6 @@ src_configure() {
 	# multiple archs...
 	replace-flags -O3 -O2
 
-	# Fix bug 18245: Prevent "make" from the following chain:
-	# (1) Notice configure.ac is newer than auto/configure
-	# (2) Rebuild auto/configure
-	# (3) Notice auto/configure is newer than auto/config.mk
-	# (4) Run ./configure (with wrong args) to remake auto/config.mk
-	sed -i -e \
-		's# auto/config\.mk:#:#' src/Makefile || die "Makefile sed failed"
-	rm -v src/auto/configure || die "rm failed"
 	emake -j1 -C src autoconf
 
 	# This should fix a sandbox violation (see bug 24447). The hvc
@@ -196,7 +201,7 @@ src_configure() {
 
 	use debug && append-flags "-DDEBUG"
 
-	myconf=(
+	local myconf=(
 		--with-features=huge
 		--disable-gpm
 		--with-gnome=no
@@ -216,14 +221,11 @@ src_configure() {
 		$(use_enable tcl tclinterp)
 	)
 
-	# --with-features=huge forces on cscope even if we --disable it. We need
-	# to sed this out to avoid screwiness. (1 Sep 2004 ciaranm)
-	if ! use cscope; then
-		sed -i -e \
-			'/# define FEAT_CSCOPE/d' src/feature.h || die "couldn't disable cscope"
-	fi
-
 	if use lua; then
+		# -DLUA_COMPAT_OPENLIB=1 is required to enable the
+		# deprecated (in 5.1) luaL_openlib API (#874690)
+		use lua_single_target_lua5-1 && append-cppflags -DLUA_COMPAT_OPENLIB=1
+
 		myconf+=(
 			--enable-luainterp
 			$(use_with lua_single_target_luajit luajit)
@@ -231,13 +233,7 @@ src_configure() {
 		)
 	fi
 
-	# gvim's GUI preference order is as follows:
-	# aqua                         CARBON (not tested)
-	# -aqua gtk                    GTK3
-	# -aqua -gtk gtk2              GTK2
-	# -aqua -gtk -gtk motif        MOTIF
-	# -aqua -gtk -gtk -motif neXt  NEXTAW
-	# -aqua -gtk -gtk -motif -neXt ATHENA
+	# Default is gtk unless aqua or motif are enabled
 	echo ; echo
 	if use aqua; then
 		einfo "Building gvim with the Carbon GUI"
@@ -245,23 +241,13 @@ src_configure() {
 			--enable-darwin
 			--enable-gui=carbon
 		)
-	elif use gtk; then
-		myconf+=( --enable-gtk3-check )
-		einfo "Building gvim with the gtk+-3 GUI"
-		myconf+=( --enable-gui=gtk3 )
-	elif use gtk2; then
-		myconf+=( --enable-gtk2-check )
-		einfo "Building gvim with the gtk+-2 GUI"
-		myconf+=( --enable-gui=gtk2 )
 	elif use motif; then
 		einfo "Building gvim with the MOTIF GUI"
 		myconf+=( --enable-gui=motif )
-	elif use neXt; then
-		einfo "Building gvim with the neXtaw GUI"
-		myconf+=( --enable-gui=nextaw )
 	else
-		einfo "Building gvim with the Athena GUI"
-		myconf+=( --enable-gui=athena )
+		myconf+=( --enable-gtk3-check )
+		einfo "Building gvim with the gtk+-3 GUI"
+		myconf+=( --enable-gui=gtk3 )
 	fi
 	echo ; echo
 
@@ -276,6 +262,14 @@ src_configure() {
 		# configure or the source, which would be much more hackish.
 		# after all vim does it right, only interix is badly broken (again)
 		export ac_cv_func_sigaction=no
+	fi
+
+	if tc-is-cross-compiler ; then
+		export vim_cv_getcwd_broken=no \
+			   vim_cv_memmove_handles_overlap=yes \
+			   vim_cv_stat_ignores_slash=yes \
+			   vim_cv_terminfo=yes \
+			   vim_cv_toupper_broken=no
 	fi
 
 	econf \
@@ -319,7 +313,7 @@ src_test() {
 # Call eselect vi update with --if-unset
 # to respect user's choice (bug 187449)
 eselect_vi_update() {
-	einfo "Calling eselect vi update..."
+	ebegin "Calling eselect vi update"
 	eselect vi update --if-unset
 	eend $?
 }

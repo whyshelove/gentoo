@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: tree-sitter-grammar.eclass
@@ -10,17 +10,15 @@
 # @SUPPORTED_EAPIS: 8
 # @BLURB: Common functions and variables for Tree Sitter grammars
 
-inherit edo
+case ${EAPI} in
+	8) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
+esac
 
 if [[ -z ${_TREE_SITTER_GRAMMAR_ECLASS} ]]; then
 _TREE_SITTER_GRAMMAR_ECLASS=1
 
-case ${EAPI} in
-	8) ;;
-	*) die "EAPI=${EAPI:-0} is not supported" ;;
-esac
-
-inherit multilib toolchain-funcs
+inherit edo multilib toolchain-funcs
 
 SRC_URI="https://github.com/tree-sitter/${PN}/archive/${TS_PV:-v${PV}}.tar.gz
 	-> ${P}.tar.gz"
@@ -29,7 +27,9 @@ S="${WORKDIR}"/${PN}-${TS_PV:-${PV}}/src
 # Needed for tree_sitter/parser.h
 DEPEND="dev-libs/tree-sitter"
 
-EXPORT_FUNCTIONS src_compile src_install
+BDEPEND+=" test? ( dev-util/tree-sitter-cli )"
+IUSE+=" test"
+RESTRICT+=" !test? ( test )"
 
 # @ECLASS_VARIABLE: TS_PV
 # @PRE_INHERIT
@@ -76,11 +76,27 @@ tree-sitter-grammar_src_compile() {
 	fi
 
 	local soname=lib${PN}$(get_libname $(_get_tsg_abi_ver))
+
+	local soname_args="-Wl,--soname=${soname}"
+	if [[ ${CHOST} == *darwin* ]] ; then
+		soname_args="-Wl,-install_name,${EPREFIX}/usr/$(get_libdir)/${soname}"
+	fi
+
 	edo ${link} ${LDFLAGS} \
 			-shared \
 			*.o \
-			-Wl,--soname=${soname} \
-			-o "${WORKDIR}"/${soname} || die
+			${soname_args} \
+			-o "${WORKDIR}"/${soname}
+}
+
+# @FUNCTION: tree-sitter-grammar_src_test
+# @DESCRIPTION:
+# Runs the Tree Sitter parser's test suite.
+# See: https://tree-sitter.github.io/tree-sitter/creating-parsers#command-test
+tree-sitter-grammar_src_test() {
+	debug-print-function ${FUNCNAME} "${@}"
+
+	(cd .. && tree-sitter test) || die "Test suite failed"
 }
 
 # @FUNCTION: tree-sitter-grammar_src_install
@@ -95,4 +111,7 @@ tree-sitter-grammar_src_install() {
 	dosym "${soname}" \
 		  /usr/$(get_libdir)/lib${PN}$(get_libname)
 }
+
 fi
+
+EXPORT_FUNCTIONS src_compile src_test src_install

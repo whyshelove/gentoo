@@ -3,9 +3,10 @@
 <pkgmetadata>
 	<maintainer type="project">
 		<email>tcltk@gentoo.org</email>
-		<name>TCL / TK herd</name>
+		<name>TCL/TK project</name>
 	</maintainer>
 	<upstream>
 		<remote-id type="sourceforge">tclx</remote-id>
+		<remote-id type="github">flightaware/tclx</remote-id>
 	</upstream>
 </pkgmetadata>

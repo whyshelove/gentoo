@@ -1,8 +1,23 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # Unmask the flag which corresponds to ARCH.
 -arm64
+
+# Georgy Yakovlev <gyakovlev@gentoo.org> (2023-01-01)
+# unmask synaptics input driver
+-input_devices_synaptics
+
+# matoro <matoro_gentoo@matoro.tk> (2022-09-29)
+# dev-util/google-perftools is supported here
+-tcmalloc
+
+# Mike Gilbert <floppym@gentoo.org> (2022-08-31)
+# Requires the following packages to be keyworded/stable:
+# sys-libs/libapparmor
+# sys-apps/apparmor
+# sys-apps/apparmor-utils
+-apparmor
 
 # David Seifert <soap@gentoo.org> (2022-03-13)
 # NVENC works here
@@ -50,11 +65,6 @@ cpu_flags_arm_neon
 -cpu_flags_arm_vfpv4
 -cpu_flags_arm_vfp-d32
 
-# Mattéo Rossillol‑‑Laruelle <beatussum@protonmail.com> (2019‑08‑31)
-# Dependency not keyworded (dev-libs/libindicate).
-appindicator
-ayatana
-
 # Michał Górny <mgorny@gentoo.org> (2018-07-09)
 # No OpenCL provider is available on arm64.
 opencl
@@ -66,11 +76,6 @@ smi
 # Mart Raudsepp <leio@gentoo.org> (2017-02-01)
 # Unmask systemd since it is keyworded here.
 -systemd
-
-# Mart Raudsepp <leio@gentoo.org> (2017-01-28)
-# dev-util/valgrind not tested on arm64 yet
-# Upstream seems to have architecture support, however
-valgrind
 
 # Markus Meier <maekke@gentoo.org> (2010-08-22)
 # net-wireless/wimax not tested
@@ -99,7 +104,6 @@ mssql
 # havent tested yet
 darcs
 afs
-scanner
 zvbi
 sid
 mms
@@ -113,6 +117,7 @@ lpsol
 zvbi
 gts
 anthy
+snapcast
 
 # Unmask ARM-only video-cards
 -video_cards_exynos
@@ -123,6 +128,9 @@ anthy
 -video_cards_tegra
 -video_cards_v3d
 -video_cards_vc4
+-video_cards_amdgpu
+-video_cards_radeon
+-video_cards_radeonsi
 
 # James Le Cuirot <chewi@gentoo.org>
 # Unmask as Vivante is available for arm.
@@ -132,15 +140,11 @@ anthy
 # Modular X: mask for architectures on which they aren't available
 video_cards_glint
 video_cards_mga
-video_cards_nv
 video_cards_r128
-video_cards_radeon
 
 # Matt Turner <mattst88@gentoo.org>
 # Mask more VIDEO_CARDs added with mesa-8.0
-video_cards_amdgpu
 video_cards_r100
 video_cards_r200
 video_cards_r300
 video_cards_r600
-video_cards_radeonsi

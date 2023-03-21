@@ -1,13 +1,13 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
 # Note: Please bump in sync with dev-libs/libxslt
 
-PYTHON_COMPAT=( python3_{8..10} )
-PYTHON_REQ_USE="xml"
-inherit autotools flag-o-matic python-r1 multilib-minimal
+PYTHON_COMPAT=( python3_{9..11} )
+PYTHON_REQ_USE="xml(+)"
+inherit flag-o-matic python-r1 multilib-minimal toolchain-funcs
 
 XSTS_HOME="http://www.w3.org/XML/2004/xml-schema-test-suite"
 XSTS_NAME_1="xmlschema2002-01-16"
@@ -20,10 +20,10 @@ DESCRIPTION="XML C parser and toolkit"
 HOMEPAGE="http://www.xmlsoft.org/ https://gitlab.gnome.org/GNOME/libxml2"
 if [[ ${PV} == 9999 ]] ; then
 	EGIT_REPO_URI="https://gitlab.gnome.org/GNOME/libxml2"
-	inherit git-r3
+	inherit autotools git-r3
 else
-	inherit gnome.org
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+	inherit gnome.org libtool
+	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 fi
 
 SRC_URI+="
@@ -36,22 +36,21 @@ S="${WORKDIR}/${PN}-${PV%_rc*}"
 
 LICENSE="MIT"
 SLOT="2"
-IUSE="debug examples icu lzma +python readline static-libs test"
+IUSE="debug examples +ftp icu lzma +python readline static-libs test"
 RESTRICT="!test? ( test )"
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 
-BDEPEND="
-	dev-util/gtk-doc-am
-	virtual/pkgconfig
-"
-RDEPEND="
-	>=sys-libs/zlib-1.2.8-r1:=[${MULTILIB_USEDEP}]
+RDEPEND=">=sys-libs/zlib-1.2.8-r1:=[${MULTILIB_USEDEP}]
 	icu? ( >=dev-libs/icu-51.2-r1:=[${MULTILIB_USEDEP}] )
 	lzma? ( >=app-arch/xz-utils-5.0.5-r1:=[${MULTILIB_USEDEP}] )
 	python? ( ${PYTHON_DEPS} )
-	readline? ( sys-libs/readline:= )
-"
+	readline? ( sys-libs/readline:= )"
 DEPEND="${RDEPEND}"
+BDEPEND="virtual/pkgconfig"
+
+if [[ ${PV} == 9999 ]] ; then
+	BDEPEND+=" dev-util/gtk-doc-am"
+fi
 
 MULTILIB_CHOST_TOOLS=(
 	/usr/bin/xml2-config
@@ -67,7 +66,11 @@ src_unpack() {
 
 		# ${A} isn't used to avoid unpacking of test tarballs into ${WORKDIR},
 		# as they are needed as tarballs in ${S}/xstc instead and not unpacked
-		unpack ${tarname} ${PN}-${PATCHSET_VERSION}.tar.bz2
+		unpack ${tarname}
+
+		if [[ -n ${PATCHSET_VERSION} ]] ; then
+			unpack ${PN}-${PATCHSET_VERSION}.tar.bz2
+		fi
 	fi
 
 	cd "${S}" || die
@@ -84,25 +87,33 @@ src_unpack() {
 src_prepare() {
 	default
 
-	# Please do not remove, as else we get references to PORTAGE_TMPDIR
-	# in /usr/lib/python?.?/site-packages/libxml2mod.la among things.
-	# We now need to run eautoreconf at the end to prevent maintainer mode.
-	#elibtoolize
-	# Needed for https://gitlab.gnome.org/GNOME/libxml2/-/issues/338 too in 2.9.13
-	eautoreconf
+	if [[ ${PV} == 9999 ]] ; then
+		eautoreconf
+	else
+		# Please do not remove, as else we get references to PORTAGE_TMPDIR
+		# in /usr/lib/python?.?/site-packages/libxml2mod.la among things.
+		elibtoolize
+	fi
 }
 
 multilib_src_configure() {
-	# Filter seemingly problematic CFLAGS (#26320)
+	# Filter seemingly problematic CFLAGS (bug #26320)
 	filter-flags -fprefetch-loop-arrays -funroll-loops
+
+	# ideally we want !tc-ld-is-bfd for best future-proofing, but it needs
+	# https://github.com/gentoo/gentoo/pull/28355
+	# mold needs this too but right now tc-ld-is-mold is also not available
+	if tc-ld-is-lld; then
+		append-ldflags -Wl,--undefined-version
+	fi
 
 	# Notes:
 	# The meaning of the 'debug' USE flag does not apply to the --with-debug
 	# switch (enabling the libxml2 debug module). See bug #100898.
-
 	libxml2_configure() {
 		ECONF_SOURCE="${S}" econf \
 			--enable-ipv6 \
+			$(use_with ftp) \
 			$(use_with debug run-debug) \
 			$(use_with icu) \
 			$(use_with lzma) \
@@ -142,7 +153,7 @@ multilib_src_test() {
 	emake check
 
 	multilib_is_native_abi && use python &&
-		python_foreach_impl run_in_build_dir libxml2_py_emake test
+		python_foreach_impl run_in_build_dir libxml2_py_emake check
 }
 
 multilib_src_install() {
@@ -150,6 +161,10 @@ multilib_src_install() {
 
 	multilib_is_native_abi && use python &&
 		python_foreach_impl run_in_build_dir libxml2_py_emake DESTDIR="${D}" install
+
+	# Hack until automake release is made for the optimise fix
+	# https://git.savannah.gnu.org/cgit/automake.git/commit/?id=bde43d0481ff540418271ac37012a574a4fcf097
+	multilib_is_native_abi && use python && python_foreach_impl python_optimize
 }
 
 multilib_src_install_all() {
@@ -159,6 +174,8 @@ multilib_src_install_all() {
 		rm -rf "${ED}"/usr/share/doc/${PF}/examples || die
 		rm -rf "${ED}"/usr/share/doc/${PF}/python/examples || die
 	fi
+
+	rm -rf "${ED}"/usr/share/doc/${PN}-python-${PVR} || die
 
 	find "${ED}" -name '*.la' -delete || die
 }

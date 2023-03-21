@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -9,9 +9,9 @@ inherit gnome2
 DESCRIPTION="Diagram/flowchart creation program"
 HOMEPAGE="https://wiki.gnome.org/Apps/Dia"
 
-LICENSE="GPL-2"
+LICENSE="GPL-2+"
 SLOT="0"
-KEYWORDS="~alpha amd64 ~arm ~hppa ~ia64 ~ppc ppc64 ~riscv ~sparc x86 ~amd64-linux ~x86-linux ~ppc-macos"
+KEYWORDS="~alpha amd64 ~arm ~hppa ~ia64 ~loong ~ppc ppc64 ~riscv ~sparc x86 ~amd64-linux ~x86-linux ~ppc-macos"
 # the doc USE flag doesn't seem to do anything without docbook2html
 # cairo support is preferred as explained by upstream at:
 # https://bugzilla.gnome.org/show_bug.cgi?id=729668#c6
@@ -35,7 +35,6 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}
 	dev-util/intltool
-	sys-apps/sed
 	virtual/pkgconfig
 	doc? ( dev-libs/libxslt )"
 
@@ -46,6 +45,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-0.97.2-underlinking.patch #420685, upstream #678761
 	"${FILESDIR}"/${PN}-0.97.3-freetype_pkgconfig.patch #654814, upstream https://gitlab.gnome.org/GNOME/dia/merge_requests/1
 	"${FILESDIR}"/${PN}-0.97.3-slibtool.patch
+	"${FILESDIR}"/${PN}-0.97.3-configure-clang16.patch
 )
 
 src_prepare() {

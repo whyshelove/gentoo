@@ -1,17 +1,17 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
 # This ebuild uses 3 special global variables:
 # GRUB_BOOTSTRAP: Depend on python and invoke bootstrap (gnulib).
-# GRUB_AUTOGEN: Depend on python and invoke the autogen.sh.
+# GRUB_AUTOGEN: Depend on python and invoke autogen.sh.
 # GRUB_AUTORECONF: Inherit autotools and invoke eautoreconf.
 #
 # When applying patches:
 # If gnulib is updated, set GRUB_BOOTSTRAP=1
-# If *.def is updated, set GRUB_AUTOGEN=1
-# If gnulib, *.def, or any autotools files are updated, set GRUB_AUTORECONF=1
+# If gentpl.py or *.def is updated, set GRUB_AUTOGEN=1
+# If gnulib, gentpl.py, *.def, or any autotools files are updated, set GRUB_AUTORECONF=1
 #
 # If any of the above applies to a user patch, the user should set the
 # corresponding variable in make.conf or the environment.
@@ -21,7 +21,7 @@ if [[ ${PV} == 9999  ]]; then
 	GRUB_BOOTSTRAP=1
 fi
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..11} )
 WANT_LIBTOOL=none
 
 if [[ -n ${GRUB_AUTOGEN} || -n ${GRUB_BOOTSTRAP} ]]; then
@@ -69,7 +69,8 @@ LICENSE="GPL-3+ BSD MIT fonts? ( GPL-2-with-font-exception ) themes? ( CC-BY-SA-
 SLOT="2/${PVR}"
 IUSE="device-mapper doc efiemu +fonts mount nls sdl test +themes truetype libzfs"
 
-GRUB_ALL_PLATFORMS=( coreboot efi-32 efi-64 emu ieee1275 loongson multiboot qemu qemu-mips pc uboot xen xen-32 xen-pvh )
+GRUB_ALL_PLATFORMS=( coreboot efi-32 efi-64 emu ieee1275 loongson multiboot
+	qemu qemu-mips pc uboot xen xen-32 xen-pvh )
 IUSE+=" ${GRUB_ALL_PLATFORMS[@]/#/grub_platforms_}"
 
 REQUIRED_USE="
@@ -81,7 +82,7 @@ REQUIRED_USE="
 
 BDEPEND="
 	${PYTHON_DEPS}
-	sys-devel/flex
+	>=sys-devel/flex-2.5.35
 	sys-devel/bison
 	sys-apps/help2man
 	sys-apps/texinfo
@@ -155,8 +156,6 @@ src_unpack() {
 src_prepare() {
 	default
 
-	sed -i -e /autoreconf/d autogen.sh || die
-
 	if [[ -n ${GRUB_AUTOGEN} || -n ${GRUB_BOOTSTRAP} ]]; then
 		python_setup
 	else
@@ -167,7 +166,7 @@ src_prepare() {
 		eautopoint --force
 		AUTOPOINT=: AUTORECONF=: ./bootstrap || die
 	elif [[ -n ${GRUB_AUTOGEN} ]]; then
-		./autogen.sh || die
+		FROM_BOOTSTRAP=1 ./autogen.sh || die
 	fi
 
 	if [[ -n ${GRUB_AUTORECONF} ]]; then
@@ -257,6 +256,10 @@ src_configure() {
 	tc-export CC NM OBJCOPY RANLIB STRIP
 	tc-export BUILD_CC BUILD_PKG_CONFIG
 
+	# Force configure to use flex & bison, bug 887211.
+	export LEX=flex
+	unset YACC
+
 	MULTIBUILD_VARIANTS=()
 	local p
 	for p in "${GRUB_ALL_PLATFORMS[@]}"; do
@@ -287,7 +290,7 @@ src_install() {
 	einstalldocs
 
 	insinto /etc/default
-	newins "${FILESDIR}"/grub.default-3 grub
+	newins "${FILESDIR}"/grub.default-4 grub
 
 	# https://bugs.gentoo.org/231935
 	dostrip -x /usr/lib/grub
@@ -297,16 +300,26 @@ pkg_postinst() {
 	elog "For information on how to configure GRUB2 please refer to the guide:"
 	elog "    https://wiki.gentoo.org/wiki/GRUB2_Quick_Start"
 
-	if has_version 'sys-boot/grub:0'; then
-		elog "A migration guide for GRUB Legacy users is available:"
-		elog "    https://wiki.gentoo.org/wiki/GRUB2_Migration"
-	fi
-
-	if [[ -z ${REPLACING_VERSIONS} ]]; then
+	if [[ -n ${REPLACING_VERSIONS} ]]; then
+		local v
+		for v in ${REPLACING_VERSIONS}; do
+			if ver_test -gt ${v}; then
+				ewarn
+				ewarn "Re-run grub-install to update installed boot code!"
+				ewarn
+				break
+			fi
+		done
+	else
 		elog
 		optfeature "detecting other operating systems (grub-mkconfig)" sys-boot/os-prober
 		optfeature "creating rescue media (grub-mkrescue)" dev-libs/libisoburn
 		optfeature "enabling RAID device detection" sys-fs/mdadm
+	fi
+
+	if has_version 'sys-boot/grub:0'; then
+		elog "A migration guide for GRUB Legacy users is available:"
+		elog "    https://wiki.gentoo.org/wiki/GRUB2_Migration"
 	fi
 
 	if has_version sys-boot/os-prober; then

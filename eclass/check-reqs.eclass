@@ -1,4 +1,4 @@
-# Copyright 2004-2021 Gentoo Authors
+# Copyright 2004-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: check-reqs.eclass
@@ -40,12 +40,10 @@
 
 case ${EAPI} in
 	6|7|8) ;;
-	*) die "${ECLASS}: EAPI=${EAPI:-0} is not supported" ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
-EXPORT_FUNCTIONS pkg_pretend pkg_setup
-
-if [[ ! ${_CHECK_REQS_ECLASS} ]]; then
+if [[ -z ${_CHECK_REQS_ECLASS} ]]; then
 _CHECK_REQS_ECLASS=1
 
 # @ECLASS_VARIABLE: CHECKREQS_MEMORY
@@ -75,6 +73,12 @@ _CHECK_REQS_ECLASS=1
 # Do not error out in _check-reqs_output if requirements are not met.
 # This is a user flag and should under _no circumstances_ be set in the ebuild.
 [[ -n ${I_KNOW_WHAT_I_AM_DOING} ]] && CHECKREQS_DONOTHING=1
+
+# @ECLASS_VARIABLE: CHECKREQS_FAILED
+# @INTERNAL
+# @DESCRIPTION:
+# If set the checks failed and eclass should abort the build.
+# Internal, do not set yourself.
 
 # @FUNCTION: check-reqs_pkg_setup
 # @DESCRIPTION:
@@ -457,12 +461,9 @@ _check-reqs_unsatisfied() {
 	[[ ${EBUILD_PHASE} == "pretend" && -z ${CHECKREQS_DONOTHING} ]] && msg="eerror"
 	${msg} "There is NOT at least ${sizeunit} ${location}"
 
-	# @ECLASS_VARIABLE: CHECKREQS_FAILED
-	# @INTERNAL
-	# @DESCRIPTION:
-	# If set the checks failed and eclass should abort the build.
-	# Internal, do not set yourself.
 	CHECKREQS_FAILED="true"
 }
 
 fi
+
+EXPORT_FUNCTIONS pkg_pretend pkg_setup

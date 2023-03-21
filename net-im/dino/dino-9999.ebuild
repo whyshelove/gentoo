@@ -1,10 +1,8 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-CMAKE_MAKEFILE_GENERATOR="ninja"
-VALA_MIN_API_VERSION="0.34"
 inherit cmake vala xdg readme.gentoo-r1
 
 DESCRIPTION="Modern Jabber/XMPP Client using GTK+/Vala"
@@ -28,38 +26,38 @@ RDEPEND="
 	app-text/gspell[vala]
 	dev-db/sqlite:3
 	dev-libs/glib:2
-	dev-libs/icu
-	dev-libs/libgee:0.8
+	dev-libs/icu:=
+	dev-libs/libgee:0.8=
+	gui-libs/gtk:4
+	>=gui-libs/libadwaita-1.2.0:1
 	net-libs/glib-networking
 	>=net-libs/libnice-0.1.15
 	net-libs/libsignal-protocol-c
 	net-libs/libsrtp:2
 	x11-libs/cairo
 	x11-libs/gdk-pixbuf:2
-	x11-libs/gtk+:3
 	x11-libs/pango
 	gpg? ( app-crypt/gpgme:= )
 	http? ( net-libs/libsoup:2.4 )
-	omemo? (
-		dev-libs/libgcrypt:0
-		media-gfx/qrencode
-	)
 	notification-sound? ( media-libs/libcanberra:0[sound] )
+	omemo? (
+		dev-libs/libgcrypt:=
+		media-gfx/qrencode:=
+	)
 "
 DEPEND="
-	$(vala_depend)
 	${RDEPEND}
 	media-libs/gst-plugins-base
 	media-libs/gstreamer
+"
+BDEPEND="
 	sys-devel/gettext
+	$(vala_depend)
 "
 
-src_prepare() {
-	cmake_src_prepare
-	vala_src_prepare
-}
-
 src_configure() {
+	vala_setup
+
 	local disabled_plugins=(
 		$(usex gpg "" "openpgp")
 		$(usex omemo "" "omemo")
@@ -68,7 +66,7 @@ src_configure() {
 	local enabled_plugins=(
 		$(usex notification-sound "notification-sound" "")
 	)
-	local mycmakeargs+=(
+	local mycmakeargs=(
 		"-DENABLED_PLUGINS=$(local IFS=";"; echo "${enabled_plugins[*]}")"
 		"-DDISABLED_PLUGINS=$(local IFS=";"; echo "${disabled_plugins[*]}")"
 		"-DVALA_EXECUTABLE=${VALAC}"
@@ -87,7 +85,7 @@ src_install() {
 	readme.gentoo_create_doc
 }
 
-src_postinst() {
+pkg_postinst() {
 	xdg_pkg_postinst
 	readme.gentoo_print_elog
 }

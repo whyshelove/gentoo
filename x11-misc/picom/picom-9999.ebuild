@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..11} )
 inherit git-r3 meson python-any-r1 virtualx xdg
 
 DESCRIPTION="A lightweight compositor for X11 (previously a compton fork)"
@@ -31,7 +31,7 @@ RDEPEND="dev-libs/libev
 	dbus? ( sys-apps/dbus )
 	drm? ( x11-libs/libdrm )
 	opengl? ( virtual/opengl )
-	pcre? ( dev-libs/libpcre )
+	pcre? ( dev-libs/libpcre2:= )
 	!x11-misc/compton"
 DEPEND="${RDEPEND}
 	x11-base/xorg-proto"
@@ -43,7 +43,7 @@ BDEPEND="virtual/pkgconfig
 DOCS=( README.md picom.sample.conf )
 
 python_check_deps() {
-	has_version -b "dev-python/xcffib[${PYTHON_USEDEP}]"
+	python_has_version "dev-python/xcffib[${PYTHON_USEDEP}]"
 }
 
 pkg_setup() {

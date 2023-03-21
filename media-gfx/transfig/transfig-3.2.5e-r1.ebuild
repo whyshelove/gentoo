@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -16,7 +16,7 @@ S="${WORKDIR}/${MY_P}"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x64-solaris ~x86-solaris"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~loong ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x64-solaris ~x86-solaris"
 
 RDEPEND="
 	media-libs/libpng
@@ -26,6 +26,7 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 BDEPEND="
 	app-text/rman
+	sys-devel/gcc
 	>=x11-misc/imake-1.0.8-r1"
 
 PATCHES=(
@@ -73,7 +74,7 @@ src_prepare() {
 }
 
 src_configure() {
-	export IMAKECPP=${IMAKECPP:-$(tc-getCPP)}
+	export IMAKECPP=${IMAKECPP:-${CHOST}-gcc -E}
 	CC="$(tc-getBUILD_CC)" LD="$(tc-getLD)" xmkmf || die
 }
 

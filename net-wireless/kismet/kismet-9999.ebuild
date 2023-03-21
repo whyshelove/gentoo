@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8,9,10} )
+PYTHON_COMPAT=( python3_{9..11} )
 
 inherit autotools python-single-r1 udev systemd
 
@@ -40,12 +40,12 @@ CDEPEND="
 	${PYTHON_DEPS}
 	acct-user/kismet
 	acct-group/kismet
-	networkmanager? ( net-misc/networkmanager:= )
-	dev-libs/glib:=
-	dev-libs/elfutils:=
+	networkmanager? ( net-misc/networkmanager )
+	dev-libs/glib:2
+	dev-libs/elfutils
+	dev-libs/openssl:=
 	sys-libs/zlib:=
-	dev-db/sqlite:=
-	net-libs/libmicrohttpd:=
+	dev-db/sqlite:3
 	net-libs/libwebsockets:=[client,lejp]
 	kernel_linux? ( sys-libs/libcap
 			dev-libs/libnl:3
@@ -58,36 +58,35 @@ CDEPEND="
 		dev-python/protobuf-python[${PYTHON_USEDEP}]
 		dev-python/websockets[${PYTHON_USEDEP}]
 	')
-	sys-libs/ncurses:=
-	lm-sensors? ( sys-apps/lm-sensors )
+	lm-sensors? ( sys-apps/lm-sensors:= )
 	pcre? ( dev-libs/libpcre )
 	suid? ( sys-libs/libcap )
-	ubertooth? ( net-wireless/ubertooth:= )
+	ubertooth? ( net-wireless/ubertooth )
 	"
-
-DEPEND="${CDEPEND}
-	dev-libs/boost
-	dev-libs/libfmt
-	virtual/pkgconfig
-"
-
 RDEPEND="${CDEPEND}
 	$(python_gen_cond_dep '
 		dev-python/pyserial[${PYTHON_USEDEP}]
 	')
-	selinux? ( sec-policy/selinux-kismet )
-"
-PDEPEND="
 	rtlsdr? (
 		$(python_gen_cond_dep '
 			dev-python/numpy[${PYTHON_USEDEP}]
 		')
 		net-wireless/rtl-sdr
-	)"
+	)
+	selinux? ( sec-policy/selinux-kismet )
+"
+#switched back to bundled libfmt-8
+#https://bugs.gentoo.org/895252
+#<dev-libs/libfmt-9
+DEPEND="${CDEPEND}
+	dev-libs/boost
+	sys-libs/libcap
+"
+BDEPEND="virtual/pkgconfig"
 
 src_prepare() {
-	sed -i -e "s:^\(logtemplate\)=\(.*\):\1=/tmp/\2:" \
-		conf/kismet_logging.conf || die
+	#sed -i -e "s:^\(logtemplate\)=\(.*\):\1=/tmp/\2:" \
+	#	conf/kismet_logging.conf || die
 
 	#this was added to quiet macosx builds but it makes gcc builds noisier
 	sed -i -e 's#-Wno-unknown-warning-option ##g' Makefile.inc.in || die
@@ -95,7 +94,9 @@ src_prepare() {
 	#sed -i -e 's#root#kismet#g' packaging/systemd/kismet.service.in
 
 	rm -r boost || die
-	rm -r fmt || die
+	#switched back to bundled libfmt-8
+	#https://bugs.gentoo.org/895252
+	#rm -r fmt || die
 
 	#dev-libs/jsoncpp
 	#rm -r json || die
@@ -106,15 +107,7 @@ src_prepare() {
 	#	log_tools/kismetdb_to_wiglecsv.cc trackedcomponent.h \
 	#	trackedelement.h trackedelement_workers.h
 
-	# Don't strip and set correct mangrp
-	sed -i -e 's| -s||g' \
-		-e 's|@mangrp@|root|g' Makefile.in || die
-
 	eapply_user
-
-	#just use set to fix setup.py
-	find . -name "Makefile.in" -exec sed -i 's#setup.py install#setup.py install --root=$(DESTDIR)#' {} + || die
-	find . -name "Makefile" -exec sed -i 's#setup.py install#setup.py install --root=$(DESTDIR)#' {} + || die
 
 	if [ "${PV}" = "9999" ]; then
 		eautoreconf
@@ -124,6 +117,7 @@ src_prepare() {
 src_configure() {
 	econf \
 		$(use_enable libusb libusb) \
+		$(use_enable libusb wifi-coconut) \
 		$(use_enable pcre) \
 		$(use_enable lm-sensors lmsensors) \
 		$(use_enable networkmanager libnm) \
@@ -145,7 +139,7 @@ src_install() {
 		dobin "${FILESDIR}"/kismet-gdb
 	fi
 
-	dodoc CHANGELOG README*
+	dodoc README*
 	newinitd "${FILESDIR}"/${PN}.initd-r3 kismet
 	newconfd "${FILESDIR}"/${PN}.confd-r2 kismet
 	systemd_dounit packaging/systemd/kismet.service
@@ -200,4 +194,8 @@ pkg_postinst() {
 			fi
 		done
 	fi
+	udev_reload
+}
+pkg_postrm() {
+	udev_reload
 }

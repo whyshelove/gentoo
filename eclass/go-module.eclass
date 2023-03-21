@@ -1,4 +1,4 @@
-# Copyright 2019-2022 Gentoo Authors
+# Copyright 2019-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: go-module.eclass
@@ -26,7 +26,9 @@
 # If the software has a directory named vendor in its
 # top level directory, the only thing you need to do is inherit the
 # eclass. If it doesn't, you need to also create a dependency tarball and
-# host it somewhere, for example in your dev space.
+# host it somewhere, for example in your dev space. It's recommended that
+# a format supporting parallel decompression is used and developers should
+# use higher levels of compression like '-9' for xz.
 #
 # Here is an example of how to create a dependency tarball.
 # The base directory in the GOMODCACHE setting must be go-mod in order
@@ -36,7 +38,7 @@
 #
 # $ cd /path/to/project
 # $ GOMODCACHE="${PWD}"/go-mod go mod download -modcacherw
-# $ tar -acf project-1.0-deps.tar.xz go-mod
+# $ XZ_OPT='-T0 -9' tar -acf project-1.0-deps.tar.xz go-mod
 #
 # @CODE
 #
@@ -63,20 +65,19 @@ case ${EAPI} in
 	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
-if [[ -z ${_GO_MODULE} ]]; then
+if [[ -z ${_GO_MODULE_ECLASS} ]]; then
+_GO_MODULE_ECLASS=1
 
-_GO_MODULE=1
+inherit multiprocessing toolchain-funcs
 
 if [[ ! ${GO_OPTIONAL} ]]; then
-	BDEPEND=">=dev-lang/go-1.16"
+	BDEPEND=">=dev-lang/go-1.18"
 
 	# Workaround for pkgcheck false positive: https://github.com/pkgcore/pkgcheck/issues/214
 	# MissingUnpackerDep: version ...: missing BDEPEND="app-arch/unzip"
 	# Added here rather than to each affected package, so it can be cleaned up just
 	# once when pkgcheck is improved.
 	BDEPEND+=" app-arch/unzip"
-
-	EXPORT_FUNCTIONS src_unpack
 fi
 
 # Force go to build in module mode.
@@ -93,10 +94,12 @@ export GOCACHE="${T}/go-build"
 export GOMODCACHE="${WORKDIR}/go-mod"
 
 # The following go flags should be used for all builds.
+# -buildmode=pie builds position independent executables
+# -buildvcs=false omits version control information
 # -modcacherw makes the build cache read/write
 # -v prints the names of packages as they are compiled
 # -x prints commands as they are executed
-export GOFLAGS="-modcacherw -v -x"
+export GOFLAGS="-buildvcs=false -modcacherw -v -x"
 
 # Do not complain about CFLAGS etc since go projects do not use them.
 QA_FLAGS_IGNORED='.*'
@@ -345,6 +348,11 @@ go-module_setup_proxy() {
 # - Otherwise, if EGO_VENDOR is set, bail out.
 # - Otherwise do a normal unpack.
 go-module_src_unpack() {
+	if use amd64 || use arm || use arm64 ||
+		( use ppc64 && [[ $(tc-endian) == "little" ]] ) || use s390 || use x86; then
+			GOFLAGS="-buildmode=pie ${GOFLAGS}"
+	fi
+	GOFLAGS="${GOFLAGS} -p=$(makeopts_jobs)"
 	if [[ "${#EGO_SUM[@]}" -gt 0 ]]; then
 		eqawarn "This ebuild uses EGO_SUM which is deprecated"
 		eqawarn "Please migrate to a dependency tarball"
@@ -355,6 +363,12 @@ go-module_src_unpack() {
 		die "Please update this ebuild"
 	else
 		default
+		if [[ ! -d "${S}"/vendor ]]; then
+			cd "${S}"
+			local nf
+			[[ -n ${NONFATAL_VERIFY} ]] && nf=nonfatal
+			${nf} ego mod verify
+		fi
 	fi
 }
 
@@ -508,4 +522,8 @@ _go-module_gomod_encode() {
 	echo "${input}"
 }
 
+fi
+
+if [[ ! ${GO_OPTIONAL} ]]; then
+	EXPORT_FUNCTIONS src_unpack
 fi

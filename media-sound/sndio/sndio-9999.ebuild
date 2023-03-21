@@ -1,7 +1,7 @@
-# Copyright 2020-2021 Gentoo Authors
+# Copyright 2020-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit multilib-minimal toolchain-funcs
 
@@ -13,7 +13,7 @@ if [[ "${PV}" == "9999" ]]; then
 	EGIT_MIN_CLONE_TYPE="single+tags"
 else
 	SRC_URI="http://www.sndio.org/${P}.tar.gz"
-	KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~ia64 ~ppc ~ppc64 ~sparc ~x86"
+	KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~ppc ~ppc64 ~sparc ~x86"
 fi
 
 LICENSE="ISC"
@@ -37,6 +37,7 @@ src_prepare() {
 multilib_src_configure() {
 	tc-export CC
 
+	# Not autotools-based but a custom one.
 	./configure \
 		--prefix="${EPREFIX}"/usr \
 		--libdir="${EPREFIX}"/usr/$(get_libdir) \

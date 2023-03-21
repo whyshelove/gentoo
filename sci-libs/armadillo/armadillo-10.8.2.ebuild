@@ -8,12 +8,12 @@ CMAKE_IN_SOURCE_BUILD=1
 inherit cmake toolchain-funcs multilib
 
 DESCRIPTION="Streamlined C++ linear algebra library"
-HOMEPAGE="http://arma.sourceforge.net/"
+HOMEPAGE="https://arma.sourceforge.net"
 SRC_URI="mirror://sourceforge/arma/${P}.tar.xz"
 
 LICENSE="Apache-2.0"
 SLOT="0/10"
-KEYWORDS="~amd64 ~arm ~ppc64 ~riscv ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="amd64 ~arm ~ppc64 ~riscv x86 ~amd64-linux ~x86-linux"
 IUSE="arpack blas doc examples hdf5 lapack mkl superlu test"
 RESTRICT="!test? ( test )"
 REQUIRED_USE="test? ( lapack )"

@@ -4,12 +4,12 @@
 # Note: xemacs currently does not work with position independent code
 # so the build forces the use of the -no-pie option
 
-EAPI=7
+EAPI=8
 
 inherit flag-o-matic xdg-utils desktop
 
 DESCRIPTION="highly customizable open source text editor and application development system"
-HOMEPAGE="http://www.xemacs.org/"
+HOMEPAGE="https://www.xemacs.org/"
 SRC_URI="neXt? ( http://www.malfunction.de/afterstep/files/NeXT_XEmacs.tar.gz )"
 
 inherit mercurial
@@ -36,13 +36,13 @@ RDEPEND="
 	dnd? ( x11-libs/dnd )
 	motif? ( >=x11-libs/motif-2.3:0[xft=] )
 	athena? ( x11-libs/libXaw )
-	Xaw3d? ( x11-libs/libXaw3d[unicode] )
+	Xaw3d? ( x11-libs/libXaw3d[unicode(+)] )
 	xft? ( media-libs/freetype:2 x11-libs/libXft x11-libs/libXrender >=media-libs/fontconfig-2.5.0 )
 	neXt? ( x11-libs/neXtaw )
 	xface? ( media-libs/compface )
-	tiff? ( media-libs/tiff:0 )
+	tiff? ( media-libs/tiff:= )
 	png? ( >=media-libs/libpng-1.2:0 )
-	jpeg? ( virtual/jpeg:0 )
+	jpeg? ( media-libs/libjpeg-turbo:= )
 	freewnn? ( app-i18n/freewnn )
 	>=sys-libs/ncurses-5.2:=
 	>=app-eselect/eselect-emacs-1.15"
@@ -62,14 +62,6 @@ src_unpack() {
 src_prepare() {
 	use neXt && cp "${WORKDIR}"/NeXT.XEmacs/xemacs-icons/* "${S}"/etc/toolbar/
 	find "${S}"/lisp -name '*.elc' -exec rm {} \; || die
-	# eapply "${FILESDIR}/${P}-ncurses-tinfo.patch"
-	# eapply "${FILESDIR}/${P}-gcc5.patch"
-	# eapply "${FILESDIR}/${P}-glibc-macro.patch"
-	# eapply "${FILESDIR}/${P}-as-needed.patch"
-	# eapply "${FILESDIR}/${P}-configure-libc-version.patch"
-	# eapply "${FILESDIR}/${P}-ar.patch"
-	# eapply "${FILESDIR}/${P}-strsignal.patch"
-	# eapply "${FILESDIR}/${P}-process-test-qa.patch"
 
 	eapply_user
 
@@ -166,7 +158,7 @@ src_configure() {
 	fi
 
 	use debug && myconf="${myconf} --with-debug" ||
-		myconf="${myconf} --with-optimization"
+		myconf="${myconf} --with-optimization --with-cflags-debugging="
 
 	econf ${myconf} \
 		$(use_with gif ) \

@@ -18,7 +18,7 @@ S="${WORKDIR}/${DP/_/-}.orig"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm ~arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos"
 
 DEPEND=">=net-libs/liblockfile-1.03
 	dev-libs/libbsd
@@ -33,6 +33,7 @@ src_prepare() {
 	eapply "${WORKDIR}/debian/patches"
 	eapply "${FILESDIR}/${PN}-8.1.2.20050715-offsetof.patch"
 	eapply "${FILESDIR}/${PN}-8.1.2.20180807-fno-common.patch"
+	eapply "${FILESDIR}/${PN}-8.1.2-20180807-musl-CCEQ.patch"
 	eapply_user
 }
 

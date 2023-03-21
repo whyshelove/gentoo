@@ -1,19 +1,19 @@
 # Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit systemd prefix tmpfiles
 
 DESCRIPTION="A man replacement that utilizes dbm instead of flat files"
-HOMEPAGE="https://gitlab.com/cjwatson/man-db https://www.nongnu.org/man-db/"
+HOMEPAGE="https://gitlab.com/man-db/man-db https://www.nongnu.org/man-db/"
 if [[ ${PV} == *9999 ]] ; then
 	inherit autotools git-r3
-	EGIT_REPO_URI="https://gitlab.com/cjwatson/man-db.git"
+	EGIT_REPO_URI="https://gitlab.com/man-db/man-db"
 else
 	# TODO: Change tarballs to gitlab too...?
 	SRC_URI="mirror://nongnu/${PN}/${P}.tar.xz"
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 fi
 
 LICENSE="GPL-3"
@@ -61,7 +61,7 @@ src_unpack() {
 src_prepare() {
 	default
 
-	if [[ "${PV}" == *9999 ]] ; then
+	if [[ ${PV} == *9999 ]] ; then
 		local bootstrap_opts=(
 			--gnulib-srcdir=../gnulib
 			--no-bootstrap-sync
@@ -131,9 +131,11 @@ src_configure() {
 	econf "${myeconfargs[@]}"
 
 	# Disable color output from groff so that the manpager can add it. bug #184604
-	sed -i \
-		-e '/^#DEFINE.*\<[nt]roff\>/{s:^#::;s:$: -c:}' \
-		src/man_db.conf || die
+	if use manpager; then
+		sed -i \
+			-e '/^#DEFINE.*\<[nt]roff\>/{s:^#::;s:$: -c:}' \
+			src/man_db.conf || die
+	fi
 
 	cat > 15man-db <<-EOF || die
 	SANDBOX_PREDICT="/var/cache/man"

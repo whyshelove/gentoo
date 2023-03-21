@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -35,6 +35,14 @@ RDEPEND="${DEPEND}"
 
 DOCS=( README.md doc/api.md )
 
+PATCHES=(
+	"${FILESDIR}"/${P}-openssl-1.1.1.patch
+)
+
+pkg_setup() {
+	use lua && lua_pkg_setup
+}
+
 src_prepare() {
 	default
 	rm tests/schema/{definitions,ref{,Remote}}.json || die
@@ -42,8 +50,6 @@ src_prepare() {
 }
 
 src_configure() {
-	use lua && lua_setup
-
 	local myeconfargs=(
 		"$(use_enable lua)"
 		"$(use_enable regex)"
@@ -56,10 +62,6 @@ src_configure() {
 		LIB_LIBS="$(lua_get_LIBS)"
 	)
 	econf "${myeconfargs[@]}"
-}
-
-src_test() {
-	emake check
 }
 
 src_install() {

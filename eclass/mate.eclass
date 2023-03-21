@@ -1,4 +1,4 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: mate.eclass
@@ -7,18 +7,21 @@
 # @AUTHOR:
 # Authors: NP-Hardass <NP-Hardass@gentoo.org> based upon the gnome2
 # and autotools-utils eclasses
-# @SUPPORTED_EAPIS: 6 7
+# @SUPPORTED_EAPIS: 7
+# @PROVIDES: mate-desktop.org
 # @BLURB: Provides phases for MATE based packages.
 # @DESCRIPTION:
 # Exports portage base functions used by ebuilds written for packages using the
 # MATE framework. Occassionally acts as a wrapper to gnome2 due to the
 # fact that MATE is a GNOME fork. For additional functions, see gnome2-utils.eclass.
 
-# Check EAPI only
-case "${EAPI:-0}" in
-	6|7) ;;
-	*) die "EAPI=${EAPI:-0} is not supported" ;;
+case ${EAPI} in
+	7) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
+
+if [[ -z ${_MATE_ECLASS} ]]; then
+_MATE_ECLASS=1
 
 # Inherit happens below after declaration of GNOME2_LA_PUNT
 
@@ -26,10 +29,6 @@ esac
 # @DESCRIPTION:
 # Available values for MATE_LA_PUNT:
 # - "no": will not clean any .la files
-# - In EAPI < 7:
-# - "yes": will run prune_libtool_files --modules
-# - If it is not set, it will run prune_libtool_files
-# - In EAPI 7:
 # - Any non-"no" value will run
 #	find "${ED}" -name '*.la' -delete || die
 # MATE_LA_PUNT is a stub to GNOME2_LA_PUNT
@@ -37,11 +36,6 @@ MATE_LA_PUNT=${MATE_LA_PUNT:-""}
 GNOME2_LA_PUNT="${MATE_LA_PUNT}"
 
 inherit gnome2 autotools mate-desktop.org
-
-case "${EAPI:-0}" in
-	6|7) EXPORT_FUNCTIONS src_prepare src_configure src_install pkg_preinst pkg_postinst pkg_postrm ;;
-	*) die "EAPI=${EAPI:-0} is not supported" ;;
-esac
 
 # Autotools requires our MATE m4 files
 DEPEND=">=mate-base/mate-common-${MATE_BRANCH}"
@@ -53,7 +47,7 @@ DEPEND=">=mate-base/mate-common-${MATE_BRANCH}"
 # This function should only be used if the ebuild also inherits the
 # python-r1 eclass
 mate_py_cond_func_wrap() {
-	if [[ ! ${_PYTHON_R1} ]]; then
+	if [[ ! ${_PYTHON_R1_ECLASS} ]]; then
 		die "This function requires the inheritence of the python-r1 eclass"
 	fi
 	if use python; then
@@ -164,3 +158,7 @@ mate_pkg_postinst() {
 mate_pkg_postrm() {
 	gnome2_pkg_postrm "$@"
 }
+
+fi
+
+EXPORT_FUNCTIONS src_prepare src_configure src_install pkg_preinst pkg_postinst pkg_postrm

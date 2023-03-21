@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="8"
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..11} )
 
 inherit meson python-any-r1
 
@@ -20,7 +20,7 @@ SRC_URI="https://github.com/Snaipe/Criterion/archive/refs/tags/v${PV}.tar.gz -> 
 
 LICENSE="BSD-2 MIT ZLIB"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~arm64 ~x86"
+KEYWORDS="amd64 ~arm ~arm64 ~x86"
 IUSE="test"
 RESTRICT="!test? ( test )"
 
@@ -28,11 +28,12 @@ RDEPEND="dev-libs/nanomsg:=
 	dev-libs/libgit2:=
 	dev-libs/libffi:="
 DEPEND="${RDEPEND}
-	dev-libs/boxfort
+	>=dev-libs/boxfort-0.1.4
 	test? (
 		$(python_gen_any_dep 'dev-util/cram[${PYTHON_USEDEP}]')
 	)"
-BDEPEND="virtual/pkgconfig"
+BDEPEND="dev-util/cmake
+	virtual/pkgconfig"
 
 S="${WORKDIR}/Criterion-${PV}"
 

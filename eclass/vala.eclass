@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: vala.eclass
@@ -6,7 +6,7 @@
 # gnome@gentoo.org
 # @AUTHOR:
 # Alexandre Rostovtsev <tetromino@gentoo.org>
-# @SUPPORTED_EAPIS: 6 7 8
+# @SUPPORTED_EAPIS: 7 8
 # @BLURB: Sets up the environment for using a specific version of vala.
 # @DESCRIPTION:
 # This eclass sets up commonly used environment variables for using a specific
@@ -15,8 +15,7 @@
 # executables, pkgconfig files, etc., which Gentoo does not provide.
 
 case ${EAPI} in
-	6|7) inherit eutils multilib ;;
-	8) ;;
+	7|8) ;;
 	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
@@ -25,8 +24,8 @@ _VALA_ECLASS=1
 
 # @ECLASS_VARIABLE: VALA_MIN_API_VERSION
 # @DESCRIPTION:
-# Minimum vala API version (e.g. 0.50).
-VALA_MIN_API_VERSION=${VALA_MIN_API_VERSION:-0.50}
+# Minimum vala API version (e.g. 0.56).
+VALA_MIN_API_VERSION=${VALA_MIN_API_VERSION:-0.56}
 
 # @ECLASS_VARIABLE: VALA_MAX_API_VERSION
 # @DESCRIPTION:
@@ -49,11 +48,10 @@ vala_api_versions() {
 	local minimal_supported_minor_version minor_version
 
 	# Dependency atoms are not generated for Vala versions older than 0.${minimal_supported_minor_version}.
-	minimal_supported_minor_version="46"
+	minimal_supported_minor_version="56"
 
 	for ((minor_version = ${VALA_MAX_API_VERSION#*.}; minor_version >= ${VALA_MIN_API_VERSION#*.}; minor_version = minor_version - 2)); do
-		# 0.42 is EOL and removed from tree; remove special case once minimal_support_minor_version >= 44
-		if ((minor_version >= minimal_supported_minor_version)) && ((minor_version != 42)); then
+		if ((minor_version >= minimal_supported_minor_version)); then
 			echo "0.${minor_version}"
 		fi
 	done
@@ -100,13 +98,11 @@ vala_depend() {
 # VALA_MAX_API_VERSION, VALA_MIN_API_VERSION, and VALA_USE_DEPEND.
 vala_best_api_version() {
 	local u v
-	local hv_opt="-b"
-	[[ ${EAPI} == 6 ]] && hv_opt=""
 
 	u=$(_vala_use_depend)
 
 	for v in $(vala_api_versions); do
-		has_version ${hv_opt} "dev-lang/vala:${v}${u}" && echo "${v}" && return
+		has_version -b "dev-lang/vala:${v}${u}" && echo "${v}" && return
 	done
 }
 
@@ -122,8 +118,6 @@ vala_best_api_version() {
 # version is not available.
 vala_setup() {
 	local p d valafoo version ignore_use
-	local hv_opt="-b"
-	[[ ${EAPI} == 6 ]] && hv_opt=""
 
 	while [[ $1 ]]; do
 		case $1 in
@@ -142,7 +136,7 @@ vala_setup() {
 	fi
 
 	if [[ ${version} ]]; then
-		has_version ${hv_opt} "dev-lang/vala:${version}" || die "No installed vala:${version}"
+		has_version -b "dev-lang/vala:${version}" || die "No installed vala:${version}"
 	else
 		version=$(vala_best_api_version)
 		[[ ${version} ]] || die "No installed vala in $(vala_depend)"
@@ -179,8 +173,8 @@ vala_setup() {
 
 # @FUNCTION: vala_src_prepare
 # @DESCRIPTION:
-# For backwards compatibility in EAPIs 6 and 7.  Calls vala_setup.
-if [[ ${EAPI} == [67] ]]; then
+# For backwards compatibility in EAPI 7.  Calls vala_setup.
+if [[ ${EAPI} == 7 ]]; then
 	vala_src_prepare() { vala_setup "$@"; }
 fi
 

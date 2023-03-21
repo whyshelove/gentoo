@@ -1,8 +1,8 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..10} )
 
 inherit autotools python-single-r1
 
@@ -14,7 +14,7 @@ SRC_URI="https://github.com/ClusterLabs/${PN}/archive/${MY_P}.tar.gz"
 
 LICENSE="GPL-2+ LGPL-2.1+ BSD CC-BY-SA-4.0"
 SLOT="0"
-KEYWORDS="~amd64 ~hppa ~x86"
+KEYWORDS="amd64 ~hppa x86"
 IUSE="acl smtp snmp"
 
 DEPEND="
@@ -65,7 +65,7 @@ src_install() {
 	python_optimize
 
 	# remove provided initd file as we need support for OpenRC
-	rm -r "${ED}/etc/init.d" || die "Failed to remove old initd"
+	rm -rf "${ED}/etc/init.d" || die "Failed to remove old initd"
 	newinitd "${FILESDIR}/${PN}.initd" "${PN}"
 
 	keepdir /var/lib/pacemaker/{blackbox,cib,cores,pengine}

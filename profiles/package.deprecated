@@ -17,6 +17,97 @@
 
 #--- END OF EXAMPLES ---
 
+# Michał Górny <mgorny@gentoo.org> (2023-02-03)
+# The same functionality is supported by dev-python/setuptools-scm-7.
+# See: https://github.com/pypa/setuptools_scm/#git-archives
+# https://github.com/Changaco/setuptools_scm_git_archive/#readme
+dev-python/setuptools_scm_git_archive
+
+# Michał Górny <mgorny@gentoo.org> (2023-01-30)
+# The package is on keep-alive by Debian.  Nevertheless, they can't
+# keep up with changes in dev-python/setuptools, and they do not accept
+# bug reports.  PEP517 build systems are simply a no-go for this class
+# of packages (partially due to the limitations of wheel format), meson
+# and autotools are both much better choices.
+dev-python/python-distutils-extra
+
+# Michał Górny <mgorny@gentoo.org> (2023-01-18)
+# Renamed to dev-python/pyproject-hooks (with upstream module name change).
+dev-python/pep517
+
+# Sam James <sam@gentoo.org> (2022-12-29)
+# Doesn't work correctly on newer kernels/hardware. Events may go unreported
+# if using sys-apps/edac-utils. See app-admin/rasdaemon's README for the technical
+# details. Please migrate to app-admin/rasdaemon instead.
+sys-apps/edac-utils
+
+# Andreas Sturmlechner <asturm@gentoo.org> (2022-12-26)
+# Last-rites pending and waiting for revdeps, bug 877311
+x11-libs/snorenotify
+
+# Michał Górny <mgorny@gentoo.org> (2022-12-25)
+# Archived upstream.  Last activity in 2018.  Broken with Python 3.8.
+# Broken with Django 2.
+dev-python/oauth2client
+
+# Michał Górny <mgorny@gentoo.org> (2022-12-24)
+# Unmaintained with last release in 2019.  We already patched it to work
+# with Python 3.9+.  The upstream code is also vulnerable
+# to CVE-2022-40899.  Above all, this library is completely redundant
+# to packages not supporting Python 2 anymore.
+dev-python/future
+
+# Michał Górny <mgorny@gentoo.org> (2022-10-17)
+# Nosetests are no longer maintained (since 2015!), are completely
+# broken with Python 3.11, and we were already patching it to make it
+# work with prior Python versions.  If your package still needs it
+# (sic!), then either port it to use a maintained test framework (pytest
+# preferably) or last rite it.
+#
+# Case is also unmaintained (since 2018).  Nose-random has had last
+# commit in 2016 and was not even released to pypi!
+dev-python/nose
+dev-python/nose-random
+
+# Michał Górny <mgorny@gentoo.org> (2022-10-14)
+# The toml package is unmaintained (last release in 2020) and does not
+# implement TOML 1.0.  The recommended alternatives include the built-in
+# tomllib module, dev-python/tomli, dev-python/tomli-w
+# and dev-python/tomlkit.  Please consult Guide for porting tips:
+# https://projects.gentoo.org/python/guide/porting.html#replacing-the-toml-package
+dev-python/toml
+
+# Petr Vaněk <arkamar@atlas.cz> (2022-10-06)
+# Obsolete virtual.
+# Only one provider is left (net-libs/c-client), please change dependency to
+# that instead.
+virtual/imap-c-client
+
+# Matt Turner <mattst88@gentoo.org> (2022-10-02)
+# Dummy packages, now merged into app-accessibility/at-spi2-core.
+# When possible, replace dependencies on these packages with a dependency on
+# 	>=app-accessibility/at-spi2-core-2.46.0
+app-accessibility/at-spi2-atk
+dev-libs/atk
+
+# Michał Górny <mgorny@gentoo.org> (2022-06-19)
+# Test automation tools.  They are generally used to run the test suite
+# across multiple Python versions, i.e. what our eclasses do for you
+# already.  They usually can't work inside network sandbox (since they
+# fetch and install all the dependencies inside the venv), so even
+# if they are listed in dependencies, your package probably does not
+# actually need them to run tests.
+dev-python/nox
+dev-python/tox
+
+# Michał Górny <mgorny@gentoo.org> (2022-06-17)
+# So far not a single dependency on dev-python/versioneer was correct.
+# This package is a generator for "versioneer.py" file that is included
+# in the sdist tarball.  Your package most likely only imports that file
+# and does not need dev-python/versioneer.  If it really does, please
+# ping me.
+dev-python/versioneer
+
 # Sam James <sam@gentoo.org> (2022-04-22)
 # Obsolete virtual.
 # Only one provider is left (media-libs/libjpeg-turbo), please change
@@ -25,27 +116,23 @@ virtual/jpeg
 
 # Matt Turner <mattst88@gentoo.org> (2022-03-27)
 # Deprecated GNOME 2 era packages
-app-misc/tracker:0
-app-misc/tracker-miners:0
 app-text/enchant:0
 app-text/gnome-doc-utils
 app-text/gtkspell:2
 app-text/rarian
 app-text/scrollkeeper-dtd
-dev-cpp/gconfmm
 dev-cpp/gtkmm:2.4
-dev-cpp/libglademm
-dev-cpp/libgnomecanvasmm
 dev-libs/libcroco
 dev-libs/libIDL
 dev-libs/libunique:1
 gnome-base/gconf
+gnome-base/libglade
 gnome-base/libgnomecanvas
 gnome-extra/gconf-editor
-gnome-extra/gtkhtml
-x11-libs/gtk+extra
+media-libs/libart_lgpl
 x11-libs/gtksourceview:2.0
 x11-libs/libwnck:1
+x11-libs/vte:0
 x11-themes/gnome-icon-theme-extras
 x11-themes/gnome-icon-theme-symbolic
 x11-themes/gtk-chtheme
@@ -68,8 +155,6 @@ dev-perl/Mail-Sender
 # gtk2. Nuff said. See HOMEPAGE, too.
 dev-perl/Gtk2
 dev-perl/Gtk2-Notify
-dev-perl/Gtk2-SourceView2
-dev-perl/Gtk2-Unique
 dev-perl/gnome2-wnck
 
 # Mart Raudsepp <leio@gentoo.org> (2020-07-04)
@@ -84,15 +169,6 @@ x11-libs/wxGTK:3.0
 # Bug #650320
 dev-perl/Net-SMTP-SSL
 
-# Matt Turner <mattst88@gentoo.org> (2020-03-17)
-# Deprecated GNOME 2 era packages, bug #751001
-gnome-base/gnome-vfs
-
 # Andreas Sturmlechner <asturm@gentoo.org> (2020-03-08)
 # x11-libs/gtkglext is in the process of being removed, tracker bug #698950
 x11-libs/gtkglext
-
-# Zac Medico <zmedico@gentoo.org> (2019-12-06)
-# These golang libraries should be vendored either by upstream or via
-# the EGO_VENDOR variable.
-dev-go/go-sqlite3

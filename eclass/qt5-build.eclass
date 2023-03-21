@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: qt5-build.eclass
@@ -11,14 +11,16 @@
 # @DESCRIPTION:
 # This eclass contains various functions that are used when building Qt5.
 
-if [[ ${CATEGORY} != dev-qt ]]; then
-	die "${ECLASS} is only to be used for building Qt 5"
-fi
-
 case ${EAPI} in
 	8) ;;
 	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
+
+if [[ -z ${_QT5_BUILD_ECLASS} ]]; then
+_QT5_BUILD_ECLASS=1
+
+[[ ${CATEGORY} != dev-qt ]] &&
+	die "${ECLASS} is only to be used for building Qt 5"
 
 # @ECLASS_VARIABLE: QT5_BUILD_TYPE
 # @DESCRIPTION:
@@ -63,6 +65,13 @@ readonly QT5_PV
 # The upstream package name of the module this package belongs to.
 # Used for SRC_URI and S.
 
+# @ECLASS_VARIABLE: _QT5_GENTOOPATCHSET_REV
+# @DEFAULT_UNSET
+# @INTERNAL
+# @DESCRIPTION:
+# Gentoo downstream patchset version applied over qtbase. Used for SRC_URI and
+# applied in src_prepare.
+
 # @ECLASS_VARIABLE: QT5_TARGET_SUBDIRS
 # @DEFAULT_UNSET
 # @DESCRIPTION:
@@ -100,7 +109,7 @@ if [[ ${PN} != qtwebengine ]]; then
 		*9999 )
 			inherit kde.org # kde/5.15 branch
 			;;
-		5.15.[3-9]* )
+		5.15.[5-9]* | 5.15.??* )
 			# official stable release
 			_QT5_P=${QT5_MODULE}-everywhere-opensource-src-${PV}
 			HOMEPAGE="https://www.qt.io/"
@@ -113,6 +122,18 @@ if [[ ${PN} != qtwebengine ]]; then
 			S="${WORKDIR}"/${_QT5_P/opensource-}
 			;;
 	esac
+fi
+
+if [[ ${QT5_MODULE} == qtbase ]]; then
+	case ${PV} in
+		5.15.7)
+			_QT5_GENTOOPATCHSET_REV=2
+			;;
+		*)
+			_QT5_GENTOOPATCHSET_REV=3
+			;;
+	esac
+	SRC_URI+=" https://dev.gentoo.org/~asturm/distfiles/qtbase-5.15-gentoo-patchset-${_QT5_GENTOOPATCHSET_REV}.tar.xz"
 fi
 
 # @ECLASS_VARIABLE: QT5_BUILD_DIR
@@ -152,8 +173,6 @@ fi
 
 ######  Phase functions  ######
 
-EXPORT_FUNCTIONS src_prepare src_configure src_compile src_install src_test pkg_postinst pkg_postrm
-
 # @FUNCTION: qt5-build_src_prepare
 # @DESCRIPTION:
 # Prepares the environment and patches the sources if necessary.
@@ -170,12 +189,14 @@ qt5-build_src_prepare() {
 	if [[ ${QT5_MODULE} == qtbase ]]; then
 		qt5_symlink_tools_to_build_dir
 
+		[[ -n ${_QT5_GENTOOPATCHSET_REV} ]] && eapply "${WORKDIR}/qtbase-5.15-gentoo-patchset-${_QT5_GENTOOPATCHSET_REV}"
+
 		# Avoid unnecessary qmake recompilations
 		sed -i -e "/Creating qmake/i if [ '!' -e \"\$outpath/bin/qmake\" ]; then" \
 			-e '/echo "Done."/a fi' configure || die "sed failed (skip qmake bootstrap)"
 
 		# Respect CC, CXX, *FLAGS, MAKEOPTS and EXTRA_EMAKE when bootstrapping qmake
-		sed -i -e "/outpath\/qmake\".*\"\$MAKE\")/ s|)| \
+		sed -i -e "/outpath\/qmake\".*\"*\$MAKE\"*)/ s|)| \
 			${MAKEOPTS} ${EXTRA_EMAKE} 'CC=$(tc-getCC)' 'CXX=$(tc-getCXX)' \
 			'QMAKE_CFLAGS=${CFLAGS}' 'QMAKE_CXXFLAGS=${CXXFLAGS}' 'QMAKE_LFLAGS=${LDFLAGS}'&|" \
 			-e 's/\(setBootstrapVariable\s\+\|EXTRA_C\(XX\)\?FLAGS=.*\)QMAKE_C\(XX\)\?FLAGS_\(DEBUG\|RELEASE\).*/:/' \
@@ -955,3 +976,7 @@ qt5_regenerate_global_configs() {
 		ewarn "${qmodule_pri} or ${qmodule_pri_orig} does not exist or is not a regular file"
 	fi
 }
+
+fi
+
+EXPORT_FUNCTIONS src_prepare src_configure src_compile src_install src_test pkg_postinst pkg_postrm

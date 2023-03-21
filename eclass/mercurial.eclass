@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: mercurial.eclass
 # @MAINTAINER:
-# Christoph Junghans <junghans@gentoo.org>
+# No maintainer <maintainer-needed@gentoo.org.
 # @AUTHOR:
 # Next gen author: Krzysztof Pawlik <nelchael@gentoo.org>
 # Original author: Aron Griffis <agriffis@gentoo.org>
@@ -94,6 +94,10 @@ BDEPEND="dev-vcs/mercurial"
 # users.
 EHG_OFFLINE="${EHG_OFFLINE:-${EVCS_OFFLINE}}"
 
+# @ECLASS_VARIABLE: EHG_BOOTSTRAP
+# @DESCRIPTION:
+# Command to be executed after checkout and clone of the specified repository.
+
 # @FUNCTION: mercurial_fetch
 # @USAGE: [repository_uri] [module] [sourcedir]
 # @DESCRIPTION:
@@ -171,10 +175,6 @@ mercurial_fetch() {
 mercurial_bootstrap() {
 	debug-print-function ${FUNCNAME} "$@"
 
-	# @ECLASS_VARIABLE: EHG_BOOTSTRAP
-	# @DESCRIPTION:
-	# Command to be executed after checkout and clone of the specified
-	# repository.
 	if [[ ${EHG_BOOTSTRAP} ]]; then
 		pushd "${S}" > /dev/null
 		einfo "Starting bootstrap"

@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -18,8 +18,10 @@ fi
 
 LICENSE="GPL-2 GPL-2+"
 SLOT="0"
+IUSE="test"
+RESTRICT="!test? ( test )"
 
-BDEPEND=">=dev-util/lxqt-build-tools-0.10.0"
+BDEPEND=">=dev-util/lxqt-build-tools-0.12.0"
 DEPEND="
 	>=dev-qt/qtcore-5.15:5
 	>=dev-qt/qtdbus-5.15:5
@@ -28,10 +30,17 @@ DEPEND="
 	>=dev-qt/qtx11extras-5.15:5
 	x11-libs/libX11
 	~x11-libs/qtermwidget-${PV}:=
+	test? ( dev-qt/qttest:5 )
 "
 RDEPEND="${DEPEND}"
 
-PATCHES=( "${FILESDIR}/qterminal-0.16.1-appdata.patch" )
+src_configure() {
+	local mycmakeargs=(
+		-DBUILD_TESTS=$(usex test)
+	)
+
+	cmake_src_configure
+}
 
 pkg_postinst() {
 	xdg_icon_cache_update

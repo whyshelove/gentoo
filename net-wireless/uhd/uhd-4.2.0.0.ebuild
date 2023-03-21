@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8,9,10} )
+PYTHON_COMPAT=( python3_{9,10} )
 
 inherit cmake gnome2-utils python-single-r1 udev
 
@@ -17,15 +17,15 @@ SRC_URI="https://github.com/EttusResearch/uhd/archive/v${PV}.tar.gz -> EttusRese
 
 LICENSE="GPL-3"
 SLOT="0/$(ver_cut 1-3)"
-KEYWORDS="~amd64 ~arm ~x86"
-IUSE="+b100 +b200 doc e300 examples +mpmd octoclock +n230 test +usb +usrp1 +usrp2 +utils +x300"
+KEYWORDS="~amd64 ~arm ~riscv ~x86"
+IUSE="+b100 +b200 doc cpu_flags_arm_neon cpu_flags_x86_ssse3 e300 examples +mpmd octoclock test +usb +usrp1 +usrp2 +utils +x300"
 RESTRICT="!test? ( test )"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
 			b100? ( usb )
 			b200? ( usb )
 			usrp1? ( usb )
 			usrp2? ( usb )
-			|| ( b100 b200 e300 mpmd n230 usrp1 usrp2 x300 )"
+			|| ( b100 b200 e300 mpmd usrp1 usrp2 x300 )"
 
 RDEPEND="${PYTHON_DEPS}
 	e300? ( virtual/udev )
@@ -38,7 +38,7 @@ RDEPEND="${PYTHON_DEPS}
 	')
 "
 DEPEND="${RDEPEND}"
-#zip an gzip are directly used by the build system
+#zip and gzip are directly used by the build system
 BDEPEND="
 	doc? ( app-doc/doxygen )
 	$(python_gen_cond_dep '
@@ -84,8 +84,11 @@ src_configure() {
 		-DENABLE_X300="$(usex x300)"
 		-DENABLE_MPMD="$(usex mpmd)"
 		-DENABLE_OCTOCLOCK="$(usex octoclock)"
+		-DENABLE_SSSE3="$(usex cpu_flags_x86_ssse3)"
+		-DNEON_SIMD_ENABLE="$(usex cpu_flags_arm_neon)"
 		-DPYTHON_EXECUTABLE="${PYTHON}"
 		-DPKG_DOC_DIR="${EPREFIX}/usr/share/doc/${PF}"
+		-DUHD_VERSION="${PV}"
 	)
 	cmake_src_configure
 }
@@ -93,9 +96,15 @@ src_configure() {
 src_install() {
 	cmake_src_install
 	python_optimize
-	use utils && python_fix_shebang "${ED}"/usr/$(get_libdir)/${PN}/utils/
-	if [[ "${PV}" != "9999" ]]; then
-		rm -r "${ED}/usr/bin/uhd_images_downloader" || die
+	if use utils; then
+		python_fix_shebang "${ED}"/usr/$(get_libdir)/${PN}/utils/
+		if [[ "${PV}" != "9999" ]]; then
+			rm -r "${ED}/usr/bin/uhd_images_downloader" || die
+		fi
+	fi
+	# do not install test files (bug #857492)
+	if use test; then
+		rm "${ED}/usr/lib64/${PN}/tests" -R || die
 	fi
 
 	udev_dorules "${S}/utils/uhd-usrp.rules"
@@ -113,9 +122,6 @@ src_install() {
 	if ! use mpmd; then
 		rm "${WORKDIR}"/images/usrp_n310* || die
 	fi
-	if ! use n230; then
-		rm "${WORKDIR}"/images/usrp_n230* || die
-	fi
 	if ! use octoclock; then
 		rm "${WORKDIR}"/images/octoclock* || die
 	fi
@@ -132,4 +138,12 @@ src_install() {
 	fi
 	insinto /usr/share/${PN}
 	doins -r "${WORKDIR}/images"
+}
+
+pkg_postinst() {
+	udev_reload
+}
+
+pkg_postrm() {
+	udev_reload
 }

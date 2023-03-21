@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( pypy3 python3_{8..10} )
+PYTHON_COMPAT=( pypy3 python3_{9..10} )
 
 inherit distutils-r1
 
@@ -27,23 +27,23 @@ BDEPEND="
 	)
 "
 
-distutils_enable_tests nose
+distutils_enable_tests unittest
 
 python_test() {
 	local pidfile="${TMPDIR}/memcached.pid"
 
-	memcached -d -P "$pidfile" || die "failed to start memcached"
+	memcached -d -P "${pidfile}" || die "failed to start memcached"
 
-	nosetests -v || die "Tests fail with ${EPYTHON}"
+	eunittest || die "Tests fail with ${EPYTHON}"
 
-	kill "$(<"$pidfile")" || die "failed to kill memcached"
+	kill "$(<"${pidfile}")" || die "failed to kill memcached"
 	local elapsed=0
-	while [[ -f "$pidfile" ]]; do
-		if [[ $elapsed -ge 30 ]]; then
-			kill -KILL "$(<"$pidfile")" || die "failed to kill -KILL memcached"
+	while [[ -f ${pidfile} ]]; do
+		if [[ $(( elapsed++ )) -ge 30 ]]; then
+			kill -KILL "$(<"${pidfile}")" ||
+				die "failed to kill -KILL memcached"
 			die "memcached failed to stop after 30 seconds"
 		fi
 		sleep 1
-		let elapsed++
 	done
 }

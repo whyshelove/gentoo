@@ -3,7 +3,7 @@
 
 EAPI=8
 
-USE_RUBY="ruby26 ruby27 ruby30"
+USE_RUBY="ruby27 ruby30 ruby31"
 
 RUBY_FAKEGEM_TASK_TEST="-Ilib test"
 RUBY_FAKEGEM_TASK_DOC="doc"
@@ -20,10 +20,10 @@ DESCRIPTION="'httpclient' gives something like the functionality of libwww-perl 
 HOMEPAGE="https://github.com/nahi/httpclient"
 SRC_URI="https://github.com/nahi/httpclient/archive/v${PV}.tar.gz -> ${P}.tgz"
 
-LICENSE="Ruby"
+LICENSE="|| ( Ruby Ruby-BSD BSD-2 )"
 SLOT="0"
 
-KEYWORDS="amd64 ~arm ~arm64 ~hppa ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x64-solaris ~x86-solaris"
+KEYWORDS="amd64 arm arm64 ~hppa ~loong ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x64-solaris ~x86-solaris"
 IUSE=""
 
 ruby_add_rdepend "virtual/ruby-ssl"

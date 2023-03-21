@@ -1,8 +1,45 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # This file requires eapi 5 or later. New entries go on top.
 # Please use the same syntax as in package.use.mask
+
+# Daniel Pielmeier <billie@gentoo.org> (2023-03-04)
+# For docs, app-text/pandoc is required. For details see:
+# Bug #737612
+app-admin/conky doc
+
+# Arsen Arsenović <arsen@gentoo.org> (2023-01-27)
+# Pulls in large amounts of unstable dependencies, blocking
+# stabilization of other packages.
+# Bug #891965.
+sys-block/nbdkit libguestfs
+
+# Andreas Sturmlechner <asturm@gentoo.org> (2022-12-24)
+# dev-util/hip and its rocm dependencies not stable yet
+sci-physics/lammps hip
+
+# Sam James <sam@gentoo.org> (2022-12-07)
+# Needs unstable media-libs/oneVPL
+media-libs/gst-plugins-bad qsv
+
+# Guillermo Joandet <gjoandet@gmail.com> (2022-11-22)
+# app-text/pandoc is not stable
+net-libs/gssdp man
+
+# Marek Szuba <marecki@gentoo.org> (2022-09-25)
+# This depends on app-admin/ansible-molecule, which is not stable yet.
+# Moreover, all but the most recent versions of ansible-molecule
+# depend in turn on subprocess-tee.
+dev-python/subprocess-tee test-full
+
+# Arthur Zamarin <arthurzam@gentoo.org> (2022-09-16)
+# app-emacs/flycheck is not stable
+dev-util/pkgcheck emacs
+
+# Matt Turner <mattst88@gentoo.org> (2022-05-11)
+# app-text/pandoc is not stable
+app-text/nuspell doc
 
 # Sam James <sam@gentoo.org> (2022-02-11)
 # Needs glibc-2.35(?) (or <2.34) which is not yet even keyworded but
@@ -18,10 +55,6 @@ sys-apps/nvme-cli hugepages
 # test deps are not stable and tests do not work
 # due to network access issues #829430
 net-libs/grpc test
-
-# Ben Kohler <bkohler@gentoo.org> (2021-11-27)
-# net-misc/pyhoca-cli and several of its deps will need stable first
-net-misc/remmina x2go
 
 # Sergey Popov <pinkbyte@gentoo.org> (2021-10-14)
 # net-libs/grpc is not yet stabilized,
@@ -63,12 +96,6 @@ dev-libs/glib sysprof
 # bug #769923
 dev-embedded/urjtag ftd2xx
 
-# Sam James <sam@gentoo.org> (2021-01-27)
-# Experimental feature which may not be as secure
-# as on OpenBSD (where proper kernel support exists).
-# bug #726994
-app-admin/doas persist
-
 # Sam James <sam@gentoo.org> (2021-01-09)
 # relapack is experimental, please be careful with use
 # bug #764206
@@ -78,7 +105,7 @@ sci-libs/openblas relapack
 # temporarily block tests so that bugs can be resolved
 dev-php/theseer-Autoload test
 
-# James Le Cuirot <sam@gentoo.org> (2020-11-23)
+# James Le Cuirot <chewi@gentoo.org> (2020-11-23)
 # Cinnamon is not stable on any architecture.
 x11-themes/arc-theme cinnamon
 
@@ -97,7 +124,7 @@ app-emulation/winetricks test
 # Georgy Yakovlev <gyakovlev@gentoo.org> (2019-12-21)
 # For bleeding edge features and testing, not generally suitable
 # for stable systems
-dev-lang/rust miri nightly system-bootstrap
+dev-lang/rust nightly profiler system-bootstrap
 
 # Andreas Sturmlechner <asturm@gentoo.org> (2019-12-09)
 # Declared experimental, and dev-cpp/websocketpp not stable yet
@@ -156,11 +183,6 @@ dev-perl/DBD-SQLite system-sqlite
 # Bug #643840.
 dev-python/matplotlib doc
 
-# Michał Górny <mgorny@gentoo.org> (2018-01-20)
-# Requires proprietary fetch-restricted package that is not suitable
-# for stabilization. Bug #645092.
-net-proxy/haproxy device-atlas
-
 # Bernard Cafarelli <voyageur@gentoo.org> (2017-11-27)
 # Dependencies have no stable keyword
 app-backup/backup-manager s3
@@ -173,10 +195,6 @@ dev-php/PEAR-Text_Password test
 # Requires unmaintained unstable dependency net-libs/gloox.
 # The go flag requires stable masked dev-lang/go[gccgo].
 www-servers/uwsgi go uwsgi_plugins_alarm_xmpp
-
-# Michael Palimaka <kensington@gentoo.org> (2017-09-30)
-# Required dependeny is not stable
-sci-libs/gdal mdb
 
 # Tim Harder <radhermit@gentoo.org> (2017-09-11)
 # Requires guile-2 which is still unstable.
@@ -206,12 +224,6 @@ net-libs/gnutls test-full
 # Lars Wendler <polynomial-c@gentoo.org> (2016-12-15)
 # Requires php:7.0 and ruby:2.2 being stable
 >=dev-libs/Ice-3.6.3 php ruby
-
-# Kristian Fiskerstrand <k_f@gentoo.org> (2016-08-18)
-# Dropping stable for xtrabackup-bin, stable masking use
-# flag until a source based version that doesn't depend
-# on a vulnerable libgcrypt version is in tree
-dev-db/mariadb sst-xtrabackup
 
 # Pacho Ramos <pacho@gentoo.org> (2015-05-15)
 # Version compatible with current ffmpeg is not ready to be stabilized

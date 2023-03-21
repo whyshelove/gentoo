@@ -1,4 +1,4 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -14,7 +14,7 @@ LICENSE="EPL-1.0"
 # major soname component
 SLOT="0/1"
 
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~amd64 ~loong ~riscv ~x86 ~amd64-linux ~x86-linux"
 IUSE="doc examples static-libs test"
 RESTRICT="!test? ( test )"
 
@@ -33,6 +33,10 @@ DEPEND="sci-libs/coinor-osi:=
 RDEPEND="${DEPEND}"
 
 S="${WORKDIR}/${MY_PN}-releases-${PV}/${MY_PN}"
+
+PATCHES=(
+	"${FILESDIR}"/${P}-musl-1.2.3-null.patch
+)
 
 src_prepare() {
 	# Needed to make the --with-coin-instdir in src_configure happy.

@@ -1,8 +1,8 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="7"
-USE_RUBY="ruby24 ruby25 ruby26"
+EAPI="8"
+USE_RUBY="ruby26 ruby27 ruby30 ruby31"
 
 inherit git-r3 ruby-single
 
@@ -19,7 +19,7 @@ IUSE="cdb ${USE_RUBY//ruby/ruby_targets_ruby}"
 
 DEPEND="${RUBY_DEPS}
 	app-i18n/skktools
-	virtual/awk
+	app-alternatives/awk
 	cdb? (
 		|| (
 			dev-db/tinycdb

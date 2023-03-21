@@ -17,11 +17,12 @@ IUSE="+ocamlopt"
 RDEPEND="
 	dev-ml/astring:=
 	dev-ml/async_unix:=
-	dev-ml/cmdliner:=
+	<dev-ml/cmdliner-1.1.0:=
 	dev-ml/core:=
 	dev-ml/core_kernel:=
 	dev-ml/duration:=
 	>=dev-ml/fmt-0.8.9:=
+	dev-ml/lwt:=
 	dev-ml/mirage-clock:=
 	dev-ml/re:=
 	dev-ml/result:=

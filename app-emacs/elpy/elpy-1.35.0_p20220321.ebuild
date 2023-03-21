@@ -1,13 +1,13 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-H=1746e7009000b7635c0ea6f1559018143aa61642
+[[ ${PV} == *_p20220321 ]] && COMMIT=1746e7009000b7635c0ea6f1559018143aa61642
 
 DISTUTILS_SINGLE_IMPL=ON
 DISTUTILS_USE_PEP517=setuptools
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..11} )
 
 NEED_EMACS=24.4
 
@@ -15,9 +15,9 @@ inherit distutils-r1 elisp
 
 DESCRIPTION="Emacs Python Development Environment"
 HOMEPAGE="https://github.com/jorgenschaefer/elpy/"
-SRC_URI="https://github.com/jorgenschaefer/${PN}/archive/${H}.tar.gz
-			-> ${P}.tar.gz"
-S="${WORKDIR}"/${PN}-${H}
+SRC_URI="https://github.com/jorgenschaefer/${PN}/archive/${COMMIT}.tar.gz
+	-> ${P}.tar.gz"
+S="${WORKDIR}"/${PN}-${COMMIT}
 
 LICENSE="GPL-3+"
 SLOT="0"
@@ -44,11 +44,12 @@ BDEPEND="
 	)
 "
 
-DOCS=( CONTRIBUTING.rst README.rst )
 PATCHES=(
 	"${FILESDIR}"/${PN}-elpy.el-yas-snippet-dirs.patch
 	"${FILESDIR}"/${PN}-elpy-rpc.el-elpy-rpc-pythonpath.patch
 )
+
+DOCS=( CONTRIBUTING.rst README.rst )
 SITEFILE="50${PN}-gentoo.el"
 
 distutils_enable_sphinx docs --no-autodoc

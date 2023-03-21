@@ -1,7 +1,7 @@
-# Copyright 2019-2021 Gentoo Authors
+# Copyright 2019-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 DESCRIPTION="A new set of tools for working with SquashFS images"
 HOMEPAGE="https://github.com/AgentD/squashfs-tools-ng"
@@ -13,15 +13,16 @@ else
 	SRC_URI="https://infraroot.at/pub/squashfs/${P}.tar.xz"
 fi
 
-LICENSE="LGPL-3+ tools? ( GPL-3+ )"
+LICENSE="LGPL-3+ BSD-2 MIT tools? ( GPL-3+ )"
 SLOT="0"
 IUSE="lz4 +lzma lzo selinux +tools zstd"
 
 DEPEND="
+	app-arch/bzip2:=
 	sys-libs/zlib:=
 	lz4?     ( app-arch/lz4:= )
-	lzma?    ( app-arch/xz-utils:= )
-	lzo?     ( dev-libs/lzo:= )
+	lzma?    ( app-arch/xz-utils )
+	lzo?     ( dev-libs/lzo:2 )
 	selinux? ( sys-libs/libselinux:= )
 	zstd?    ( app-arch/zstd:= )
 "

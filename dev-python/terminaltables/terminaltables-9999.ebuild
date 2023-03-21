@@ -1,10 +1,10 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
 DISTUTILS_USE_PEP517=poetry
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..11} )
 
 inherit distutils-r1 git-r3
 
@@ -31,4 +31,11 @@ src_prepare() {
 		-i pyproject.toml || die
 
 	distutils-r1_src_prepare
+}
+
+python_test() {
+	# We override FORCE_COLOR otherwise termcolor
+	# would pick it up from env. and give unexpected
+	# output for tests.
+	FORCE_COLOR=1 epytest
 }

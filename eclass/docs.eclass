@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: docs.eclass
@@ -7,7 +7,7 @@
 # @AUTHOR:
 # Author: Andrew Ammerlaan <andrewammerlaan@gentoo.org>
 # Based on the work of: Michał Górny <mgorny@gentoo.org>
-# @SUPPORTED_EAPIS: 6 7 8
+# @SUPPORTED_EAPIS: 7 8
 # @BLURB: A simple eclass to build documentation.
 # @DESCRIPTION:
 # A simple eclass providing basic functions and variables to build
@@ -57,15 +57,9 @@
 # ...
 # @CODE
 
-case "${EAPI:-0}" in
-	0|1|2|3|4|5)
-		die "Unsupported EAPI=${EAPI:-0} (too old) for ${ECLASS}"
-		;;
-	6|7|8)
-		;;
-	*)
-		die "Unsupported EAPI=${EAPI} (unknown) for ${ECLASS}"
-		;;
+case ${EAPI} in
+	7|8) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
 # @ECLASS_VARIABLE: DOCS_BUILDER
@@ -143,13 +137,23 @@ esac
 #
 # Defaults to Doxyfile for doxygen
 
-if [[ ! ${_DOCS} ]]; then
+# @ECLASS_VARIABLE: DOCS_INITIALIZE_GIT
+# @DEFAULT_UNSET
+# @PRE_INHERIT
+# @DESCRIPTION:
+# Sometimes building the documentation will fail if this is not done
+# inside a git repository. If this variable is set the compile functions
+# will initialize a dummy git repository before compiling. A dependency
+# on dev-vcs/git is automatically added.
+
+if [[ -z ${_DOCS_ECLASS} ]]; then
+_DOCS_ECLASS=1
 
 # For the python based DOCS_BUILDERS we need to inherit any python eclass
 case ${DOCS_BUILDER} in
 	"sphinx"|"mkdocs")
 		# We need the python_gen_any_dep function
-		if [[ ! ${_PYTHON_R1} && ! ${_PYTHON_ANY_R1} && ! ${_PYTHON_SINGLE_R1} ]]; then
+		if [[ ! ${_PYTHON_R1_ECLASS} && ! ${_PYTHON_ANY_R1_ECLASS} && ! ${_PYTHON_SINGLE_R1_ECLASS} ]]; then
 			die "distutils-r1, python-r1, python-single-r1 or python-any-r1 needs to be inherited to use python based documentation builders"
 		fi
 		;;
@@ -163,6 +167,24 @@ case ${DOCS_BUILDER} in
 		die "Unsupported DOCS_BUILDER=${DOCS_BUILDER} (unknown) for ${ECLASS}"
 		;;
 esac
+
+# @FUNCTION: initialize_git_repo
+# @DESCRIPTION:
+# Initializes a dummy git repository. This function is called by the
+# documentation compile functions if DOCS_INITIALIZE_GIT is set. It can
+# also be called manually.
+initialize_git_repo() {
+	# Only initialize if we are not already in a git repository
+	local git_is_initialized="$(git rev-parse --is-inside-work-tree 2> /dev/null)"
+	if [[ ! "${git_is_initialized}" ]]; then
+		git init -q || die
+		git config --global user.email "larry@gentoo.org" || die
+		git config --global user.name "Larry the Cow" || die
+		git add . || die
+		git commit -qm "init" || die
+		git tag -a "${PV}" -m "${PN} version ${PV}" || die
+	fi
+}
 
 # @FUNCTION: python_append_deps
 # @INTERNAL
@@ -199,7 +221,7 @@ sphinx_deps() {
 	elif [[ ${DOCS_AUTODOC} != 0 && ${DOCS_AUTODOC} != 1 ]]; then
 		die "${FUNCNAME}: DOCS_AUTODOC should be set to 0 or 1"
 	fi
-	if [[ ${_PYTHON_SINGLE_R1} ]]; then
+	if [[ ${_PYTHON_SINGLE_R1_ECLASS} ]]; then
 		DOCS_DEPEND="$(python_gen_cond_dep "${deps}")"
 	else
 		DOCS_DEPEND="$(python_gen_any_dep "${deps}")"
@@ -207,15 +229,16 @@ sphinx_deps() {
 }
 
 # @FUNCTION: sphinx_compile
-# @INTERNAL
 # @DESCRIPTION:
 # Calls sphinx to build docs.
-#
-# If you overwrite python_compile_all do not call
-# this function, call docs_compile instead
 sphinx_compile() {
 	debug-print-function ${FUNCNAME}
 	use doc || return
+
+	: ${DOCS_DIR:="${S}"}
+	: ${DOCS_OUTDIR:="${S}/_build/html/sphinx"}
+
+	[[ ${DOCS_INITIALIZE_GIT} ]] && initialize_git_repo
 
 	local confpy=${DOCS_DIR}/conf.py
 	[[ -f ${confpy} ]] ||
@@ -236,6 +259,12 @@ sphinx_compile() {
 	# not all packages include the Makefile in pypi tarball
 	sphinx-build -b html -d "${DOCS_OUTDIR}"/_build/doctrees "${DOCS_DIR}" \
 	"${DOCS_OUTDIR}" || die "${FUNCNAME}: sphinx-build failed"
+
+	HTML_DOCS+=( "${DOCS_OUTDIR}" )
+
+	# We don't need these any more, unset them in case we want to call a
+	# second documentation builder.
+	unset DOCS_DIR DOCS_OUTDIR
 }
 
 # @FUNCTION: mkdocs_deps
@@ -255,7 +284,7 @@ mkdocs_deps() {
 	elif [[ ${DOCS_AUTODOC} != 0 && ${DOCS_AUTODOC} != 1 ]]; then
 		die "${FUNCNAME}: DOCS_AUTODOC should be set to 0 or 1"
 	fi
-	if [[ ${_PYTHON_SINGLE_R1} ]]; then
+	if [[ ${_PYTHON_SINGLE_R1_ECLASS} ]]; then
 		DOCS_DEPEND="$(python_gen_cond_dep "${deps}")"
 	else
 		DOCS_DEPEND="$(python_gen_any_dep "${deps}")"
@@ -263,15 +292,16 @@ mkdocs_deps() {
 }
 
 # @FUNCTION: mkdocs_compile
-# @INTERNAL
 # @DESCRIPTION:
 # Calls mkdocs to build docs.
-#
-# If you overwrite python_compile_all do not call
-# this function, call docs_compile instead
 mkdocs_compile() {
 	debug-print-function ${FUNCNAME}
 	use doc || return
+
+	: ${DOCS_DIR:="${S}"}
+	: ${DOCS_OUTDIR:="${S}/_build/html/mkdocs"}
+
+	[[ ${DOCS_INITIALIZE_GIT} ]] && initialize_git_repo
 
 	local mkdocsyml=${DOCS_DIR}/mkdocs.yml
 	[[ -f ${mkdocsyml} ]] ||
@@ -285,6 +315,12 @@ mkdocs_compile() {
 	# mkdocs currently has no option to disable this
 	# and portage complains: "Colliding files found by ecompress"
 	rm "${DOCS_OUTDIR}"/*.gz || die
+
+	HTML_DOCS+=( "${DOCS_OUTDIR}" )
+
+	# We don't need these any more, unset them in case we want to call a
+	# second documentation builder.
+	unset DOCS_DIR DOCS_OUTDIR
 }
 
 # @FUNCTION: doxygen_deps
@@ -299,14 +335,18 @@ doxygen_deps() {
 }
 
 # @FUNCTION: doxygen_compile
-# @INTERNAL
 # @DESCRIPTION:
 # Calls doxygen to build docs.
 doxygen_compile() {
 	debug-print-function ${FUNCNAME}
 	use doc || return
 
+	# This is the default name of the config file, upstream can change it.
 	: ${DOCS_CONFIG_NAME:="Doxyfile"}
+	: ${DOCS_DIR:="${S}"}
+	: ${DOCS_OUTDIR:="${S}/_build/html/doxygen"}
+
+	[[ ${DOCS_INITIALIZE_GIT} ]] && initialize_git_repo
 
 	local doxyfile=${DOCS_DIR}/${DOCS_CONFIG_NAME}
 	[[ -f ${doxyfile} ]] ||
@@ -318,6 +358,12 @@ doxygen_compile() {
 	pushd "${DOCS_DIR}" || die
 	(cat "${DOCS_CONFIG_NAME}" ; echo "HTML_OUTPUT=${DOCS_OUTDIR}") | doxygen - || die "${FUNCNAME}: doxygen failed"
 	popd || die
+
+	HTML_DOCS+=( "${DOCS_OUTDIR}" )
+
+	# We don't need these any more, unset them in case we want to call a
+	# second documentation builder.
+	unset DOCS_DIR DOCS_OUTDIR DOCS_CONFIG_NAME
 }
 
 # @FUNCTION: docs_compile
@@ -343,15 +389,7 @@ docs_compile() {
 	debug-print-function ${FUNCNAME}
 	use doc || return
 
-	# Set a sensible default as DOCS_DIR
-	: ${DOCS_DIR:="${S}"}
-
-	# Where to put the compiled files?
-	: ${DOCS_OUTDIR:="${S}/_build/html"}
-
 	${DOCS_BUILDER}_compile
-
-	HTML_DOCS+=( "${DOCS_OUTDIR}/." )
 
 	# we need to ensure successful return in case we're called last,
 	# otherwise Portage may wrongly assume sourcing failed
@@ -378,19 +416,16 @@ case ${DOCS_BUILDER} in
 		;;
 esac
 
-if [[ ${EAPI} != 6 ]]; then
-	BDEPEND+=" doc? ( ${DOCS_DEPEND} )"
-else
-	DEPEND+=" doc? ( ${DOCS_DEPEND} )"
-fi
+[[ ${DOCS_INITIALIZE_GIT} ]] && DOCS_DEPEND+=" dev-vcs/git "
+
+BDEPEND+=" doc? ( ${DOCS_DEPEND} )"
 
 # If this is a python package using distutils-r1
 # then put the compile function in the specific
 # python function, else docs_compile should be manually
 # added to src_compile
-if [[ ${_DISTUTILS_R1} && ( ${DOCS_BUILDER}="mkdocs" || ${DOCS_BUILDER}="sphinx" ) ]]; then
+if [[ ${_DISTUTILS_R1_ECLASS} && ( ${DOCS_BUILDER}="mkdocs" || ${DOCS_BUILDER}="sphinx" ) ]]; then
 	python_compile_all() { docs_compile; }
 fi
 
-_DOCS=1
 fi

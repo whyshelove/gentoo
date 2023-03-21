@@ -1,19 +1,22 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
 VERIFY_SIG_OPENPGP_KEY_PATH="${BROOT}"/usr/share/openpgp-keys/bcl.asc
-inherit verify-sig
+
+inherit autotools verify-sig
 
 DESCRIPTION="Create, destroy, resize, check, copy partitions and file systems"
 HOMEPAGE="https://www.gnu.org/software/parted/"
-SRC_URI="mirror://gnu/${PN}/${P}.tar.xz
-	verify-sig? ( mirror://gnu/${PN}/${P}.tar.xz.sig )"
+SRC_URI="
+	mirror://gnu/${PN}/${P}.tar.xz
+	verify-sig? ( mirror://gnu/${PN}/${P}.tar.xz.sig )
+"
 
-LICENSE="GPL-3"
+LICENSE="GPL-3+"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~loong ~mips ppc ppc64 ~riscv ~s390 sparc x86"
 IUSE="+debug device-mapper nls readline"
 
 # util-linux for libuuid
@@ -29,7 +32,7 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 BDEPEND="
 	nls? ( >=sys-devel/gettext-0.12.1-r2 )
-	verify-sig? ( sec-keys/openpgp-keys-bcl )
+	verify-sig? ( >=sec-keys/openpgp-keys-bcl-20230315 )
 	virtual/pkgconfig
 "
 
@@ -44,8 +47,12 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-3.4-posix-printf.patch
 )
 
+# false positive
+QA_CONFIG_IMPL_DECL_SKIP="MIN"
+
 src_prepare() {
 	default
+	eautoconf
 
 	touch doc/pt_BR/Makefile.in || die
 }

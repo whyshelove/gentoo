@@ -1,4 +1,4 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -11,7 +11,7 @@ SRC_URI="https://www.molspaces.com/dl/progs/${P}.tar.gz"
 
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="amd64 ~x86"
 IUSE="+lzo"
 
 DEPEND="
@@ -51,6 +51,8 @@ src_install() {
 }
 
 pkg_postinst() {
+	xdg_desktop_database_update
+
 	elog "For best functionality, emerge the following packages:"
 	elog "    app-text/poppler[utils] - for data import from PDF files"
 	elog "    app-text/dvipdfm        - for data import from DVI files"
@@ -60,10 +62,6 @@ pkg_postinst() {
 	elog "                              text strings"
 	elog "    virtual/latex-base      - to check for BibTeX file correctness and to get"
 	elog "                              nice printing through the shell script bib2pdf"
-}
-
-pkg_postinst() {
-	xdg_desktop_database_update
 }
 
 pkg_postrm() {

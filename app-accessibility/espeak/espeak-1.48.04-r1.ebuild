@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
 
-inherit toolchain-funcs
+inherit flag-o-matic toolchain-funcs
 
 MY_P="${P}-source"
 SRC_URI="mirror://sourceforge/${PN}/${MY_P}.zip"
@@ -11,7 +11,7 @@ DESCRIPTION="Speech synthesizer for English and other languages"
 HOMEPAGE="http://espeak.sourceforge.net/"
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ppc ppc64 ~riscv sparc x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~loong ppc ppc64 ~riscv sparc x86 ~amd64-linux ~x86-linux"
 IUSE="portaudio pulseaudio"
 
 COMMON_DEPEND="portaudio? ( >=media-libs/portaudio-19_pre20071207 )
@@ -46,6 +46,9 @@ src_prepare() {
 }
 
 src_compile() {
+	# Uses removed 'register' keyword, bug #894180
+	append-cxxflags -std=c++14
+
 	emake \
 		PREFIX="${EPREFIX}/usr" \
 		CC="$(tc-getCC)" \

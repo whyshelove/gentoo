@@ -1,8 +1,48 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # NOTE: When masking a USE flag due to missing keywords, please file a keyword
 # request bug for the hppa arch.
+
+# Michał Górny <mgorny@gentoo.org> (2023-03-14)
+# Requires virtual/pandoc.
+dev-python/nbclassic doc
+
+# Hans de Graaff <graaff@gentoo.org> (2023-02-27)
+# Depends on virtual/rust
+dev-lang/ruby jit
+
+# Sam James <sam@gentoo.org> (2022-12-26)
+# Unkeyworded dependencies
+dev-util/diffoscope opendocument pascal pdf R
+
+# Florian Schmaus <flow@gentoo.org> (2022-11-23)
+# avoid larger deptree, bug #882593
+dev-python/bracex doc
+
+# Conrad Kostecki <conikost@gentoo.org> (2022-11-01)
+# Mask tests, as not all needed deps are available on this arch.
+# See #878933 for progress.
+net-dns/ddclient test
+
+# Arthur Zamarin <arthurzam@gentoo.org> (2022-08-15)
+# deps not keyworded
+dev-util/pkgcheck emacs
+
+# Sergey Torokhov <torokhov-s-a@yandex.ru> (2022-06-22)
+# media-libs/libjxl is not keyworded
+# bug https://bugs.gentoo.org/853628
+media-gfx/gimp jpegxl
+
+# Sam James <sam@gentoo.org> (2022-05-17)
+# sci-libs/sundials fails to build tests on HPPA
+# bug #845222
+sci-mathematics/octave sundials
+
+# Matt Turner <mattst88@gentoo.org> (2022-05-07)
+# app-crypt/gcr is not keyworded
+app-crypt/pinentry gtk
+dev-libs/libgdata crypt
 
 # Nickolas Raymond Kaczynski <nrk@disroot.org> (2022-04-24)
 # Dependencies are missing keywords
@@ -36,11 +76,6 @@ media-video/ffmpeg vmaf
 # Sam James <sam@gentoo.org> (2022-03-06)
 # Unkeyworded dependencies
 net-mail/cyrus-imapd http
-
-# Adel Kara Slimane <adel.ks@zegrapher.com> (2022-02-17)
-# Mask AMF keyword on non-amd64 arches
-# It is unusable, for now, in other arches
-media-video/ffmpeg amf
 
 # Arthur Zamarin <arthurzam@gentoo.org> (2022-02-08)
 # bash becomes corrupted and system breaks, bug #832946
@@ -135,10 +170,6 @@ dev-util/cppcheck z3
 # media-sound/lash not keyworded, bug #736725
 media-sound/fluidsynth lash
 
-# Cédric Krier <cedk@gentoo.org> (2020-11-10)
-# virtual/rust has no hppa keyword
-dev-vcs/mercurial rust
-
 # Joonas Niilola <juippis@gentoo.org> (2020-10-08)
 # Dependency not keyworded on this arch.
 dev-libs/efl avif heif lua_single_target_luajit physics
@@ -183,7 +214,7 @@ media-video/ffmpeg dav1d libaribb24 libtesseract vidstab
 
 # Rolf Eike Beer <eike@sf-mail.de> (2020-04-11)
 # media-gfx/nvidia-texture-tools, media-libs/allegro not keyworded on hppa
-media-libs/devil allegro nvtt
+media-libs/devil allegro
 
 # Rolf Eike Beer <eike@sf-mail.de> (2020-04-09)
 # dependencies not keyworded
@@ -198,9 +229,8 @@ app-emacs/elscreen wanderlust
 net-im/pidgin gadu
 
 # Jeroen Roovers <jer@gentoo.org> (2020-01-28)
-# sys-apps/systemd is not stable
 # media-libs/libilbc has not been ported to HPPA
-net-analyzer/wireshark ilbc sdjournal
+net-analyzer/wireshark ilbc
 
 # Andreas Sturmlechner <asturm@gentoo.org> (2020-01-26)
 # media-libs/libheif is not keyworded
@@ -222,10 +252,6 @@ dev-ruby/asciidoctor test
 # Sergei Trofimovich <slyfox@gentoo.org> (2019-05-25)
 # libgo needs an explicit port to hppa: bug #686624
 sys-devel/gcc go
-
-# Jeroen Roovers (jer@gentoo.org) (2018-03-22)
-# HiPE does not work on HPPA
-dev-lang/erlang hipe
 
 # Thomas Deutschmann <whissi@gentoo.org> (2018-07-04)
 # dev-libs/xxhash not keyworded for hppa
@@ -283,10 +309,6 @@ kde-frameworks/extra-cmake-modules doc
 # pulls in many dev-ruby/asciidoctor dependencies (bug #583390)
 net-misc/chrony html
 
-# Jeroen Roovers <jer@gentoo.org> (2015-07-03)
-# net-libs/nghttp2 fails to compile (bug #552898)
-net-libs/nghttp2 cxx
-
 # Jeroen Roovers <jer@gentoo.org> (2015-05-17)
 # Mask USE=rados for net-analyzer/rrdtool since sys-cluster/ceph is not
 # keyworded (bug #549516)
@@ -296,11 +318,6 @@ net-analyzer/rrdtool rados
 # Contact us if you want or have an HPPA cluster with dev-db/mariadb
 # (bug #544378)
 dev-db/mariadb galera
-
-# Jeroen Roovers <jer@gentoo.org> (2015-02-02)
-# dev-python/gevent requires dev-python/greenlet which has not been ported to
-# HPPA (bug #538510)
-mail-filter/pyzor gevent
 
 # Jeroen Roovers <jer@gentoo.org> (2014-10-19)
 # requires dev-python/restkit which requires
@@ -342,7 +359,7 @@ sci-mathematics/octave hdf5 qhull
 
 # Jeroen Roovers <jer@gentoo.org> (2012-07-08)
 # media-libs/devil has not been fully tested on HPPA
-media-gfx/graphviz devil lefty
+media-gfx/graphviz devil
 
 # Jeroen Roovers <jer@gentoo.org> (2012-07-03)
 # Mask USE=connman for net-libs/gupnp (bug #424225)
@@ -357,7 +374,6 @@ dev-libs/libpcre jit
 # usable. Mask until this is available.
 # Jeroen Roovers <jer@gentoo.org> (2014-02-18)
 # OSS is the only kernel audio interface that works on HPPA
-media-sound/pulseaudio equalizer -oss
 media-sound/pulseaudio-daemon equalizer -oss
 
 # Jeroen Roovers <jer@gentoo.org> (2012-05-21)

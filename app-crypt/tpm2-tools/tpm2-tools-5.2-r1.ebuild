@@ -1,10 +1,10 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8..10} )
-inherit autotools bash-completion-r1 python-any-r1
+PYTHON_COMPAT=( python3_{9..11} )
+inherit autotools bash-completion-r1 flag-o-matic python-any-r1
 
 DESCRIPTION="Tools for the TPM 2.0 TSS"
 HOMEPAGE="https://github.com/tpm2-software/tpm2-tools"
@@ -12,7 +12,7 @@ SRC_URI="https://github.com/tpm2-software/tpm2-tools/releases/download/${PV}/${P
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~x86"
+KEYWORDS="amd64 arm arm64 ppc64 x86"
 IUSE="+fapi test"
 
 RESTRICT="!test? ( test )"
@@ -41,6 +41,14 @@ PATCHES=(
 	"${FILESDIR}/${PN}-5.2-testparms-fix-condition-for-negative-test.patch"
 )
 
+python_check_deps() {
+	python_has_version "dev-python/pyyaml[${PYTHON_USEDEP}]"
+}
+
+pkg_setup() {
+	use test && python-any-r1_pkg_setup
+}
+
 src_prepare() {
 	default
 	sed -i \
@@ -51,6 +59,8 @@ src_prepare() {
 }
 
 src_configure() {
+	# tests fail with LTO enabbled. See bug 865275 and 865277
+	filter-lto
 	econf \
 		$(use_enable fapi) \
 		$(use_enable test unit) \

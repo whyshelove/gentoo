@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..10} )
 inherit autotools pam python-single-r1 systemd
 
 MY_PV=$(ver_rs 1- "_")
@@ -129,15 +129,15 @@ src_prepare() {
 		raddb/radiusd.conf.in || die
 
 	# verbosity
-	# build shared libraries using jlibtool --shared
+	# build shared libraries using jlibtool -shared
 	sed -i \
 		-e '/$(LIBTOOL)/s|--quiet ||g' \
-		-e 's:--mode=\(compile\|link\):& --shared:g' \
+		-e 's:--mode=\(compile\|link\):& -shared:g' \
 		Make.inc.in || die
 
 	sed -i \
 		-e 's|--silent ||g' \
-		-e 's:--mode=\(compile\|link\):& --shared:g' \
+		-e 's:--mode=\(compile\|link\):& -shared:g' \
 		scripts/libtool.mk || die
 
 	# crude measure to stop jlibtool from running ranlib and ar

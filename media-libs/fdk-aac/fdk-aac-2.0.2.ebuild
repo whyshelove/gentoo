@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -10,7 +10,8 @@ if [[ ${PV} == *9999* ]]; then
 	[[ ${PV%9999} != "" ]] && EGIT_BRANCH="release/${PV%.9999}"
 	inherit autotools git-r3
 else
-	KEYWORDS="amd64 arm arm64 ppc ppc64 ~riscv x86 ~x64-macos"
+	inherit libtool
+	KEYWORDS="amd64 arm arm64 ~loong ~mips ppc ppc64 ~riscv x86 ~x64-macos"
 	if [[ ${PV%_p*} != ${PV} ]]; then # Gentoo snapshot
 		SRC_URI="mirror://gentoo/${P}.tar.xz"
 	else # Official release
@@ -30,13 +31,18 @@ PATCHES=( "${FILESDIR}"/${P}-always_inline.patch )
 
 src_prepare() {
 	default
-	[[ ${PV} == *9999* ]] && eautoreconf
+
+	if [[ ${PV} == *9999* ]] ; then
+		eautoreconf
+	else
+		elibtoolize
+	fi
 }
 
 multilib_src_configure() {
 	local myeconfargs=(
 		--disable-static
-		$(use_enable examples example)
+		$(multilib_native_use_enable examples example)
 	)
 	ECONF_SOURCE=${S} econf "${myeconfargs[@]}"
 }

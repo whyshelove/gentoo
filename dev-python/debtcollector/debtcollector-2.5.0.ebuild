@@ -1,20 +1,23 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
 DISTUTILS_USE_PEP517=setuptools
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..11} )
 
-inherit distutils-r1
+inherit distutils-r1 pypi
 
 DESCRIPTION="Python deprecation patterns and strategies that collect technical debt"
-HOMEPAGE="https://www.openstack.org/"
-SRC_URI="mirror://pypi/${PN:0:1}/${PN}/${P}.tar.gz"
+HOMEPAGE="
+	https://opendev.org/openstack/debtcollector/
+	https://github.com/openstack/debtcollector/
+	https://pypi.org/project/debtcollector/
+"
 
 LICENSE="Apache-2.0"
 SLOT="0"
-KEYWORDS="amd64 ~arm arm64 x86"
+KEYWORDS="amd64 ~arm arm64 ~riscv x86"
 
 RDEPEND="
 	>=dev-python/wrapt-1.7.0[${PYTHON_USEDEP}]
@@ -22,7 +25,6 @@ RDEPEND="
 BDEPEND="
 	>dev-python/pbr-2.1.0[${PYTHON_USEDEP}]
 	test? (
-		dev-python/subunit[${PYTHON_USEDEP}]
 		dev-python/testtools[${PYTHON_USEDEP}]
 		dev-python/fixtures[${PYTHON_USEDEP}]
 	)

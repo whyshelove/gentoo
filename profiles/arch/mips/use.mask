@@ -1,8 +1,24 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # Unmask the flag which corresponds to ARCH.
 -mips
+
+# matoro <matoro_gentoo@matoro.tk> (2023-03-07)
+# GPU-related USE flags.  While hardware with PCIe host
+# capabilities exists, mask these by default to reduce burden
+# on maintainers of GPU-related packages.  Can be unmasked
+# in the future upon user request.
+vulkan
+vaapi
+
+# matoro <matoro_gentoo@matoro.tk> (2023-03-03)
+# app-crypt/tpm2-tss is not keyworded here
+tpm
+
+# Andreas K. Hüttel <dilfridge@gentoo.org> (2022-05-15)
+# rdma-core is not keyworded mips...
+rdma
 
 # Matt Turner <mattst88@gentoo.org> (2018-03-25)
 # Unmask systemd since it is keyworded here.
@@ -21,10 +37,6 @@ networkmanager
 # sci-geosciences/gpsd is not keyworded here.
 gps
 
-# Brian Evans <grknight@gentoo.org> (2018-01-15)
-# Mask tcmalloc as dev-util/google-perftools is unavailable
-tcmalloc
-
 # James Le Cuirot <chewi@gentoo.org> (2017-06-29)
 # Unmask as this profile is big endian.
 -big-endian
@@ -40,11 +52,6 @@ gnome-online-accounts
 # Mart Raudsepp <leio@gentoo.org> (2017-05-27)
 # Keywords lost on net-fs/samba over time, use.mask until re-keyworded
 samba
-
-# Mart Raudsepp <leio@gentoo.org> (2017-02-07)
-# dev-libs/libappindicator not tested
-appindicator
-ayatana
 
 # Anthony G. Basile <blueness@gentoo.org> (2015-08-01)
 # There is no luajit support on mips.  Bug #554376.
@@ -121,7 +128,6 @@ dri
 # more modular X stuff
 video_cards_mga
 video_cards_nouveau
-video_cards_nv
 video_cards_r128
 video_cards_radeon
 input_devices_elographics
@@ -264,7 +270,6 @@ ocamlopt
 fluidsynth
 
 # Mips USE flags
--fixed-point
 -loongson2f
 
 # Chí-Thanh Christopher Nguyễn <chithanh@gentoo.org> (2013-08-22)

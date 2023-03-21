@@ -1,7 +1,7 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 ECM_EXAMPLES="true"
 ECM_TEST="true"
@@ -15,7 +15,10 @@ SRC_URI="mirror://kde/stable/${PN}/${P}.tar.xz"
 
 LICENSE="LGPL-2.1"
 SLOT="5"
-KEYWORDS="amd64 ~arm arm64 ~ppc64 ~riscv x86"
+KEYWORDS="amd64 ~arm arm64 ~loong ~ppc64 ~riscv x86"
+
+# tests require DBus
+RESTRICT="test"
 
 DEPEND="
 	>=dev-qt/qtdbus-${QTMIN}:5
@@ -23,6 +26,3 @@ DEPEND="
 	>=dev-qt/qtwidgets-${QTMIN}:5
 "
 RDEPEND="${DEPEND}"
-
-# tests require DBus
-RESTRICT+=" test"

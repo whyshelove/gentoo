@@ -14,7 +14,7 @@ SRC_URI="https://git.kernel.org/pub/scm/linux/kernel/git/jejb/${PN}.git/snapshot
 
 LICENSE="GPL-3 LGPL-3 LGPL-2.1 CC0-1.0"
 SLOT="0"
-KEYWORDS="amd64 arm64 ~riscv ~x86"
+KEYWORDS="amd64 arm64 ~riscv x86"
 IUSE=""
 
 RDEPEND="
@@ -25,6 +25,10 @@ DEPEND="${RDEPEND}
 	sys-boot/gnu-efi
 	sys-libs/binutils-libs
 	virtual/pkgconfig"
+
+PATCHES=(
+	"${FILESDIR}"/${PN}-0.9.4-no-werror.patch
+)
 
 src_prepare() {
 	mv "${WORKDIR}"/lib/ccan "${S}"/lib || die "mv failed"

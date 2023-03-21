@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="7"
@@ -9,11 +9,11 @@ inherit check-reqs cmake flag-o-matic linux-info \
 	multiprocessing prefix toolchain-funcs multilib-minimal
 
 # Patch version
-PATCH_SET="https://dev.gentoo.org/~whissi/dist/mysql/${PN}-5.7.36-patches-01.tar.xz"
+PATCH_SET="https://dev.gentoo.org/~whissi/dist/mysql/${P}-patches-01.tar.xz"
 
-SRC_URI="https://cdn.mysql.com/Downloads/MySQL-5.7/${PN}-boost-${PV}.tar.gz
-	https://cdn.mysql.com/archives/mysql-5.7/mysql-boost-${PV}.tar.gz
-	http://downloads.mysql.com/archives/MySQL-5.7/${PN}-boost-${PV}.tar.gz
+SRC_URI="https://cdn.mysql.com/Downloads/MySQL-$(ver_cut 1-2)/${PN}-boost-${PV}.tar.gz
+	https://cdn.mysql.com/archives/mysql-$(ver_cut 1-2)/mysql-boost-${PV}.tar.gz
+	http://downloads.mysql.com/archives/MySQL-$(ver_cut 1-2)/${PN}-boost-${PV}.tar.gz
 	${PATCH_SET}"
 
 HOMEPAGE="https://www.mysql.com/"
@@ -71,7 +71,7 @@ DEPEND="
 	${COMMON_DEPEND}
 	|| ( >=sys-devel/gcc-3.4.6 >=sys-devel/gcc-apple-4.0 )
 	dev-libs/protobuf
-	virtual/yacc
+	app-alternatives/yacc
 	server? (
 		dev-libs/libevent:=[ssl]
 		experimental? ( net-libs/rpcsvc-proto )
@@ -290,7 +290,7 @@ multilib_src_configure() {
 	CMAKE_BUILD_TYPE="RelWithDebInfo"
 
 	# debug hack wrt #497532
-	mycmakeargs=(
+	local mycmakeargs=(
 		-DCMAKE_C_FLAGS_RELWITHDEBINFO="$(usex debug '' '-DNDEBUG')"
 		-DCMAKE_CXX_FLAGS_RELWITHDEBINFO="$(usex debug '' '-DNDEBUG')"
 		-DMYSQL_DATADIR="${EPREFIX}/var/lib/mysql"
@@ -1147,7 +1147,7 @@ pkg_config() {
 		log-slave-updates \
 	; do
 		optexp="--(skip-)?${opt}" optfull="--loose-skip-${opt}"
-		egrep -sq -- "${optexp}" "${helpfile}" && mysqld_options+=( "${optfull}" )
+		grep -E -sq -- "${optexp}" "${helpfile}" && mysqld_options+=( "${optfull}" )
 	done
 
 	# Prepare timezones, see

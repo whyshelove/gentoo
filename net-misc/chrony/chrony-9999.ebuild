@@ -1,25 +1,25 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-inherit systemd tmpfiles toolchain-funcs
+inherit edo systemd tmpfiles toolchain-funcs
 
 DESCRIPTION="NTP client and server programs"
 HOMEPAGE="https://chrony.tuxfamily.org/ https://git.tuxfamily.org/chrony/chrony.git"
 
-if [[ ${PV} == "9999" ]] ; then
+if [[ ${PV} == 9999 ]] ; then
 	EGIT_REPO_URI="https://git.tuxfamily.org/chrony/chrony.git"
 	inherit git-r3
 else
-	VERIFY_SIG_OPENPGP_KEY_PATH=${BROOT}/usr/share/openpgp-keys/mlichvar.asc
+	VERIFY_SIG_OPENPGP_KEY_PATH="${BROOT}"/usr/share/openpgp-keys/mlichvar.asc
 	inherit verify-sig
 
 	SRC_URI="https://download.tuxfamily.org/${PN}/${P/_/-}.tar.gz"
 	SRC_URI+=" verify-sig? ( https://download.tuxfamily.org/chrony/${P/_/-}-tar-gz-asc.txt -> ${P/_/-}.tar.gz.asc )"
 
 	if [[ ${PV} != *_pre* ]] ; then
-		KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86"
+		KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~m68k ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86"
 	fi
 fi
 
@@ -27,7 +27,7 @@ S="${WORKDIR}/${P/_/-}"
 
 LICENSE="GPL-2"
 SLOT="0"
-IUSE="+caps +cmdmon debug html ipv6 libedit libtomcrypt +nettle nss +ntp +nts +phc pps +refclock +rtc samba +seccomp +sechash selinux"
+IUSE="+caps +cmdmon debug html libtomcrypt +nettle nss +ntp +nts +phc pps +readline +refclock +rtc samba +seccomp +sechash selinux"
 # nettle > nss > libtomcrypt in configure
 REQUIRED_USE="
 	sechash? ( || ( nettle nss libtomcrypt ) )
@@ -44,12 +44,11 @@ DEPEND="
 		acct-user/ntp
 		sys-libs/libcap
 	)
-	libedit? ( dev-libs/libedit )
-	!libedit? ( sys-libs/readline:= )
 	nettle? ( dev-libs/nettle:= )
 	nss? ( dev-libs/nss:= )
 	nts? ( net-libs/gnutls:= )
 	pps? ( net-misc/pps-tools )
+	readline? ( dev-libs/libedit )
 	seccomp? ( sys-libs/libseccomp )
 "
 RDEPEND="
@@ -65,10 +64,13 @@ BDEPEND="
 	)
 "
 
-if [[ ${PV} == "9999" ]] ; then
+if [[ ${PV} == 9999 ]] ; then
 	# Needed for doc generation in 9999
 	REQUIRED_USE+=" html"
-	BDEPEND+=" virtual/w3m"
+	BDEPEND+="
+		sys-devel/bison
+		virtual/w3m
+	"
 else
 	BDEPEND+=" verify-sig? ( >=sec-keys/openpgp-keys-mlichvar-20210513 )"
 fi
@@ -76,6 +78,7 @@ fi
 PATCHES=(
 	"${FILESDIR}"/${PN}-3.5-pool-vendor-gentoo.patch
 	"${FILESDIR}"/${PN}-4.2-systemd-gentoo.patch
+	"${FILESDIR}"/${P}-strict-prototypes-clang16.patch
 )
 
 src_prepare() {
@@ -111,23 +114,27 @@ src_configure() {
 	local myconf=(
 		$(use_enable seccomp scfilter)
 
-		$(usex caps '' '--disable-linuxcaps')
-		$(usex cmdmon '' '--disable-cmdmon')
-		$(usex debug '--enable-debug' '')
-		$(usex ipv6 '' '--disable-ipv6')
-		$(usex libedit '' '--without-editline')
-		$(usex libtomcrypt '' '--without-tomcrypt')
-		$(usex nettle '' '--without-nettle')
-		$(usex nss '' '--without-nss')
-		$(usex ntp '' '--disable-ntp')
-		$(usex nts '' '--disable-nts')
-		$(usex nts '' '--without-gnutls')
-		$(usex phc '' '--disable-phc')
-		$(usex pps '' '--disable-pps')
-		$(usex refclock '' '--disable-refclock')
-		$(usex rtc '' '--disable-rtc')
-		$(usex samba '--enable-ntp-signd' '')
-		$(usex sechash '' '--disable-sechash')
+		$(usev !caps '--disable-linuxcaps')
+		$(usev !cmdmon '--disable-cmdmon')
+		$(usev debug '--enable-debug')
+
+		# USE=readline here means "readline-like functionality"
+		# chrony only supports libedit in terms of the library providing
+		# it.
+		$(usev !readline '--without-editline --disable-readline')
+
+		$(usev !libtomcrypt '--without-tomcrypt')
+		$(usev !nettle '--without-nettle')
+		$(usev !nss '--without-nss')
+		$(usev !ntp '--disable-ntp')
+		$(usev !nts '--disable-nts')
+		$(usev !nts '--without-gnutls')
+		$(usev !phc '--disable-phc')
+		$(usev !pps '--disable-pps')
+		$(usev !refclock '--disable-refclock')
+		$(usev !rtc '--disable-rtc')
+		$(usev samba '--enable-ntp-signd')
+		$(usev !sechash '--disable-sechash')
 
 		--chronysockdir="${EPREFIX}/run/chrony"
 		--docdir="${EPREFIX}/usr/share/doc/${PF}"
@@ -141,21 +148,23 @@ src_configure() {
 	)
 
 	# Print the ./configure call
-	echo sh ./configure "${myconf[@]}" >&2
-	sh ./configure "${myconf[@]}" || die
+	edo ./configure "${myconf[@]}" || die
 }
 
 src_compile() {
-	if [[ ${PV} == "9999" ]] ; then
+	if [[ ${PV} == 9999 ]] ; then
 		# Uses w3m
 		emake -C doc man txt
 	fi
 
-	emake all docs $(usex html '' 'ADOC=true')
+	emake all docs $(usev !html 'ADOC=true')
 }
 
 src_install() {
 	default
+
+	# Compatibility with other distributions who install to /etc/chrony.conf (bug #835461)
+	dosym -r /etc/chrony/chrony.conf /etc/chrony.conf
 
 	newinitd "${FILESDIR}"/chronyd.init-r2 chronyd
 	newconfd "${T}"/chronyd.conf chronyd
@@ -179,8 +188,8 @@ src_install() {
 		# Prepare a directory for the chrony.drift file (a la ntpsec)
 		# Ensures the environment is sane on new installs
 		# bug #711058
-		fowners ntp:ntp /var/{lib,log}/chrony
-		fperms 770 /var/lib/chrony
+		fowners -R ntp:ntp /var/{lib,log}/chrony
+		fperms -R 770 /var/lib/chrony
 	fi
 
 	insinto /etc/logrotate.d
@@ -244,7 +253,7 @@ pkg_postinst() {
 
 	if [[ ${show_seccomp_enable_msg} -eq 1 ]] ; then
 		elog "To enable seccomp in a stricter mode, please modify:"
-		elog "- /etc/conf.d/chronyd for OpenRC"
+		elog "- ${EROOT}/etc/conf.d/chronyd for OpenRC"
 		elog "- systemctl edit chronyd for systemd"
 		elog "to use -F 1 or -F -1 instead of -F 2 (see man chronyd)"
 		elog "By default, we now use -F 2 which is a baseline/minimal filter."

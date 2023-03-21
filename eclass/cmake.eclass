@@ -1,9 +1,10 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: cmake.eclass
 # @MAINTAINER:
 # kde@gentoo.org
+# base-system@gentoo.org
 # @AUTHOR:
 # Tomáš Chvátal <scarabeus@gentoo.org>
 # Maciej Mrozowski <reavertm@gentoo.org>
@@ -15,12 +16,11 @@
 # @DESCRIPTION:
 # The cmake eclass makes creating ebuilds for cmake-based packages much easier.
 # It provides all inherited features (DOCS, HTML_DOCS, PATCHES) along with
-# out-of-source builds (default), in-source builds and an implementation of the
-# well-known use_enable function for CMake.
+# out-of-source builds (default) and in-source builds.
 
 case ${EAPI} in
 	7|8) ;;
-	*) die "${ECLASS}: EAPI=${EAPI:-0} is not supported" ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
 if [[ -z ${_CMAKE_ECLASS} ]]; then
@@ -97,6 +97,7 @@ fi
 # By default it uses current working directory (in EAPI-7: ${S}).
 
 # @ECLASS_VARIABLE: CMAKE_VERBOSE
+# @USER_VARIABLE
 # @DESCRIPTION:
 # Set to OFF to disable verbose messages during compilation
 : ${CMAKE_VERBOSE:=ON}
@@ -136,7 +137,7 @@ case ${CMAKE_MAKEFILE_GENERATOR} in
 		BDEPEND="sys-devel/make"
 		;;
 	ninja)
-		BDEPEND="dev-util/ninja"
+		BDEPEND="${NINJA_DEPEND}"
 		;;
 	*)
 		eerror "Unknown value for \${CMAKE_MAKEFILE_GENERATOR}"
@@ -355,19 +356,12 @@ cmake_src_prepare() {
 
 	default_src_prepare
 
-	# check if CMakeLists.txt exist and if no then die
+	# check if CMakeLists.txt exists and if not then die
 	if [[ ! -e ${CMAKE_USE_DIR}/CMakeLists.txt ]] ; then
 		eerror "Unable to locate CMakeLists.txt under:"
 		eerror "\"${CMAKE_USE_DIR}/CMakeLists.txt\""
 		eerror "Consider not inheriting the cmake eclass."
 		die "FATAL: Unable to find CMakeLists.txt"
-	fi
-
-	# if ninja is enabled but not installed, the build could fail
-	# this could happen if ninja is manually enabled (eg. make.conf) but not installed
-	if [[ ${CMAKE_MAKEFILE_GENERATOR} == ninja ]] && ! has_version -b dev-util/ninja; then
-		eerror "CMAKE_MAKEFILE_GENERATOR is set to ninja, but ninja is not installed."
-		die "Please install dev-util/ninja or unset CMAKE_MAKEFILE_GENERATOR."
 	fi
 
 	local modules_list
@@ -495,7 +489,7 @@ cmake_src_configure() {
 			# When cross-compiling with a sysroot (e.g. with crossdev's emerge wrappers)
 			# we need to tell cmake to use libs/headers from the sysroot but programs from / only.
 			cat >> "${toolchain_file}" <<- _EOF_ || die
-				set(CMAKE_FIND_ROOT_PATH "${SYSROOT}")
+				set(CMAKE_SYSROOT "${ESYSROOT}")
 				set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 				set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 				set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
@@ -601,9 +595,9 @@ cmake_src_configure() {
 		-DCMAKE_TOOLCHAIN_FILE="${toolchain_file}"
 	)
 
-	if [[ -n ${MYCMAKEARGS} ]] ; then
-		cmakeargs+=( "${MYCMAKEARGS}" )
-	fi
+	# Handle quoted whitespace
+	eval "local -a MYCMAKEARGS=( ${MYCMAKEARGS} )"
+	cmakeargs+=( "${MYCMAKEARGS[@]}" )
 
 	if [[ -n "${CMAKE_EXTRA_CACHE_FILE}" ]] ; then
 		cmakeargs+=( -C "${CMAKE_EXTRA_CACHE_FILE}" )
@@ -674,7 +668,8 @@ cmake_src_test() {
 
 	[[ -n ${TEST_VERBOSE} ]] && myctestargs+=( --extra-verbose --output-on-failure )
 
-	set -- ctest -j "$(makeopts_jobs)" --test-load "$(makeopts_loadavg)" "${myctestargs[@]}" "$@"
+	set -- ctest -j "$(makeopts_jobs "${MAKEOPTS}" 999)" \
+		--test-load "$(makeopts_loadavg)" "${myctestargs[@]}" "$@"
 	echo "$@" >&2
 	if "$@" ; then
 		einfo "Tests succeeded."
@@ -704,11 +699,7 @@ cmake_src_test() {
 cmake_src_install() {
 	debug-print-function ${FUNCNAME} "$@"
 
-	_cmake_check_build_dir
-	pushd "${BUILD_DIR}" > /dev/null || die
-	DESTDIR="${D}" ${CMAKE_MAKEFILE_GENERATOR} install "$@" ||
-		die "died running ${CMAKE_MAKEFILE_GENERATOR} install"
-	popd > /dev/null || die
+	DESTDIR="${D}" cmake_build install "$@"
 
 	if [[ ${EAPI} == 7 ]]; then
 		pushd "${S}" > /dev/null || die

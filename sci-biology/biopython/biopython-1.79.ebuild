@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..10} )
 
 inherit distutils-r1 optfeature
 
@@ -55,7 +55,7 @@ python_install_all() {
 pkg_postinst() {
 	optfeature_header "For database support you need to install:"
 	optfeature "MySQL database support" dev-python/mysqlclient
-	optfeature "PostgreSQL database support" dev-python/psycopg
+	optfeature "PostgreSQL database support" dev-python/psycopg:2
 
 	optfeature_header "Some applications need extra packages:"
 	optfeature "EMBOSS (The European Molecular Biology Open Software Suite)" sci-biology/emboss

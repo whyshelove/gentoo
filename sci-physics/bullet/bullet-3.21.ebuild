@@ -11,7 +11,7 @@ SRC_URI="https://github.com/bulletphysics/bullet3/archive/${PV}.tar.gz -> ${P}.t
 
 LICENSE="ZLIB"
 SLOT="0/${PV}"
-KEYWORDS="amd64 ~arm ~arm64 ~ppc ~ppc64 ~riscv x86 ~amd64-linux ~x86-linux"
+KEYWORDS="amd64 ~arm ~arm64 ~loong ~ppc ~ppc64 ~riscv x86 ~amd64-linux ~x86-linux"
 IUSE="doc double-precision examples extras openmp tbb test +threads"
 
 REQUIRED_USE="
@@ -45,6 +45,8 @@ pkg_setup() {
 }
 
 src_prepare() {
+	(use ppc || use ppc64) && PATCHES+=( "${FILESDIR}/${P}-replace_altivec_vector_keyword.patch" )
+
 	cmake_src_prepare
 
 	# allow to generate docs

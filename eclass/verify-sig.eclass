@@ -1,4 +1,4 @@
-# Copyright 2020-2022 Gentoo Authors
+# Copyright 2020-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: verify-sig.eclass
@@ -45,9 +45,8 @@ case ${EAPI} in
 	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
-EXPORT_FUNCTIONS src_unpack
-
-if [[ ! ${_VERIFY_SIG_ECLASS} ]]; then
+if [[ -z ${_VERIFY_SIG_ECLASS} ]]; then
+_VERIFY_SIG_ECLASS=1
 
 IUSE="verify-sig"
 
@@ -141,9 +140,19 @@ verify-sig_verify_detached() {
 	einfo "Verifying ${filename} ..."
 	case ${VERIFY_SIG_METHOD} in
 		openpgp)
-			gemato gpg-wrap -K "${key}" "${extra_args[@]}" -- \
-				gpg --verify "${sig}" "${file}" ||
-				die "PGP signature verification failed"
+			# gpg can't handle very long TMPDIR
+			# https://bugs.gentoo.org/854492
+			local -x TMPDIR=/tmp
+			if has_version ">=app-portage/gemato-20"; then
+				gemato openpgp-verify-detached -K "${key}" \
+					"${extra_args[@]}" \
+					"${sig}" "${file}" ||
+					die "PGP signature verification failed"
+			else
+				gemato gpg-wrap -K "${key}" "${extra_args[@]}" -- \
+					gpg --verify "${sig}" "${file}" ||
+					die "PGP signature verification failed"
+			fi
 			;;
 		signify)
 			signify -V -p "${key}" -m "${file}" -x "${sig}" ||
@@ -190,6 +199,9 @@ verify-sig_verify_message() {
 	einfo "Verifying ${filename} ..."
 	case ${VERIFY_SIG_METHOD} in
 		openpgp)
+			# gpg can't handle very long TMPDIR
+			# https://bugs.gentoo.org/854492
+			local -x TMPDIR=/tmp
 			gemato gpg-wrap -K "${key}" "${extra_args[@]}" -- \
 				gpg --verify --output="${output_file}" "${file}" ||
 				die "PGP signature verification failed"
@@ -377,5 +389,6 @@ verify-sig_src_unpack() {
 	default_src_unpack
 }
 
-_VERIFY_SIG_ECLASS=1
 fi
+
+EXPORT_FUNCTIONS src_unpack

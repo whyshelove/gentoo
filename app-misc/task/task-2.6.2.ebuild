@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -13,7 +13,7 @@ SRC_URI="https://github.com/GothenburgBitFactory/taskwarrior/releases/download/v
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~x86 ~x64-macos"
+KEYWORDS="amd64 ~arm x86 ~x64-macos"
 IUSE="+sync"
 
 DEPEND="
@@ -32,7 +32,7 @@ src_prepare() {
 }
 
 src_configure() {
-	mycmakeargs=(
+	local mycmakeargs=(
 		-DENABLE_SYNC=$(usex sync)
 		-DTASK_DOCDIR=share/doc/${PF}
 		-DTASK_RCDIR=share/${PN}/rc

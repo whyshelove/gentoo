@@ -1,5 +1,82 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
+
+# Andreas Sturmlechner <asturm@gentoo.org> (2023-02-06)
+# Successful build of dev-qt/qtwebengine depends on 64-bit host
+# Bug #893234
+app-i18n/fcitx-libpinyin dictionary-manager
+dev-lang/idris2 test-full
+dev-python/cloudscraper test
+dev-python/QtPy test
+games-util/lgogdownloader gui
+kde-apps/kde-apps-meta:5 pim
+kde-apps/kdenetwork-meta:5 bittorrent telepathy
+kde-apps/kleopatra:5 pim
+kde-apps/umbrello:5 php
+kde-misc/kio-gdrive share
+net-irc/quassel urlpreview
+net-misc/fatrat bittorrent
+net-misc/seafile-client shibboleth
+sci-mathematics/yacas gui
+sci-physics/root qt5
+
+# Michael Orlitzky <mjo@gentoo.org> (2022-12-23)
+# sci-libs/lrslib is keyworded ~x86, but probably shouldn't have been:
+#
+#   https://bugs.gentoo.org/771675
+#
+# Here we prevent its only direct consumer from pulling it in.
+sci-mathematics/polymake lrs
+
+# Michał Górny <mgorny@gentoo.org> (2022-11-16)
+# spirv-llvm-translator is not keyworded x86.
+dev-libs/libclc spirv
+
+# Ionen Wolkens <ionen@gentoo.org> (2022-11-07)
+# media-libs/libplacebo is keyworded here and vulkan is usable
+media-video/mpv -libplacebo -vulkan
+
+# WANG Xuerui <xen0n@gentoo.org> (2022-10-07)
+# sys-libs/libsmbios is available here.
+app-laptop/pbbuttonsd -macbook
+sys-apps/fwupd -dell
+
+# Alexey Shvetsov <alexxy@gentoo.org> (2022-09-15)
+# Mask nvml use flag for slurm
+sys-cluster/slurm nvml
+
+# Alfredo Tupone <tupone@gentoo.org> (2022-08-30)
+# ada bootstrap currently only available on amd64/x86
+sys-devel/gcc -ada
+
+# Andreas Sturmlechner <asturm@gentoo.org> (2020-09-11)
+# media-libs/qtav not keyworded yet
+media-gfx/kphotoalbum qtav
+
+# Arthur Zamarin <arthurzam@gentoo.org> (2022-08-15)
+# deps not keyworded
+dev-util/pkgcheck emacs
+
+# Conrad Kostecki <conikost@gentoo.org> (2022-07-19)
+# www-servers/nginx currently only available on amd64/x86
+www-servers/nginx -nginx_modules_http_security
+
+# James Le Cuirot <chewi@gentoo.org> (2022-06-25)
+# Allow stack to be realigned for compatibility with older 32-bit binaries.
+sys-libs/glibc -stack-realign
+sys-libs/ncurses -stack-realign
+
+# Anna Vyalkova <cyber+gentoo@sysrq.in> (2022-06-25)
+# Unkeyworded test dep
+app-vim/jedi test
+
+# Ben Kohler <bkohler@gentoo.org> (2022-06-07)
+# Disable 64bit builds on x86
+sys-apps/memtest86+ bios64 efi64 iso64
+
+# Jimi Huotari <chiitoo@gentoo.org> (2022-05-08)
+# Not keyworded here yet.
+lxqt-base/lxqt-meta desktop-portal
 
 # Adel Kara Slimane <adel.ks@zegrapher.com> (2022-03-14)
 # Untested useflag on other arches, needs keywording
@@ -9,18 +86,9 @@ media-video/ffmpeg vmaf
 # dev-util/hip and its rocm dependencies not keyworded here
 sci-physics/lammps hip
 
-# Adel Kara Slimane <adel.ks@zegrapher.com> (2021-02-17)
-# Mask AMF keyword on non-amd64 arches
-# It is unusable, for now, in other arches
-media-video/ffmpeg amf
-
 # Sam James <sam@gentoo.org> (2022-01-20)
 # Only supports cpu_flags_x86_aes in 64-bit mode
 net-fs/samba cpu_flags_x86_aes
-
-# Conrad Kostecki <conikost@gentoo.org> (2021-11-16)
-# AppArmor is not available on x86
-app-benchmarks/stress-ng apparmor
 
 # James Le Cuirot <chewi@gentoo.org> (2021-10-22)
 # The JIT feature only works on amd64 and x86.
@@ -64,13 +132,6 @@ media-video/obs-studio browser
 x11-base/xwayland video_cards_nvidia
 x11-wm/mutter video_cards_nvidia
 
-# Andreas Sturmlechner <asturm@gentoo.org> (2020-04-25)
-# Depends on either unkeyworded dev-java/openjdk:11
-# or unavailable >=dev-java/icedtea-4, bug #785640
->=app-office/libreoffice-7 base java
->=app-office/libreoffice-bin-7 java
->=app-office/libreoffice-bin-debug-7 java
-
 # Daniel Novomesky <dnovomesky@gmail.com> (2021-02-24)
 # Depends on media-libs/svt-av1, which is unavailable on x86
 media-libs/libavif svt-av1
@@ -94,6 +155,7 @@ sys-libs/compiler-rt-sanitizers -asan -lsan
 sys-libs/compiler-rt-sanitizers -ubsan -safestack -cfi -scudo
 sys-libs/compiler-rt-sanitizers -gwp-asan
 sys-libs/compiler-rt-sanitizers -profile
+>=sys-libs/compiler-rt-sanitizers-16 -libfuzzer
 
 # Thomas Deutschmann <whissi@gentoo.org> (2020-10-06)
 # - aesni plugin is supported on x86
@@ -126,15 +188,6 @@ dev-python/influxdb test
 # Mikle Kolyada <zlogene@gentoo.org> (2020-06-08)
 # clisp is keyworded on x86
 app-text/texlive-core -xindy
-
-# Joonas Niilola <juippis@gentoo.org> (2020-05-14)
-# sys-apps/apparmor not keyworded on x86.
-app-containers/lxc apparmor
-app-containers/lxd apparmor
-
-# Thomas Deutschmann <whissi@gentoo.org> (2020-04-30)
-# sys-cluster/slurm is keyworded on x86
-app-metrics/collectd -collectd_plugins_slurm
 
 # Georgy Yakovlev <gyakovlev@gentoo.org (2020-04-26)
 # static-pie works on x86, #719444
@@ -305,12 +358,12 @@ www-client/vivaldi widevine
 www-client/vivaldi-snapshot widevine
 
 # Ian Delaney <idella4@gentoo.org> (2015-12-02)
-# mask revdeps of xen that emply a hypervisor in arch x86
+# mask revdeps of xen that imply a hypervisor in arch x86
 app-emulation/libvirt xen
 
 # Brian Evans <grknight@gentoo.org (2015-09-14)
 # Unmask new USE flags for mariadb on supported arches
->=dev-db/mariadb-10.1.0 -sst-xtrabackup -galera
+>=dev-db/mariadb-10.1.0 -galera
 
 # Mike Gilbert <floppym@gentoo.org> (2015-09-05)
 # sys-boot/gnu-efi is not supported on all archs.
@@ -359,7 +412,6 @@ app-arch/zpaq -jit
 # Arun Raghavan <ford_prefect@gentoo.org> (2012-03-29)
 # webrtc-audio-processing is only supported on x86/amd64. Possibly arm can be
 # added.
-media-sound/pulseaudio -webrtc-aec
 media-sound/pulseaudio-daemon -webrtc-aec
 
 # Bernard Cafarelli <voyageur@gentoo.org> (2012-02-27)
@@ -404,3 +456,7 @@ media-gfx/iscan -X
 
 # Steve Dibb <beandog@gentoo.org> (2008-09-29)
 media-video/mplayer -cpudetection
+
+# Craig Andrews <candrews@gentoo.org> (2023-03-09)
+# media-libs/libplacebo is keyworded here
+media-video/ffmepg -libplacebo

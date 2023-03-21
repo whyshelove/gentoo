@@ -1,14 +1,12 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
-
-EXPORT_FUNCTIONS pkg_setup
 
 # @ECLASS: postgres.eclass
 # @MAINTAINER:
 # PostgreSQL <pgsql-bugs@gentoo.org>
 # @AUTHOR:
 # Aaron W. Swenson <titanofold@gentoo.org>
-# @SUPPORTED_EAPIS: 5 6 7
+# @SUPPORTED_EAPIS: 7
 # @BLURB: An eclass for PostgreSQL-related packages
 # @DESCRIPTION:
 # This eclass provides common utility functions that many
@@ -16,18 +14,20 @@ EXPORT_FUNCTIONS pkg_setup
 # currently selected PostgreSQL slot is within a range, adding a system
 # user to the postgres system group, and generating dependencies.
 
-
-case ${EAPI:-0} in
-	5|6|7) ;;
-	*) die "Unsupported EAPI=${EAPI} (unknown) for ${ECLASS}" ;;
+case ${EAPI} in
+	7) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
+
+if [[ ! ${_POSTGRES_ECLASS} ]]; then
+_POSTGRES_ECLASS=1
 
 # @ECLASS_VARIABLE: _POSTGRES_ALL_VERSIONS
 # @INTERNAL
 # @DESCRIPTION:
 # List of versions to reverse sort POSTGRES_COMPAT slots
 
-_POSTGRES_ALL_VERSIONS=( 9999 14 13 12 11 10 9.6 9.5 9.4 9.3 9.2 )
+_POSTGRES_ALL_VERSIONS=( 9999 15 14 13 12 11 10 )
 
 
 
@@ -106,7 +106,7 @@ postgres_check_slot() {
 	fi
 
 	# Don't die because we can't run postgresql-config during pretend.
-	[[ "$EBUILD_PHASE" = "pretend" && -z "$(which postgresql-config 2> /dev/null)" ]] \
+	[[ "$EBUILD_PHASE" = "pretend" && -z "$(type -P postgresql-config 2> /dev/null)" ]] \
 		&& return 0
 
 	if has $(postgresql-config show 2> /dev/null) "${POSTGRES_COMPAT[@]}"; then
@@ -148,7 +148,7 @@ postgres_pkg_setup() {
 	fi
 
 	export PG_SLOT=${best_slot}
-	export PG_CONFIG=$(which pg_config${best_slot//./})
+	export PG_CONFIG=$(type -P pg_config${best_slot//./})
 
 	local pg_pkg_config_path="$(${PG_CONFIG} --libdir)/pkgconfig"
 	if [[ -n "${PKG_CONFIG_PATH}" ]]; then
@@ -159,3 +159,7 @@ postgres_pkg_setup() {
 
 	elog "PostgreSQL Target: ${best_slot}"
 }
+
+fi
+
+EXPORT_FUNCTIONS pkg_setup

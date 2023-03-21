@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -12,7 +12,7 @@ if [[ ${PV} == *9999 ]]; then
 else
 	MY_P=${PN^}-${PV}
 	SRC_URI="https://github.com/catchorg/Catch2/archive/v${PV}.tar.gz -> ${MY_P}.tar.gz"
-	KEYWORDS="amd64 ~arm ~arm64 ~hppa ~ppc ~ppc64 ~sparc x86"
+	KEYWORDS="amd64 ~arm ~arm64 ~hppa ~ppc ~ppc64 ~riscv ~sparc x86"
 
 	S="${WORKDIR}/${PN^}2-${PV}"
 fi
@@ -24,8 +24,6 @@ LICENSE="Boost-1.0"
 SLOT="1"
 IUSE="test"
 RESTRICT="!test? ( test )"
-
-RDEPEND="!<dev-cpp/catch-1.12.2:0"
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-1.12.2-glibc-2.34-sigstksz.patch

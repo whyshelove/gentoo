@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8,9,10} )
+PYTHON_COMPAT=( python3_{9,10} )
 
 inherit cmake gnome2-utils python-single-r1 udev
 
@@ -38,7 +38,7 @@ RDEPEND="${PYTHON_DEPS}
 	')
 "
 DEPEND="${RDEPEND}"
-#zip an gzip are directly used by the build system
+#zip and gzip are directly used by the build system
 BDEPEND="
 	doc? ( app-doc/doxygen )
 	$(python_gen_cond_dep '
@@ -97,10 +97,12 @@ src_configure() {
 src_install() {
 	cmake_src_install
 	python_optimize
-	use utils && python_fix_shebang "${ED}"/usr/$(get_libdir)/${PN}/utils/
-	if [[ "${PV}" != "9999" ]]; then
-		rm -r "${ED}/usr/bin/uhd_images_downloader" || die
-		rm -r "${ED}/usr/share/man/man1/uhd_images_downloader.1" || die
+	if use utils; then
+		python_fix_shebang "${ED}"/usr/$(get_libdir)/${PN}/utils/
+		if [[ "${PV}" != "9999" ]]; then
+			rm -r "${ED}/usr/bin/uhd_images_downloader" || die
+			rm -r "${ED}/usr/share/man/man1/uhd_images_downloader.1" || die
+		fi
 	fi
 
 	udev_dorules "${S}/utils/uhd-usrp.rules"

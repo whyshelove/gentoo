@@ -5,10 +5,6 @@
 		<email>gyakovlev@gentoo.org</email>
 		<name>Georgy Yakovlev</name>
 	</maintainer>
-	<maintainer type="person" proxied="yes">
-		<email>gentoo@seichter.de</email>
-		<name>Ralph Seichter</name>
-	</maintainer>
 	<use>
 		<flag name="apidoc">Provide doxygen generated API docs</flag>
 		<flag name="doc">Install API documentation</flag>
@@ -20,7 +16,7 @@
 		<flag name="nmbug">Install experimental tag sharing /
 			pseudo-bug-tracking script for Notmuch
 			(see http://notmuchmail.org/nmbug/)</flag>
-		<flag name="valgrind">Depend on dev-util/valgrind for test suite</flag>
+		<flag name="valgrind">Depend on <pkg>dev-util/valgrind</pkg> for test suite</flag>
 	</use>
 	<longdescription lang="en">
 		Notmuch is a system for indexing, searching, reading, and tagging large

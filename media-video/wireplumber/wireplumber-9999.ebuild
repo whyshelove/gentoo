@@ -1,7 +1,14 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
+
+# 1. Please regularly check (even at the point of bumping) Fedora's packaging
+# for needed backports at https://src.fedoraproject.org/rpms/wireplumber/tree/rawhide
+#
+# 2. Keep an eye on git master (for both PipeWire and WirePlumber) as things
+# continue to move quickly. It's not uncommon for fixes to be made shortly
+# after releases.
 
 LUA_COMPAT=( lua5-{3,4} )
 
@@ -12,8 +19,8 @@ if [[ ${PV} == 9999 ]]; then
 	EGIT_BRANCH="master"
 	inherit git-r3
 else
-	SRC_URI="https://gitlab.freedesktop.org/pipewire/${PN}/-/archive/${PV}/${P}.tar.gz"
-	KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~riscv ~sparc ~x86"
+	SRC_URI="https://gitlab.freedesktop.org/pipewire/${PN}/-/archive/${PV}/${P}.tar.bz2"
+	KEYWORDS="~amd64 ~arm ~arm64 ~loong ~ppc ~ppc64 ~riscv ~sparc ~x86"
 fi
 
 DESCRIPTION="Replacement for pipewire-media-session"
@@ -36,13 +43,13 @@ BDEPEND="
 	dev-libs/glib
 	dev-util/gdbus-codegen
 	dev-util/glib-utils
+	sys-devel/gettext
 "
 
 DEPEND="
 	${LUA_DEPS}
 	>=dev-libs/glib-2.62
-	>=media-video/pipewire-0.3.48:=
-	virtual/libc
+	>=media-video/pipewire-0.3.65-r1:=
 	virtual/libintl
 	elogind? ( sys-auth/elogind )
 	systemd? ( sys-apps/systemd )
@@ -63,6 +70,9 @@ DOCS=( {NEWS,README}.rst )
 
 src_configure() {
 	local emesonargs=(
+		-Ddaemon=true
+		-Dtools=true
+		-Dmodules=true
 		-Ddoc=disabled # Ebuild not wired up yet (Sphinx, Doxygen?)
 		-Dintrospection=disabled # Only used for Sphinx doc generation
 		-Dsystem-lua=true # We always unbundle everything we can
@@ -74,6 +84,7 @@ src_configure() {
 		-Dsystemd-system-unit-dir=$(systemd_get_systemunitdir)
 		-Dsystemd-user-unit-dir=$(systemd_get_userunitdir)
 		$(meson_use test tests)
+		$(meson_use test dbus-tests)
 	)
 
 	meson_src_configure
@@ -87,7 +98,7 @@ src_install() {
 	# If a reflinking CoW filesystem is used (e.g. Btrfs), then the files
 	# will not actually get stored twice until modified.
 	insinto /etc
-	doins -r ${ED}/usr/share/wireplumber
+	doins -r "${ED}"/usr/share/wireplumber
 }
 
 pkg_postinst() {

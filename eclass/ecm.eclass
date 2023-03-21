@@ -1,10 +1,10 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: ecm.eclass
 # @MAINTAINER:
 # kde@gentoo.org
-# @SUPPORTED_EAPIS: 7 8
+# @SUPPORTED_EAPIS: 8
 # @PROVIDES: cmake virtualx
 # @BLURB: Support eclass for packages that use KDE Frameworks with ECM.
 # @DESCRIPTION:
@@ -22,8 +22,8 @@
 # any phase functions are overridden the version here should also be called.
 
 case ${EAPI} in
-	7|8) ;;
-	*) die "${ECLASS}: EAPI=${EAPI:-0} is not supported" ;;
+	8) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
 if [[ -z ${_ECM_ECLASS} ]]; then
@@ -143,9 +143,9 @@ fi
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # Minimum version of Frameworks to require. Default value for kde-frameworks
-# is ${PV} and 5.64.0 baseline for everything else. This is not going to be
+# is ${PV} and 5.82.0 baseline for everything else. This is not going to be
 # changed unless we also bump EAPI, which usually implies (rev-)bumping.
-# Version will later be used to differentiate between KF5/Qt5 and KF6/Qt6.
+# Version will also be used to differentiate between KF5/Qt5 and KF6/Qt6.
 if [[ ${CATEGORY} = kde-frameworks ]]; then
 	: ${KFMIN:=$(ver_cut 1-2)}
 fi
@@ -218,13 +218,23 @@ case ${ECM_HANDBOOK} in
 		;;
 esac
 
+# Unfortunately, Portage has no concept of BDEPEND=dev-qt/qthelp being broken
+# by having only partially updated Qt dependencies, which means it will order
+# dev-qt/qthelp revdeps in build queue before its own Qt dependencies, leaving
+# qhelpgenerator broken. This is an attempt to help with that. Bug #836726
 case ${ECM_QTHELP} in
 	true)
 		IUSE+=" doc"
 		COMMONDEPEND+=" doc? ( dev-qt/qt-docs:${KFSLOT} )"
 		BDEPEND+=" doc? (
 			>=app-doc/doxygen-1.8.13-r1
-			dev-qt/qthelp:${KFSLOT}
+			(
+				=dev-qt/qtcore-5.15.8*:5
+				=dev-qt/qtgui-5.15.8*:5
+				=dev-qt/qthelp-5.15.8*:5
+				=dev-qt/qtsql-5.15.8*:5
+				=dev-qt/qtwidgets-5.15.8*:5
+			)
 		)"
 		;;
 	false) ;;
@@ -247,7 +257,10 @@ case ${ECM_TEST} in
 		;;
 esac
 
-BDEPEND+=" >=kde-frameworks/extra-cmake-modules-${KFMIN}:${KFSLOT}"
+BDEPEND+="
+	dev-libs/libpcre2:*
+	>=kde-frameworks/extra-cmake-modules-${KFMIN}:${KFSLOT}
+"
 RDEPEND+=" >=kde-frameworks/kf-env-4"
 COMMONDEPEND+=" dev-qt/qtcore:${KFSLOT}"
 
@@ -325,10 +338,10 @@ _ecm_punt_kfqt_module() {
 	[[ ! -e "CMakeLists.txt" ]] && return
 
 	# FIXME: dep=WebKit will result in 'Widgets' over 'WebKitWidgets' (no regression)
-	pcregrep -Mni "(?s)find_package\s*\(\s*${prefix}(\d+|\\$\{\w*\})[^)]*?${dep}.*?\)" \
+	pcre2grep -Mni "(?s)find_package\s*\(\s*${prefix}(\d+|\\$\{\w*\})[^)]*?${dep}.*?\)" \
 		CMakeLists.txt > "${T}/bogus${dep}"
 
-	# pcregrep returns non-zero on no matches/error
+	# pcre2grep returns non-zero on no matches/error
 	[[ $? -ne 0 ]] && return
 
 	local length=$(wc -l "${T}/bogus${dep}" | cut -d " " -f 1)
@@ -362,21 +375,34 @@ ecm_punt_qt_module() {
 }
 
 # @FUNCTION: ecm_punt_bogus_dep
-# @USAGE: <prefix> <dependency>
+# @USAGE: <dependency> or <prefix> <dependency>
 # @DESCRIPTION:
-# Removes a specified dependency from a find_package call with multiple
-# components.
+# Removes a specified dependency from a find_package call, optionally
+# supports prefix for find_package with multiple components.
 ecm_punt_bogus_dep() {
-	local prefix=${1}
-	local dep=${2}
+
+	if [[ "$#" == 2 ]] ; then
+		local prefix=${1}
+		local dep=${2}
+	elif [[ "$#" == 1 ]] ; then
+		local dep=${1}
+	else
+		die "${FUNCNAME[0]} must be passed either one or two arguments"
+	fi
 
 	if [[ ! -e "CMakeLists.txt" ]]; then
 		return
 	fi
 
-	pcregrep -Mni "(?s)find_package\s*\(\s*${prefix}[^)]*?${dep}.*?\)" CMakeLists.txt > "${T}/bogus${dep}"
+	if [[ -z ${prefix} ]]; then
+		sed -e "/find_package\s*(\s*${dep}\(\s\+\(REQUIRED\|CONFIG\|COMPONENTS\|\${[A-Z0-9_]*}\)\)\+\s*)/Is/^/# removed by ecm.eclass - /" \
+			-i CMakeLists.txt || die
+		return
+	else
+		pcre2grep -Mni "(?s)find_package\s*\(\s*${prefix}[^)]*?${dep}.*?\)" CMakeLists.txt > "${T}/bogus${dep}"
+	fi
 
-	# pcregrep returns non-zero on no matches/error
+	# pcre2grep returns non-zero on no matches/error
 	if [[ $? -ne 0 ]] ; then
 		return
 	fi
@@ -589,16 +615,14 @@ ecm_src_install() {
 	cmake_src_install
 
 	# bug 621970
-	if [[ ${EAPI} != 7 ]]; then
-		if [[ -d "${ED}"/usr/share/applications ]]; then
-			local f
-			for f in "${ED}"/usr/share/applications/*.desktop; do
-				if [[ -x ${f} ]]; then
-					einfo "Removing executable bit from ${f#${ED}}"
-					fperms a-x "${f#${ED}}"
-				fi
-			done
-		fi
+	if [[ -d "${ED}"/usr/share/applications ]]; then
+		local f
+		for f in "${ED}"/usr/share/applications/*.desktop; do
+			if [[ -x ${f} ]]; then
+				einfo "Removing executable bit from ${f#${ED}}"
+				fperms a-x "${f#${ED}}"
+			fi
+		done
 	fi
 }
 
@@ -650,8 +674,4 @@ if [[ -v ${KDE_GCC_MINIMAL} ]]; then
 	EXPORT_FUNCTIONS pkg_pretend
 fi
 
-EXPORT_FUNCTIONS pkg_setup src_prepare src_configure src_test pkg_preinst pkg_postinst pkg_postrm
-
-if [[ ${EAPI} != 7 ]]; then
-	EXPORT_FUNCTIONS src_install
-fi
+EXPORT_FUNCTIONS pkg_setup src_prepare src_configure src_test src_install pkg_preinst pkg_postinst pkg_postrm

@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -7,7 +7,7 @@ inherit optfeature prefix
 
 if [[ ${PV} != *9999* ]]; then
 	SRC_URI="https://github.com/dylanaraps/${PN}/archive/${PV}/${P}.tar.gz"
-	KEYWORDS="amd64 arm arm64 ~mips ~ppc ~ppc64 ~riscv x86"
+	KEYWORDS="amd64 arm arm64 ~ia64 ~loong ~mips ~ppc ~ppc64 ~riscv ~sparc x86"
 else
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/dylanaraps/neofetch.git"
@@ -17,6 +17,10 @@ DESCRIPTION="Simple information system script"
 HOMEPAGE="https://github.com/dylanaraps/neofetch"
 LICENSE="MIT-with-advertising"
 SLOT="0"
+
+PATCHES=(
+	"${FILESDIR}"/${P}-fix-arm-riscv-loongarch-cpu-model-detection.patch
+)
 
 src_prepare() {
 	if use prefix; then

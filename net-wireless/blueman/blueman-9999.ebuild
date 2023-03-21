@@ -1,54 +1,60 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="7"
+EAPI=8
 
-PYTHON_COMPAT=( python3_{8..10} )
-inherit autotools gnome2-utils linux-info python-single-r1 systemd xdg-utils
+DISTUTILS_SINGLE_IMPL=1
+DISTUTILS_USE_PEP517=no
+PYTHON_COMPAT=( python3_{9..11} )
+
+inherit autotools distutils-r1 gnome2-utils linux-info systemd xdg-utils
 
 DESCRIPTION="Simple and intuitive GTK+ Bluetooth Manager"
-HOMEPAGE="https://github.com/blueman-project/blueman"
+HOMEPAGE="https://github.com/blueman-project/blueman/"
 
 if [[ ${PV} == "9999" ]] ; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/blueman-project/blueman.git"
 else
-	SRC_URI="https://github.com/blueman-project/${PN}/releases/download/${PV/_/.}/${P/_/.}.tar.xz"
+	SRC_URI="
+		https://github.com/blueman-project/blueman/releases/download/${PV/_/.}/${P/_/.}.tar.xz
+	"
 	S=${WORKDIR}/${P/_/.}
-	KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~x86"
+	KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~riscv ~x86"
 fi
 
 # icons are GPL-2
 # source files are mixed GPL-3+ and GPL-2+
 LICENSE="GPL-3+ GPL-2"
 SLOT="0"
-IUSE="appindicator network nls policykit pulseaudio"
+IUSE="network nls policykit pulseaudio"
 
 DEPEND="
 	$(python_gen_cond_dep '
 		dev-python/pygobject:3[${PYTHON_USEDEP}]
 	')
 	>=net-wireless/bluez-5:=
-	${PYTHON_DEPS}"
+"
 BDEPEND="
 	$(python_gen_cond_dep '
 		dev-python/cython[${PYTHON_USEDEP}]
 	')
 	virtual/pkgconfig
-	nls? ( sys-devel/gettext )"
-RDEPEND="${DEPEND}
+	nls? ( sys-devel/gettext )
+"
+RDEPEND="
+	${DEPEND}
 	$(python_gen_cond_dep '
 		dev-python/pycairo[${PYTHON_USEDEP}]
 	')
 	sys-apps/dbus
-	x11-libs/gtk+:3[introspection]
+	x11-libs/gtk+:3[introspection,X]
 	x11-libs/libnotify[introspection]
 	|| (
 		x11-themes/adwaita-icon-theme
 		x11-themes/faenza-icon-theme
 		x11-themes/mate-icon-theme
 	)
-	appindicator? ( dev-libs/libappindicator:3[introspection] )
 	network? (
 		net-firewall/iptables
 		|| (
@@ -58,26 +64,29 @@ RDEPEND="${DEPEND}
 		|| (
 			net-dns/dnsmasq
 			net-misc/dhcp
-			>=net-misc/networkmanager-0.8
+			>=net-misc/networkmanager-0.8[introspection]
 		)
 	)
-	policykit? ( sys-auth/polkit )
+	policykit? (
+		sys-auth/polkit
+	)
 	pulseaudio? (
 		|| (
 			media-sound/pulseaudio-daemon[bluetooth]
 			media-video/pipewire[bluetooth]
 			<media-sound/pulseaudio-15.99.1[bluetooth]
-			media-sound/pulseaudio-modules-bt
 		)
 	)
 "
 
-REQUIRED_USE="${PYTHON_REQUIRED_USE}"
-
 pkg_pretend() {
 	if use network; then
-		local CONFIG_CHECK="~BRIDGE ~IP_NF_IPTABLES
-			~IP_NF_NAT ~IP_NF_TARGET_MASQUERADE"
+		local CONFIG_CHECK="
+			~BRIDGE
+			~IP_NF_IPTABLES
+			~IP_NF_NAT
+			~IP_NF_TARGET_MASQUERADE
+		"
 		check_extra_config
 	fi
 }
@@ -87,19 +96,22 @@ pkg_setup() {
 }
 
 src_prepare() {
-	default
-	# replace py-compile to fix py3
-	[[ ${PV} == 9999 ]] && eautoreconf || eautomake
+	if [[ ${PV} == 9999 ]]; then
+		eautoreconf
+	else
+		# remove this when upstream switches to automake with .pyc fix
+		eautomake
+	fi
+	distutils-r1_src_prepare
 }
 
-src_configure() {
+python_configure() {
 	local myconf=(
 		--disable-runtime-deps-check
 		--disable-static
 		--with-systemdsystemunitdir="$(systemd_get_systemunitdir)"
 		--with-systemduserunitdir="$(systemd_get_userunitdir)"
 		--with-dhcp-config="/etc/dhcp/dhcpd.conf"
-		$(use_enable appindicator)
 		$(use_enable policykit polkit)
 		$(use_enable nls)
 		$(use_enable pulseaudio)
@@ -110,7 +122,17 @@ src_configure() {
 	econf "${myconf[@]}"
 }
 
-src_install() {
+python_compile() {
+	default
+}
+
+python_test() {
+	# import tests are not very valuable and fail if /dev/rfkill
+	# does not exist
+	"${EPYTHON}" -m unittest -v test/test_gobject.py || die
+}
+
+python_install() {
 	default
 
 	if use policykit; then

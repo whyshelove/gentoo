@@ -1,4 +1,4 @@
-# Copyright 2002-2022 Gentoo Authors
+# Copyright 2002-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: elisp.eclass
@@ -9,7 +9,7 @@
 # Jeremy Maitin-Shepard <jbms@attbi.com>
 # Christian Faulhammer <fauli@gentoo.org>
 # Ulrich Müller <ulm@gentoo.org>
-# @SUPPORTED_EAPIS: 6 7 8
+# @SUPPORTED_EAPIS: 7 8
 # @PROVIDES: elisp-common
 # @BLURB: Eclass for Emacs Lisp packages
 # @DESCRIPTION:
@@ -65,18 +65,12 @@
 inherit elisp-common
 
 case ${EAPI} in
-	6|7|8) ;;
+	7|8) ;;
 	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
-EXPORT_FUNCTIONS src_{unpack,prepare,configure,compile,install} \
-	pkg_{setup,postinst,postrm}
-
 RDEPEND=">=app-editors/emacs-${NEED_EMACS}:*"
-case ${EAPI} in
-	6) DEPEND="${RDEPEND}" ;;
-	*) BDEPEND="${RDEPEND}" ;;
-esac
+BDEPEND="${RDEPEND}"
 
 # @FUNCTION: elisp_pkg_setup
 # @DESCRIPTION:
@@ -192,3 +186,6 @@ elisp_pkg_postinst() {
 elisp_pkg_postrm() {
 	elisp-site-regen
 }
+
+EXPORT_FUNCTIONS src_{unpack,prepare,configure,compile,install} \
+	pkg_{setup,postinst,postrm}

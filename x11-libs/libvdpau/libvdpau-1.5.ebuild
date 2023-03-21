@@ -6,8 +6,8 @@ EAPI=8
 inherit meson-multilib virtualx
 
 DESCRIPTION="VDPAU wrapper and trace libraries"
-HOMEPAGE="https://www.freedesktop.org/wiki/Software/VDPAU"
-SRC_URI="https://gitlab.freedesktop.org/vdpau/libvdpau/-/archive/${PV}/${P}.tar.gz"
+HOMEPAGE="https://www.freedesktop.org/wiki/Software/VDPAU/"
+SRC_URI="https://gitlab.freedesktop.org/vdpau/libvdpau/-/archive/${PV}/${P}.tar.bz2"
 
 LICENSE="MIT"
 SLOT="0"

@@ -6,25 +6,20 @@
 # Jason Zaman <perfinion@gentoo.org>
 # @AUTHOR:
 # Jason Zaman <perfinion@gentoo.org>
-# @SUPPORTED_EAPIS: 7 8
+# @SUPPORTED_EAPIS: 8
 # @BLURB: Utility functions for packages using Bazel Build
 # @DESCRIPTION:
 # A utility eclass providing functions to run the Bazel Build system.
 #
 # This eclass does not export any phase functions.
 
-case "${EAPI:-0}" in
-	0|1|2|3|4|5|6)
-		die "Unsupported EAPI=${EAPI:-0} (too old) for ${ECLASS}"
-		;;
-	7|8)
-		;;
-	*)
-		die "Unsupported EAPI=${EAPI} (unknown) for ${ECLASS}"
-		;;
+case ${EAPI} in
+	8) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
 if [[ ! ${_BAZEL_ECLASS} ]]; then
+_BAZEL_ECLASS=1
 
 inherit multiprocessing toolchain-funcs
 
@@ -113,7 +108,7 @@ bazel_setup_bazelrc() {
 		fetch --repository_cache="${T}/bazel-cache/" --distdir="${T}/bazel-distdir/"
 		build --repository_cache="${T}/bazel-cache/" --distdir="${T}/bazel-distdir/"
 
-		build --define=PREFIX=${EPREFIX%/}/usr
+		build --define=PREFIX=${EPREFIX}/usr
 		build --define=LIBDIR=\$(PREFIX)/$(get_libdir)
 		build --define=INCLUDEDIR=\$(PREFIX)/include
 		EOF
@@ -222,5 +217,4 @@ bazel_load_distfiles() {
 	fi
 }
 
-_BAZEL_ECLASS=1
 fi

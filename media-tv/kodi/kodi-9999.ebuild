@@ -1,16 +1,16 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
 PYTHON_REQ_USE="sqlite,ssl"
-LIBDVDCSS_VERSION="1.4.2-Leia-Beta-5"
-LIBDVDREAD_VERSION="6.0.0-Leia-Alpha-3"
-LIBDVDNAV_VERSION="6.0.0-Leia-Alpha-3"
-FFMPEG_VERSION="4.4"
-CODENAME="N"
-FFMPEG_KODI_VERSION="Alpha1"
-PYTHON_COMPAT=( python3_{8,9,10} )
+LIBDVDCSS_VERSION="1.4.3-Next-Nexus-Alpha2"
+LIBDVDREAD_VERSION="6.1.3-Next-Nexus-Alpha2"
+LIBDVDNAV_VERSION="6.1.1-Next-Nexus-Alpha2"
+FFMPEG_VERSION="5.1.2"
+CODENAME="Nexus"
+FFMPEG_KODI_VERSION="Alpha3"
+PYTHON_COMPAT=( python3_11 )
 SRC_URI="https://github.com/xbmc/libdvdcss/archive/${LIBDVDCSS_VERSION}.tar.gz -> libdvdcss-${LIBDVDCSS_VERSION}.tar.gz
 	https://github.com/xbmc/libdvdread/archive/${LIBDVDREAD_VERSION}.tar.gz -> libdvdread-${LIBDVDREAD_VERSION}.tar.gz
 	https://github.com/xbmc/libdvdnav/archive/${LIBDVDNAV_VERSION}.tar.gz -> libdvdnav-${LIBDVDNAV_VERSION}.tar.gz
@@ -29,7 +29,7 @@ else
 	S=${WORKDIR}/xbmc-${MY_PV}-${CODENAME}
 fi
 
-inherit autotools cmake desktop linux-info pax-utils python-single-r1 xdg
+inherit autotools cmake desktop libtool linux-info pax-utils python-single-r1 xdg
 
 DESCRIPTION="A free and open source media-player and entertainment hub"
 HOMEPAGE="https://kodi.tv/ https://kodi.wiki/"
@@ -62,7 +62,7 @@ RESTRICT="!test? ( test )"
 COMMON_DEPEND="
 	>=dev-libs/lzo-2.04
 	>=dev-libs/flatbuffers-1.11.0:=
-	>=media-libs/libjpeg-turbo-2.0.4:=
+	>=media-libs/libjpeg-turbo-2.1.4:=
 	>=media-libs/libpng-1.6.26:0=
 "
 COMMON_TARGET_DEPEND="${PYTHON_DEPS}
@@ -72,7 +72,7 @@ COMMON_TARGET_DEPEND="${PYTHON_DEPS}
 	)
 	alsa? ( >=media-libs/alsa-lib-1.1.4.1 )
 	bluetooth? ( net-wireless/bluez )
-	bluray? ( >=media-libs/libbluray-1.1.2 )
+	bluray? ( >=media-libs/libbluray-1.3.2 )
 	caps? ( sys-libs/libcap )
 	dbus? ( sys-apps/dbus )
 	dev-db/sqlite
@@ -87,7 +87,7 @@ COMMON_TARGET_DEPEND="${PYTHON_DEPS}
 		dev-python/pycryptodome[${PYTHON_USEDEP}]
 	')
 	>=dev-libs/libcdio-2.1.0[cxx]
-	>=dev-libs/libfmt-6.1.2
+	>=dev-libs/libfmt-9.1.0
 	dev-libs/libfstrcmp
 	gbm? (
 		>=dev-libs/libinput-1.10.5
@@ -116,7 +116,7 @@ COMMON_TARGET_DEPEND="${PYTHON_DEPS}
 	mysql? ( dev-db/mysql-connector-c:= )
 	mariadb? ( dev-db/mariadb-connector-c:= )
 	>=net-misc/curl-7.68.0[http2]
-	nfs? ( >=net-fs/libnfs-2.0.0:= )
+	nfs? ( >=net-fs/libnfs-5.0.2:= )
 	!gles? ( media-libs/glu )
 	>=dev-libs/openssl-1.1.0:0=
 	raspberry-pi? (
@@ -129,12 +129,10 @@ COMMON_TARGET_DEPEND="${PYTHON_DEPS}
 	udf? ( >=dev-libs/libudfread-1.0.0 )
 	udev? ( virtual/udev )
 	vaapi? (
-		x11-libs/libva:=
-		!gles? ( x11-libs/libva[opengl] )
+		media-libs/libva:=
 		system-ffmpeg? ( media-video/ffmpeg[vaapi] )
-		vdpau? ( x11-libs/libva-vdpau-driver )
-		wayland? ( x11-libs/libva[wayland] )
-		X? ( x11-libs/libva[X] )
+		wayland? ( media-libs/libva[wayland] )
+		X? ( media-libs/libva[X] )
 	)
 	virtual/libiconv
 	vdpau? (
@@ -147,7 +145,7 @@ COMMON_TARGET_DEPEND="${PYTHON_DEPS}
 		>=dev-libs/wayland-protocols-1.7
 		>=x11-libs/libxkbcommon-0.4.1
 	)
-	webserver? ( >=net-libs/libmicrohttpd-0.9.55[messages(+)] )
+	webserver? ( >=net-libs/libmicrohttpd-0.9.75[messages(+)] )
 	X? (
 		media-libs/mesa[X]
 		!gles? ( media-libs/libglvnd[X] )
@@ -159,7 +157,7 @@ COMMON_TARGET_DEPEND="${PYTHON_DEPS}
 	x11-libs/libdrm
 	xslt? (
 		dev-libs/libxslt
-		>=dev-libs/libxml2-2.9.4
+		>=dev-libs/libxml2-2.10.1
 	)
 	zeroconf? ( net-dns/avahi[dbus] )
 "

@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -12,7 +12,7 @@ SRC_URI="https://linuxcontainers.org/downloads/lxd/${P}.tar.gz
 
 LICENSE="Apache-2.0"
 SLOT="0"
-KEYWORDS="amd64 ~x86"
+KEYWORDS="~amd64 ~arm64 ~x86"
 IUSE="apparmor ipv6 nls verify-sig"
 
 DEPEND="acct-group/lxd
@@ -80,6 +80,8 @@ RESTRICT="test"
 
 GOPATH="${S}/_dist"
 
+PATCHES=( "${FILESDIR}"/lxd-4.0.9-glibc-2.36-fix.patch )
+
 src_prepare() {
 	export GOPATH="${S}/_dist"
 
@@ -125,7 +127,7 @@ src_compile() {
 		go install -v -x "${S}/${k}" || die "failed compiling ${k}"
 	done
 
-	go install -v -x -tags libsqlite3 ${S}/lxd || die "Failed to build the daemon"
+	go install -v -x -tags libsqlite3 "${S}"/lxd || die "Failed to build the daemon"
 
 	# Needs to be built statically
 	CGO_ENABLED=0 go install -v -tags netgo "${S}"/lxd-p2c

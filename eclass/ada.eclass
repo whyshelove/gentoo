@@ -1,4 +1,4 @@
-# Copyright 2019 Gentoo Authors
+# Copyright 2019-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: ada.eclass
@@ -6,7 +6,7 @@
 # Ada team <ada@gentoo.org>
 # @AUTHOR:
 # Tupone Alfredo <tupone@gentoo.org>
-# @SUPPORTED_EAPIS: 6 7
+# @SUPPORTED_EAPIS: 7 8
 # @BLURB: An eclass for Ada packages
 # @DESCRIPTION:
 # This eclass set the IUSE and REQUIRED_USE to request the ADA_TARGET
@@ -23,19 +23,13 @@
 #
 # Mostly copied from python-single-r1.eclass
 
-case "${EAPI:-0}" in
-	0|1|2|3|4|5)
-		die "Unsupported EAPI=${EAPI:-0} (too old) for ${ECLASS}"
-		;;
-	6|7)
-		# EAPI=5 is required for sane USE_EXPAND dependencies
-		;;
-	*)
-		die "Unsupported EAPI=${EAPI} (unknown) for ${ECLASS}"
-		;;
+case ${EAPI} in
+	7|8) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
-EXPORT_FUNCTIONS pkg_setup
+if [[ -z ${_ADA_ECLASS} ]]; then
+_ADA_ECLASS=1
 
 # @ECLASS_VARIABLE: ADA_DEPS
 # @OUTPUT_VARIABLE
@@ -52,16 +46,58 @@ EXPORT_FUNCTIONS pkg_setup
 # DEPEND="${RDEPEND}"
 # @CODE
 #
+# Example value:
+# @CODE
+# ada_target_gcc_12? ( sys-devel/gcc:12[ada] )
+# ada_target_gnat_2021? ( dev-lang/gnat-gps:2021[ada] )
+# @CODE
 
 # @ECLASS_VARIABLE: _ADA_ALL_IMPLS
 # @INTERNAL
 # @DESCRIPTION:
 # All supported Ada implementations, most preferred last.
 _ADA_ALL_IMPLS=(
-	gnat_2020 gnat_2021
+	gnat_2021 gcc_12_2_0 gcc_12
 )
 readonly _ADA_ALL_IMPLS
 
+# @ECLASS_VARIABLE: ADA_REQUIRED_USE
+# @OUTPUT_VARIABLE
+# @DESCRIPTION:
+# This is an eclass-generated required-use expression which ensures
+# that exactly one ADA_TARGET value has been enabled.
+#
+# This expression should be utilized in an ebuild by including it in
+# REQUIRED_USE, optionally behind a use flag.
+#
+# Example use:
+# @CODE
+# REQUIRED_USE="ada? ( ${ADA_REQUIRED_USE} )"
+# @CODE
+#
+# Example value:
+# @CODE
+# ^^ ( ada_target_gnat_2021 ada_target_gcc_12 )
+# @CODE
+
+# @ECLASS_VARIABLE: ADA_USEDEP
+# @OUTPUT_VARIABLE
+# @DESCRIPTION:
+# This is a placeholder variable,
+# in order to depend on ada packages built for the same ada
+# implementations.
+#
+# Example use:
+# @CODE
+# RDEPEND="$(ada_gen_cond_dep '
+#     dev-ada/foo[${ADA_USEDEP}]
+#   ')"
+# @CODE
+#
+# Example value:
+# @CODE
+# ada_targets_gcc_12(-)
+# @CODE
 
 # @FUNCTION: _ada_impl_supported
 # @USAGE: <impl>
@@ -83,7 +119,13 @@ _ada_impl_supported() {
 	# keep in sync with _ADA_ALL_IMPLS!
 	# (not using that list because inline patterns shall be faster)
 	case "${impl}" in
-		gnat_202[01])
+		gnat_2021)
+			return 0
+			;;
+		gcc_12_2_0)
+			return 0
+			;;
+		gcc_12)
 			return 0
 			;;
 		*)
@@ -177,7 +219,15 @@ ada_export() {
 	local impl var
 
 	case "${1}" in
-		gnat_202[01])
+		gnat_2021)
+			impl=${1}
+			shift
+			;;
+		gcc_12_2_0)
+			impl=${1}
+			shift
+			;;
+		gcc_12)
 			impl=${1}
 			shift
 			;;
@@ -193,13 +243,17 @@ ada_export() {
 	local gcc_pv
 	local slot
 	case "${impl}" in
-		gnat_2020)
-			gcc_pv=9.3.1
-			slot=9.3.1
-			;;
 		gnat_2021)
-			gcc_pv=10.3.1
+			gcc_pv=10
 			slot=10
+			;;
+		gcc_12_2_0)
+			gcc_pv=12.2.0
+			slot=12
+			;;
+		gcc_12)
+			gcc_pv=12
+			slot=12
 			;;
 		*)
 			gcc_pv="9.9.9"
@@ -246,7 +300,17 @@ ada_export() {
 				debug-print "${FUNCNAME}: GNATCHOP = ${GNATCHOP}"
 				;;
 			ADA_PKG_DEP)
-				ADA_PKG_DEP="dev-lang/gnat-gpl:${slot}[ada]"
+				case "${impl}" in
+					gnat_2021)
+						ADA_PKG_DEP="dev-lang/gnat-gpl:${slot}[ada]"
+						;;
+					gcc_12)
+						ADA_PKG_DEP="sys-devel/gcc:${slot}[ada]"
+						;;
+					*)
+						ADA_PKG_DEP="=sys-devel/gcc-${gcc_pv}*[ada]"
+						;;
+				esac
 
 				# use-dep
 				if [[ ${ADA_REQ_USE} ]]; then
@@ -460,3 +524,7 @@ ada_pkg_setup() {
 
 	[[ ${MERGE_TYPE} != binary ]] && ada_setup
 }
+
+fi
+
+EXPORT_FUNCTIONS pkg_setup

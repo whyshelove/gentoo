@@ -1,9 +1,13 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
 inherit flag-o-matic toolchain-funcs
+
+# Uncomment if we have a patchset
+GENTOO_PATCH_DEV="sam"
+GENTOO_PATCH_VER="${PV}-r2"
 
 # Official patchlevel
 # See ftp://ftp.cwru.edu/pub/bash/bash-4.3-patches/
@@ -35,6 +39,10 @@ HOMEPAGE="https://tiswww.case.edu/php/chet/bash/bashtop.html"
 SRC_URI="mirror://gnu/bash/${MY_P}.tar.gz $(patches)"
 [[ ${PV} == *_rc* ]] && SRC_URI+=" ftp://ftp.cwru.edu/pub/bash/${MY_P}.tar.gz"
 
+if [[ -n ${GENTOO_PATCH_VER} ]] ; then
+	SRC_URI+=" https://dev.gentoo.org/~${GENTOO_PATCH_DEV}/distfiles/${CATEGORY}/${PN}/${PN}-${GENTOO_PATCH_VER}-patches.tar.xz"
+fi
+
 LICENSE="GPL-3"
 SLOT="${MY_PV}"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~s390 sparc x86"
@@ -46,13 +54,13 @@ DEPEND=">=sys-libs/ncurses-5.2-r2:0=
 RDEPEND="${DEPEND}
 	!<sys-apps/portage-2.1.6.7_p1"
 # We only need yacc when the .y files get patched (bash42-005)
-BDEPEND="virtual/yacc"
+BDEPEND="app-alternatives/yacc"
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-4.3-mapfile-improper-array-name-validation.patch
-	"${FILESDIR}"/${PN}-4.3-arrayfunc.patch
-	"${FILESDIR}"/${PN}-4.3-protos.patch
-	"${FILESDIR}"/${PN}-4.4-popd-offset-overflow.patch # bug #600174
+	"${WORKDIR}"/${P}-r2-patches/${PN}-4.3-mapfile-improper-array-name-validation.patch
+	"${WORKDIR}"/${P}-r2-patches/${PN}-4.3-arrayfunc.patch
+	"${WORKDIR}"/${P}-r2-patches/${PN}-4.3-protos.patch
+	"${WORKDIR}"/${P}-r2-patches/${PN}-4.4-popd-offset-overflow.patch # bug #600174
 )
 
 S="${WORKDIR}/${MY_P}"
@@ -73,6 +81,10 @@ pkg_setup() {
 
 src_unpack() {
 	unpack ${MY_P}.tar.gz
+
+	if [[ -n ${GENTOO_PATCH_VER} ]] ; then
+		unpack ${PN}-${GENTOO_PATCH_VER}-patches.tar.xz
+	fi
 }
 
 src_prepare() {
@@ -117,10 +129,10 @@ src_configure() {
 	# For descriptions of these, see config-top.h
 	# bashrc/#26952 bash_logout/#90488 ssh/#24762 mktemp/#574426
 	append-cppflags \
-		-DDEFAULT_PATH_VALUE=\'\"${EPREFIX}/usr/local/sbin:${EPREFIX}/usr/local/bin:${EPREFIX}/usr/sbin:${EPREFIX}/usr/bin:${EPREFIX}/sbin:${EPREFIX}/bin\"\' \
-		-DSTANDARD_UTILS_PATH=\'\"${EPREFIX}/bin:${EPREFIX}/usr/bin:${EPREFIX}/sbin:${EPREFIX}/usr/sbin\"\' \
-		-DSYS_BASHRC=\'\"${EPREFIX}/etc/bash/bashrc\"\' \
-		-DSYS_BASH_LOGOUT=\'\"${EPREFIX}/etc/bash/bash_logout\"\' \
+		-DDEFAULT_PATH_VALUE=\'\""${EPREFIX}"/usr/local/sbin:"${EPREFIX}"/usr/local/bin:"${EPREFIX}"/usr/sbin:"${EPREFIX}"/usr/bin:"${EPREFIX}"/sbin:"${EPREFIX}"/bin\"\' \
+		-DSTANDARD_UTILS_PATH=\'\""${EPREFIX}"/bin:"${EPREFIX}"/usr/bin:"${EPREFIX}"/sbin:"${EPREFIX}"/usr/sbin\"\' \
+		-DSYS_BASHRC=\'\""${EPREFIX}"/etc/bash/bashrc\"\' \
+		-DSYS_BASH_LOGOUT=\'\""${EPREFIX}"/etc/bash/bash_logout\"\' \
 		-DNON_INTERACTIVE_LOGIN_SHELLS \
 		-DSSH_SOURCE_BASHRC \
 		-DUSE_MKTEMP -DUSE_MKSTEMP \

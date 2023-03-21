@@ -1,10 +1,10 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: autotools.eclass
 # @MAINTAINER:
 # base-system@gentoo.org
-# @SUPPORTED_EAPIS: 5 6 7 8
+# @SUPPORTED_EAPIS: 6 7 8
 # @BLURB: Regenerates auto* build scripts
 # @DESCRIPTION:
 # This eclass is for safely handling autotooled software packages that need to
@@ -12,6 +12,11 @@
 
 # Note: We require GNU m4, as does autoconf.  So feel free to use any features
 # from the GNU version of m4 without worrying about other variants (i.e. BSD).
+
+case ${EAPI} in
+	6|7|8) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
+esac
 
 if [[ ${_AUTOTOOLS_AUTO_DEPEND+set} == "set" ]] ; then
 	# See if we were included already, but someone changed the value
@@ -26,14 +31,7 @@ fi
 if [[ -z ${_AUTOTOOLS_ECLASS} ]] ; then
 _AUTOTOOLS_ECLASS=1
 
-case ${EAPI} in
-	5|6)
-		# Needed for eqawarn
-		inherit eutils
-		;;
-	7|8) ;;
-	*) die "${ECLASS}: EAPI ${EAPI} not supported" ;;
-esac
+[[ ${EAPI} == 6 ]] && inherit eqawarn
 
 inherit gnuconfig libtool
 
@@ -93,7 +91,7 @@ fi
 if [[ -n ${WANT_AUTOCONF} ]] ; then
 	case ${WANT_AUTOCONF} in
 		none)       _autoconf_atom="" ;; # some packages don't require autoconf at all
-		2.1)        _autoconf_atom="~sys-devel/autoconf-2.13" ;;
+		2.1)        _autoconf_atom=">=sys-devel/autoconf-2.13-r7:2.1" ;;
 		# if you change the "latest" version here, change also autotools_env_setup
 		latest|2.5) _autoconf_atom=">=sys-devel/autoconf-2.69" ;;
 		*)          die "Invalid WANT_AUTOCONF value '${WANT_AUTOCONF}'" ;;
@@ -101,7 +99,7 @@ if [[ -n ${WANT_AUTOCONF} ]] ; then
 	export WANT_AUTOCONF
 fi
 
-_libtool_atom=">=sys-devel/libtool-2.4"
+_libtool_atom=">=sys-devel/libtool-2.4.6"
 if [[ -n ${WANT_LIBTOOL} ]] ; then
 	case ${WANT_LIBTOOL} in
 		none)   _libtool_atom="" ;;
@@ -130,7 +128,7 @@ RDEPEND=""
 : ${AUTOTOOLS_AUTO_DEPEND:=yes}
 if [[ ${AUTOTOOLS_AUTO_DEPEND} != "no" ]] ; then
 	case ${EAPI} in
-		5|6) DEPEND=${AUTOTOOLS_DEPEND} ;;
+		6) DEPEND=${AUTOTOOLS_DEPEND} ;;
 		*) BDEPEND=${AUTOTOOLS_DEPEND} ;;
 	esac
 fi
@@ -283,7 +281,7 @@ _at_uses_pkg() {
 		for macro ; do
 			args+=( -e "^[[:space:]]*${macro}\>" )
 		done
-		egrep -q "${args[@]}" configure.??
+		grep -E -q "${args[@]}" configure.??
 	fi
 }
 _at_uses_autoheader()  { _at_uses_pkg A{C,M}_CONFIG_HEADER{S,}; }
@@ -336,7 +334,7 @@ eaclocal() {
 	# - ${BROOT}/usr/share/aclocal
 	# - ${ESYSROOT}/usr/share/aclocal
 	# See bug #677002
-	if [[ ${EAPI} != [56] ]] ; then
+	if [[ ${EAPI} != 6 ]] ; then
 		if [[ ! -f "${T}"/aclocal/dirlist ]] ; then
 			mkdir "${T}"/aclocal || die
 			cat <<- EOF > "${T}"/aclocal/dirlist || die
@@ -394,7 +392,7 @@ eautoconf() {
 
 	if [[ ${WANT_AUTOCONF} != "2.1" && -e configure.in ]] ; then
 		case ${EAPI} in
-			5|6|7)
+			6|7)
 				eqawarn "This package has a configure.in file which has long been deprecated.  Please"
 				eqawarn "update it to use configure.ac instead as newer versions of autotools will die"
 				eqawarn "when it finds this file.  See https://bugs.gentoo.org/426262 for details."
@@ -485,7 +483,7 @@ config_rpath_update() {
 	local dst src
 
 	case ${EAPI} in
-		5|6)
+		6)
 			src="${EPREFIX}/usr/share/gettext/config.rpath"
 			;;
 		*)
@@ -516,17 +514,27 @@ autotools_env_setup() {
 			# Break on first hit to respect _LATEST_AUTOMAKE order.
 			local hv_args=""
 			case ${EAPI} in
-				5|6)
+				6)
 					hv_args="--host-root"
 					;;
 				*)
 					hv_args="-b"
 					;;
 			esac
-			ROOT=/ has_version ${hv_args} "=sys-devel/automake-${pv}*" && export WANT_AUTOMAKE="${pv}" && break
+			has_version ${hv_args} "=sys-devel/automake-${pv}*" && export WANT_AUTOMAKE="${pv}" && break
 		done
-		[[ ${WANT_AUTOMAKE} == "latest" ]] && \
-			die "Cannot find the latest automake! Tried ${_LATEST_AUTOMAKE[*]}"
+
+		# During bootstrap in prefix there might be no automake merged yet
+		# due to --nodeps, but still available somewhere in PATH.
+		# For example, ncurses needs local libtool on aix and hpux.
+		# So, make the check non-fatal where automake doesn't yet
+		# exist within BROOT. (We could possibly do better here
+		# and inspect PATH, but I'm not sure there's much point.)
+		if use prefix && [[ ! -x "${BROOT}"/usr/bin/automake ]] ; then
+			[[ ${WANT_AUTOMAKE} == "latest" ]] && ewarn "Ignoring missing automake during Prefix bootstrap! Tried ${_LATEST_AUTOMAKE[*]}"
+		else
+			[[ ${WANT_AUTOMAKE} == "latest" ]] && die "Cannot find the latest automake! Tried ${_LATEST_AUTOMAKE[*]}"
+		fi
 	fi
 	[[ ${WANT_AUTOCONF} == "latest" ]] && export WANT_AUTOCONF=2.71
 }

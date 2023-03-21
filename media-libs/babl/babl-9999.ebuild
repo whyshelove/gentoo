@@ -12,7 +12,7 @@ if [[ ${PV} == *9999* ]]; then
 	EGIT_REPO_URI="https://gitlab.gnome.org/GNOME/babl.git"
 	SRC_URI=""
 else
-	SRC_URI="https://ftp.gimp.org/pub/${PN}/${PV:0:3}/${P}.tar.xz"
+	SRC_URI="https://download.gimp.org/pub/${PN}/${PV:0:3}/${P}.tar.xz"
 	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv -sparc ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x64-solaris ~x86-solaris"
 fi
 
@@ -29,8 +29,8 @@ BDEPEND="
 	vala? ( $(vala_depend) )
 "
 RDEPEND="
-	introspection? ( >=dev-libs/gobject-introspection-1.32:= )
-	lcms? ( >=media-libs/lcms-2.8:2 )
+	introspection? ( >=dev-libs/gobject-introspection-1.72:= )
+	lcms? ( >=media-libs/lcms-2.13.1:2 )
 "
 DEPEND="${RDEPEND}"
 

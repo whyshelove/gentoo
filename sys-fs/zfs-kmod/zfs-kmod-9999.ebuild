@@ -1,7 +1,7 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit autotools dist-kernel-utils flag-o-matic linux-mod toolchain-funcs
 
@@ -19,14 +19,14 @@ else
 	SRC_URI="https://github.com/openzfs/zfs/releases/download/zfs-${MY_PV}/zfs-${MY_PV}.tar.gz"
 	SRC_URI+=" verify-sig? ( https://github.com/openzfs/zfs/releases/download/zfs-${MY_PV}/zfs-${MY_PV}.tar.gz.asc )"
 	S="${WORKDIR}/zfs-${PV%_rc?}"
-	ZFS_KERNEL_COMPAT="5.17"
+	ZFS_KERNEL_COMPAT="6.1"
 
-	#  increments minor eg 5.14 -> 5.15, and still supports override.
+	# increments minor eg 5.14 -> 5.15, and still supports override.
 	ZFS_KERNEL_DEP="${ZFS_KERNEL_COMPAT_OVERRIDE:-${ZFS_KERNEL_COMPAT}}"
 	ZFS_KERNEL_DEP="${ZFS_KERNEL_DEP%%.*}.$(( ${ZFS_KERNEL_DEP##*.} + 1))"
 
 	if [[ ${PV} != *_rc* ]]; then
-		KEYWORDS="~amd64 ~arm64 ~ppc64 ~riscv"
+		KEYWORDS="~amd64 ~arm64 ~ppc64 ~riscv ~sparc"
 	fi
 fi
 
@@ -34,13 +34,11 @@ LICENSE="CDDL MIT debug? ( GPL-2+ )"
 SLOT="0/${PVR}"
 IUSE="custom-cflags debug +rootfs"
 
-RDEPEND="${DEPEND}
-	!sys-kernel/spl
-"
+RDEPEND="${DEPEND}"
 
 BDEPEND="
 	dev-lang/perl
-	virtual/awk
+	app-alternatives/awk
 "
 
 # we want dist-kernel block in BDEPEND because of portage resolver.
@@ -176,11 +174,50 @@ src_install() {
 	einstalldocs
 }
 
+_old_layout_cleanup() {
+	# new files are just extra/{spl,zfs}.ko with no subdirs.
+	local olddir=(
+		avl/zavl
+		icp/icp
+		lua/zlua
+		nvpair/znvpair
+		spl/spl
+		unicode/zunicode
+		zcommon/zcommon
+		zfs/zfs
+		zstd/zzstd
+	)
+
+	# kernel/module/Kconfig contains possible compressed extentions.
+	local kext kextfiles
+	for kext in .ko{,.{gz,xz,zst}}; do
+		kextfiles+=( "${olddir[@]/%/${kext}}" )
+	done
+
+	local oldfile oldpath
+	for oldfile in "${kextfiles[@]}"; do
+		oldpath="${EROOT}/lib/modules/${KV_FULL}/extra/${oldfile}"
+		if [[ -f "${oldpath}" ]]; then
+			ewarn "Found obsolete zfs module ${oldfile} for current kernel ${KV_FULL}, removing."
+			rm -rv "${oldpath}" || die
+			# we do not remove non-empty directories just for safety in case there's something else.
+			# also it may fail if there are both compressed and uncompressed modules installed.
+			rmdir -v --ignore-fail-on-non-empty "${oldpath%/*.*}" || die
+		fi
+	done
+}
+
 pkg_postinst() {
+	# check for old module layout before doing anything else.
+	# only attempt layout cleanup if new .ko location is used.
+	local newko=( "${EROOT}/lib/modules/${KV_FULL}/extra"/{zfs,spl}.ko* )
+	# we check first array member, if glob above did not exand, it will be "zfs.ko*" and -f will return false.
+	# if glob expanded -f will do correct file precense check.
+	[[ -f ${newko[0]} ]] && _old_layout_cleanup
 	linux-mod_pkg_postinst
 
 	if [[ -z ${ROOT} ]] && use dist-kernel; then
-		set_arch_to_portage
+		set_arch_to_pkgmgr
 		dist-kernel_reinstall_initramfs "${KV_DIR}" "${KV_FULL}"
 	fi
 
@@ -196,7 +233,7 @@ pkg_postinst() {
 		ewarn "Do *NOT* upgrade root pools to use the new feature flags."
 		ewarn "Any new pools will be created with the new feature flags by default"
 		ewarn "and will not be compatible with older versions of OpenZFS. To"
-		ewarn "create a newpool that is backward compatible wih GRUB2, use "
+		ewarn "create a new pool that is backward compatible wih GRUB2, use "
 		ewarn
 		ewarn "zpool create -o compatibility=grub2 ..."
 		ewarn

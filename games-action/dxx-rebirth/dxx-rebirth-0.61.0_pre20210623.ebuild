@@ -1,9 +1,9 @@
-# Copyright 2017-2022 Gentoo Authors
+# Copyright 2017-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..10} )
 
 inherit desktop flag-o-matic python-any-r1 scons-utils toolchain-funcs xdg
 
@@ -23,7 +23,7 @@ else
 	# fixes are merged into the main source by upstream.
 	#
 	# Cross-compilation to Windows is also supported.
-	KEYWORDS="~amd64 ~arm64 ~x86"
+	KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
 fi
 
 DESCRIPTION="Descent Rebirth - enhanced Descent 1 & 2 engine"
@@ -161,6 +161,10 @@ BDEPEND="virtual/pkgconfig"
 # rebuild, the master flag USE=music controls whether sdl-mixer is used,
 # and therefore requires a rebuild when changed.
 #IUSE_RUNTIME="flac l10n_de midi mp3 opl3-musicpack sc55-musicpack vorbis"
+
+PATCHES=(
+	"${FILESDIR}"/${P}-gcc-12.patch
+)
 
 dxx_scons() {
 	# Always build profile `m`.  If use editor, also build profile `e`.

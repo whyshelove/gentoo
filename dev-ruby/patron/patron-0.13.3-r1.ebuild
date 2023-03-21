@@ -1,8 +1,8 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-USE_RUBY="ruby26 ruby27 ruby30"
+USE_RUBY="ruby27 ruby30 ruby31"
 
 RUBY_FAKEGEM_RECIPE_TEST="rspec3"
 RUBY_FAKEGEM_EXTRADOC="README.md"
@@ -13,7 +13,7 @@ RUBY_FAKEGEM_EXTENSION_DIR="lib/patron"
 inherit ruby-fakegem
 
 DESCRIPTION="Patron is a Ruby HTTP client library based on libcurl"
-HOMEPAGE="https://toland.github.com/patron/"
+HOMEPAGE="https://github.com/toland/patron"
 
 LICENSE="MIT"
 SLOT="0"

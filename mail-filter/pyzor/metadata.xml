@@ -16,10 +16,7 @@
     </flag>
     <flag name="redis">
       Enables the redis back-end database engine for pyzord through
-      <pkg>dev-python/redis-py</pkg>
-    </flag>
-    <flag name="gevent">
-      Use <pkg>dev-python/gevent</pkg> to enable asynchronous operation
+      <pkg>dev-python/redis</pkg>
     </flag>
   </use>
   <upstream>

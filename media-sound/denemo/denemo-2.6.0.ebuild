@@ -11,7 +11,7 @@ SRC_URI="mirror://gnu/${PN}/${P}.tar.gz"
 
 LICENSE="GPL-3+ OFL-1.1"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="amd64 x86"
 
 # configure options currently not used:
 # --enable-mem(no) memory debugging: needs Electric fence (efence), which
@@ -55,7 +55,7 @@ BDEPEND="
 	>=dev-util/intltool-0.51.0-r1
 	>=sys-devel/flex-2.6.1
 	virtual/pkgconfig
-	virtual/yacc
+	app-alternatives/yacc
 	gtk-doc? ( >=dev-util/gtk-doc-1.25-r1 )
 	nls? ( >=sys-devel/gettext-0.19.8.1 )
 "

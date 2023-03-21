@@ -6,21 +6,20 @@ EAPI=7
 MYP=why3-${PV}-20190517-197BB-src
 
 DESCRIPTION="Platform for deductive program verification"
-HOMEPAGE="http://why3.lri.fr/"
+HOMEPAGE="https://why3.lri.fr/"
 SRC_URI="http://mirrors.cdn.adacore.com/art/5cdf915d31e87a8f1c967d54
 	-> ${MYP}.tar.gz"
 
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="amd64"
-IUSE="coq doc emacs gtk html hypothesis-selection +ocamlopt zarith zip"
+IUSE="doc emacs gtk html hypothesis-selection +ocamlopt zarith zip"
 RESTRICT="strip"
 
 DEPEND=">=dev-lang/ocaml-4.09.0:=[ocamlopt=]
 	>=dev-ml/ocamlbuild-0.14.0
 	<=dev-ml/menhir-20190924:=
 	dev-ml/num:=
-	coq? ( >=sci-mathematics/coq-8.9.1 )
 	doc? ( dev-tex/rubber )
 	gtk? ( >=dev-ml/lablgtk-2.18.8:=[sourceview] )
 	emacs? ( >=app-editors/emacs-23.1:* )
@@ -73,7 +72,7 @@ src_configure() {
 		--disable-pvs-libs \
 		--disable-isabelle-libs \
 		--enable-verbose-make \
-		$(use_enable coq coq-libs) \
+		--disable-coq-libs \
 		$(use_enable doc) \
 		$(use_enable emacs emacs-compilation) \
 		$(use_enable gtk ide) \

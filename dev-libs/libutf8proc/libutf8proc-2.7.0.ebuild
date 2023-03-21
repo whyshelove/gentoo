@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="8"
-USE_RUBY="ruby25 ruby26 ruby27"
+USE_RUBY="ruby27 ruby30 ruby31"
 
 inherit ruby-single toolchain-funcs
 
@@ -13,7 +13,7 @@ SRC_URI="https://github.com/JuliaStrings/${PN#lib}/archive/v${PV}.tar.gz -> ${P}
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~ppc ~ppc64 ~riscv ~sparc ~x86 ~x64-cygwin ~amd64-linux ~x86-linux ~x64-macos"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ppc ppc64 ~riscv sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~x64-macos"
 IUSE="cjk static-libs test"
 RESTRICT="!test? ( test )"
 
@@ -23,12 +23,15 @@ BDEPEND="test? (
 	)"
 S="${WORKDIR}/${P#lib}"
 
+QA_PKGCONFIG_VERSION="$(ver_cut 1).5.0"
+
 src_prepare() {
 	if use cjk; then
 		einfo "Modifying East Asian Ambiguous (A) as wide ..."
 		cp "${WORKDIR}"/${PN}-EastAsianWidth-14.0.0 ${PN#lib}_data.c || die
 	fi
 
+	sed -i "/^libdir/s:/lib:/$(get_libdir):" Makefile
 	default
 }
 
@@ -36,21 +39,19 @@ src_compile() {
 	emake \
 		AR="$(tc-getAR)" \
 		CC="$(tc-getCC)" \
-		prefix="/usr" \
-		libdir="${EPREFIX}/usr/$(get_libdir)"
+		prefix="${EPREFIX}/usr"
+}
+
+src_test() {
+	cp "${BROOT}"/usr/share/unicode-data/{DerivedCoreProperties,{Normalization,auxiliary/GraphemeBreak}Test}.txt data || die
+
+	emake CC="$(tc-getCC)" check
 }
 
 src_install() {
 	emake \
-		DESTDIR="${ED}" \
-		prefix="/usr" \
-		libdir="/usr/$(get_libdir)" \
+		DESTDIR="${D}" \
+		prefix="${EPREFIX}/usr" \
 		install
 	use static-libs || find "${ED}" -name '*.a' -delete || die
-}
-
-src_test() {
-	cp "${EPREFIX}"/usr/share/unicode-data/{DerivedCoreProperties,{Normalization,auxiliary/GraphemeBreak}Test}.txt data || die
-
-	emake CC="$(tc-getCC)" check
 }

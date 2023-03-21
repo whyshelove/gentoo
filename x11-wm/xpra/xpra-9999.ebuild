@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -7,11 +7,11 @@ if [[ ${PV} = 9999* ]]; then
 	EGIT_REPO_URI="https://github.com/Xpra-org/xpra.git"
 	inherit git-r3
 else
-	SRC_URI="mirror://pypi/${PN:0:1}/${PN}/${P}.tar.gz"
+	inherit pypi
 	KEYWORDS="~amd64 ~x86"
 fi
 
-PYTHON_COMPAT=( python3_{7,8,9,10} )
+PYTHON_COMPAT=( python3_{9..11} )
 DISTUTILS_SINGLE_IMPL=yes
 DISTUTILS_USE_SETUPTOOLS=no
 
@@ -21,7 +21,7 @@ DESCRIPTION="X Persistent Remote Apps (xpra) and Partitioning WM (parti) based o
 HOMEPAGE="https://xpra.org/"
 LICENSE="GPL-2 BSD"
 SLOT="0"
-IUSE="brotli +client +clipboard csc cups dbus doc ffmpeg jpeg html ibus +lz4 lzo minimal opengl pillow pinentry pulseaudio +server sound systemd test vpx webcam webp xdg xinerama"
+IUSE="brotli +client +clipboard csc cups dbus doc ffmpeg jpeg html ibus +lz4 lzo minimal opengl pillow pinentry pulseaudio +server sound systemd test udev vpx webcam webp xdg xinerama"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	|| ( client server )
@@ -98,6 +98,7 @@ RDEPEND="
 	x11-apps/xmodmap
 	ibus? ( app-i18n/ibus )
 	pinentry? ( app-crypt/pinentry )
+	udev? ( virtual/udev )
 "
 DEPEND+="
 	test? ( ${TDEPEND} )
@@ -114,7 +115,6 @@ RESTRICT="!test? ( test )"
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-3.0.2_ignore-gentoo-no-compile.patch
-	"${FILESDIR}"/${PN}-4.2-suid-warning.patch
 	"${FILESDIR}"/${PN}-4.3-no-service.patch
 	"${FILESDIR}"/${PN}-9999-xdummy.patch
 )
@@ -130,7 +130,8 @@ python_prepare_all() {
 		-i setup.py || die
 
 	if use minimal; then
-		sed -r -e 's/^(pam|scripts|xdg_open)_ENABLED.*/\1_ENABLED=False/' \
+		sed -r -e '/pam_ENABLED/s/DEFAULT/False/' \
+			-e 's/^(xdg_open)_ENABLED = .*/\1_ENABLED = False/' \
 			-i setup.py || die
 	fi
 }
@@ -182,7 +183,8 @@ python_test() {
 	distutils_install_for_testing
 	xdg_environment_reset
 
-	PYTHONPATH=${S}/tests/unittests:${BUILD_DIR}/test/lib \
+	env -u WAYLAND_DISPLAY -u XDG_SESSION_TYPE \
+	PYTHONPATH="${S}/tests/unittests:${BUILD_DIR}/test/lib" \
 	XPRA_SYSTEMD_RUN=$(usex systemd) XPRA_TEST_COVERAGE=0 \
 		"${PYTHON}" "${S}"/tests/unittests/unit/run.py || die
 }
@@ -191,12 +193,23 @@ python_install_all() {
 	distutils-r1_python_prepare_all
 
 	# Move udev dir to the right place.
-	local dir=$(get_udevdir)
-	dodir "${dir%/*}"
-	mv -vnT "${ED}"/usr/lib/udev "${ED}${dir}" || die
+	if use udev; then
+		local dir=$(get_udevdir)
+		dodir "${dir%/*}"
+		mv -vnT "${ED}"/usr/lib/udev "${ED}${dir}" || die
+	else
+		rm -vr "${ED}"/usr/lib/udev || die
+		rm -v "${ED}"/usr/bin/xpra_udev_product_version || die
+	fi
 }
 
 pkg_postinst() {
 	tmpfiles_process xpra.conf
 	xdg_pkg_postinst
+	use udev && udev_reload
+}
+
+pkg_postrm() {
+	xdg_pkg_postinst
+	use udev && udev_reload
 }

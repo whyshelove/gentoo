@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{7..10} )
+PYTHON_COMPAT=( python3_{9..10} )
 PYTHON_REQ_USE="threads(+)"
 DISTUTILS_USE_SETUPTOOLS=no
 CARGO_OPTIONAL=1
@@ -134,7 +134,7 @@ SRC_URI="https://www.mercurial-scm.org/release/${P}.tar.gz
 LICENSE="GPL-2+
 	rust? ( BSD Apache-2.0 Apache-2.0-with-LLVM-exceptions BSD-2 ISC MIT PSF-2 Unlicense )"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 IUSE="+chg emacs gpg test tk rust"
 
 BDEPEND="rust? ( ${RUST_DEPEND} )"

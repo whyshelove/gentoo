@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-ADA_COMPAT=( gnat_202{0..1} )
+ADA_COMPAT=( gnat_2021 )
 inherit ada multiprocessing
 
 DESCRIPTION="A complete Web development framework"
@@ -15,7 +15,7 @@ SRC_URI="https://github.com/AdaCore/${PN}/archive/refs/tags/v${PV}.tar.gz
 
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="amd64 x86"
 IUSE=""
 
 RDEPEND="dev-ada/gnatcoll-core:=[${ADA_USEDEP},shared,static-libs]

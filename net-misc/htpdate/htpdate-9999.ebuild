@@ -7,18 +7,19 @@ inherit readme.gentoo-r1 toolchain-funcs
 
 DESCRIPTION="Synchronize local workstation with time offered by remote webservers"
 HOMEPAGE="https://www.vervest.org/htp/"
-if [[ "${PV}" == *9999 ]] ; then
+if [[ ${PV} == *9999 ]] ; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/twekkel/htpdate"
 else
 	SRC_URI="https://github.com/twekkel/${PN}/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
 	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~mips ~ppc ~ppc64 ~s390 ~x86 ~amd64-linux ~x86-linux"
 fi
-IUSE="+ssl"
+
 LICENSE="GPL-2"
 SLOT="0"
+IUSE="+ssl"
 
-DEPEND="ssl? ( dev-libs/openssl:0= )"
+DEPEND="ssl? ( dev-libs/openssl:= )"
 RDEPEND="${DEPEND}"
 
 # Test suite tries to connect to the Internet
@@ -26,8 +27,6 @@ RESTRICT="test"
 
 DOC_CONTENTS="If you would like to run htpdate as a daemon, set
 appropriate http servers in /etc/conf.d/htpdate!"
-
-PATCHES=(  )
 
 src_prepare() {
 	default
@@ -39,8 +38,10 @@ src_prepare() {
 }
 
 src_compile() {
-	emake CFLAGS="-Wall ${CFLAGS} ${LDFLAGS}" CC="$(tc-getCC)" \
-		$(usex ssl "https" '')
+	emake \
+		CFLAGS="-Wall ${CFLAGS} ${CPPFLAGS} ${LDFLAGS}" \
+		CC="$(tc-getCC)" \
+		$(usev ssl 'https')
 }
 
 src_install() {

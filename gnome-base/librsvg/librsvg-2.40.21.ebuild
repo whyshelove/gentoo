@@ -1,18 +1,17 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 GNOME2_EAUTORECONF="yes"
-VALA_USE_DEPEND="vapigen"
 
-inherit autotools gnome2 multilib-minimal vala
+inherit gnome2 multilib-minimal vala
 
 DESCRIPTION="Scalable Vector Graphics (SVG) rendering library"
 HOMEPAGE="https://wiki.gnome.org/Projects/LibRsvg"
 
 LICENSE="LGPL-2+"
 SLOT="2"
-KEYWORDS="~alpha arm hppa ~ia64 ~mips ppc ~s390 sparc x86 ~amd64-linux ~x86-linux ~x64-macos ~sparc-solaris ~x64-solaris ~x86-solaris"
+KEYWORDS="~alpha arm hppa ~ia64 ~loong ~mips ppc ~s390 sparc x86 ~amd64-linux ~x86-linux ~x64-macos ~sparc-solaris ~x64-solaris ~x86-solaris"
 
 IUSE="+introspection tools +vala"
 REQUIRED_USE="vala? ( introspection )"

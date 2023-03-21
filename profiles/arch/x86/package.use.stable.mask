@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # When you add an entry to the top of this file, add your name, the date, and
@@ -16,6 +16,16 @@
 #
 
 #--- END OF EXAMPLES ---
+
+# Andreas Sturmlechner <asturm@gentoo.org> (2022-09-14)
+# sci-libs/vtk is not stable on x86 and we don't want to complicate
+# newer maxima and geant stabilisation, bug #867547, #886975
+sci-mathematics/maxima vtk
+sci-physics/geant vtk
+
+# Sam James <sam@gentoo.org> (2022-07-06)
+# sci-libs/sundials is not marked stable on x86
+sci-mathematics/octave sundials
 
 # Sam James <sam@gentoo.org> (2022-02-02)
 # sys-cluster/ucx is not marked stable on x86
@@ -73,7 +83,7 @@ dev-ruby/haml test
 
 # Adam Feldman <NP-Hardass@gentoo.org> (2017-09-27)
 # patchset variants are not stable
-virtual/wine staging
+virtual/wine proton staging
 
 # Christoph Junghans <junghans@gentoo.org> (2017-02-26)
 # Stable mask some fabrics (bug #525534)

@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7..10} )
+PYTHON_COMPAT=( python3_{9..10} )
 
 inherit autotools elisp-common python-single-r1 tmpfiles systemd
 
@@ -15,7 +15,7 @@ LICENSE="|| ( GPL-2 LGPL-3+ )"
 SLOT="0/${PV%%.*}"
 KEYWORDS="amd64 ~arm ~arm64 ~ppc ppc64 x86"
 
-IUSE="debug emacs +fuse +georeplication ipv6 +libtirpc rsyslog static-libs +syslog test +xml"
+IUSE="debug emacs +fuse +georeplication ipv6 +libtirpc rsyslog selinux static-libs +syslog test +xml"
 
 REQUIRED_USE="georeplication? ( ${PYTHON_REQUIRED_USE} xml )
 	ipv6? ( libtirpc )"
@@ -36,6 +36,7 @@ RDEPEND="
 	emacs? ( >=app-editors/emacs-23.1:* )
 	fuse? ( >=sys-fs/fuse-2.7.0:0 )
 	georeplication? ( ${PYTHON_DEPS} )
+	selinux? ( sec-policy/selinux-glusterfs )
 	xml? ( dev-libs/libxml2 )
 	!elibc_glibc? ( sys-libs/argp-standalone )
 	libtirpc? ( net-libs/libtirpc:= )

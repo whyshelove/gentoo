@@ -1,13 +1,13 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..11} )
 # vala and introspection support is broken, bug #468208
 VALA_USE_DEPEND=vapigen
 
-inherit meson optfeature python-any-r1 vala
+inherit flag-o-matic meson optfeature python-any-r1 toolchain-funcs vala
 
 if [[ ${PV} == *9999* ]]; then
 	inherit git-r3
@@ -24,7 +24,7 @@ HOMEPAGE="https://gegl.org/"
 LICENSE="|| ( GPL-3+ LGPL-3 )"
 SLOT="0.4"
 
-IUSE="cairo debug ffmpeg introspection lcms lensfun openexr pdf raw sdl svg test tiff umfpack vala v4l webp"
+IUSE="cairo debug ffmpeg introspection lcms lensfun openexr openmp pdf raw sdl sdl2 svg test tiff umfpack vala v4l webp"
 REQUIRED_USE="
 	svg? ( cairo )
 	test? ( introspection )
@@ -39,11 +39,11 @@ RESTRICT="!test? ( test )"
 RDEPEND="
 	>=dev-libs/glib-2.68.2:2
 	>=dev-libs/json-glib-1.2.6
-	>=media-libs/babl-0.1.90[introspection?,lcms?,vala?]
+	>=media-libs/babl-0.1.98[introspection?,lcms?,vala?]
+	media-libs/libjpeg-turbo
 	media-libs/libnsgif
 	>=media-libs/libpng-1.6.0:0=
 	>=sys-libs/zlib-1.2.0
-	virtual/jpeg:0=
 	>=x11-libs/gdk-pixbuf-2.32:2
 	>=x11-libs/pango-1.38.0
 	cairo? ( >=x11-libs/cairo-1.12.2 )
@@ -55,13 +55,15 @@ RDEPEND="
 	pdf? ( >=app-text/poppler-0.71.0[cairo] )
 	raw? ( >=media-libs/libraw-0.15.4:0= )
 	sdl? ( >=media-libs/libsdl-1.2.0 )
+	sdl2? ( >=media-libs/libsdl2-2.0.20 )
 	svg? ( >=gnome-base/librsvg-2.40.6:2 )
-	tiff? ( >=media-libs/tiff-4:0 )
+	tiff? ( >=media-libs/tiff-4:= )
 	umfpack? ( sci-libs/umfpack )
 	v4l? ( >=media-libs/libv4l-1.0.1 )
 	webp? ( >=media-libs/libwebp-0.5.0:= )
 "
-DEPEND="${RDEPEND}"
+DEPEND="${RDEPEND}
+	x11-base/xorg-proto"
 BDEPEND="
 	${PYTHON_DEPS}
 	dev-lang/perl
@@ -75,9 +77,18 @@ BDEPEND="
 
 DOCS=( AUTHORS docs/ChangeLog docs/NEWS.adoc )
 
+pkg_pretend() {
+	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
+}
+
+pkg_setup() {
+	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
+	python-any-r1_pkg_setup
+}
+
 python_check_deps() {
 	use test || return 0
-	has_version -b ">=dev-python/pygobject-3.2:3[${PYTHON_USEDEP}]"
+	python_has_version -b ">=dev-python/pygobject-3.2:3[${PYTHON_USEDEP}]"
 }
 
 src_prepare() {
@@ -97,6 +108,9 @@ src_prepare() {
 }
 
 src_configure() {
+	# Bug #859901
+	filter-lto
+
 	use vala && vala_setup
 
 	local emesonargs=(
@@ -111,7 +125,6 @@ src_configure() {
 		-Dlua=disabled
 		-Dmrg=disabled
 		-Dpango=enabled
-		-Dsdl2=disabled
 		#  - Parameter -Dworkshop=false disables any use of Lua, effectivly
 		-Dworkshop=false
 		$(meson_feature cairo)
@@ -120,9 +133,11 @@ src_configure() {
 		$(meson_feature lcms)
 		$(meson_feature lensfun)
 		$(meson_feature openexr)
+		$(meson_feature openmp)
 		$(meson_feature pdf poppler)
 		$(meson_feature raw libraw)
 		$(meson_feature sdl sdl1)
+		$(meson_feature sdl2 sdl2)
 		$(meson_feature svg librsvg)
 		$(meson_feature test pygobject)
 		$(meson_feature tiff libtiff)

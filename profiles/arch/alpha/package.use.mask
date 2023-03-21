@@ -1,6 +1,43 @@
 # Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
+# Matt Turner <tetromino@gentoo.org> (2023-02-15)
+# pandoc not keyworded here, bug #878355
+app-admin/conky doc
+
+# Matt Turner <tetromino@gentoo.org> (2023-02-15)
+# net-libs/libqmi and net-libs/libqrtr-glib are not keyworded here
+net-misc/modemmanager qmi qrtr
+
+# Matt Turner <mattst88@gentoo.org> (2023-02-15)
+# Depends on dev-util/umockdev which is broken on alpha.
+# See https://github.com/martinpitt/umockdev/issues/200
+dev-libs/libgudev test
+dev-libs/libgusb test
+sys-power/upower test
+
+# Stijn Tintel <stijn@linux-ipv6.be> (2023-02-02)
+# Dependency not keyworded
+# https://bugs.gentoo.org/show_bug.cgi?id=892389
+net-misc/openvswitch unwind
+
+# matoro <matoro_gentoo@matoro.tk> (2022-09-22)
+# Unable to test due to mask, bug #763963
+net-misc/openntpd constraints
+
+# Matthew Smith <matthew@gentoo.org> (2022-07-10)
+# Needs unkeyworded app-doc/halibut
+>=net-misc/putty-0.77 doc
+
+# Sergey Torokhov <torokhov-s-a@yandex.ru> (2022-06-22)
+# media-libs/libjxl is not keyworded
+# bug https://bugs.gentoo.org/853628
+media-gfx/gimp jpegxl
+
+# Sam James <sam@gentoo.org> (2022-04-29)
+# Needs unkeyworded dev-util/umockdev
+sys-power/upower test
+
 # Michał Górny <mgorny@gentoo.org> (2022-04-26)
 # Unkeyworded dependencies.
 dev-python/click doc
@@ -12,10 +49,6 @@ media-libs/imlib2 svg heif jpegxl
 # Matt Turner <mattst88@gentoo.org> (2022-04-18)
 # app-text/nuspell is not keyworded
 app-text/enchant nuspell
-
-# Matt Turner <mattst88@gentoo.org> (2022-04-16)
-# sys-auth/seatd is not keyworded
-dev-libs/weston seatd
 
 # Lars Wendler <polynomial-c@gentoo.org> (2022-04-01)
 # gnome-base/librsvg missing keywords
@@ -29,11 +62,6 @@ media-gfx/graphicsmagick jpegxl
 # Untested useflag on other arches, needs keywording
 media-video/ffmpeg vmaf
 
-# Adel Kara Slimane <adel.ks@zegrapher.com> (2022-02-17)
-# Mask AMF keyword on non-amd64 arches
-# It is unusable, for now, in other arches
-media-video/ffmpeg amf
-
 # Sam James <sam@gentoo.org> (2022-01-29)
 # app-text/ronn-ng not keyworded here, bug #801103
 app-accessibility/espeak-ng man
@@ -41,11 +69,6 @@ app-accessibility/espeak-ng man
 # James Beddek <telans@posteo.de> (2022-01-15)
 # media-libs/svt-av1 is not keyworded here
 media-video/ffmpeg svt-av1
-
-# Michał Górny <mgorny@gentoo.org> (2021-12-30)
-# Don't apply stable masks to python-exec since we're forcing every
-# impl there anyway. Please keep this in sync with use.mask.
-dev-lang/python-exec -python_targets_python3_10
 
 # Sam James <sam@gentoo.org> (2021-11-05)
 # Avoid keywording unnecessary depenencies for now, bug #804115
@@ -141,10 +164,6 @@ x11-misc/synergy gui
 # media-sound/lash not keyworded, bug #736725
 media-sound/fluidsynth lash
 
-# Cédric Krier <cedk@gentoo.org> (2020-11-10)
-# virtual/rust has no alpha keyword
-dev-vcs/mercurial rust
-
 # Arfrever Frehtes Taifersar Arahesis <arfrever.fta@gmail.com> (2020-10-14)
 # app-i18n/fcitx:4 not keyworded.
 media-libs/libsdl2 fcitx4
@@ -161,10 +180,6 @@ mail-filter/pyzor mysql
 # No drivers on this architecture support Vulkan
 media-libs/mesa vulkan vulkan-overlay zink
 
-# Mart Raudsepp <leio@gentoo.org> (2020-08-02)
-# alpha has no virtual/rust support, needed by newer gnome-base/librsvg, et al
->=media-gfx/eog-3.33.1 svg
-
 # Sergei Trofimovich <slyfox@gentoo.org> (2020-07-18)
 # net-libs/webkit-gtk has no alpha keywords
 app-editors/emacs xwidgets
@@ -176,7 +191,7 @@ gnome-base/nautilus previewer
 # needs libgdata[gnome-online-accounts], depends on net-libs/webkit-gtk
 gnome-base/gvfs google
 # needs app-text/libgepub which depends on webkit-gtk
-xfce-extra/tumbler epub
+xfce-base/tumbler epub
 
 # Michał Górny <mgorny@gentoo.org> (2020-06-14)
 # Requires dev-python/networkx.
@@ -242,11 +257,6 @@ x11-wm/mutter screencast
 # Requires net-libs/webkit-gtk which has no keywords on alpha
 dev-util/geany-plugins markdown
 
-# Tobias Klausmann <klausman@gentoo.rog> (2018-11-23)
-# Requires sys-cluster/ceph, which is unlikely to be used on Alpha
-# and a rather large dependency.
-sys-fs/multipath-tools rbd
-
 # Thomas Deutschmann <whissi@gentoo.org> (2018-10-15)
 # Requires app-text/mecab which isn't yet keyworded
 # on alpha, bug 668674
@@ -308,11 +318,6 @@ dev-db/mariadb numa
 # Michał Górny <mgorny@gentoo.org> (2017-08-08)
 # Requires USE=seccomp that is masked in this profile.
 net-libs/gnutls test-full
-
-# Michał Górny <mgorny@gentoo.org> (2017-08-08)
-# Requires USE=bluetooth that is masked in this profile.
-media-sound/pulseaudio native-headset
-media-sound/pulseaudio-daemon native-headset
 
 # Tobias Klausmann <klausman@gentoo.org> (2017-05-18)
 # Stack protector code is not ported to alpha (and may not ever be)
@@ -444,10 +449,6 @@ net-im/telepathy-connection-managers sipe
 # Missing keywords, bug #478254
 >=gnome-base/gnome-3.8 classic
 
-# Mark Wright <gienah@gentoo.org> (2013-10-26)
-# template-haskell not yet available
-dev-haskell/dataenc test
-
 # Pacho Ramos <pacho@gentoo.org> (2013-07-20)
 # Keywords pending, bug #476710
 >=gnome-base/gnome-extra-apps-3.8 games
@@ -464,10 +465,6 @@ media-libs/gst-plugins-base ivorbis
 # depends on mono
 >=net-irc/hexchat-2.9.4-r1 theme-manager
 
-# Alexandre Rostovtsev <tetromino@gentoo.org> (2013-01-31)
-# remove mask when net-libs/libqmi is keyworded here
-net-misc/modemmanager qmi
-
 # Alexandre Rostovtsev <tetromino@gentoo.org> (2013-01-22)
 # remove mask if/when media-gfx/argyllcms is keywored here.
 x11-misc/colord argyllcms extra-print-profiles
@@ -480,12 +477,6 @@ gnome-extra/sushi office
 # Raúl Porcel <armin76@gentoo.org> (2012-12-30)
 # Needs testing
 media-libs/phonon gstreamer vlc
-
-# Robin H Johnson <robbat2@gentoo.org> (2012-11-01)
-# MySQL 5.5 wants systemtap, tcmalloc & jemalloc
->=dev-db/mysql-5.5 tcmalloc
->=dev-db/mariadb-5.5 tcmalloc
->=dev-db/percona-server-5.5 tcmalloc
 
 # Raúl Porcel <armin76@gentoo.org> (2012-05-28)
 # Needs x11-misc/lightdm(which also requires some other deps)

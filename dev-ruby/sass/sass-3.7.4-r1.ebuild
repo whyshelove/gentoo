@@ -3,7 +3,7 @@
 
 EAPI=8
 
-USE_RUBY="ruby26 ruby27 ruby30"
+USE_RUBY="ruby26 ruby27 ruby30 ruby31"
 
 RUBY_FAKEGEM_TASK_DOC=""
 RUBY_FAKEGEM_DOCDIR="doc"
@@ -20,7 +20,7 @@ RUBY_S="ruby-sass-${PV}"
 
 LICENSE="MIT"
 
-KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~ppc ~ppc64 ~riscv ~x86 ~amd64-linux"
+KEYWORDS="amd64 arm arm64 ~hppa ppc ppc64 ~riscv x86 ~amd64-linux"
 SLOT="$(ver_cut 1-2)"
 IUSE=""
 

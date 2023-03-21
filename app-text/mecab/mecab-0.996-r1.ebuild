@@ -1,7 +1,7 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="6"
+EAPI=8
 
 inherit autotools
 
@@ -10,19 +10,28 @@ HOMEPAGE="https://taku910.github.io/mecab/"
 SRC_URI="https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/${PN}/${P}.tar.gz"
 
 LICENSE="|| ( BSD LGPL-2.1 GPL-2 )"
-KEYWORDS="amd64 arm arm64 ~hppa ~ia64 ppc ppc64 ~riscv ~s390 sparc x86"
+KEYWORDS="amd64 arm arm64 ~hppa ~ia64 ~loong ppc ppc64 ~riscv ~s390 sparc x86"
 SLOT="0"
 IUSE="static-libs unicode"
 
-DEPEND="dev-lang/perl
-	virtual/libiconv"
-RDEPEND=""
-PDEPEND="|| (
+BDEPEND="
+	dev-lang/perl
+	sys-devel/gettext
+"
+DEPEND="virtual/libiconv"
+RDEPEND="${DEPEND}"
+PDEPEND="
+	|| (
 		app-dicts/mecab-ipadic[unicode=]
 		app-dicts/mecab-naist-jdic[unicode=]
-	)"
+	)
+"
 
-PATCHES=( "${FILESDIR}"/${PN}-0.98-iconv.patch )
+PATCHES=(
+	"${FILESDIR}"/${PN}-0.98-iconv.patch
+	"${FILESDIR}"/${PN}-0.996-clang-16-register.patch
+)
+
 HTML_DOCS=( doc/. )
 
 src_prepare() {

@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -13,13 +13,19 @@ SRC_URI="mirror://sourceforge/project/tcl/Thread%20Extension/${PV}/${MY_P}.tar.g
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~s390 ~sparc ~x86"
+KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~m68k ~mips ppc ppc64 ~s390 ~sparc x86"
 IUSE=""
 
 DEPEND="dev-lang/tcl:0=[threads]"
 RDEPEND="${DEPEND}"
 
+QA_CONFIG_IMPL_DECL_SKIP=(
+	stat64 # used to test for Large File Support
+)
+
 S="${WORKDIR}"/${MY_P}
+
+PATCHES=( "${FILESDIR}"/${P}-musl.patch )
 
 src_prepare() {
 	default

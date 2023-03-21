@@ -1,7 +1,7 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 inherit flag-o-matic linux-info systemd
 
 #Set this variable to the required external ell version
@@ -13,7 +13,7 @@ if [[ ${PV} == *9999* ]]; then
 	ELL_EGIT_REPO_URI="https://git.kernel.org/pub/scm/libs/ell/ell.git"
 else
 	SRC_URI="https://www.kernel.org/pub/linux/network/wireless/${P}.tar.xz"
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~ia64 ~ppc ~ppc64 ~riscv ~sparc ~x86"
+	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~ia64 ~loong ~ppc ~ppc64 ~riscv ~sparc ~x86"
 	MYRST2MAN="RST2MAN=:"
 fi
 
@@ -33,6 +33,7 @@ DEPEND="
 
 RDEPEND="
 	${DEPEND}
+	acct-group/netdev
 	net-wireless/wireless-regdb
 	crda? ( net-wireless/crda )
 	standalone? (
@@ -73,7 +74,8 @@ pkg_setup() {
 	"
 	if use crda;then
 		CONFIG_CHECK="${CONFIG_CHECK} ~CFG80211_CRDA_SUPPORT"
-		WARNING_CFG80211_CRDA_SUPPORT="REGULATORY DOMAIN PROBLEM: please enable CFG80211_CRDA_SUPPORT for proper regulatory domain support"
+		WARNING_CFG80211_CRDA_SUPPORT="REGULATORY DOMAIN PROBLEM: please enable CFG80211_CRDA_SUPPORT for proper
+	regulatory domain support"
 	fi
 
 	if use amd64;then
@@ -177,6 +179,6 @@ src_install() {
 		echo "[Network]" >> "${iwdconf}"
 		echo "NameResolvingService=$(usex systemd systemd resolvconf)" >> "${iwdconf}"
 		dodir /etc/conf.d
-		echo "rc_provide=\"net\"" > ${ED}/etc/conf.d/iwd
+		echo "rc_provide=\"net\"" > "${ED}"/etc/conf.d/iwd
 	fi
 }

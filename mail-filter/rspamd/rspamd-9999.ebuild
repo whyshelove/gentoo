@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -16,10 +16,14 @@ else
 fi
 
 DESCRIPTION="Rapid spam filtering system"
-HOMEPAGE="https://rspamd.com https://github.com/rspamd/rspamd"
+HOMEPAGE="
+	https://rspamd.com
+	https://github.com/rspamd/rspamd
+"
+
 LICENSE="Apache-2.0 Boost-1.0 BSD BSD-1 BSD-2 CC0-1.0 LGPL-3 MIT public-domain unicode ZLIB"
 SLOT="0"
-IUSE="blas cpu_flags_x86_ssse3 jemalloc +jit test"
+IUSE="blas cpu_flags_x86_ssse3 jemalloc +jit selinux test"
 RESTRICT="!test? ( test )"
 
 # A part of tests use ffi luajit extension
@@ -52,11 +56,13 @@ RDEPEND="${LUA_DEPS}
 	)
 	cpu_flags_x86_ssse3? ( dev-libs/hyperscan )
 	jemalloc? ( dev-libs/jemalloc:= )
+	selinux? ( sec-policy/selinux-spamassassin )
 "
 DEPEND="${RDEPEND}
 	dev-cpp/doctest
 "
 BDEPEND="
+	dev-lang/perl
 	dev-util/ragel
 	virtual/pkgconfig
 "
@@ -85,6 +91,7 @@ src_configure() {
 		-DRUNDIR=/var/run/rspamd
 		-DDBDIR=/var/lib/rspamd
 		-DLOGDIR=/var/log/rspamd
+		-DLIBDIR="/usr/$(get_libdir)/rspamd"
 
 		-DSYSTEM_DOCTEST=ON
 		-DSYSTEM_FMT=ON

@@ -1,8 +1,17 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # Unmask the flag which corresponds to ARCH.
 -arm
+
+# Andreas Sturmlechner <asturm@gentoo.org> (2023-02-06)
+# Successful build of dev-qt/qtwebengine depends on 64-bit host
+# Bug #893234
+webengine
+
+# matoro <matoro_gentoo@matoro.tk> (2022-09-29)
+# dev-util/google-perftools is supported here
+-tcmalloc
 
 # Michał Górny <mgorny@gentoo.org> (2021-01-07)
 # Prebuilt kernels are supported here.
@@ -11,11 +20,6 @@
 # Unmask arm arch specific flags
 -cpu_flags_arm_iwmmxt
 -cpu_flags_arm_iwmmxt2
-
-# Sam James <sam@gentoo.org> (2020-11-10)
-# Rust isn't available for generic ARM,
-# just armv6, armv7
-rust
 
 # Sam James <sam@gentoo.org> (2020-06-24)
 # Valgrind lacks support for < ARMv7
@@ -101,7 +105,6 @@ anthy
 video_cards_glint
 video_cards_mga
 video_cards_nouveau
-video_cards_nv
 video_cards_r128
 video_cards_radeon
 

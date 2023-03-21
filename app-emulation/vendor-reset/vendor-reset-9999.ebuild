@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit linux-mod
+inherit linux-mod toolchain-funcs
 
 if [[ ${PV} == *9999* ]]; then
 	EGIT_REPO_URI="https://github.com/gnif/vendor-reset.git"
@@ -11,7 +11,8 @@ if [[ ${PV} == *9999* ]]; then
 	inherit git-r3
 else
 	KEYWORDS="~amd64"
-	SRC_URI="https://github.com/gnif/vendor-reset/archive/v${PV}.tar.gz -> ${P}.tar.gz"
+	EGIT_COMMIT="4b466e92a2d9f76ce1082cde982c7be0be91e248"
+	SRC_URI="https://github.com/gnif/vendor-reset/archive/${EGIT_COMMIT}.tar.gz -> ${P}.tar.gz"
 fi
 
 DESCRIPTION="Linux kernel vendor specific hardware reset module"
@@ -22,22 +23,17 @@ SLOT="0"
 DEPEND=""
 RDEPEND="${DEPEND}"
 
+MODULE_NAMES="vendor-reset(extra)"
+
 pkg_setup() {
 	local CONFIG_CHECK="FTRACE KPROBES PCI_QUIRKS KALLSYMS FUNCTION_TRACER"
 	linux-mod_pkg_setup
-}
-
-src_compile() {
-	set_arch_to_kernel
-	default
+	BUILD_TARGETS="build"
+	BUILD_PARAMS="CC=\"$(tc-getBUILD_CC)\" KDIR=${KERNEL_DIR}"
 }
 
 src_install() {
-	set_arch_to_kernel
-	emake \
-		DESTDIR="${ED}" \
-		INSTALL_MOD_PATH="${ED}" \
-		install
+	linux-mod_src_install
 
 	insinto /etc/modules-load.d/
 	newins "${FILESDIR}"/modload.conf vendor-reset.conf

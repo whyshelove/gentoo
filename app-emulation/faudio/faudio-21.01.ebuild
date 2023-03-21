@@ -1,10 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # shellcheck disable=SC2034
 EAPI=7
 
-CMAKE_ECLASS=cmake
 CMAKE_MAKEFILE_GENERATOR="emake"
 MULTILIB_COMPAT=( abi_x86_{32,64} )
 
@@ -23,7 +22,7 @@ else
 	S="${WORKDIR}/${FAUDIO_P}"
 fi
 
-DESCRIPTION="FAudio - Accuracy-focused XAudio reimplementation for open platforms"
+DESCRIPTION="Accuracy-focused XAudio reimplementation for open platforms"
 HOMEPAGE="https://fna-xna.github.io/"
 LICENSE="ZLIB"
 SLOT="0"

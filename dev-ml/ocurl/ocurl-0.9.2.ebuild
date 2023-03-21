@@ -6,12 +6,12 @@ EAPI=7
 inherit findlib
 
 DESCRIPTION="OCaml interface to the libcurl library"
-HOMEPAGE="http://forge.ocamlcore.org/projects/ocurl/ https://github.com/ygrek/ocurl"
+HOMEPAGE="https://forge.ocamlcore.org/projects/ocurl/ https://github.com/ygrek/ocurl"
 SRC_URI="https://github.com/ygrek/ocurl/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="amd64 ~arm arm64 ~ppc ppc64 x86"
+KEYWORDS="amd64 arm arm64 ~ppc ppc64 x86"
 IUSE="examples +ocamlopt"
 
 RDEPEND=">=net-misc/curl-7.9.8

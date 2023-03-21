@@ -13,7 +13,7 @@ SLOT="0/${PV}"
 IUSE="debug doc"
 
 RDEPEND="
-	>=dev-libs/ell-0.30.0
+	>=dev-libs/ell-0.45.0
 	elibc_musl? ( sys-libs/argp-standalone )
 	"
 DEPEND="
@@ -38,9 +38,15 @@ fi
 
 CONFIG_CHECK="MPTCP"
 
+PATCHES=(
+	"${FILESDIR}"/${PN}-0.9-no-werror.patch
+)
+
 src_prepare() {
 	default
-	[[ ${PV} == 9999* ]] && eautoreconf
+
+	# For Werror patch
+	eautoreconf
 }
 
 src_configure() {
@@ -60,4 +66,9 @@ src_compile() {
 
 src_test() {
 	emake check
+}
+
+src_install() {
+	default
+	find "${ED}" -name '*.la' -delete || die
 }

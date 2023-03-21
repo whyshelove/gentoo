@@ -1,14 +1,14 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 if [[ ${PV} == 9999* ]] ; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/zsh-users/zsh-completions.git"
 else
 	SRC_URI="https://github.com/zsh-users/${PN}/archive/${PV}.tar.gz -> ${P}.tar.gz"
-	KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~sparc ~x86 ~x64-macos"
+	KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~riscv ~sparc ~x86 ~x64-macos"
 fi
 
 DESCRIPTION="Additional completion definitions for Zsh"
@@ -25,9 +25,7 @@ src_install() {
 }
 
 pkg_postinst() {
-	elog
 	elog "If you happen to compile your functions, you may need to delete"
 	elog "~/.zcompdump{,.zwc} and recompile to make the new completions available"
 	elog "to your shell."
-	elog
 }

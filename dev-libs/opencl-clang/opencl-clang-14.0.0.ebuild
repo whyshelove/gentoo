@@ -14,7 +14,7 @@ S="${WORKDIR}/${PN}-${PV}"
 
 LICENSE="UoI-NCSA"
 SLOT="14"
-KEYWORDS="~amd64"
+KEYWORDS="amd64"
 
 RDEPEND="
 	dev-util/spirv-llvm-translator:${SLOT}=
@@ -33,6 +33,7 @@ src_configure() {
 	local mycmakeargs=(
 		-DCMAKE_INSTALL_PREFIX="$(get_llvm_prefix ${LLVM_MAX_SLOT})"
 		-DCLANG_LIBRARY_DIRS="${EPREFIX}"/usr/lib/clang
+		-Wno-dev
 	)
 
 	cmake_src_configure

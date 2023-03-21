@@ -19,13 +19,6 @@ if [[ ${PV} == *8888 ]]; then
 	S="${WORKDIR}/${PN}"
 fi
 
-if [ -z ${MIRROR} ] ; then MIRROR="http://mirror.stream.centos.org"; fi
-RELEASE="9-stream"
-REPO_URI="${MIRROR}/${RELEASE}/${REPO:-BaseOS}/source/tree/Packages"
-
-if [ -z ${MIRROR_BIN} ] ; then MIRROR_BIN="${MIRROR}"; fi
-REPO_BIN="${MIRROR_BIN}/${RELEASE}/${REPO:-BaseOS}/x86_64/os/Packages"
-
 if [ -z ${MY_PF} ] ; then
 	MY_PR=${PVR##*r}
 
@@ -97,10 +90,19 @@ if [ -z ${MY_PF} ] ; then
 			*) MY_PF=${P}-${MY_PR} ;;
 		esac
 	fi
-fi
+	MY_PN=${PN}
+	releasever="9"
+	baseurl="https://cdn.redhat.com/content/dist/rhel${releasever}/${releasever}/x86_64/${REPO:-baseos}"
 
-[ ${CATEGORY} != "dev-qt" ] && SRC_URI=""
-SRC_URI="${SRC_URI} ${REPO_URI}/${MY_PF}.${DIST:=el9}.src.rpm"
+	REPO_SRC="${baseurl}/source/SRPMS/Packages"
+	REPO_BIN="${baseurl}/os/Packages"
+
+	DIST_PRE_SUF_CATEGORY=${MY_PN:0:1}/${MY_PF}.${PREFIX}${DIST:=el9}${SUFFIX}
+
+	[ ${CATEGORY} != "dev-qt" ] && SRC_URI=""
+	SRC_URI="${REPO_SRC}/${DIST_PRE_SUF_CATEGORY}.src.rpm"
+	BIN_URI="${REPO_BIN}/${DIST_PRE_SUF_CATEGORY}.${WhatArch:=x86_64}.rpm"
+fi
 
 rpm_clean() {
 	# delete everything

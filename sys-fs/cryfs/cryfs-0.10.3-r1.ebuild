@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7..10} )
+PYTHON_COMPAT=( python3_{9..10} )
 inherit cmake flag-o-matic linux-info python-any-r1
 
 if [[ ${PV} == 9999 ]] ; then
@@ -11,7 +11,7 @@ if [[ ${PV} == 9999 ]] ; then
 	EGIT_REPO_URI="https://github.com/cryfs/cryfs"
 else
 	SRC_URI="https://github.com/cryfs/cryfs/releases/download/${PV}/${P}.tar.xz"
-	KEYWORDS="amd64 ~arm arm64 ~ppc64 ~riscv x86"
+	KEYWORDS="amd64 ~arm arm64 ~loong ~ppc64 ~riscv x86"
 	S="${WORKDIR}"
 fi
 
@@ -24,7 +24,7 @@ IUSE="debug test"
 RESTRICT="!test? ( test )"
 
 RDEPEND="
-	>=dev-libs/boost-1.65.1:=
+	dev-libs/boost:=
 	>=dev-libs/crypto++-8.2.0:=
 	net-misc/curl:=
 	>=sys-fs/fuse-2.8.6:0
@@ -39,6 +39,7 @@ PATCHES=(
 	# TODO upstream:
 	"${FILESDIR}/${PN}-0.10.2-unbundle-libs.patch"
 	"${FILESDIR}/${PN}-0.10.2-install-targets.patch"
+	"${FILESDIR}/${PN}-0.10.3-gcc13.patch"
 	# From upstream
 	"${FILESDIR}/${PN}-0.10.3-gcc11.patch"
 	"${FILESDIR}/${PN}-0.10.3-fix-build-with-boost-1-77.patch"

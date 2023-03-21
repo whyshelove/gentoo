@@ -1,10 +1,10 @@
-# Copyright 2002-2021 Gentoo Authors
+# Copyright 2002-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: toolchain-funcs.eclass
 # @MAINTAINER:
 # Toolchain Ninjas <toolchain@gentoo.org>
-# @SUPPORTED_EAPIS: 5 6 7 8
+# @SUPPORTED_EAPIS: 6 7 8
 # @BLURB: functions to query common info about the toolchain
 # @DESCRIPTION:
 # The toolchain-funcs aims to provide a complete suite of functions
@@ -13,9 +13,8 @@
 # in such a way that you can rely on the function always returning
 # something sane.
 
-case ${EAPI:-0} in
-	# EAPI=0 is still used by crossdev, bug #797367
-	0|5|6|7|8) ;;
+case ${EAPI} in
+	6|7|8) ;;
 	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
@@ -378,7 +377,6 @@ tc-export_build_env() {
 
 # @FUNCTION: tc-env_build
 # @USAGE: <command> [command args]
-# @INTERNAL
 # @DESCRIPTION:
 # Setup the compile environment to the build tools and then execute the
 # specified command.  We use tc-getBUILD_XX here so that we work with
@@ -424,26 +422,27 @@ tc-env_build() {
 # src_configure() {
 # 	ECONF_SOURCE=${S}
 # 	if tc-is-cross-compiler ; then
-# 		mkdir "${WORKDIR}"/${CBUILD}
-# 		pushd "${WORKDIR}"/${CBUILD} >/dev/null
+# 		mkdir "${WORKDIR}"/${CBUILD} || die
+# 		pushd "${WORKDIR}"/${CBUILD} >/dev/null || die
 # 		econf_build --disable-some-unused-stuff
-# 		popd >/dev/null
+# 		popd >/dev/null || die
 # 	fi
 # 	... normal build paths ...
 # }
 # src_compile() {
 # 	if tc-is-cross-compiler ; then
-# 		pushd "${WORKDIR}"/${CBUILD} >/dev/null
+# 		pushd "${WORKDIR}"/${CBUILD} >/dev/null || die
 # 		emake one-or-two-build-tools
-# 		ln/mv build-tools to normal build paths in ${S}/
-# 		popd >/dev/null
+# 		ln/mv build-tools to normal build paths in ${S}/ || die
+# 		popd >/dev/null || die
 # 	fi
 # 	... normal build paths ...
 # }
 # @CODE
 econf_build() {
 	local CBUILD=${CBUILD:-${CHOST}}
-	tc-env_build econf --build=${CBUILD} --host=${CBUILD} "$@"
+	econf_env() { CHOST=${CBUILD} econf "$@"; }
+	tc-env_build econf_env "$@"
 }
 
 # @FUNCTION: tc-ld-is-gold
@@ -452,6 +451,9 @@ econf_build() {
 # Return true if the current linker is set to gold.
 tc-ld-is-gold() {
 	local out
+
+	# Ensure ld output is in English.
+	local -x LC_ALL=C
 
 	# First check the linker directly.
 	out=$($(tc-getLD "$@") --version 2>&1)
@@ -464,7 +466,7 @@ tc-ld-is-gold() {
 	# options and not CFLAGS/CXXFLAGS.
 	local base="${T}/test-tc-gold"
 	cat <<-EOF > "${base}.c"
-	int main() { return 0; }
+	int main(void) { return 0; }
 	EOF
 	out=$($(tc-getCC "$@") ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -Wl,--version "${base}.c" -o "${base}" 2>&1)
 	rm -f "${base}"*
@@ -483,6 +485,9 @@ tc-ld-is-gold() {
 tc-ld-is-lld() {
 	local out
 
+	# Ensure ld output is in English.
+	local -x LC_ALL=C
+
 	# First check the linker directly.
 	out=$($(tc-getLD "$@") --version 2>&1)
 	if [[ ${out} == *"LLD"* ]] ; then
@@ -494,7 +499,7 @@ tc-ld-is-lld() {
 	# options and not CFLAGS/CXXFLAGS.
 	local base="${T}/test-tc-lld"
 	cat <<-EOF > "${base}.c"
-	int main() { return 0; }
+	int main(void) { return 0; }
 	EOF
 	out=$($(tc-getCC "$@") ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} -Wl,--version "${base}.c" -o "${base}" 2>&1)
 	rm -f "${base}"*
@@ -533,7 +538,7 @@ tc-ld-force-bfd() {
 	# to its value (like multilib).  #545218
 	local ld=$(tc-getLD "$@")
 	local bfd_ld="${ld%% *}.bfd"
-	local path_ld=$(which "${bfd_ld}" 2>/dev/null)
+	local path_ld=$(type -P "${bfd_ld}" 2>/dev/null)
 	[[ -e ${path_ld} ]] && export LD=${bfd_ld}
 
 	# Set up LDFLAGS to select bfd based on the gcc / clang version.
@@ -569,15 +574,16 @@ tc-ld-force-bfd() {
 	fi
 }
 
-# @FUNCTION: tc-has-openmp
+# @FUNCTION: _tc-has-openmp
+# @INTERNAL
 # @USAGE: [toolchain prefix]
 # @DESCRIPTION:
 # See if the toolchain supports OpenMP.
-tc-has-openmp() {
+_tc-has-openmp() {
 	local base="${T}/test-tc-openmp"
 	cat <<-EOF > "${base}.c"
 	#include <omp.h>
-	int main() {
+	int main(void) {
 		int nthreads, tid, ret = 0;
 		#pragma omp parallel private(nthreads, tid)
 		{
@@ -600,8 +606,21 @@ tc-has-openmp() {
 # OpenMP support that has been requested by the ebuild. Using this function
 # to test for OpenMP support should be preferred over tc-has-openmp and
 # printing a custom message, as it presents a uniform interface to the user.
+#
+# You should test for any necessary OpenMP support in pkg_pretend in order to
+# warn the user of required toolchain changes.  You must still check for OpenMP
+# support at build-time, e.g.
+# @CODE
+# pkg_pretend() {
+#	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
+# }
+#
+# pkg_setup() {
+#	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
+# }
+# @CODE
 tc-check-openmp() {
-	if ! tc-has-openmp; then
+	if ! _tc-has-openmp; then
 		eerror "Your current compiler does not support OpenMP!"
 
 		if tc-is-gcc; then
@@ -647,7 +666,7 @@ tc-has-tls() {
 # Parse information from CBUILD/CHOST/CTARGET rather than
 # use external variables from the profile.
 tc-ninja_magic_to_arch() {
-ninj() { [[ ${type} == "kern" ]] && echo $1 || echo $2 ; }
+	ninj() { [[ ${type} == "kern" ]] && echo $1 || echo $2 ; }
 
 	local type=$1
 	local host=$2
@@ -738,6 +757,13 @@ tc-arch() {
 	tc-ninja_magic_to_arch portage "$@"
 }
 
+# @FUNCTION: tc-endian
+# @USAGE: [toolchain prefix]
+# @RETURN: 'big' or 'little' corresponding to the passed (or host) endianness
+# @DESCRIPTION:
+# Accepts 'host' as an argument which defaults to CTARGET and falls back to CHOST
+# if unspecified.  Returns 'big' or 'little' depending on whether 'host' is
+# big or little endian.
 tc-endian() {
 	local host=$1
 	[[ -z ${host} ]] && host=${CTARGET:-${CHOST}}
@@ -786,8 +812,8 @@ tc-get-compiler-type() {
 	case ${res} in
 		*HAVE_PATHCC*)	echo pathcc;;
 		*HAVE_CLANG*)	echo clang;;
-		*HAVE_GCC*)		echo gcc;;
-		*)				echo unknown;;
+		*HAVE_GCC*)	echo gcc;;
+		*)		echo unknown;;
 	esac
 }
 
@@ -805,11 +831,11 @@ tc-is-clang() {
 
 # Internal func.  The first argument is the version info to expand.
 # Query the preprocessor to improve compatibility across different
-# compilers rather than maintaining a --version flag matrix. #335943
+# compilers rather than maintaining a --version flag matrix, bug #335943.
 _gcc_fullversion() {
 	local ver="$1"; shift
 	set -- $($(tc-getCPP "$@") -E -P - <<<"__GNUC__ __GNUC_MINOR__ __GNUC_PATCHLEVEL__")
-	eval echo "$ver"
+	eval echo "${ver}"
 }
 
 # @FUNCTION: gcc-fullversion
@@ -842,7 +868,7 @@ gcc-micro-version() {
 _clang_fullversion() {
 	local ver="$1"; shift
 	set -- $($(tc-getCPP "$@") -E -P - <<<"__clang_major__ __clang_minor__ __clang_patchlevel__")
-	eval echo "$ver"
+	eval echo "${ver}"
 }
 
 # @FUNCTION: clang-fullversion
@@ -967,6 +993,15 @@ gcc-specs-stack-check() {
 	[[ "${directive/\{!fno-stack-check:}" != "${directive}" ]]
 }
 
+# @FUNCTION: tc-enables-cxx-assertions
+# @RETURN: Truth if the current compiler enables assertions in the C++ standard library
+# @DESCRIPTION:
+# Return truth if the current compiler enables assertions in the C++ standard
+# library. For libstdc++, this is -D_GLIBCXX_ASSERTIONS, and for libcxx/libc++,
+# this is -D_LIBCPP_ENABLE_ASSERTIONS.
+tc-enables-cxx-assertions() {
+	tc-cpp-is-true "defined(_GLIBCXX_ASSERTIONS) || defined(_LIBCPP_ENABLE_ASSERTIONS)" ${CPPFLAGS} ${CXXFLAGS}
+}
 
 # @FUNCTION: tc-enables-pie
 # @RETURN: Truth if the current compiler generates position-independent code (PIC) which can be linked into executables
@@ -974,7 +1009,16 @@ gcc-specs-stack-check() {
 # Return truth if the current compiler generates position-independent code (PIC)
 # which can be linked into executables.
 tc-enables-pie() {
-	tc-cpp-is-true "defined(__PIE__)" ${CPPFLAGS} ${CFLAGS}
+	tc-cpp-is-true "defined(__PIE__)" ${CPPFLAGS} ${CFLAGS} ${CXXFLAGS}
+}
+
+# @FUNCTION: tc-enables-fortify-source
+# @RETURN: Truth if the current compiler enables FORTIFY_SOURCE at any level
+# @DESCRIPTION:
+# Return truth if the current compiler enables fortification (FORTIFY_SOURCE)
+# at any level (-D_FORTIFY_SOURCE).
+tc-enables-fortify-source() {
+	tc-cpp-is-true "defined(_FORTIFY_SOURCE)" ${CPPFLAGS} ${CFLAGS} ${CXXFLAGS}
 }
 
 # @FUNCTION: tc-enables-ssp
@@ -986,7 +1030,7 @@ tc-enables-pie() {
 #  -fstack-protector-strong
 #  -fstack-protector-all
 tc-enables-ssp() {
-	tc-cpp-is-true "defined(__SSP__) || defined(__SSP_STRONG__) || defined(__SSP_ALL__)" ${CPPFLAGS} ${CFLAGS}
+	tc-cpp-is-true "defined(__SSP__) || defined(__SSP_STRONG__) || defined(__SSP_ALL__)" ${CPPFLAGS} ${CFLAGS} ${CXXFLAGS}
 }
 
 # @FUNCTION: tc-enables-ssp-strong
@@ -997,7 +1041,7 @@ tc-enables-ssp() {
 #  -fstack-protector-strong
 #  -fstack-protector-all
 tc-enables-ssp-strong() {
-	tc-cpp-is-true "defined(__SSP_STRONG__) || defined(__SSP_ALL__)" ${CPPFLAGS} ${CFLAGS}
+	tc-cpp-is-true "defined(__SSP_STRONG__) || defined(__SSP_ALL__)" ${CPPFLAGS} ${CFLAGS} ${CXXFLAGS}
 }
 
 # @FUNCTION: tc-enables-ssp-all
@@ -1007,7 +1051,7 @@ tc-enables-ssp-strong() {
 # on level corresponding to any of the following options:
 #  -fstack-protector-all
 tc-enables-ssp-all() {
-	tc-cpp-is-true "defined(__SSP_ALL__)" ${CPPFLAGS} ${CFLAGS}
+	tc-cpp-is-true "defined(__SSP_ALL__)" ${CPPFLAGS} ${CFLAGS} ${CXXFLAGS}
 }
 
 
@@ -1051,10 +1095,10 @@ gen_usr_ldscript() {
 	# is referenced ... makes multilib saner
 	local flags=( ${CFLAGS} ${LDFLAGS} -Wl,--verbose )
 	if $(tc-getLD) --version | grep -q 'GNU gold' ; then
-		# If they're using gold, manually invoke the old bfd. #487696
+		# If they're using gold, manually invoke the old bfd, bug #487696
 		local d="${T}/bfd-linker"
 		mkdir -p "${d}"
-		ln -sf $(which ${CHOST}-ld.bfd) "${d}"/ld
+		ln -sf $(type -P ${CHOST}-ld.bfd) "${d}"/ld
 		flags+=( -B"${d}" )
 	fi
 	output_format=$($(tc-getCC) "${flags[@]}" 2>&1 | sed -n 's/^OUTPUT_FORMAT("\([^"]*\)",.*/\1/p')
@@ -1142,6 +1186,70 @@ gen_usr_ldscript() {
 		esac
 		fperms a+x "/usr/${libdir}/${lib}" || die "could not change perms on ${lib}"
 	done
+}
+
+# @FUNCTION: tc-get-cxx-stdlib
+# @DESCRIPTION:
+# Attempt to identify the C++ standard library used by the compiler.
+# If the library is identified, the function returns 0 and prints one
+# of the following:
+#
+# - ``libc++`` for ``sys-libs/libcxx``
+# - ``libstdc++`` for ``sys-devel/gcc``'s libstdc++
+#
+# If the library is not recognized, the function returns 1.
+tc-get-cxx-stdlib() {
+	local code='#include <ciso646>
+
+#if defined(_LIBCPP_VERSION)
+	HAVE_LIBCXX
+#elif defined(__GLIBCXX__)
+	HAVE_LIBSTDCPP
+#endif
+'
+	local res=$(
+		$(tc-getCXX) ${CPPFLAGS} ${CXXFLAGS} -x c++ -E -P - \
+			<<<"${code}" 2>/dev/null
+	)
+
+	case ${res} in
+		*HAVE_LIBCXX*)
+			echo libc++;;
+		*HAVE_LIBSTDCPP*)
+			echo libstdc++;;
+		*)
+			return 1;;
+	esac
+
+	return 0
+}
+
+# @FUNCTION: tc-get-c-rtlib
+# @DESCRIPTION:
+# Attempt to identify the runtime used by the C/C++ compiler.
+# If the runtime is identifed, the function returns 0 and prints one
+# of the following:
+#
+# - ``compiler-rt`` for ``sys-libs/compiler-rt``
+# - ``libgcc`` for ``sys-devel/gcc``'s libgcc
+#
+# If the runtime is not recognized, the function returns 1.
+tc-get-c-rtlib() {
+	local res=$(
+		$(tc-getCC) ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} \
+			-print-libgcc-file-name 2>/dev/null
+	)
+
+	case ${res} in
+		*libclang_rt*)
+			echo compiler-rt;;
+		*libgcc*)
+			echo libgcc;;
+		*)
+			return 1;;
+	esac
+
+	return 0
 }
 
 fi

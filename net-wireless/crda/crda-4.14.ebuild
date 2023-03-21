@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7..10} )
+PYTHON_COMPAT=( python3_{9..11} )
 inherit toolchain-funcs python-any-r1 udev
 
 DESCRIPTION="Central Regulatory Domain Agent for wireless networks"
@@ -12,7 +12,7 @@ SRC_URI="https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/crda.git/snapsho
 
 LICENSE="ISC"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 ~ia64 ~mips ppc ppc64 ~riscv sparc x86"
+KEYWORDS="~alpha amd64 arm arm64 ~ia64 ~loong ~mips ppc ppc64 ~riscv sparc x86"
 IUSE="gcrypt"
 
 RDEPEND="!gcrypt? (

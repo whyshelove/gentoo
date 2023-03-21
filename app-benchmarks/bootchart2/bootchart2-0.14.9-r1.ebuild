@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8..10} pypy3 )
+PYTHON_COMPAT=( python3_{9..10} pypy3 )
 
 inherit linux-info python-single-r1 systemd toolchain-funcs
 
@@ -31,6 +31,7 @@ CONFIG_CHECK="~PROC_EVENTS ~TASKSTATS ~TASK_DELAY_ACCT ~TMPFS"
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-0.14.8-no-compressed-man.patch
+	"${FILESDIR}"/${P}-glibc-2.36.patch
 )
 
 src_prepare() {

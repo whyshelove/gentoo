@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-PYTHON_COMPAT=( python3_{7..9} )
-inherit gnome.org gnome2-utils meson python-any-r1 udev xdg
+PYTHON_COMPAT=( python3_{9..11} )
+inherit gnome.org meson python-any-r1 udev xdg
 
 DESCRIPTION="Bluetooth graphical utilities integrated with GNOME"
 HOMEPAGE="https://wiki.gnome.org/Projects/GnomeBluetooth"
@@ -47,8 +47,8 @@ PATCHES=(
 
 python_check_deps() {
 	if use test; then
-		has_version -b "dev-python/python-dbusmock[${PYTHON_USEDEP}]" &&
-		has_version -b "dev-python/dbus-python[${PYTHON_USEDEP}]"
+		python_has_version -b "dev-python/python-dbusmock[${PYTHON_USEDEP}]" &&
+		python_has_version -b "dev-python/dbus-python[${PYTHON_USEDEP}]"
 	fi
 }
 
@@ -71,9 +71,14 @@ src_install() {
 }
 
 pkg_postinst() {
+	udev_reload
 	xdg_pkg_postinst
 	if ! has_version 'sys-apps/systemd[acl]' ; then
 		elog "Don't forget to add yourself to the plugdev group "
 		elog "if you want to be able to control bluetooth transmitter."
 	fi
+}
+
+pkg_postrm() {
+	udev_reload
 }

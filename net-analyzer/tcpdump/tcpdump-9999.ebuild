@@ -1,7 +1,7 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit autotools
 
@@ -19,16 +19,14 @@ else
 	SRC_URI="https://www.tcpdump.org/release/${P}.tar.gz"
 	SRC_URI+=" verify-sig? ( https://www.tcpdump.org/release/${P}.tar.gz.sig )"
 
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux"
+	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux"
 fi
 
 LICENSE="BSD"
 SLOT="0"
 IUSE="+drop-root +smi +ssl +samba suid test"
 REQUIRED_USE="test? ( samba )"
-
-# Assorted failures: bug #768498
-RESTRICT="test"
+RESTRICT="!test? ( test )"
 
 RDEPEND="
 	>=net-libs/libpcap-1.10.1
@@ -39,7 +37,7 @@ RDEPEND="
 	)
 	smi? ( net-libs/libsmi )
 	ssl? (
-		>=dev-libs/openssl-0.9.6m:0=
+		>=dev-libs/openssl-0.9.6m:=
 	)
 	suid? (
 		acct-group/pcap

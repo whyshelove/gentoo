@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{8..9} )
+PYTHON_COMPAT=( python3_{9..10} )
 
 inherit autotools python-single-r1
 
@@ -13,7 +13,7 @@ SRC_URI="https://releases.pagure.org/${PN}/${P}.tar.xz"
 
 LICENSE="GPL-2+"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 ~ia64 ~mips ppc ppc64 ~riscv sparc x86"
+KEYWORDS="~alpha amd64 arm arm64 ~ia64 ~loong ~mips ppc ppc64 ~riscv sparc x86"
 IUSE="test"
 RESTRICT="!test? ( test )"
 
@@ -39,13 +39,11 @@ PATCHES=(
 	"${FILESDIR}/${PN}-0.3.12-find_python3.patch" #764230
 )
 
-pkg_setup() {
-	python-single-r1_pkg_setup
-}
-
 src_prepare() {
 	default
-	eautoreconf #764230
+
+	# bug #764230
+	eautoreconf
 }
 
 src_configure() {

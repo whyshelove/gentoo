@@ -1,9 +1,9 @@
-# Copyright 2019-2022 Gentoo Authors
+# Copyright 2019-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{7..10} )
+PYTHON_COMPAT=( python3_{9..10} )
 
 inherit linux-info python-single-r1 systemd toolchain-funcs
 
@@ -13,7 +13,7 @@ SRC_URI="https://github.com/open-power/skiboot/archive/v${PV}.tar.gz -> ${P}.tar
 
 LICENSE="Apache-2.0 GPL-2+"
 SLOT="0"
-KEYWORDS="~ppc64"
+KEYWORDS="ppc64"
 IUSE="doc"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"

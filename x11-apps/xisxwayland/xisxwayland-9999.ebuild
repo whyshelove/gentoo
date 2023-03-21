@@ -1,7 +1,7 @@
-# Copyright 2020 Gentoo Authors
+# Copyright 2020-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 if [[ ${PV} = 9999* ]]; then
 	GIT_ECLASS="git-r3"
@@ -15,13 +15,12 @@ HOMEPAGE="https://gitlab.freedesktop.org/xorg/app/xisxwayland"
 if [[ ${PV} = 9999* ]]; then
 	SRC_URI=""
 else
-	KEYWORDS="~amd64"
+	KEYWORDS="~amd64 ~loong"
 	SRC_URI="https://xorg.freedesktop.org/archive/individual/app/${P}.tar.xz"
 fi
 
 LICENSE="MIT"
 SLOT="0"
-IUSE=""
 
 RDEPEND="
 	x11-libs/libX11

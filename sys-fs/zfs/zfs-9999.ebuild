@@ -1,10 +1,11 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 DISTUTILS_OPTIONAL=1
-PYTHON_COMPAT=( python3_{8,9,10} )
+DISTUTILS_USE_PEP517=setuptools
+PYTHON_COMPAT=( python3_{9..11} )
 
 inherit autotools bash-completion-r1 dist-kernel-utils distutils-r1 flag-o-matic linux-info pam systemd udev usr-ldscript
 
@@ -24,7 +25,7 @@ else
 	S="${WORKDIR}/${P%_rc?}"
 
 	if [[ ${PV} != *_rc* ]]; then
-		KEYWORDS="~amd64 ~arm64 ~ppc64 ~riscv"
+		KEYWORDS="~amd64 ~arm64 ~ppc64 ~riscv ~sparc"
 	fi
 fi
 
@@ -33,7 +34,7 @@ LICENSE="BSD-2 CDDL MIT"
 # possible candidates: libuutil, libzpool, libnvpair. Those do not provide stable abi, but are considered.
 # see libsoversion_check() below as well
 SLOT="0/5"
-IUSE="custom-cflags debug dist-kernel kernel-builtin minimal nls pam python +rootfs test-suite"
+IUSE="custom-cflags debug dist-kernel kernel-builtin minimal nls pam python +rootfs selinux test-suite"
 
 DEPEND="
 	net-libs/libtirpc:=
@@ -48,11 +49,11 @@ DEPEND="
 	)
 "
 
-BDEPEND="virtual/awk
+BDEPEND="app-alternatives/awk
 	virtual/pkgconfig
 	nls? ( sys-devel/gettext )
 	python? (
-		dev-python/setuptools[${PYTHON_USEDEP}]
+		${DISTUTILS_DEPS}
 		|| (
 			dev-python/packaging[${PYTHON_USEDEP}]
 			dev-python/distlib[${PYTHON_USEDEP}]
@@ -69,13 +70,13 @@ RDEPEND="${DEPEND}
 	!kernel-builtin? ( ~sys-fs/zfs-kmod-${PV}:= )
 	!prefix? ( virtual/udev )
 	sys-fs/udev-init-scripts
-	virtual/awk
+	app-alternatives/awk
 	dist-kernel? ( virtual/dist-kernel:= )
 	rootfs? (
 		app-arch/cpio
 		app-misc/pax-utils
-		!<sys-kernel/genkernel-3.5.1.1
 	)
+	selinux? ( sec-policy/selinux-zfs )
 	test-suite? (
 		app-shells/ksh
 		sys-apps/kmod[tools]
@@ -99,6 +100,10 @@ REQUIRED_USE="
 "
 
 RESTRICT="test"
+
+PATCHES=(
+	"${FILESDIR}"/2.1.5-dracut-zfs-missing.patch
+)
 
 pkg_pretend() {
 	use rootfs || return 0
@@ -183,6 +188,13 @@ src_configure() {
 	use custom-cflags || strip-flags
 	use minimal || python_setup
 
+	# All the same issue:
+	# Segfaults w/ GCC 12 and 'zfs send'
+	# bug #856373
+	# https://github.com/openzfs/zfs/issues/13620
+	# https://github.com/openzfs/zfs/issues/13605
+	append-flags -fno-tree-vectorize
+
 	local myconf=(
 		--bindir="${EPREFIX}/bin"
 		--enable-shared
@@ -202,6 +214,9 @@ src_configure() {
 		# Building zfs-mount-generator.c on musl breaks as strndupa
 		# isn't available. But systemd doesn't support musl anyway, so
 		# just disable building it.
+		# UPDATE: it has been fixed since,
+		# https://github.com/openzfs/zfs/commit/1f19826c9ac85835cbde61a7439d9d1fefe43a4a
+		# but we still leave it as this for now.
 		$(use_enable !elibc_musl systemd)
 		$(use_enable debug)
 		$(use_enable nls)
@@ -251,6 +266,8 @@ src_install() {
 }
 
 pkg_postinst() {
+	udev_reload
+
 	# we always need userspace utils in sync with zfs-kmod
 	# so force initrd update for userspace as well, to avoid
 	# situation when zfs-kmod trigger initrd rebuild before
@@ -293,6 +310,8 @@ pkg_postinst() {
 }
 
 pkg_postrm() {
+	udev_reload
+
 	if ! use kernel-builtin && [[ ${PV} == "9999" ]]; then
 		remove_moduledb
 	fi

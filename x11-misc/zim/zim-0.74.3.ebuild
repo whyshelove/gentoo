@@ -1,8 +1,8 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-PYTHON_COMPAT=( python3_{8,9,10} )
+PYTHON_COMPAT=( python3_{9,10} )
 PYTHON_REQ_USE="sqlite"
 DISTUTILS_SINGLE_IMPL=1
 DISTUTILS_USE_SETUPTOOLS=no
@@ -17,7 +17,7 @@ SRC_URI="https://github.com/${PN}-desktop-wiki/${PN}-desktop-wiki/archive/${PV/_
 
 LICENSE="BSD GPL-2+"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~x86"
+KEYWORDS="amd64 ~arm x86"
 RESTRICT="test"
 
 RDEPEND="
@@ -60,8 +60,8 @@ pkg_postinst() {
 	xdg_pkg_postinst
 	if ! has_version ${CATEGORY}/${PN}; then
 		elog "Please install these packages for additional functionality"
+		elog "    app-text/gtkspell[introspection]"
 		elog "    dev-lang/R"
-		elog "    dev-python/gtkspell-python"
 		elog "    dev-vcs/bzr"
 		elog "    media-gfx/graphviz"
 		elog "    media-gfx/imagemagick"

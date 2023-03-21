@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -26,10 +26,10 @@ COMMON_DEPEND="
 	sys-libs/zlib
 	virtual/opengl
 	dns? ( net-libs/udns )
-	gdal? ( sci-libs/gdal )
+	gdal? ( sci-libs/gdal:= )
 "
 DEPEND="${COMMON_DEPEND}
-	>=dev-libs/boost-1.44
+	dev-libs/boost
 "
 RDEPEND="${COMMON_DEPEND}
 	subversion? ( dev-vcs/subversion )

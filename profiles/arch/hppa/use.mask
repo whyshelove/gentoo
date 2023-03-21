@@ -7,6 +7,10 @@
 # NOTE: When masking a USE flag due to missing keywords, please file a keyword
 # request bug for the hppa arch.
 
+# Sam James <sam@gentoo.org> (2022-10-15)
+# x11-apps/fonttosfnt is not keyworded here
+opentype-compat
+
 # Matt Turner <mattst88gentoo.org> (2022-02-21)
 # app-crypt/tpm2-tss is not keyworded here
 tpm
@@ -36,11 +40,6 @@ vulkan
 # media-libs/libvpx is not keyworded, bug #698956
 system-libvpx
 vpx
-
-# Mattéo Rossillol‑‑Laruelle <beatussum@protonmail.com> (2019‑08‑31)
-# Dependency not keyworded (dev-libs/libappindicator).
-appindicator
-ayatana
 
 # Matt Turner <mattst88@gentoo.org> (2018-05-26)
 # Unmask systemd since it is keyworded here.
@@ -102,10 +101,6 @@ luajittex
 # Jeroen Roovers <jer@gentoo.org> (2014-05-20)
 # Mask USE=systemtap generally until proper kernel support is in place
 systemtap
-
-# Jeroen Roovers <jer@gentoo.org> (2014-05-20)
-# USE=tcmalloc needs dev-util/google-perftools
-tcmalloc
 
 # Chí-Thanh Christopher Nguyễn <chithanh@gentoo.org> (2013-11-10)
 # sys-devel/llvm is not keyworded, bug #320221
@@ -203,10 +198,6 @@ d
 # Lack of user/dev support for WiFi (bug #176517)
 networkmanager
 
-# Jeroen Roovers <jer@gentoo.org> (2007-04-07)
-# libffi has not been ported to hppa, therefore gcc fails to build with USE=gcj
-gcj
-
 # Samuli Suominen <drac@gentoo.org> (2007-03-02)
 # See bug #157881#c3
 battery
@@ -237,7 +228,6 @@ video_cards_amdgpu
 video_cards_glint
 video_cards_mga
 video_cards_nouveau
-video_cards_nv
 video_cards_r100
 video_cards_r128
 video_cards_r200

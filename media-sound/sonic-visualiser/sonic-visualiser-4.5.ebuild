@@ -11,7 +11,7 @@ SRC_URI="https://code.soundsoftware.ac.uk/attachments/download/2820/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="amd64 x86"
 IUSE="id3tag jack mad ogg opus osc +portaudio pulseaudio test"
 
 BDEPEND="
@@ -62,6 +62,7 @@ REQUIRED_USE="
 
 PATCHES=(
 	"${FILESDIR}/${PN}-4.3-meson.build.patch"
+	"${FILESDIR}/serd.patch"
 )
 
 src_configure() {

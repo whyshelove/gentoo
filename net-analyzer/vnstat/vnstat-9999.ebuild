@@ -16,7 +16,11 @@ else
 	inherit verify-sig
 
 	SRC_URI="https://humdi.net/vnstat/${P}.tar.gz"
-	SRC_URI+=" verify-sig? ( https://humdi.net/vnstat/${P}.tar.gz.asc )"
+	SRC_URI+=" https://github.com/vergoh/vnstat/releases/download/v${PV}/${P}.tar.gz"
+	SRC_URI+=" verify-sig? (
+			https://humdi.net/vnstat/${P}.tar.gz.asc
+			https://github.com/vergoh/vnstat/releases/download/v${PV}/${P}.tar.gz.asc
+		)"
 
 	KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86"
 

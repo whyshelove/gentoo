@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8,9,10} )
+PYTHON_COMPAT=( python3_{9,10} )
 
 inherit autotools python-single-r1
 
@@ -17,7 +17,7 @@ if [[ ${PV} == *9999* ]]; then
 else
 	MDDS_SLOT="1/2.0"
 	SRC_URI="https://kohei.us/files/orcus/src/${P}.tar.xz"
-	KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~x86"
+	KEYWORDS="amd64 ~arm arm64 ~loong ~ppc ~ppc64 x86"
 fi
 
 LICENSE="MIT"
@@ -36,6 +36,11 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	dev-util/mdds:${MDDS_SLOT}
 "
+
+PATCHES=(
+	"${FILESDIR}"/${P}-clang.patch
+	"${FILESDIR}"/${P}-gcc-13.patch
+)
 
 pkg_setup() {
 	use python && python-single-r1_pkg_setup

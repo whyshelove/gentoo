@@ -10,6 +10,6 @@
     <name>Proxy Maintainers</name>
   </maintainer>
   <upstream>
-    <remote-id type="gitlab">https://gitlab.freedesktop.org/realmd/adcli</remote-id>
+    <remote-id type="freedesktop-gitlab">realmd/adcli</remote-id>
   </upstream>
 </pkgmetadata>

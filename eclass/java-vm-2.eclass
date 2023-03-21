@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: java-vm-2.eclass
@@ -10,20 +10,27 @@
 # This eclass provides functionality which assists with installing
 # virtual machines, and ensures that they are recognized by java-config.
 
-case ${EAPI:-0} in
-	[678]) ;;
-	*) die "EAPI=${EAPI} is not supported" ;;
+case ${EAPI} in
+	6|7|8) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
-inherit multilib pax-utils prefix xdg-utils
+if [[ -z ${_JAVA_VM_2_ECLASS} ]]; then
+_JAVA_VM_2_ECLASS=1
 
-EXPORT_FUNCTIONS pkg_setup pkg_postinst pkg_prerm pkg_postrm
+inherit multilib pax-utils prefix xdg-utils
 
 RDEPEND="
 	dev-java/java-config
 	app-eselect/eselect-java
 "
 DEPEND="${RDEPEND}"
+BDEPEND="app-arch/unzip"
+IDEPEND="app-eselect/eselect-java"
+
+if [[ ${EAPI} == 6 ]]; then
+	DEPEND+=" ${BDEPEND}"
+fi
 
 export WANT_JAVA_CONFIG=2
 
@@ -83,14 +90,35 @@ java-vm-2_pkg_postinst() {
 	xdg_desktop_database_update
 }
 
+# @FUNCTION: has_eselect_java-vm_update
+# @INTERNAL
+# @DESCRIPTION:
+# Checks if an eselect-java version providing "eselect java-vm update"
+# is available.
+# @RETURN: 0 if >=app-eselect/eselect-java-0.5 is installed, 1 otherwise.
+has_eselect_java-vm_update() {
+	local has_version_args="-b"
+	if [[ ${EAPI} == 6 ]]; then
+		has_version_args="--host-root"
+	fi
+
+	has_version "${has_version_args}" ">=app-eselect/eselect-java-0.5"
+}
 
 # @FUNCTION: java-vm-2_pkg_prerm
 # @DESCRIPTION:
 # default pkg_prerm
 #
-# Warn user if removing system-vm.
+# Does nothing if eselect-java-0.5 or newer is available.  Otherwise,
+# warn user if removing system-vm.
 
 java-vm-2_pkg_prerm() {
+	if has_eselect_java-vm_update; then
+		# We will potentially switch to a new Java system VM in
+		# pkg_postrm().
+		return
+	fi
+
 	if [[ $(GENTOO_VM= java-config -f 2>/dev/null) == ${VMHANDLE} && -z ${REPLACED_BY_VERSION} ]]; then
 		ewarn "It appears you are removing your system-vm! Please run"
 		ewarn "\"eselect java-vm list\" to list available VMs, then use"
@@ -103,10 +131,14 @@ java-vm-2_pkg_prerm() {
 # @DESCRIPTION:
 # default pkg_postrm
 #
-# Update mime database.
+# Invoke "eselect java-vm update" if eselect-java 0.5, or newer, is
+# available.  Also update the mime database.
 
 java-vm-2_pkg_postrm() {
 	xdg_desktop_database_update
+	if has_eselect_java-vm_update; then
+		eselect java-vm update
+	fi
 }
 
 
@@ -319,3 +351,7 @@ java-vm_sandbox-predict() {
 	echo "SANDBOX_PREDICT=\"${path}\"" > "${ED}/etc/sandbox.d/20${VMHANDLE}" \
 		|| die "Failed to write sandbox control file"
 }
+
+fi
+
+EXPORT_FUNCTIONS pkg_setup pkg_postinst pkg_prerm pkg_postrm

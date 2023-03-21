@@ -1,15 +1,15 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7..9} )
+PYTHON_COMPAT=( python3_9 )
 
 inherit linux-info python-single-r1
 
 DESCRIPTION="A linux trace/probe tool"
 HOMEPAGE="https://www.sourceware.org/systemtap/"
-SRC_URI="https://www.sourceware.org/${PN}/ftp/releases/${P}.tar.gz"
+SRC_URI="https://www.sourceware.org/ftp/${PN}/releases/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"

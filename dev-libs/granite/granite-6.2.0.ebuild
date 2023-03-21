@@ -1,9 +1,8 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-VALA_MIN_API_VERSION=0.40
 BUILD_DIR="${WORKDIR}/${P}-build"
 
 inherit meson vala xdg
@@ -14,7 +13,7 @@ SRC_URI="https://github.com/elementary/${PN}/archive/${PV}.tar.gz -> ${P}.tar.gz
 
 LICENSE="LGPL-3+"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~arm ~x86"
+KEYWORDS="amd64 arm x86"
 
 BDEPEND="
 	$(vala_depend)

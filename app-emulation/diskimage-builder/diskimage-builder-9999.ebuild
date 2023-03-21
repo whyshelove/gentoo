@@ -1,10 +1,11 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{7,8,9} )
+PYTHON_COMPAT=( python3_{9,10} )
 DISTUTILS_USE_SETUPTOOLS=rdepend
+PYPI_NO_NORMALIZE=1
 inherit distutils-r1
 
 DESCRIPTION="Golden Disk Image builder"
@@ -13,7 +14,7 @@ if [[ ${PV} == 9999* ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://opendev.org/openstack/diskimage-builder.git"
 else
-	SRC_URI="mirror://pypi/${PN:0:1}/${PN}/${P}.tar.gz"
+	inherit pypi
 	KEYWORDS="~amd64 ~arm64 ~x86 ~amd64-linux ~x86-linux"
 fi
 

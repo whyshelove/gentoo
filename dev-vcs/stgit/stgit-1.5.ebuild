@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..11} )
 
 inherit bash-completion-r1 distutils-r1
 
@@ -13,12 +13,12 @@ UPSTREAM_VER=
 [[ -n ${UPSTREAM_VER} ]] && \
 	UPSTREAM_PATCHSET_URI="https://dev.gentoo.org/~dlan/distfiles/${P}-upstream-patches-${UPSTREAM_VER}.tar.xz"
 
-SRC_URI="https://github.com/ctmarinas/stgit/archive/v${PV}.tar.gz -> ${P}.tar.gz
+SRC_URI="https://github.com/stacked-git/stgit/archive/v${PV}.tar.gz -> ${P}.tar.gz
 	${UPSTREAM_PATCHSET_URI}"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~riscv ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="amd64 arm arm64 ppc ppc64 ~riscv x86 ~amd64-linux ~x86-linux"
 IUSE="doc"
 
 RDEPEND=">=dev-vcs/git-1.6.3.3"

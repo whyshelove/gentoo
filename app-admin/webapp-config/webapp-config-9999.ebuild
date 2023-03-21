@@ -1,16 +1,16 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
 DISTUTILS_USE_SETUPTOOLS=no
-PYTHON_COMPAT=( python3_{7..10} )
+PYTHON_COMPAT=( python3_{9..11} )
 
 inherit distutils-r1 prefix
 
 if [[ ${PV} = 9999* ]]
 then
-	EGIT_REPO_URI="git://anongit.gentoo.org/proj/${PN}.git"
+	EGIT_REPO_URI="https://anongit.gentoo.org/proj/${PN}.git"
 	inherit git-r3
 else
 	SRC_URI="https://dev.gentoo.org/~blueness/${PN}/${P}.tar.bz2"
@@ -38,6 +38,11 @@ python_compile_all() {
 	emake -C doc/
 }
 
+python_test() {
+	PYTHONPATH="." "${EPYTHON}" WebappConfig/tests/external.py -v ||
+		die "Testing failed with ${EPYTHON}"
+}
+
 python_install() {
 	# According to this discussion:
 	# http://mail.python.org/pipermail/distutils-sig/2004-February/003713.html
@@ -58,11 +63,6 @@ python_install_all() {
 
 	dodoc AUTHORS
 	doman doc/*.[58]
-}
-
-python_test() {
-	PYTHONPATH="." "${EPYTHON}" WebappConfig/tests/external.py -v ||
-		die "Testing failed with ${EPYTHON}"
 }
 
 pkg_postinst() {

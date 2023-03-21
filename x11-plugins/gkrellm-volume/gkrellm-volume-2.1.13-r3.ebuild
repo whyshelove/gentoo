@@ -1,8 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-inherit gkrellm-plugin toolchain-funcs
+
+inherit gkrellm-plugin multilib toolchain-funcs
 
 DESCRIPTION="A mixer control plugin for gkrellm"
 HOMEPAGE="http://gkrellm.luon.net/volume.php"
@@ -11,7 +12,7 @@ S="${WORKDIR}/${PN}"
 
 LICENSE="GPL-2"
 SLOT="2"
-KEYWORDS="~alpha ~amd64 ~ppc ~sparc ~x86"
+KEYWORDS="~alpha amd64 ~ppc ~sparc x86"
 IUSE="alsa"
 
 RDEPEND="

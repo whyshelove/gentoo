@@ -1,9 +1,9 @@
-# Copyright 2021 Gentoo Authors
+# Copyright 2021-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..10} )
 inherit distutils-r1
 
 DESCRIPTION="The async transformation code"
@@ -22,6 +22,6 @@ src_prepare() {
 
 distutils_enable_sphinx docs/source \
 	dev-python/sphinxcontrib-trio \
-	dev-python/sphinx_rtd_theme
+	dev-python/sphinx-rtd-theme
 
 distutils_enable_tests --install pytest

@@ -1,7 +1,7 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 inherit autotools git-r3
 
 DESCRIPTION="Copy data from standard input to X clipboard"
@@ -19,6 +19,7 @@ RDEPEND="
 
 DEPEND="
 	${RDEPEND}
+	x11-base/xorg-proto
 	x11-libs/libXt
 "
 

@@ -1,11 +1,11 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 WX_GTK_VER="3.0-gtk3"
 
-inherit autotools subversion wxwidgets xdg
+inherit autotools flag-o-matic subversion wxwidgets xdg
 
 DESCRIPTION="The open source, cross platform, free C, C++ and Fortran IDE"
 HOMEPAGE="https://codeblocks.org/"
@@ -15,8 +15,9 @@ KEYWORDS=""
 SRC_URI=""
 ESVN_REPO_URI="svn://svn.code.sf.net/p/${PN}/code/trunk"
 ESVN_FETCH_CMD="svn checkout --ignore-externals"
+ESVN_UPDATE_CMD="svn update --ignore-externals"
 
-IUSE="contrib debug pch"
+IUSE="contrib debug"
 
 BDEPEND="virtual/pkgconfig"
 
@@ -32,7 +33,7 @@ RDEPEND="app-arch/zip
 
 DEPEND="${RDEPEND}"
 
-PATCHES=( "${FILESDIR}"/codeblocks-17.12-nodebug.diff )
+PATCHES=( "${FILESDIR}/${P}-nodebug.diff" )
 
 src_prepare() {
 	default
@@ -45,19 +46,25 @@ src_prepare() {
 }
 
 src_configure() {
+	# Bug 858338
+	append-flags -fno-strict-aliasing
+
 	setup-wxwidgets
 
 	econf \
+		--disable-pch \
 		--disable-static \
+		$(use_with contrib boost-libdir "${ESYSROOT}/usr/$(get_libdir)") \
 		$(use_enable debug) \
-		$(use_enable pch) \
 		$(use_with contrib contrib-plugins all)
 }
 
-pkg_postinst() {
-	elog "The Symbols Browser is disabled due to it causing crashes."
-	elog "For more information see https://sourceforge.net/p/codeblocks/tickets/225/"
+src_install() {
+	default
+	find "${ED}" -type f -name '*.la' -delete || die
+}
 
+pkg_postinst() {
 	xdg_pkg_postinst
 }
 

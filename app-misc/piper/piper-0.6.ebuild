@@ -1,13 +1,13 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..11} )
 
 inherit meson python-single-r1 xdg
 
-DESCRIPTION="GTK configuration application for libratbag"
+DESCRIPTION="GTK application to configure gaming devices"
 HOMEPAGE="https://github.com/libratbag/piper"
 SRC_URI="https://github.com/libratbag/piper/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
@@ -46,6 +46,8 @@ DEPEND="
 	dev-libs/libevdev
 	virtual/libudev
 "
+
+PATCHES=( "${FILESDIR}/${P}-fix-tests.patch" )
 
 src_configure() {
 	python_setup

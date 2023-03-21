@@ -1,9 +1,12 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{8,9,10} )
+# See https://sourceware.org/gdb/wiki/DistroAdvice for general packaging
+# tips & notes.
+
+PYTHON_COMPAT=( python3_{9..11} )
 inherit flag-o-matic python-single-r1 strip-linguas toolchain-funcs
 
 export CTARGET=${CTARGET:-${CHOST}}
@@ -23,41 +26,49 @@ case ${PV} in
 		inherit git-r3
 		SRC_URI=""
 		;;
-	*.*.50.2???????)
-		# weekly snapshots
-		SRC_URI="ftp://sourceware.org/pub/gdb/snapshots/current/gdb-weekly-${PV}.tar.xz"
+	*.*.50_p2???????|*.*.90_p2???????)
+		# Weekly snapshots
+		MY_PV="${PV/_p/.}"
+		SRC_URI="
+			https://sourceware.org/pub/gdb/snapshots/branch/gdb-weekly-${MY_PV}.tar.xz
+			https://sourceware.org/pub/gdb/snapshots/current/gdb-weekly-${MY_PV}.tar.xz
+		"
+		S="${WORKDIR}/${PN}-${MY_PV}"
+		;;
+	*.*.9?)
+		# Prereleases
+		MY_PV="${PV/_p/.}"
+		SRC_URI="
+			https://sourceware.org/pub/gdb/snapshots/branch/gdb-${MY_PV}.tar.xz
+		"
+		S="${WORKDIR}/${PN}-${MY_PV}"
 		;;
 	*)
 		# Normal upstream release
-		SRC_URI="mirror://gnu/gdb/${P}.tar.xz
-			ftp://sourceware.org/pub/gdb/releases/${P}.tar.xz"
+		SRC_URI="
+			mirror://gnu/gdb/${P}.tar.xz
+			https://sourceware.org/pub/gdb/releases/${P}.tar.xz
+		"
+
+		KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~x64-cygwin ~amd64-linux ~x86-linux ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 		;;
 esac
 
-PATCH_VER=""
 PATCH_DEV=""
+PATCH_VER=""
 DESCRIPTION="GNU debugger"
 HOMEPAGE="https://sourceware.org/gdb/"
-SRC_URI="${SRC_URI}
-	${PATCH_DEV:+https://dev.gentoo.org/~${PATCH_DEV}/distfiles/${P}-patches-${PATCH_VER}.tar.xz}
+SRC_URI="
+	${SRC_URI}
+	${PATCH_DEV:+https://dev.gentoo.org/~${PATCH_DEV}/distfiles/${CATEGORY}/${PN}/${P}-patches-${PATCH_VER}.tar.xz}
 	${PATCH_VER:+mirror://gentoo/${P}-patches-${PATCH_VER}.tar.xz}
 "
 
-LICENSE="GPL-2 LGPL-2"
+LICENSE="GPL-3+ LGPL-2.1+"
 SLOT="0"
-
-if [[ ${PV} != 9999* ]] ; then
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~x64-cygwin ~amd64-linux ~x86-linux ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-fi
-
-IUSE="cet guile lzma multitarget nls +python +server source-highlight test vanilla xml xxhash"
+IUSE="cet guile lzma multitarget nls +python +server sim source-highlight test vanilla xml xxhash zstd"
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
-
-# ia64 kernel crashes when gdb testsuite is running
-RESTRICT="
-	ia64? ( test )
-	!test? ( test )
-"
+RESTRICT="!test? ( test )"
 
 RDEPEND="
 	dev-libs/mpfr:0=
@@ -65,6 +76,7 @@ RDEPEND="
 	>=sys-libs/ncurses-5.2-r2:0=
 	>=sys-libs/readline-7:0=
 	sys-libs/zlib
+	elibc_glibc? ( net-libs/libnsl:= )
 	lzma? ( app-arch/xz-utils )
 	python? ( ${PYTHON_DEPS} )
 	guile? ( >=dev-scheme/guile-2.0 )
@@ -75,12 +87,13 @@ RDEPEND="
 	xxhash? (
 		dev-libs/xxhash
 	)
+	zstd? ( app-arch/zstd:= )
 "
 DEPEND="${RDEPEND}"
 BDEPEND="
 	app-arch/xz-utils
 	sys-apps/texinfo
-	virtual/yacc
+	app-alternatives/yacc
 	nls? ( sys-devel/gettext )
 	source-highlight? ( virtual/pkgconfig )
 	test? ( dev-util/dejagnu )
@@ -98,9 +111,8 @@ src_prepare() {
 	default
 
 	strip-linguas -u bfd/po opcodes/po
-	export CC_FOR_BUILD="$(tc-getBUILD_CC)"
 
-	# avoid using ancient termcap from host on Prefix systems
+	# Avoid using ancient termcap from host on Prefix systems
 	sed -i -e 's/termcap tinfow/tinfow/g' \
 		gdb/configure{.ac,} || die
 }
@@ -120,6 +132,11 @@ gdb_branding() {
 src_configure() {
 	strip-unsupported-flags
 
+	# See https://www.gnu.org/software/make/manual/html_node/Parallel-Output.html
+	# Avoid really confusing logs from subconfigure spam, makes logs far
+	# more legible.
+	MAKEOPTS="--output-sync=line ${MAKEOPTS}"
+
 	local myconf=(
 		# portage's econf() does not detect presence of --d-d-t
 		# because it greps only top-level ./configure. But not
@@ -129,24 +146,27 @@ src_configure() {
 		--with-pkgversion="$(gdb_branding)"
 		--with-bugurl='https://bugs.gentoo.org/'
 		--disable-werror
-		# Disable modules that are in a combined binutils/gdb tree. #490566
-		--disable-{binutils,etc,gas,gold,gprof,ld}
+		# Disable modules that are in a combined binutils/gdb tree. bug #490566
+		--disable-{binutils,etc,gas,gold,gprof,gprofng,ld}
 
 		# avoid automagic dependency on (currently prefix) systems
 		# systems with debuginfod library, bug #754753
 		--without-debuginfod
 
+		$(use_enable test unit-tests)
+
 		# Allow user to opt into CET for host libraries.
 		# Ideally we would like automagic-or-disabled here.
 		# But the check does not quite work on i686: bug #760926.
 		$(use_enable cet)
+
+		# Helps when cross-compiling. Not to be confused with --with-sysroot.
+		--with-build-sysroot="${ESYSROOT}"
 	)
 
-	local sysroot="${EPREFIX}/usr/${CTARGET}"
-
 	is_cross && myconf+=(
-		--with-sysroot="${sysroot}"
-		--includedir="${sysroot}/usr/include"
+		--with-sysroot="\${prefix}/${CTARGET}"
+		--includedir="\${prefix}/include/${CTARGET}"
 		--with-gdb-datadir="\${datadir}/gdb/${CTARGET}"
 	)
 
@@ -176,11 +196,20 @@ src_configure() {
 		$(use_with xml expat)
 		$(use_with lzma)
 		$(use_enable nls)
+		$(use_enable sim)
 		$(use_enable source-highlight)
 		$(use multitarget && echo --enable-targets=all)
 		$(use_with python python "${EPYTHON}")
 		$(use_with xxhash)
 		$(use_with guile)
+		$(use_with zstd)
+
+		# Find libraries using the toolchain sysroot rather than the configured
+		# prefix. Needed when cross-compiling.
+		#
+		# Check which libraries to apply this to with:
+		# "${S}"/gdb/configure --help | grep without-lib | sort
+		--without-lib{babeltrace,expat,gmp,iconv,ipt,lzma,mpfr,xxhash}-prefix
 	)
 
 	if use sparc-solaris || use x86-solaris ; then
@@ -192,18 +221,36 @@ src_configure() {
 	# source-highlight is detected with pkg-config: bug #716558
 	export ac_cv_path_pkg_config_prog_path="$(tc-getPKG_CONFIG)"
 
+	export CC_FOR_BUILD="$(tc-getBUILD_CC)"
+
 	# ensure proper compiler is detected for Clang builds: bug #831202
 	export GCC_FOR_TARGET="${CC_FOR_TARGET:-$(tc-getCC)}"
 
 	econf "${myconf[@]}"
 }
 
+src_compile() {
+	emake V=1
+}
+
+src_test() {
+	# Run the unittests (nabbed invocation from Fedora's spec file) at least
+	emake -k -C gdb run GDBFLAGS='-batch -ex "maintenance selftest"'
+
+	# Too many failures
+	# In fact, gdb's test suite needs some work to get passing.
+	# See e.g. https://sourceware.org/gdb/wiki/TestingGDB.
+	# As of 11.2, on amd64: "# of unexpected failures    8600"
+	# Also, ia64 kernel crashes when gdb testsuite is running.
+	#emake -k check
+}
+
 src_install() {
-	default
+	emake V=1 DESTDIR="${D}" install
 
 	find "${ED}"/usr -name libiberty.a -delete || die
 
-	# Delete translations that conflict with binutils-libs. #528088
+	# Delete translations that conflict with binutils-libs. bug #528088
 	# Note: Should figure out how to store these in an internal gdb dir.
 	if use nls ; then
 		find "${ED}" \
@@ -231,23 +278,19 @@ src_install() {
 
 	docinto gdb
 	dodoc gdb/CONTRIBUTE gdb/README gdb/MAINTAINERS \
-		gdb/NEWS gdb/ChangeLog gdb/PROBLEMS
+		gdb/NEWS gdb/PROBLEMS
 	docinto sim
-	dodoc sim/{ChangeLog,MAINTAINERS,README-HACKING}
+	dodoc sim/{MAINTAINERS,README-HACKING}
 
 	if use server ; then
 		docinto gdbserver
-		dodoc gdbserver/{ChangeLog,README}
-	fi
-
-	if [[ -n ${PATCH_VER} ]] ; then
-		dodoc "${WORKDIR}"/extra/gdbinit.sample
+		dodoc gdbserver/README
 	fi
 
 	# Remove shared info pages
-	rm -f "${ED}"/usr/share/info/{annotate,bfd,configure,standards}.info*
+	rm -f "${ED}"/usr/share/info/{annotate,bfd,configure,ctf-spec,standards}.info*
 
-	if use python; then
+	if use python ; then
 		python_optimize "${ED}"/usr/share/gdb/python/gdb
 	fi
 }

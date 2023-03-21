@@ -1,4 +1,4 @@
-# Copyright 2004-2021 Gentoo Authors
+# Copyright 2004-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: java-pkg-simple.eclass
@@ -6,7 +6,7 @@
 # java@gentoo.org
 # @AUTHOR:
 # Java maintainers <java@gentoo.org>
-# @SUPPORTED_EAPIS: 5 6 7 8
+# @SUPPORTED_EAPIS: 6 7 8
 # @BLURB: Eclass for packaging Java software with ease.
 # @DESCRIPTION:
 # This class is intended to build pure Java packages from Java sources
@@ -16,8 +16,9 @@
 # addressed by an ebuild by putting corresponding files into the target
 # directory before calling the src_compile function of this eclass.
 
-case ${EAPI:-0} in
-	[5678]) ;;
+case ${EAPI} in
+	6) inherit eqawarn ;;
+	7|8) ;;
 	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
@@ -132,6 +133,12 @@ fi
 # @CODE
 #	JAVA_MAIN_CLASS="org.gentoo.java.ebuilder.Main"
 # @CODE
+
+# @ECLASS_VARIABLE: JAVA_AUTOMATIC_MODULE_NAME
+# @DEFAULT_UNSET
+# @DESCRIPTION:
+# The value of the Automatic-Module-Name entry, which is going to be added to
+# MANIFEST.MF.
 
 # @ECLASS_VARIABLE: JAVADOC_ARGS
 # @DEFAULT_UNSET
@@ -337,9 +344,6 @@ java-pkg-simple_prepend_resources() {
 java-pkg-simple_src_compile() {
 	local sources=sources.lst classes=target/classes apidoc=target/api moduleinfo
 
-	# auto generate classpath
-	java-pkg_gen-cp JAVA_GENTOO_CLASSPATH
-
 	# do not compile if we decide to install binary jar
 	if has binary ${JAVA_PKG_IUSE} && use binary; then
 		# register the runtime dependencies
@@ -350,6 +354,9 @@ java-pkg-simple_src_compile() {
 		cp "${DISTDIR}"/${JAVA_BINJAR_FILENAME} ${JAVA_JAR_FILENAME}\
 			|| die "Could not copy the binary jar file to ${S}"
 		return 0
+	else
+		# auto generate classpath
+		java-pkg_gen-cp JAVA_GENTOO_CLASSPATH
 	fi
 
 	# gather sources
@@ -393,8 +400,8 @@ java-pkg-simple_src_compile() {
 			JAVA_PKG_WANT_SOURCE=${tmp_source}
 			JAVA_PKG_WANT_TARGET=${tmp_target}
 		else
-			ewarn "Need at least JDK 9 to compile module-info.java in src_compile,"
-			ewarn "see https://bugs.gentoo.org/796875"
+			eqawarn "Need at least JDK 9 to compile module-info.java in src_compile."
+			eqawarn "Please adjust DEPEND accordingly. See https://bugs.gentoo.org/796875#c3"
 		fi
 	fi
 
@@ -410,20 +417,32 @@ java-pkg-simple_src_compile() {
 	# package
 	local jar_args
 	if [[ -e ${classes}/META-INF/MANIFEST.MF ]]; then
+		sed '/Created-By: /Id' -i ${classes}/META-INF/MANIFEST.MF
 		jar_args="cfm ${JAVA_JAR_FILENAME} ${classes}/META-INF/MANIFEST.MF"
-	elif [[ ${JAVA_MAIN_CLASS} ]]; then
-		jar_args="cfe ${JAVA_JAR_FILENAME} ${JAVA_MAIN_CLASS}"
 	else
 		jar_args="cf ${JAVA_JAR_FILENAME}"
 	fi
 	jar ${jar_args} -C ${classes} . || die "jar failed"
+	if  [[ -n "${JAVA_AUTOMATIC_MODULE_NAME}" ]]; then
+		echo "Automatic-Module-Name: ${JAVA_AUTOMATIC_MODULE_NAME}" \
+			>> "${T}/add-to-MANIFEST.MF" || die "adding module name failed"
+	fi
+	if  [[ -n "${JAVA_MAIN_CLASS}" ]]; then
+		echo "Main-Class: ${JAVA_MAIN_CLASS}" \
+			>> "${T}/add-to-MANIFEST.MF" || die "adding main class failed"
+	fi
+	if [[ -f "${T}/add-to-MANIFEST.MF" ]]; then
+		jar ufmv ${JAVA_JAR_FILENAME} "${T}/add-to-MANIFEST.MF" \
+			|| die "updating MANIFEST.MF failed"
+		rm -f "${T}/add-to-MANIFEST.MF" || die "cannot remove"
+	fi
 }
 
 # @FUNCTION: java-pkg-simple_src_install
 # @DESCRIPTION:
 # src_install for simple single jar java packages. Simply installs
 # ${JAVA_JAR_FILENAME}. It will also install a launcher if
-# ${JAVA_MAIN_CLASS} is set.
+# ${JAVA_MAIN_CLASS} is set. Also invokes einstalldocs.
 java-pkg-simple_src_install() {
 	local sources=sources.lst classes=target/classes apidoc=target/api
 
@@ -454,6 +473,8 @@ java-pkg-simple_src_install() {
 		fi
 		java-pkg_dosrc ${srcdirs}
 	fi
+
+	einstalldocs
 }
 
 # @FUNCTION: java-pkg-simple_src_test
@@ -529,19 +550,21 @@ java-pkg-simple_src_test() {
 	if [[ -n ${JAVA_TEST_RUN_ONLY} ]]; then
 		tests_to_run="${JAVA_TEST_RUN_ONLY[@]}"
 	else
-		tests_to_run=$(find "${classes}" -type f\
-			\( -name "*Test.class"\
-			-o -name "Test*.class"\
-			-o -name "*Tests.class"\
-			-o -name "*TestCase.class" \)\
-			! -name "*Abstract*"\
-			! -name "*BaseTest*"\
-			! -name "*TestTypes*"\
-			! -name "*TestUtils*"\
-			! -name "*\$*")
-		tests_to_run=${tests_to_run//"${classes}"\/}
-		tests_to_run=${tests_to_run//.class}
-		tests_to_run=${tests_to_run//\//.}
+		pushd "${JAVA_TEST_SRC_DIR}" > /dev/null || die
+			tests_to_run=$(find * -type f\
+				\( -name "*Test.java"\
+				-o -name "Test*.java"\
+				-o -name "*Tests.java"\
+				-o -name "*TestCase.java" \)\
+				! -name "*Abstract*"\
+				! -name "*BaseTest*"\
+				! -name "*TestTypes*"\
+				! -name "*TestUtils*"\
+				! -name "*\$*")
+			tests_to_run=${tests_to_run//"${classes}"\/}
+			tests_to_run=${tests_to_run//.java}
+			tests_to_run=${tests_to_run//\//.}
+		popd > /dev/null || die
 
 		# exclude extra test classes, usually corner cases
 		# that the code above cannot handle

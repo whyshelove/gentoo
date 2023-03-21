@@ -1,19 +1,23 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-inherit rhel9-a
+VERIFY_SIG_OPENPGP_KEY_PATH="${BROOT}"/usr/share/openpgp-keys/m4.asc
+inherit verify-sig
 
 DESCRIPTION="GNU macro processor"
 HOMEPAGE="https://www.gnu.org/software/m4/m4.html"
-if [[ "${PV}" == *_beta* ]] ; then
+if [[ ${PV} == *_beta* ]] ; then
 	MY_P="${PN}-1.4.18d"
-	#SRC_URI="mirror://gnu-alpha/${PN}/${MY_P}.tar.xz"
 	SRC_URI="https://alpha.gnu.org/gnu/${PN}/${MY_P}.tar.xz"
+	SRC_URI+=" verify-sig? ( https://alpha.gnu.org/gnu/${PN}/${MY_P}.tar.xz.sig )"
 	S="${WORKDIR}/${MY_P}"
 else
-	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+	SRC_URI="mirror://gnu/${PN}/${P}.tar.xz"
+	SRC_URI+=" https://dev.gentoo.org/~floppym/dist/${P}-test-198-sysval-r1.patch.gz"
+	SRC_URI+=" verify-sig? ( mirror://gnu/${PN}/${P}.tar.xz.sig )"
+	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 fi
 
 LICENSE="GPL-3"
@@ -29,13 +33,34 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 # Remember: cannot dep on autoconf since it needs us
 BDEPEND="app-arch/xz-utils
-	nls? ( sys-devel/gettext )"
+	nls? ( sys-devel/gettext )
+	verify-sig? ( sec-keys/openpgp-keys-m4 )"
 
-PATCHES=( "${FILESDIR}/ppc-musl.patch" )
+PATCHES=(
+	"${FILESDIR}"/ppc-musl.patch
+	"${FILESDIR}"/loong-fix-build.patch
+	"${FILESDIR}"/${PN}-1.4.19-make-4.4-tests.patch
+	"${WORKDIR}"/${P}-test-198-sysval-r1.patch
+	"${FILESDIR}"/${PN}-1.4.19-fortify-source.patch
+)
+
+src_unpack() {
+	if use verify-sig ; then
+		# Needed for downloaded patch (which is unsigned, which is fine)
+		verify-sig_verify_detached "${DISTDIR}"/${P}.tar.xz{,.sig}
+	fi
+
+	default
+}
 
 src_prepare() {
 	default
-	eautoreconf -ivf
+
+	# touch generated files after patching m4, to avoid activating maintainer
+	# mode
+	# remove when loong-fix-build.patch is no longer necessary
+	touch ./aclocal.m4 ./lib/config.hin ./configure ./doc/stamp-vti || die
+	find . -name Makefile.in -exec touch {} + || die
 }
 
 src_configure() {

@@ -1,14 +1,14 @@
-# Copyright 2019-2021 Gentoo Authors
+# Copyright 2019-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-PYTHON_COMPAT=( python3_{7..9} )
+PYTHON_COMPAT=( python3_9 )
 
 inherit python-single-r1
 
 DESCRIPTION="Tool for community verification of Gentoo elections"
-HOMEPAGE="https://github.com/mgorny/votrify"
-SRC_URI="https://github.com/mgorny/votrify/archive/v${PV}.tar.gz -> ${P}.tar.gz"
+HOMEPAGE="https://github.com/projg2/votrify"
+SRC_URI="https://github.com/projg2/votrify/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="BSD-2"
 SLOT="0"

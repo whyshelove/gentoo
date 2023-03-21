@@ -1,16 +1,12 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
-
-inherit multibuild postgres
-EXPORT_FUNCTIONS pkg_setup src_prepare src_compile src_install src_test
-
 
 # @ECLASS: postgres-multi.eclass
 # @MAINTAINER:
 # PostgreSQL <pgsql-bugs@gentoo.org>
 # @AUTHOR:
 # Aaron W. Swenson <titanofold@gentoo.org>
-# @SUPPORTED_EAPIS: 5 6 7
+# @SUPPORTED_EAPIS: 7
 # @PROVIDES: multibuild postgres
 # @BLURB: An eclass to build PostgreSQL-related packages against multiple slots
 # @DESCRIPTION:
@@ -18,12 +14,15 @@ EXPORT_FUNCTIONS pkg_setup src_prepare src_compile src_install src_test
 # build and install for one or more PostgreSQL slots as specified by
 # POSTGRES_TARGETS use flags.
 
-
-case ${EAPI:-0} in
-	5|6|7) ;;
-	*) die "Unsupported EAPI=${EAPI} (unknown) for ${ECLASS}" ;;
+case ${EAPI} in
+	7) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
+if [[ ! ${_POSTGRES_MULTI_ECLASS} ]]; then
+_POSTGRES_MULTI_ECLASS=1
+
+inherit multibuild postgres
 
 # @ECLASS_VARIABLE: POSTGRES_COMPAT
 # @PRE_INHERIT
@@ -58,7 +57,7 @@ export _POSTGRES_INTERSECT_SLOTS=( )
 _postgres-multi_multibuild_wrapper() {
 	debug-print-function ${FUNCNAME} "${@}"
 	export PG_SLOT=${MULTIBUILD_VARIANT}
-	export PG_CONFIG=$(which pg_config${MULTIBUILD_VARIANT//./})
+	export PG_CONFIG=$(type -P pg_config${MULTIBUILD_VARIANT//./})
 	if [[ -n ${PKG_CONFIG_PATH} ]] ; then
 		PKG_CONFIG_PATH="$(${PG_CONFIG} --libdir)/pkgconfig:${PKG_CONFIG_PATH}"
 	else
@@ -139,7 +138,7 @@ postgres-multi_src_prepare() {
 	# Portage, but won't be caught by /usr/bin/ebuild)
 	local slot
 	for slot in ${_POSTGRES_INTERSECT_SLOTS[@]} ; do
-		if [[ -z $(which pg_config${slot/.} 2> /dev/null) ]] ; then
+		if [[ -z $(type -P pg_config${slot/.} 2> /dev/null) ]] ; then
 			eerror
 			eerror "postgres_targets_postgres${slot/.} use flag is enabled, but hasn't been emerged."
 			eerror
@@ -147,10 +146,7 @@ postgres-multi_src_prepare() {
 		fi
 	done
 
-	case ${EAPI:-0} in
-		0|1|2|3|4|5) epatch_user ;;
-		6|7) eapply_user ;;
-	esac
+	eapply_user
 
 	local MULTIBUILD_VARIANT
 	local MULTIBUILD_VARIANTS=("${_POSTGRES_INTERSECT_SLOTS[@]}")
@@ -164,6 +160,13 @@ postgres-multi_src_compile() {
 	postgres-multi_foreach emake
 }
 
+# @FUNCTION: postgres-multi_src_test
+# @DESCRIPTION:
+# Runs `emake installcheck' in each build directory.
+postgres-multi_src_test() {
+	postgres-multi_foreach emake installcheck
+}
+
 # @FUNCTION: postgres-multi_src_install
 # @DESCRIPTION:
 # Runs `emake install DESTDIR="${D}"' in each build directory.
@@ -171,9 +174,6 @@ postgres-multi_src_install() {
 	postgres-multi_foreach emake install DESTDIR="${D}"
 }
 
-# @FUNCTION: postgres-multi_src_test
-# @DESCRIPTION:
-# Runs `emake installcheck' in each build directory.
-postgres-multi_src_test() {
-	postgres-multi_foreach emake installcheck
-}
+fi
+
+EXPORT_FUNCTIONS pkg_setup src_prepare src_compile src_install src_test

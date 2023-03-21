@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..10} )
 
 inherit distutils-r1
 
@@ -13,7 +13,7 @@ SRC_URI="https://github.com/rseichter/automx2/archive/${PV}.tar.gz -> ${P}.tar.g
 
 LICENSE="GPL-3+"
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="amd64"
 
 RDEPEND="acct-user/automx2
 	dev-python/flask[${PYTHON_USEDEP}]
@@ -30,13 +30,13 @@ python_prepare_all() {
 }
 
 python_test() {
-	export AUTOMX2_CONF="tests/unittest.conf"
-	${EPYTHON} -m unittest discover tests/ || die "Tests failed with ${EPYTHON}"
+	local -x AUTOMX2_CONF="tests/unittest.conf"
+	eunittest tests/
 }
 
 python_install_all() {
-	local DOCS=( ${S}/docs/*.adoc ${S}/contrib/*sample.conf )
-	local HTML_DOCS=( ${S}/docs/*.{html,svg} )
+	local DOCS=( "${S}"/docs/*.adoc "${S}"/contrib/*sample.conf )
+	local HTML_DOCS=( "${S}"/docs/*.{html,svg} )
 	newconfd "${FILESDIR}/confd" "${PN}"
 	newinitd "${FILESDIR}/init-r1" "${PN}"
 	insinto /etc

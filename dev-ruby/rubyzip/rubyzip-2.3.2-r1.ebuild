@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-USE_RUBY="ruby26 ruby27 ruby30 ruby31"
+USE_RUBY="ruby27 ruby30 ruby31 ruby32"
 
 RUBY_FAKEGEM_RECIPE_DOC="none"
 RUBY_FAKEGEM_EXTRADOC="Changelog.md README.md TODO"
@@ -19,9 +19,9 @@ HOMEPAGE="https://github.com/rubyzip/rubyzip"
 # Tests are not included in the gem.
 SRC_URI="https://github.com/rubyzip/rubyzip/archive/v${PV}.tar.gz -> ${P}-git.tgz"
 
-LICENSE="Ruby"
+LICENSE="Ruby-BSD"
 SLOT="$(ver_cut 1)"
-KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~ppc ~ppc64 ~riscv ~sparc ~x86"
+KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~loong ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
 IUSE=""
 
 RDEPEND=""
@@ -44,7 +44,7 @@ all_ruby_prepare() {
 	sed -i -e '/bundler/ s:^:#: ; /rubocop/I s:^:#:' Rakefile || die
 
 	# Fix hardcoded path to /tmp
-	sed -i -e 's:/tmp/:'${T}'/:g' test/entry_test.rb || die
+	sed -i -e "s:/tmp/:${T}/:g" test/entry_test.rb || die
 
 	# Add missing requires
 	sed -i -e '1irequire "forwardable"; require "pathname"' test/input_stream_test.rb || die

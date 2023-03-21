@@ -1,7 +1,5 @@
-# Switch ABI flags for this arch.
-abi_s390_32
--abi_s390_64
+# Copyright 1999-2022 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
 
-# sys-libs/libunwind is keyworded on s390x
--unwind
--libunwind
+# Unmask ABI flags for this arch.
+-abi_s390_64

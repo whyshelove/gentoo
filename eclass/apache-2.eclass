@@ -1,25 +1,26 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: apache-2.eclass
 # @MAINTAINER:
+# apache-bugs@gentoo.org
+# @AUTHOR:
 # polynomial-c@gentoo.org
-# @SUPPORTED_EAPIS: 6 7
+# @SUPPORTED_EAPIS: 7
 # @BLURB: Provides a common set of functions for apache-2.x ebuilds
 # @DESCRIPTION:
 # This eclass handles apache-2.x ebuild functions such as LoadModule generation
 # and inter-module dependency checking.
 
 LUA_COMPAT=( lua5-{1..4} )
-inherit autotools flag-o-matic lua-single multilib ssl-cert user toolchain-funcs
+inherit autotools flag-o-matic lua-single multilib ssl-cert toolchain-funcs
 
 [[ ${CATEGORY}/${PN} != www-servers/apache ]] \
 	&& die "Do not use this eclass with anything else than www-servers/apache ebuilds!"
 
-case ${EAPI:-0} in
-	0|1|2|3|4|5|6)
-		die "This eclass is banned for EAPI<7"
-	;;
+case ${EAPI} in
+	7) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
 # settings which are version specific go in here:
@@ -131,39 +132,45 @@ _apache2_set_mpms() {
 _apache2_set_mpms
 unset -f _apache2_set_mpms
 
+NGHTTP2_VERSION=1.2.1
+if ver_test ${PV} -ge 2.4.55 ; then
+	NGHTTP2_VERSION=1.50.0
+fi
+
 # Dependencies
 RDEPEND="
+	acct-group/apache
+	acct-user/apache
 	dev-lang/perl
 	>=dev-libs/apr-1.5.1:=
 	=dev-libs/apr-util-1*:=[gdbm=,ldap?]
-	dev-libs/libpcre
+	dev-libs/libpcre2
 	virtual/libcrypt:=
 	apache2_modules_brotli? ( >=app-arch/brotli-0.6.0:= )
 	apache2_modules_deflate? ( sys-libs/zlib )
 	apache2_modules_http2? (
-		>=net-libs/nghttp2-1.2.1
+		>=net-libs/nghttp2-${NGHTTP2_VERSION}:=
 		kernel_linux? ( sys-apps/util-linux )
 	)
 	apache2_modules_lua? ( ${LUA_DEPS} )
-	apache2_modules_md? ( >=dev-libs/jansson-2.10 )
+	apache2_modules_md? ( >=dev-libs/jansson-2.10:= )
 	apache2_modules_mime? ( app-misc/mime-types )
 	apache2_modules_proxy_http2? (
-		>=net-libs/nghttp2-1.2.1
+		>=net-libs/nghttp2-${NGHTTP2_VERSION}:=
 		kernel_linux? ( sys-apps/util-linux )
 	)
 	apache2_modules_session_crypto? (
 		dev-libs/apr-util[openssl]
 	)
 	gdbm? ( sys-libs/gdbm:= )
-	ldap? ( =net-nds/openldap-2* )
+	ldap? ( net-nds/openldap:= )
 	selinux? ( sec-policy/selinux-apache )
 	ssl? (
-		>=dev-libs/openssl-1.0.2:0=
+		>=dev-libs/openssl-1.0.2:=
 		kernel_linux? ( sys-apps/util-linux )
 	)
 	systemd? ( sys-apps/systemd )
 "
-
 DEPEND="${RDEPEND}"
 BDEPEND="
 	virtual/pkgconfig
@@ -289,7 +296,7 @@ setup_modules() {
 		mod_type="shared"
 	fi
 
-	MY_CONF=( --enable-so=static )
+	MY_CONF=( --enable-so=static --disable-static )
 	MY_MODS=()
 
 	if use ldap ; then
@@ -375,7 +382,7 @@ setup_modules() {
 # This internal function generates the LoadModule lines for httpd.conf based on
 # the current module selection and MODULE_DEFINES
 generate_load_module() {
-	local def= endit=0 m= mod_lines= mod_dir="${ED%/}/usr/$(get_libdir)/apache2/modules"
+	local def= endit=0 m= mod_lines= mod_dir="${ED}/usr/$(get_libdir)/apache2/modules"
 
 	if use static; then
 		sed -i -e "/%%LOAD_MODULE%%/d" \
@@ -436,10 +443,6 @@ check_upgrade() {
 # needed (we don't depend on kernel sources and therefore cannot check).
 apache-2_pkg_setup() {
 	check_upgrade
-
-	# setup apache user and group
-	enewgroup apache 81
-	enewuser apache 81 -1 /var/www apache
 
 	setup_mpm
 	setup_modules
@@ -520,8 +523,8 @@ apache-2_src_prepare() {
 	chmod g-w "${T}" || die
 
 	# This package really should upgrade to using pcre's .pc file.
-	cat <<-\EOF >"${T}"/pcre-config
-	#!/bin/bash
+	cat <<-\EOF > "${T}"/pcre2-config
+	#!/usr/bin/env bash
 	flags=()
 	for flag; do
 		if [[ ${flag} == "--version" ]]; then
@@ -530,9 +533,9 @@ apache-2_src_prepare() {
 			flags+=( "${flag}" )
 		fi
 	done
-	exec ${PKG_CONFIG} libpcre "${flags[@]}"
+	exec ${PKG_CONFIG} libpcre2-8 "${flags[@]}"
 	EOF
-	chmod a+x "${T}"/pcre-config || die
+	chmod a+x "${T}"/pcre2-config || die
 }
 
 # @FUNCTION: apache-2_src_configure
@@ -541,10 +544,11 @@ apache-2_src_prepare() {
 # MY_CONF
 apache-2_src_configure() {
 	tc-export PKG_CONFIG
+	export ac_cv_path_PKGCONFIG="${PKG_CONFIG}"
 
 	# Sanity check in case people have bad mounts/TPE settings. #500928
-	if ! "${T}"/pcre-config --help >/dev/null ; then
-		eerror "Could not execute ${T}/pcre-config; do you have bad mount"
+	if ! "${T}"/pcre2-config --help &>/dev/null ; then
+		eerror "Could not execute ${T}/pcre2-config; do you have bad mount"
 		eerror "permissions in ${T} or have TPE turned on in your kernel?"
 		die "check your runtime settings #500928"
 	fi
@@ -569,13 +573,19 @@ apache-2_src_configure() {
 		--with-mpm=${MY_MPM}
 		--with-apr="${SYSROOT}${EPREFIX}"/usr
 		--with-apr-util="${SYSROOT}${EPREFIX}"/usr
-		--with-pcre="${T}"/pcre-config
 		--with-z="${EPREFIX}"/usr
 		--with-port=80
 		--with-program-name=apache2
 		--enable-layout=Gentoo
 	)
-	ac_cv_path_PKGCONFIG=${PKG_CONFIG} \
+
+	export ac_cv_prog_ac_ct_PCRE_CONFIG="${T}"/pcre2-config
+
+	MY_CONF+=(
+		--without-pcre
+		--with-pcre2="${T}"/pcre2-config
+	)
+
 	econf "${MY_CONF[@]}"
 
 	sed -i -e 's:apache2\.conf:httpd.conf:' include/ap_config_auto.h || die
@@ -633,24 +643,23 @@ apache-2_src_install() {
 	# drop in a convenient link to the manual
 	if use doc ; then
 		sed -i -e "s:VERSION:${PVR}:" \
-			"${ED%/}/etc/apache2/modules.d/00_apache_manual.conf" \
+			"${ED}/etc/apache2/modules.d/00_apache_manual.conf" \
 			|| die
 		docompress -x /usr/share/doc/${PF}/manual # 503640
 	else
-		rm -f "${ED%/}/etc/apache2/modules.d/00_apache_manual.conf" \
+		rm -f "${ED}/etc/apache2/modules.d/00_apache_manual.conf" \
 			|| die
-		rm -Rf "${ED%/}/usr/share/doc/${PF}/manual" || die
+		rm -rf "${ED}/usr/share/doc/${PF}/manual" || die
 	fi
 
 	# the default icons and error pages get stored in
 	# /usr/share/apache2/{error,icons}
 	dodir /usr/share/apache2
-	mv -f "${ED%/}/var/www/localhost/error" \
-		"${ED%/}/usr/share/apache2/error" || die
-	mv -f "${ED%/}/var/www/localhost/icons" \
-		"${ED%/}/usr/share/apache2/icons" || die
-	rm -rf "${ED%/}/var/www/localhost/" || die
-	eend $?
+	mv -f "${ED}/var/www/localhost/error" \
+		"${ED}/usr/share/apache2/error" || die
+	mv -f "${ED}/var/www/localhost/icons" \
+		"${ED}/usr/share/apache2/icons" || die
+	rm -rf "${ED}/var/www/localhost/" || die
 
 	# set some sane permissions for suexec
 	if use suexec ; then
@@ -664,7 +673,7 @@ apache-2_src_install() {
 
 	# empty dirs
 	local i
-	for i in /var/lib/dav /var/log/apache2 /var/cache/apache2 ; do
+	for i in /var/lib/dav /var/log/apache2 ; do
 		keepdir ${i}
 		fowners apache:apache ${i}
 		fperms 0750 ${i}

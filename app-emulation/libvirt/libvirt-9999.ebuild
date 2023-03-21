@@ -1,13 +1,18 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-# Please bump with dev-python/libvirt-python!
+# Packages which get releases together:
+# app-emacs/nxml-libvirt-schemas
+# dev-python/libvirt-python
+# dev-perl/Sys-Virt
+# app-emulation/libvirt
+# Please bump them together!
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..11} )
 VERIFY_SIG_OPENPGP_KEY_PATH="${BROOT}"/usr/share/openpgp-keys/libvirt.org.asc
-inherit meson bash-completion-r1 linux-info python-any-r1 readme.gentoo-r1 tmpfiles verify-sig
+inherit meson linux-info python-any-r1 readme.gentoo-r1 tmpfiles verify-sig
 
 if [[ ${PV} = *9999* ]]; then
 	inherit git-r3
@@ -16,7 +21,7 @@ if [[ ${PV} = *9999* ]]; then
 else
 	SRC_URI="https://libvirt.org/sources/${P}.tar.xz
 		verify-sig? ( https://libvirt.org/sources/${P}.tar.xz.asc )"
-	KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
+	KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~x86"
 fi
 
 DESCRIPTION="C toolkit to manipulate virtual machines"
@@ -55,7 +60,7 @@ BDEPEND="
 # non-optional, so put it into RDEPEND.
 # We can use both libnl:1.1 and libnl:3, but if you have both installed, the
 # package will use 3 by default. Since we don't have slot pinning in an API,
-# we must go with the most recent
+# we must go with the most recent.
 RDEPEND="
 	acct-user/qemu
 	app-misc/scrub
@@ -81,9 +86,9 @@ RDEPEND="
 	glusterfs? ( >=sys-cluster/glusterfs-3.4.1 )
 	iscsi? ( >=sys-block/open-iscsi-1.18.0 )
 	iscsi-direct? ( >=net-libs/libiscsi-1.18.0 )
-	libssh? ( >=net-libs/libssh-0.7:= )
+	libssh? ( >=net-libs/libssh-0.8.1:= )
 	libssh2? ( >=net-libs/libssh2-1.3 )
-	lvm? ( >=sys-fs/lvm2-2.02.48-r2[-device-mapper-only(-)] )
+	lvm? ( >=sys-fs/lvm2-2.02.48-r2[lvm] )
 	lxc? ( !sys-apps/systemd[cgroup-hybrid(-)] )
 	nfs? ( net-fs/nfs-utils )
 	numa? (
@@ -92,7 +97,7 @@ RDEPEND="
 	)
 	parted? (
 		>=sys-block/parted-1.8[device-mapper]
-		sys-fs/lvm2[-device-mapper-only(-)]
+		sys-fs/lvm2[lvm]
 	)
 	pcap? ( >=net-libs/libpcap-1.8.0 )
 	policykit? (
@@ -100,7 +105,7 @@ RDEPEND="
 		>=sys-auth/polkit-0.9
 	)
 	qemu? (
-		>=app-emulation/qemu-2.11
+		>=app-emulation/qemu-4.2
 		>=dev-libs/yajl-2.0.3:=
 	)
 	rbd? ( sys-cluster/ceph )
@@ -124,9 +129,16 @@ RDEPEND="
 	)
 	zfs? ( sys-fs/zfs )
 	kernel_linux? ( sys-apps/util-linux )"
-DEPEND="${BDEPEND}
+DEPEND="
+	${BDEPEND}
 	${RDEPEND}
-	${PYTHON_DEPS}"
+	${PYTHON_DEPS}
+"
+# The 'circular' dependency on dev-python/libvirt-python is because of
+# virt-qemu-qmp-proxy.
+PDEPEND="
+	qemu? ( dev-python/libvirt-python )
+"
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-6.0.0-fix_paths_in_libvirt-guests_sh.patch

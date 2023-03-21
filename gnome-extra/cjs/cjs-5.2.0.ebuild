@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7,8,9,10} )
+PYTHON_COMPAT=( python3_{9,10} )
 
 inherit meson pax-utils python-any-r1 virtualx
 
@@ -11,10 +11,10 @@ DESCRIPTION="Linux Mint's fork of gjs for Cinnamon"
 HOMEPAGE="https://projects.linuxmint.com/cinnamon/ https://github.com/linuxmint/cjs"
 SRC_URI="https://github.com/linuxmint/cjs/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
-LICENSE="MIT || ( MPL-1.1 LGPL-2+ GPL-2+ )"
+LICENSE="BSD CC0-1.0 MIT MPL-2.0 || ( MPL-1.1 GPL-2+ LGPL-2.1+ )"
 SLOT="0"
 IUSE="+cairo examples readline sysprof test"
-KEYWORDS="~amd64 ~arm64 ~riscv ~x86"
+KEYWORDS="amd64 ~arm64 ~riscv x86"
 
 RDEPEND="
 	dev-lang/spidermonkey:78

@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..11} )
 
 inherit pam python-any-r1 readme.gentoo-r1
 
@@ -61,7 +61,7 @@ BDEPEND="$(python_gen_any_dep '
 	')"
 
 python_check_deps() {
-	has_version -b "dev-python/jinja[${PYTHON_USEDEP}]"
+	python_has_version "dev-python/jinja[${PYTHON_USEDEP}]"
 }
 
 src_configure() {

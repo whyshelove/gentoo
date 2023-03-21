@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -19,18 +19,18 @@ SRC_URI="https://github.com/net-ssh/net-scp/archive/v${PV}.tar.gz -> ${P}.tar.gz
 
 LICENSE="GPL-2"
 SLOT="2"
-KEYWORDS="amd64 ppc ppc64 x86 ~amd64-linux ~x86-linux ~ppc-macos ~sparc-solaris ~x64-solaris ~x86-solaris"
+KEYWORDS="amd64 ~arm64 ppc ppc64 x86 ~amd64-linux ~x86-linux ~ppc-macos ~sparc-solaris ~x64-solaris ~x86-solaris"
 IUSE="test"
 RESTRICT="!test? ( test )"
 
 ruby_add_bdepend "
-	doc? ( || ( dev-ruby/net-ssh:6 dev-ruby/net-ssh:5 ) )
+	doc? ( dev-ruby/net-ssh:6 )
 	test? (
-		|| ( dev-ruby/net-ssh:6 dev-ruby/net-ssh:5 )
+		dev-ruby/net-ssh:6
 		dev-ruby/mocha
 	)"
 
-ruby_add_rdepend "|| ( dev-ruby/net-ssh:6 dev-ruby/net-ssh:5 )"
+ruby_add_rdepend "dev-ruby/net-ssh:6"
 
 all_ruby_prepare() {
 	sed -e "s:_relative ': './:" \

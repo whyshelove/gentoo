@@ -14,7 +14,7 @@ SRC_URI="https://files.inria.fr/${PN}/${P}/${P}.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0/7"
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ppc ppc64 ~riscv ~sparc x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~loong ppc ppc64 ~riscv ~sparc x86 ~amd64-linux ~x86-linux"
 
 IUSE="
 	blas cuda doc examples fftw fortran hdf5 mpi opencl opengl
@@ -42,8 +42,13 @@ BDEPEND="
 	doc? ( app-doc/doxygen virtual/latex-base )
 "
 
+pkg_pretend() {
+	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
+}
+
 pkg_setup() {
 	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
+	fortran-2_pkg_setup
 }
 
 src_prepare() {

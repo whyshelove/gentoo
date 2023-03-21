@@ -1,12 +1,11 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{8,9,10} )
+PYTHON_COMPAT=( python3_{9,10,11} )
 
-inherit flag-o-matic git-r3 linux-info multilib pam prefix python-single-r1 \
-		systemd tmpfiles
+inherit flag-o-matic git-r3 linux-info pam python-single-r1 systemd tmpfiles
 
 KEYWORDS=""
 
@@ -109,9 +108,6 @@ pkg_setup() {
 }
 
 src_prepare() {
-	# still needed as of 2021-08-13
-	eapply "${FILESDIR}"/${PN}-13.3-riscv-spinlocks.patch
-
 	# Set proper run directory
 	sed "s|\(PGSOCKET_DIR\s\+\)\"/tmp\"|\1\"${EPREFIX}/run/postgresql\"|" \
 		-i src/include/pg_config_manual.h || die

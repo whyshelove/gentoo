@@ -1,7 +1,7 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 # Subslot: libavutil major.libavcodec major.libavformat major
 # Since FFmpeg ships several libraries, subslot is kind of limited here.
@@ -12,7 +12,7 @@ EAPI=7
 # changes its ABI then this package will be rebuilt needlessly. Hence, such a
 # package is free _not_ to := depend on FFmpeg but I would strongly encourage
 # doing so since such a case is unlikely.
-FFMPEG_SUBSLOT=57.59.59
+FFMPEG_SUBSLOT=58.60.60
 
 SCM=""
 if [ "${PV#9999}" != "${PV}" ] ; then
@@ -64,7 +64,7 @@ LICENSE="
 	samba? ( GPL-3 )
 "
 if [ "${PV#9999}" = "${PV}" ] ; then
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86 ~amd64-linux ~x86-linux"
+	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86 ~amd64-linux ~x86-linux ~x64-macos"
 fi
 
 # Options to use as use_enable in the foo[:bar] form.
@@ -83,14 +83,15 @@ FFMPEG_FLAG_MAP=(
 		libv4l:libv4l2 pulseaudio:libpulse libdrm jack:libjack
 		# decoders
 		amr:libopencore-amrwb amr:libopencore-amrnb codec2:libcodec2 +dav1d:libdav1d fdk:libfdk-aac
-		jpeg2k:libopenjpeg bluray:libbluray gme:libgme gsm:libgsm
-		libaribb24 mmal modplug:libmodplug opus:libopus libilbc librtmp ssh:libssh
+		jpeg2k:libopenjpeg jpegxl:libjxl bluray:libbluray gme:libgme gsm:libgsm
+		libaribb24 mmal modplug:libmodplug opus:libopus qsv:libvpl libilbc librtmp ssh:libssh
 		speex:libspeex srt:libsrt svg:librsvg nvenc:ffnvcodec
 		vorbis:libvorbis vpx:libvpx zvbi:libzvbi
 		# libavfilter options
 		appkit
 		bs2b:libbs2b chromaprint cuda:cuda-llvm flite:libflite frei0r vmaf:libvmaf
-		fribidi:libfribidi fontconfig ladspa libass libtesseract lv2 truetype:libfreetype vidstab:libvidstab
+		fribidi:libfribidi fontconfig ladspa lcms:lcms2 libass libplacebo libtesseract lv2
+		truetype:libfreetype vidstab:libvidstab
 		rubberband:librubberband zeromq:libzmq zimg:libzimg
 		# libswresample options
 		libsoxr
@@ -224,12 +225,15 @@ RDEPEND="
 	)
 	jack? ( virtual/jack[${MULTILIB_USEDEP}] )
 	jpeg2k? ( >=media-libs/openjpeg-2:2[${MULTILIB_USEDEP}] )
+	jpegxl? ( >=media-libs/libjxl-0.7.0[$MULTILIB_USEDEP] )
+	lcms? ( >=media-libs/lcms-2.13:2[$MULTILIB_USEDEP] )
 	libaom? ( >=media-libs/libaom-1.0.0-r1:=[${MULTILIB_USEDEP}] )
 	libaribb24? ( >=media-libs/aribb24-1.0.3-r2[${MULTILIB_USEDEP}] )
 	libass? ( >=media-libs/libass-0.11.0:=[${MULTILIB_USEDEP}] )
 	libcaca? ( >=media-libs/libcaca-0.99_beta18-r1[${MULTILIB_USEDEP}] )
 	libdrm? ( x11-libs/libdrm[${MULTILIB_USEDEP}] )
 	libilbc? ( >=media-libs/libilbc-2[${MULTILIB_USEDEP}] )
+	libplacebo? ( >=media-libs/libplacebo-4.192.0[$MULTILIB_USEDEP] )
 	librtmp? ( >=media-video/rtmpdump-2.4_p20131018[${MULTILIB_USEDEP}] )
 	libsoxr? ( >=media-libs/soxr-0.1.0[${MULTILIB_USEDEP}] )
 	libtesseract? ( >=app-text/tesseract-4.1.0-r1[${MULTILIB_USEDEP}] )
@@ -244,6 +248,7 @@ RDEPEND="
 	opengl? ( >=virtual/opengl-7.0-r1[${MULTILIB_USEDEP}] )
 	opus? ( >=media-libs/opus-1.0.2-r2[${MULTILIB_USEDEP}] )
 	pulseaudio? ( >=media-sound/pulseaudio-2.1-r1[${MULTILIB_USEDEP}] )
+	qsv? ( media-libs/oneVPL )
 	rubberband? ( >=media-libs/rubberband-1.8.1-r1[${MULTILIB_USEDEP}] )
 	samba? ( >=net-fs/samba-3.6.23-r1[client,${MULTILIB_USEDEP}] )
 	sdl? ( media-libs/libsdl2[sound,video,${MULTILIB_USEDEP}] )
@@ -256,12 +261,12 @@ RDEPEND="
 		x11-libs/cairo[${MULTILIB_USEDEP}]
 	)
 	nvenc? ( >=media-libs/nv-codec-headers-9.1.23.1 )
-	svt-av1? ( >=media-libs/svt-av1-0.8.4[${MULTILIB_USEDEP}] )
+	svt-av1? ( >=media-libs/svt-av1-0.9.0[${MULTILIB_USEDEP}] )
 	truetype? ( >=media-libs/freetype-2.5.0.1:2[${MULTILIB_USEDEP}] )
-	vaapi? ( >=x11-libs/libva-1.2.1-r1:0=[${MULTILIB_USEDEP}] )
+	vaapi? ( >=media-libs/libva-1.2.1-r1:0=[${MULTILIB_USEDEP}] )
 	vdpau? ( >=x11-libs/libvdpau-0.7[${MULTILIB_USEDEP}] )
 	vidstab? ( >=media-libs/vidstab-1.1.0[${MULTILIB_USEDEP}] )
-	vmaf? ( media-libs/libvmaf[${MULTILIB_USEDEP}] )
+	vmaf? ( >=media-libs/libvmaf-2.0.0[${MULTILIB_USEDEP}] )
 	vorbis? (
 		>=media-libs/libvorbis-1.3.3-r1[${MULTILIB_USEDEP}]
 		>=media-libs/libogg-1.3.0[${MULTILIB_USEDEP}]
@@ -274,7 +279,6 @@ RDEPEND="
 		>=x11-libs/libXv-1.0.10[${MULTILIB_USEDEP}]
 		>=x11-libs/libxcb-1.4:=[${MULTILIB_USEDEP}]
 	)
-	postproc? ( !media-libs/libpostproc )
 	zeromq? ( >=net-libs/zeromq-4.1.6 )
 	zimg? ( >=media-libs/zimg-2.7.4:=[${MULTILIB_USEDEP}] )
 	zlib? ( >=sys-libs/zlib-1.2.8-r1[${MULTILIB_USEDEP}] )
@@ -287,6 +291,7 @@ RDEPEND="${RDEPEND}
 "
 
 DEPEND="${RDEPEND}
+	amf? ( media-libs/amf-headers )
 	ladspa? ( >=media-libs/ladspa-sdk-1.13-r2[${MULTILIB_USEDEP}] )
 	v4l? ( sys-kernel/linux-headers )
 "
@@ -295,7 +300,6 @@ DEPEND="${RDEPEND}
 BDEPEND+="
 	>=sys-devel/make-3.81
 	virtual/pkgconfig
-	amf? ( media-libs/amf-headers )
 	cpu_flags_x86_mmx? ( || ( >=dev-lang/nasm-2.13 >=dev-lang/yasm-1.3 ) )
 	cuda? ( >=sys-devel/clang-7[llvm_targets_NVPTX] )
 	doc? ( sys-apps/texinfo )
@@ -342,6 +346,20 @@ build_separate_libffmpeg() {
 	use opencl
 }
 
+pkg_setup() {
+	# ffmpeg[chromaprint] depends on chromaprint, and chromaprint[tools] depends on ffmpeg.
+	# May cause breakage while updating, #862996, #625210, #833821.
+	if has_version media-libs/chromaprint[tools] && use chromaprint; then
+		ewarn "You have media-libs/chromaprint installed with 'tools' USE flag, which "
+		ewarn "links to ffmpeg, and you have enabled 'chromaprint' USE flag for ffmpeg, "
+		ewarn "which links to chromaprint. This may cause issues while rebuilding ffmpeg."
+		ewarn ""
+		ewarn "If your build fails to 'ERROR: chromaprint not found', rebuild chromaprint "
+		ewarn "without the 'tools' use flag first, then rebuild ffmpeg, and then finally enable "
+		ewarn "'tools' USE flag for chromaprint. See #862996."
+	fi
+}
+
 src_prepare() {
 	if [[ "${PV%_p*}" != "${PV}" ]] ; then # Snapshot
 		export revision=git-N-${FFMPEG_REVISION}
@@ -358,6 +376,15 @@ src_prepare() {
 
 multilib_src_configure() {
 	local myconf=( )
+
+	# bug 842201
+	use ia64 && tc-is-gcc && append-flags \
+		-fno-tree-ccp \
+		-fno-tree-dominator-opts \
+		-fno-tree-fre \
+		-fno-code-hoisting \
+		-fno-tree-pre \
+		-fno-tree-vrp
 
 	local ffuse=( "${FFMPEG_FLAG_MAP[@]}" )
 	use openssl && myconf+=( --enable-nonfree )
@@ -403,7 +430,7 @@ multilib_src_configure() {
 
 	# (temporarily) disable non-multilib deps
 	if ! multilib_is_native_abi; then
-		for i in librav1e libzmq ; do
+		for i in librav1e libmfx libvpl libzmq ; do
 			myconf+=( --disable-${i} )
 		done
 	fi
@@ -432,9 +459,9 @@ multilib_src_configure() {
 		break
 	done
 
-	# LTO support, bug #566282, bug #754654
-	is-flagq "-flto*" && myconf+=( "--enable-lto" )
-	filter-flags "-flto*"
+	# LTO support, bug #566282, bug #754654, bug #772854
+	[[ ${ABI} != x86 ]] && is-flagq "-flto*" && myconf+=( "--enable-lto" )
+	filter-lto
 
 	# Mandatory configuration
 	myconf=(
@@ -471,14 +498,7 @@ multilib_src_configure() {
 		$(multilib_native_enable manpages)
 	)
 
-	# Fixed in 5.0.1? Waiting for verification from someone who hit the issue.
-	local extra_libs
-	if use arm || use ppc || use mips || [[ ${CHOST} == *i486* ]] ; then
-		# bug #782811
-		# bug #790590
-		extra_libs+="$(test-flags-CCLD -latomic) "
-	fi
-
+	# Use --extra-libs if needed for LIBS
 	set -- "${S}/configure" \
 		--prefix="${EPREFIX}/usr" \
 		--libdir="${EPREFIX}/usr/$(get_libdir)" \
@@ -494,7 +514,6 @@ multilib_src_configure() {
 		--ranlib="$(tc-getRANLIB)" \
 		--pkg-config="$(tc-getPKG_CONFIG)" \
 		--optflags="${CFLAGS}" \
-		--extra-libs="${extra_libs}" \
 		$(use_enable static-libs static) \
 		"${myconf[@]}" \
 		${EXTRA_FFMPEG_CONF}

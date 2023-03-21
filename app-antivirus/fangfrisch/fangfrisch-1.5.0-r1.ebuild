@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{8,9,10} )
+PYTHON_COMPAT=( python3_{9..11} )
 
 inherit distutils-r1 readme.gentoo-r1 systemd
 
@@ -36,22 +36,21 @@ database tables, then run the initdb command as shown above."
 
 LICENSE="GPL-3+"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="amd64 x86"
+
+# Due to the nature of Fangfrisch, most tests require network
+# connectivity and/or access keys to download signature files.
+PROPERTIES="test_network"
+RESTRICT="test"
 
 DEPEND=">=dev-python/requests-2.22.0[${PYTHON_USEDEP}]
 	>=dev-python/sqlalchemy-1.3.11[${PYTHON_USEDEP}]"
 RDEPEND="${DEPEND}"
 
+distutils_enable_tests unittest
+
 python_prepare_all() {
 	sed -i -e '/SQLAlchemy/d' setup.py || die
-	# Due to the nature of Fangfrisch, most tests require network
-	# connectivity and/or access keys to download signature files.
-	# Also, my own CI reports show that the tests are successful,
-	# so instead of a pick-and-choose approach, the complete tests
-	# directory is removed in this ebuild.	--RS
-	if [ -d tests ]; then
-		rm -r tests || die
-	fi
 	distutils-r1_python_prepare_all
 }
 

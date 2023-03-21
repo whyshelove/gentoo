@@ -1,14 +1,14 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 if [[ ${PV} = *9999* ]]; then
 	EGIT_REPO_URI="https://gitlab.freedesktop.org/wayland/wayland.git"
 	inherit git-r3
 else
-	SRC_URI="https://wayland.freedesktop.org/releases/${P}.tar.xz"
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
+	SRC_URI="https://gitlab.freedesktop.org/wayland/${PN}/-/releases/${PV}/downloads/${P}.tar.xz"
+	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
 fi
 inherit meson-multilib
 
@@ -30,8 +30,6 @@ BDEPEND="
 	)
 "
 DEPEND="
-	>=dev-libs/expat-2.1.0-r3:=[${MULTILIB_USEDEP}]
-	dev-libs/libxml2:=
 	>=dev-libs/libffi-3.0.13-r1:=[${MULTILIB_USEDEP}]
 "
 RDEPEND="${DEPEND}"
@@ -56,4 +54,13 @@ src_test() {
 	chmod 0700 "${XDG_RUNTIME_DIR}" || die
 
 	multilib-minimal_src_test
+}
+
+src_install() {
+	meson-multilib_src_install
+
+	if use doc; then
+		mv "${ED}"/usr/share/doc/"${PN}"/* "${ED}"/usr/share/doc/"${PF}"/ || die
+		rmdir "${ED}"/usr/share/doc/"${PN}" || die
+	fi
 }

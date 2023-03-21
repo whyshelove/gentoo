@@ -10,10 +10,8 @@
 		<name>Proxy Maintainers</name>
 	</maintainer>
 	<use>
-		<flag name="github">Add github support into PCB editor</flag>
 		<flag name="ngspice">Enable circuit simulation</flag>
 		<flag name="occ">Enable viewing 3D rendering of designs via <pkg>sci-libs/opencascade</pkg></flag>
-		<flag name="python">Enable python scripting support</flag>
 		<flag name="pcm">Enable plugin content manager</flag>
 	</use>
 	<longdescription>
@@ -21,7 +19,7 @@
 		schematic diagrams and printed circuit board artwork.
 	</longdescription>
 	<upstream>
-		<remote-id type="github">KiCad/kicad-i18n</remote-id>
+		<remote-id type="gitlab">kicad/code/kicad</remote-id>
 		<remote-id type="launchpad">kicad</remote-id>
 	</upstream>
 </pkgmetadata>

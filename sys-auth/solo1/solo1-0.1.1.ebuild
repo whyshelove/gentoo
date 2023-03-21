@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..10} )
 DISTUTILS_USE_PEP517=flit
 
 inherit distutils-r1
@@ -19,7 +19,7 @@ KEYWORDS="amd64 ~riscv"
 RDEPEND=">=dev-python/click-7.1.0[${PYTHON_USEDEP}]
 	dev-python/cryptography[${PYTHON_USEDEP}]
 	dev-python/ecdsa[${PYTHON_USEDEP}]
-	>=dev-python/fido2-0.9.1[${PYTHON_USEDEP}]
+	dev-python/fido2:0/0.9[${PYTHON_USEDEP}]
 	dev-python/intelhex[${PYTHON_USEDEP}]
 	dev-python/pyserial[${PYTHON_USEDEP}]
 	dev-python/pyusb[${PYTHON_USEDEP}]

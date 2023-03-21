@@ -1,10 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-# TODO: py3.10 support (currently blocked by media-libs/gexiv2)
-PYTHON_COMPAT=( python3_{8..9} )
+PYTHON_COMPAT=( python3_{9..11} )
 PYTHON_REQ_USE="sqlite"
 DISTUTILS_SINGLE_IMPL=1
 DISTUTILS_USE_SETUPTOOLS=no
@@ -37,7 +36,7 @@ RDEPEND="
 	x11-misc/xdg-utils
 	berkdb? ( $(python_gen_cond_dep '
 		dev-python/bsddb3[${PYTHON_USEDEP}]
-	' python3_{8,9}) )
+	' python3_9) )
 	geo? ( >=sci-geosciences/osm-gps-map-1.1.0 )
 	spell? ( app-text/gtkspell:3[introspection] )
 	rcs? ( dev-vcs/rcs )

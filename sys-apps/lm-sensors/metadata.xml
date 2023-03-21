@@ -2,12 +2,8 @@
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 	<maintainer type="person">
-		<email>polynomial-c@gentoo.org</email>
-		<name>Lars Wendler</name>
-	</maintainer>
-	<maintainer type="person">
-		<email>whissi@gentoo.org</email>
-		<name>Thomas Deutschmann</name>
+		<email>marecki@gentoo.org</email>
+		<name>Marek Szuba</name>
 	</maintainer>
 	<slots>
 		<subslots>Reflect ABI of libsensors.so.</subslots>
@@ -26,6 +22,6 @@
 		</flag>
 	</use>
 	<upstream>
-		<remote-id type="github">groeck/lm-sensors</remote-id>
+		<remote-id type="github">lm-sensors/lm-sensors</remote-id>
 	</upstream>
 </pkgmetadata>

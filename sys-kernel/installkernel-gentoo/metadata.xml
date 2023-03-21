@@ -6,8 +6,9 @@
 		<name>Distribution Kernel Project</name>
 	</maintainer>
 	<use>
-		<flag name="grub" restrict="&lt;sys-kernel/installkernel-gentoo-4">
-			Re-generate grub.cfg on each kernel installation
-		</flag>
+		<flag name="grub">Re-generate grub.cfg on each kernel installation</flag>
 	</use>
+	<upstream>
+		<remote-id type="github">projg2/installkernel-gentoo</remote-id>
+	</upstream>
 </pkgmetadata>

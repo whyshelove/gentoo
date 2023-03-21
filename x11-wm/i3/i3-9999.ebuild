@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -23,10 +23,10 @@ RESTRICT="!test? ( test )"
 
 COMMON_DEPEND="
 	dev-libs/libev
-	dev-libs/libpcre
+	dev-libs/libpcre2
 	dev-libs/yajl
 	x11-libs/cairo[X,xcb(+)]
-	x11-libs/libxcb[xkb]
+	x11-libs/libxcb:=
 	x11-libs/libxkbcommon[X]
 	x11-libs/pango[X]
 	x11-libs/startup-notification
@@ -64,10 +64,6 @@ RDEPEND="
 	dev-perl/JSON-XS
 "
 BDEPEND="virtual/pkgconfig"
-
-PATCHES=(
-	"${FILESDIR}"/${PN}-4.16-musl-GLOB_TILDE.patch
-)
 
 src_prepare() {
 	default

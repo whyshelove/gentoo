@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( pypy3 python3_{8..10} )
+PYTHON_COMPAT=( pypy3 python3_{9..11} )
 PYTHON_REQ_USE='bzip2(+),threads(+)'
 TMPFILES_OPTIONAL=1
 
@@ -21,8 +21,10 @@ IUSE="apidoc build doc gentoo-dev +ipc +native-extensions +rsync-verify selinux 
 RESTRICT="!test? ( test )"
 
 BDEPEND="
-	test? ( dev-vcs/git )"
-DEPEND="!build? ( $(python_gen_impl_dep 'ssl(+)') )
+	test? ( dev-vcs/git )
+"
+DEPEND="
+	!build? ( $(python_gen_impl_dep 'ssl(+)') )
 	>=app-arch/tar-1.27
 	dev-lang/python-exec:2
 	>=sys-apps/sed-4.0.5 sys-devel/patch
@@ -48,7 +50,7 @@ RDEPEND="
 		>=app-admin/eselect-1.2
 		rsync-verify? (
 			>=app-portage/gemato-14.5[${PYTHON_USEDEP}]
-			>=sec-keys/openpgp-keys-gentoo-release-20180706
+			>=sec-keys/openpgp-keys-gentoo-release-20220101
 			>=app-crypt/gnupg-2.2.4-r2[ssl(-)]
 		)
 	)
@@ -67,9 +69,10 @@ RDEPEND="
 PDEPEND="
 	!build? (
 		>=net-misc/rsync-2.6.4
-		>=sys-apps/file-5.41
 		>=sys-apps/coreutils-6.4
-	)"
+		>=sys-apps/file-5.44-r3
+	)
+"
 # coreutils-6.4 rdep is for date format in emerge-webrsync #164532
 # NOTE: FEATURES=installsources requires debugedit and rsync
 
@@ -148,14 +151,10 @@ python_prepare_all() {
 				-e "s|^\(sync-uri = \).*|\\1rsync://rsync.prefix.bitzolder.nl/gentoo-portage-prefix|" \
 				-i cnf/repos.conf || die "sed failed"
 		fi
-
-		einfo "Adding FEATURES=force-prefix to make.globals ..."
-		echo -e '\nFEATURES="${FEATURES} force-prefix"' >> cnf/make.globals \
-			|| die "failed to append to make.globals"
 	fi
 
 	cd "${S}/cnf" || die
-	if [ -f "make.conf.example.${ARCH}".diff ]; then
+	if [[ -f "make.conf.example.${ARCH}".diff ]] ; then
 		patch make.conf.example "make.conf.example.${ARCH}".diff || \
 			die "Failed to patch make.conf.example"
 	else
@@ -212,7 +211,7 @@ python_install_all() {
 		esetup.py "${targets[@]}"
 	fi
 
-	dotmpfiles "${FILESDIR}"/portage-ccache.conf
+	dotmpfiles "${FILESDIR}"/portage-{ccache,tmpdir}.conf
 
 	# Due to distutils/python-exec limitations
 	# these must be installed to /usr/bin.
@@ -254,5 +253,15 @@ pkg_preinst() {
 	# This is allowed to fail if the user/group are invalid for prefix users.
 	if chown portage:portage "${ED}"/var/log/portage{,/elog} 2>/dev/null ; then
 		chmod g+s,ug+rwx "${ED}"/var/log/portage{,/elog}
+	fi
+}
+
+pkg_postinst() {
+	# Warn about obsolete "enotice" script, bug #867010
+	local bashrc=${EROOT}/etc/portage/profile/profile.bashrc
+	if [[ -e ${bashrc} ]] && grep -q enotice "${bashrc}"; then
+		eerror "Obsolete 'enotice' script detected!"
+		eerror "Please remove this from ${bashrc} to avoid problems."
+		eerror "See bug 867010 for more details."
 	fi
 }

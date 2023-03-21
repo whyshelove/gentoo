@@ -1,8 +1,8 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-PYTHON_COMPAT=( python3_7 python3_8 python3_9 )
+PYTHON_COMPAT=(  python3_9 )
 
 inherit autotools linux-info linux-mod python-r1 systemd tmpfiles
 
@@ -90,6 +90,11 @@ src_install() {
 
 	local SCRIPT
 	if use monitor; then
+		# ovs-bugtool is installed to sbin by the build system, but we
+		# install it to bin below, and these clash in merged-usr
+		# https://bugs.gentoo.org/889846
+		rm "${ED}"/usr/sbin/ovs-bugtool || die
+
 		for SCRIPT in ovs-{pcap,parse-backtrace,dpctl-top,l3ping,tcpdump,tcpundump,test,vlan-test} bugtool/ovs-bugtool; do
 			sed -e '1s|^.*$|#!/usr/bin/python|' -i utilities/"${SCRIPT}"
 			python_foreach_impl python_doscript utilities/"${SCRIPT}"

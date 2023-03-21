@@ -1,18 +1,22 @@
-# Copyright 2005-2022 Gentoo Authors
+# Copyright 2005-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-inherit cmake toolchain-funcs xdg-utils
+inherit cmake flag-o-matic toolchain-funcs xdg-utils
 
 if [[ ${PV} == *9999* ]] ; then
 	inherit git-r3
 	EGIT_REPO_URI="https://anongit.freedesktop.org/git/poppler/poppler.git"
 	SLOT="0/9999"
 else
+	VERIFY_SIG_OPENPGP_KEY_PATH="${BROOT}"/usr/share/openpgp-keys/aacid.asc
+	inherit verify-sig
+
 	SRC_URI="https://poppler.freedesktop.org/${P}.tar.xz"
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-	SLOT="0/120"   # CHECK THIS WHEN BUMPING!!! SUBSLOT IS libpoppler.so SOVERSION
+	SRC_URI+=" verify-sig? ( https://poppler.freedesktop.org/${P}.tar.xz.sig )"
+	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+	SLOT="0/126"   # CHECK THIS WHEN BUMPING!!! SUBSLOT IS libpoppler.so SOVERSION
 fi
 
 DESCRIPTION="PDF rendering library based on the xpdf-3.0 code base"
@@ -24,38 +28,42 @@ IUSE="boost cairo cjk curl +cxx debug doc +introspection +jpeg +jpeg2k +lcms nss
 # No test data provided
 RESTRICT="test"
 
-DEPEND="
-	media-libs/fontconfig
-	media-libs/freetype
+COMMON_DEPEND="
+	>=media-libs/fontconfig-2.13
+	>=media-libs/freetype-2.10
 	sys-libs/zlib
 	cairo? (
-		dev-libs/glib:2
-		x11-libs/cairo
-		introspection? ( dev-libs/gobject-introspection:= )
+		>=dev-libs/glib-2.64:2
+		>=x11-libs/cairo-1.16
+		introspection? ( >=dev-libs/gobject-introspection-1.64:= )
 	)
 	curl? ( net-misc/curl )
-	jpeg? ( virtual/jpeg:0 )
+	jpeg? ( >=media-libs/libjpeg-turbo-1.1.0:= )
 	jpeg2k? ( >=media-libs/openjpeg-2.3.0-r1:2= )
 	lcms? ( media-libs/lcms:2 )
-	nss? ( >=dev-libs/nss-3.19:0 )
+	nss? ( >=dev-libs/nss-3.49 )
 	png? ( media-libs/libpng:0= )
 	qt5? (
 		dev-qt/qtcore:5
 		dev-qt/qtgui:5
 		dev-qt/qtxml:5
 	)
-	tiff? ( media-libs/tiff:0 )
+	tiff? ( media-libs/tiff:= )
 "
-RDEPEND="${DEPEND}
+RDEPEND="${COMMON_DEPEND}
 	cjk? ( app-text/poppler-data )
 "
-DEPEND+="
-	boost? ( dev-libs/boost )
+DEPEND="${COMMON_DEPEND}
+	boost? ( >=dev-libs/boost-1.71 )
 "
 BDEPEND="
-	dev-util/glib-utils
+	>=dev-util/glib-utils-2.64
 	virtual/pkgconfig
 "
+
+if [[ ${PV} != *9999* ]] ; then
+	BDEPEND+=" verify-sig? ( >=sec-keys/openpgp-keys-aacid-20230313 )"
+fi
 
 DOCS=( AUTHORS NEWS README.md README-XPDF )
 
@@ -84,6 +92,8 @@ src_prepare() {
 
 src_configure() {
 	xdg_environment_reset
+	append-lfs-flags # bug #898506
+
 	local mycmakeargs=(
 		-DBUILD_GTK_TESTS=OFF
 		-DBUILD_QT5_TESTS=OFF

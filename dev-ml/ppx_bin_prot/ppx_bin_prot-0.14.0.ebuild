@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -23,8 +23,20 @@ RDEPEND="
 	>=dev-ml/ppxlib-0.18.0:=
 	>=dev-ml/ocaml-migrate-parsetree-2.0.0:=
 	dev-ml/cinaps:=
+	dev-ml/sexplib0:=
 	"
 DEPEND="${RDEPEND}
 	test? (
 		dev-ml/ppx_jane
+		dev-ml/core
+		dev-ml/ounit2
+		dev-ml/core_bench
 	)"
+
+src_prepare() {
+	sed -i \
+		-e "s:oUnit:ounit2:" \
+		test/dune \
+		|| die
+	default
+}

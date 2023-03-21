@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -12,7 +12,7 @@ S="${WORKDIR}/dune-${PV}"
 
 LICENSE="Apache-2.0"
 SLOT="0/${PV}"
-KEYWORDS="amd64 ~arm arm64 ~ppc ppc64 x86"
+KEYWORDS="amd64 arm arm64 ~ppc ppc64 x86"
 IUSE="+ocamlopt test"
 RESTRICT="!test? ( test )"
 
@@ -26,8 +26,8 @@ BDEPEND="
 	)
 "
 DEPEND="
-	dev-ml/csexp:=[ocamlopt=]
-	dev-ml/findlib:=[ocamlopt=]
+	dev-ml/csexp:=[ocamlopt?]
+	dev-ml/findlib:=[ocamlopt?]
 	>=dev-lang/ocaml-4.09:=
 "
 RDEPEND="${DEPEND}"

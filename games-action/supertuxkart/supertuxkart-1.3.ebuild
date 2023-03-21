@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -13,7 +13,7 @@ SRC_URI="https://github.com/${PN}/stk-code/releases/download/${PV}/${MY_P}.tar.x
 
 LICENSE="GPL-2 GPL-3 CC-BY-SA-3.0 CC-BY-SA-4.0 CC0-1.0 public-domain ZLIB"
 SLOT="0"
-KEYWORDS="~amd64 ~riscv ~x86"
+KEYWORDS="~amd64 ~arm64 ~ppc64 ~riscv ~x86"
 IUSE="debug nettle recorder sqlite wiimote"
 
 # don't unbundle irrlicht and bullet
@@ -67,11 +67,9 @@ src_configure() {
 		-DUSE_SQLITE3=$(usex sqlite)
 		-DUSE_SYSTEM_ANGELSCRIPT=ON
 		-DUSE_SYSTEM_ENET=ON
-		-DUSE_SYSTEM_GLEW=ON
 		-DUSE_SYSTEM_SQUISH=OFF
 		-DUSE_SYSTEM_WIIUSE=OFF
 		-DUSE_IPV6=OFF # not supported by system enet
-		-DOpenGL_GL_PREFERENCE=GLVND
 		-DUSE_CRYPTO_OPENSSL=$(usex nettle no yes)
 		-DBUILD_RECORDER=$(usex recorder)
 		-DUSE_WIIUSE=$(usex wiimote)

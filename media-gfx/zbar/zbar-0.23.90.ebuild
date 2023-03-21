@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..10} )
 inherit autotools flag-o-matic java-pkg-opt-2 multilib-minimal python-single-r1 qmake-utils virtualx
 
 DESCRIPTION="Library and tools for reading barcodes from images or video"
@@ -72,6 +72,7 @@ DEPEND="${COMMON_DEPEND}
 
 BDEPEND="
 	app-text/xmlto
+	sys-devel/gettext
 	virtual/pkgconfig
 	gtk? ( dev-util/glib-utils )
 	nls? (
@@ -146,12 +147,12 @@ multilib_src_configure() {
 
 	if multilib_is_native_abi; then
 		# both must be enabled to use GraphicsMagick
-		if use graphicsmagick; then
+		if use imagemagick && use graphicsmagick; then
 			myeconfargs+=(
 				--with-graphicsmagick
 				--without-imagemagick
 			)
-		elif use imagemagick; then
+		elif ! use graphicsmagick && use imagemagick; then
 			myeconfargs+=(
 				--with-imagemagick
 				--without-graphicsmagick
