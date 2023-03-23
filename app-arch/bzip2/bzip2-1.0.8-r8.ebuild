@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # XXX: atm, libbz2.a is always PIC :(, so it is always built quickly
@@ -6,6 +6,7 @@
 
 EAPI=7
 
+VERIFY_SIG_OPENPGP_KEY_PATH="${BROOT}"/usr/share/openpgp-keys/bzip2.gpg
 inherit toolchain-funcs multilib-minimal usr-ldscript flag-o-matic rhel9
 
 DESCRIPTION="A high-quality data compressor used extensively by Gentoo Linux"
@@ -13,8 +14,19 @@ HOMEPAGE="https://sourceware.org/bzip2/"
 
 LICENSE="BZIP2"
 SLOT="0/1" # subslot = SONAME
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~arm64-macos"
 IUSE="static static-libs"
+
+BDEPEND=""
+PDEPEND="
+	app-alternatives/bzip2
+"
+
+PATCHES=(
+	"${FILESDIR}"/${PN}-1.0.6-progress.patch
+	"${FILESDIR}"/${PN}-1.0.3-no-test.patch
+	"${FILESDIR}"/${PN}-1.0.8-mingw.patch #393573
+)
 
 DOCS=( CHANGES README{,.COMPILATION.PROBLEMS,.XML.STUFF} manual.pdf )
 HTML_DOCS=( manual.html )
@@ -45,12 +57,17 @@ bemake() {
 multilib_src_compile() {
 	export O3=""
 	filter-ldflags -Wl,-O2 -Wl,--as-needed -Wl,--hash-style=gnu -Wl,--sort-common
-	OPTFLAGS=$CFLAGS
+
 	cd ${S}
-	bemake -f Makefile-libbz2_so all CFLAGS="$OPTFLAGS -D_FILE_OFFSET_BITS=64 -fpic -fPIC $O3"
+	bemake -f Makefile-libbz2_so all CFLAGS="$CFLAGS -D_FILE_OFFSET_BITS=64 -fpic -fPIC $O3"
 	# Make sure we link against the shared lib #504648
 	ln -s libbz2.so.${PV} libbz2.so || die
-	bemake -f Makefile all LDFLAGS="${LDFLAGS} $(usex static -static '')" CFLAGS="$OPTFLAGS -D_FILE_OFFSET_BITS=64 $O3"
+	bemake -f Makefile all LDFLAGS="${LDFLAGS} $(usex static -static '')" CFLAGS="$CFLAGS -D_FILE_OFFSET_BITS=64 $O3"
+}
+
+multilib_src_test() {
+	cp "${S}"/sample* "${BUILD_DIR}" || die
+	bemake -f "${S}"/Makefile check
 }
 
 multilib_src_install() {
@@ -66,13 +83,6 @@ multilib_src_install() {
 		dosym libbz2.so.${PV} /usr/$(get_libdir)/${v}
 	done
 
-	# Install libbz2.so.1.0 due to accidental soname change in 1.0.7.
-	# Reference: 98da0ad82192d21ad74ae52366ea8466e2acea24.
-	# OK to remove one year after 2020-04-11.
-	if [[ ! -L "${ED}/usr/$(get_libdir)/libbz2.so.1.0" ]]; then
-		dosym libbz2.so.${PV} "/usr/$(get_libdir)/libbz2.so.1.0"
-	fi
-
 	use static-libs && dolib.a libbz2.a
 
 	if multilib_is_native_abi ; then
@@ -80,7 +90,7 @@ multilib_src_install() {
 
 		dobin bzip2recover
 		into /
-		dobin bzip2
+		newbin bzip2 bzip2-reference
 	fi
 }
 
@@ -91,7 +101,8 @@ multilib_src_install_all() {
 	doins bzlib.h
 	into /usr
 	dobin bz{diff,grep,more}
-	doman *.1
+	doman bz{diff,grep,more}.1
+	newman bzip2.1 bzip2-reference.1
 
 	dosym bzdiff /usr/bin/bzcmp
 	dosym bzdiff.1 /usr/share/man/man1/bzcmp.1
@@ -99,18 +110,23 @@ multilib_src_install_all() {
 	dosym bzmore /usr/bin/bzless
 	dosym bzmore.1 /usr/share/man/man1/bzless.1
 
+	dosym bzip2-reference.1 /usr/share/man/man1/bzip2recover.1
 	local x
-	for x in bunzip2 bzcat bzip2recover ; do
-		dosym bzip2.1 /usr/share/man/man1/${x}.1
-	done
 	for x in bz{e,f}grep ; do
 		dosym bzgrep /usr/bin/${x}
 		dosym bzgrep.1 /usr/share/man/man1/${x}.1
 	done
 
 	einstalldocs
+}
 
-	# move "important" bzip2 binaries to /bin and use the shared libbz2.so
-	dosym bzip2 /bin/bzcat
-	dosym bzip2 /bin/bunzip2
+pkg_postinst() {
+	# ensure to preserve the symlinks before app-alternatives/bzip2
+	# is installed
+	local x
+	for x in bzip2 bunzip2 bzcat; do
+		if [[ ! -h ${EROOT}/bin/${x} ]]; then
+			ln -s bzip2-reference "${EROOT}/bin/${x}" || die
+		fi
+	done
 }

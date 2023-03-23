@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -18,9 +18,7 @@ RDEPEND=""
 DEPEND="!prefix? ( >=sys-kernel/linux-headers-2.6.11 )"
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-1.6-endian-check-1.patch
 	"${FILESDIR}"/${PN}-1.6-makefile-fixup.patch
-	"${FILESDIR}"/${PN}-1.6.1-silence-rpm-check.patch #656446
 	"${FILESDIR}"/${PN}-1.5.10-disable-tests.patch #519062 #522050
 	"${FILESDIR}"/${PN}-1.5.9-header-extern-c.patch
 )
@@ -97,6 +95,7 @@ multilib_src_compile() {
 	else
 		export NO_ARLIB=$(usex static-libs 0 1)
 	fi
+	export NO_GLIBC_KEYERR=1
 	emake
 }
 

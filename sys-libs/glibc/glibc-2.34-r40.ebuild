@@ -43,10 +43,10 @@ SRC_URI+=" https://gitweb.gentoo.org/proj/locale-gen.git/snapshot/locale-gen-${L
 SRC_URI+=" multilib-bootstrap? ( https://dev.gentoo.org/~dilfridge/distfiles/gcc-multilib-bootstrap-${GCC_BOOTSTRAP_VER}.tar.xz )"
 SRC_URI+=" systemd? ( https://gitweb.gentoo.org/proj/toolchain/glibc-systemd.git/snapshot/glibc-systemd-${GLIBC_SYSTEMD_VER}.tar.gz )"
 
-IUSE="audit caps cet +clone3 compile-locales +crypt custom-cflags doc gd headers-only +multiarch multilib multilib-bootstrap nscd profile selinux +ssp +static-libs static-pie suid systemd systemtap test vanilla"
+IUSE="audit caps +cet +clone3 compile-locales +crypt custom-cflags doc gd headers-only +multiarch multilib multilib-bootstrap nscd profile selinux +ssp +static-libs static-pie suid systemd systemtap test vanilla"
 
 # Minimum kernel version that glibc requires
-MIN_KERN_VER="3.2.0"
+MIN_KERN_VER="4.18.0"
 # Minimum pax-utils version needed (which contains any new syscall changes for
 # its seccomp filter!). Please double check this!
 MIN_PAX_UTILS_VER="1.3.3"
@@ -942,7 +942,7 @@ glibc_do_configure() {
 
 	# Enable Intel Control-flow Enforcement Technology on amd64 if requested
 	case ${CTARGET} in
-		x86_64-*) myconf+=( $(use_enable cet) ) ;;
+		x86_64-*) myconf+=( --enable-cet ) ;;
 		arm64*) myconf+=( --enable-memory-tagging ) ;;
 		*) ;;
 	esac
