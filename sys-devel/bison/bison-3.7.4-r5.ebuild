@@ -1,7 +1,7 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit flag-o-matic rhel9-a
 
@@ -9,11 +9,8 @@ PATCH_TAR="${PN}-3.7.6-patches-01.tar.xz"
 
 DESCRIPTION="A general-purpose (yacc-compatible) parser generator"
 HOMEPAGE="https://www.gnu.org/software/bison/"
-SRC_URI="${SRC_URI}
-	https://dev.gentoo.org/~whissi/dist/bison/${PATCH_TAR}
-	https://dev.gentoo.org/~polynomial-c/dist/bison/${PATCH_TAR}"
 
-LICENSE="GPL-2"
+LICENSE="GPL-3+"
 SLOT="0"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 IUSE="examples nls static test"
@@ -28,9 +25,9 @@ DEPEND="
 RDEPEND="${DEPEND}"
 BDEPEND="
 	sys-devel/flex
-	examples? ( dev-lang/perl )
 	test? ( dev-lang/perl )
 "
+PDEPEND="app-alternatives/yacc"
 
 DOCS=( AUTHORS ChangeLog NEWS README THANKS TODO ) # ChangeLog-2012 ChangeLog-1998 PACKAGING README-alpha README-release
 
@@ -39,7 +36,6 @@ src_prepare() {
 	touch -r configure.ac old.configure.ac || die
 	touch -r configure old.configure || die
 
-	eapply "${WORKDIR}"/patches
 	default
 
 	# Restore date after patching
@@ -58,7 +54,6 @@ src_configure() {
 	use static && append-ldflags -static
 
 	local myeconfargs=(
-		$(use_enable examples)
 		$(use_enable nls)
 	)
 	econf "${myeconfargs[@]}"
@@ -67,25 +62,31 @@ src_configure() {
 src_install() {
 	default
 
-	# This one is installed by dev-util/yacc
+	# These are owned by app-alternatives/yacc
 	mv "${ED}"/usr/bin/yacc{,.bison} || die
 	mv "${ED}"/usr/share/man/man1/yacc{,.bison}.1 || die
 
 	# We do not need liby.a
 	rm -r "${ED}"/usr/lib* || die
-}
 
-pkg_postinst() {
-	local f="${EROOT}/usr/bin/yacc"
-	if [[ ! -e ${f} ]] ; then
-		ln -s yacc.bison "${f}"
+	# Examples are about 200K, so let's make them optional still for now.
+	if ! use examples ; then
+		rm -r "${ED}"/usr/share/doc/${PF}/examples/ || die
 	fi
 }
 
-pkg_postrm() {
-	# clean up the dead symlink when we get unmerged #377469
-	local f="${EROOT}/usr/bin/yacc"
-	if [[ -L ${f} && ! -e ${f} ]] ; then
-		rm -f "${f}"
+pkg_postinst() {
+	# ensure to preserve the symlinks before app-alternatives/yacc
+	# is installed
+	if [[ ! -h ${EROOT}/usr/bin/yacc ]]; then
+		if [[ -e ${EROOT}/usr/bin/yacc ]] ; then
+			# bug #886123
+			ewarn "${EROOT}/usr/bin/yacc exists but is not a symlink."
+			ewarn "This is expected during Prefix bootstrap and unsual otherwise."
+			ewarn "Moving away unexpected ${EROOT}/usr/bin/yacc to .bak."
+			mv "${EROOT}/usr/bin/yacc" "${EROOT}/usr/bin/yacc.bak" || die
+		fi
+
+		ln -s yacc.bison "${EROOT}/usr/bin/yacc" || die
 	fi
 }

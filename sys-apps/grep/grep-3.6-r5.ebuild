@@ -55,7 +55,6 @@ src_configure() {
 	local myeconfargs=(
 		--bindir="${EPREFIX}"/bin
 		--without-included-regex
-		--disable-silent-rules
 		CPPFLAGS="-I${_includedir}/pcre"
 		CFLAGS="${CFLAGS}"
 		$(use_enable nls)
@@ -69,14 +68,12 @@ src_install() {
 
 	rm -f "${ED}"/usr/share/info/dir
 
-	dodir ${_sysconfdir}/profile.d
 	insinto ${_sysconfdir}/profile.d/
-	doins ${WORKDIR}/colorgrep.sh
+	doins ${WORKDIR}/colorgrep.{,c}sh
 
-	insinto ${_sysconfdir}/
+	insinto ${_sysconfdir}
 	doins ${WORKDIR}/GREP_COLORS
 
-	insinto ${_libexecdir}/
-	insopts -m0755
-	doins ${WORKDIR}/grepconf.sh
+	exeinto ${_libexecdir}
+	doexe ${WORKDIR}/grepconf.sh
 }

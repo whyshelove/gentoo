@@ -1,8 +1,9 @@
 # Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="6"
+EAPI="7"
 
+_strip_ldflags="undefine"
 inherit autotools flag-o-matic systemd rhel9
 
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv sparc x86 ~amd64-linux ~x86-linux ~x64-macos"
@@ -48,6 +49,9 @@ src_prepare() {
 }
 
 src_configure() {
+	append-cxxflags -fpie
+	append-ldflags -pie '-Wl,-z,now'
+
 	use static && append-ldflags -static
 	# The build installs /etc/init.d/smartd, but we clobber it
 	# in our src_install, so no need to manually delete it.

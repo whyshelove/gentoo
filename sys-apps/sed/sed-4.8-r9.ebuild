@@ -1,7 +1,7 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit flag-o-matic rhel9
 
@@ -30,19 +30,23 @@ DEPEND="${RDEPEND}
 BDEPEND="nls? ( sys-devel/gettext )"
 
 src_configure() {
-	local myconf=()
-	if use userland_GNU; then
-		myconf+=( --exec-prefix="${EPREFIX}" )
-	else
-		myconf+=( --program-prefix=g )
-	fi
-
 	use static && append-ldflags -static
+
 	myconf+=(
 		--without-included-regex
 		$(use_enable acl)
 		$(use_enable nls)
 		$(use_with selinux)
+		# rename to gsed for better BSD compatibility
+		--program-prefix=g
 	)
 	econf "${myconf[@]}"
+}
+
+src_install() {
+	default
+
+	# symlink to the standard name
+	dosym gsed /usr/bin/sed
+	dosym gsed.1 /usr/share/man/man1/sed.1
 }

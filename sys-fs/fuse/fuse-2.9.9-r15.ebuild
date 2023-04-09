@@ -7,14 +7,17 @@ inherit autotools flag-o-matic linux-info udev rhel9
 
 DESCRIPTION="An interface for filesystems implemented in userspace"
 HOMEPAGE="https://github.com/libfuse/libfuse"
+# For bug #809920 to avoid a gettext dependency
+# extracted from sys-devel/gettext-0.21-r1
+SRC_URI+=" https://dev.gentoo.org/~sam/distfiles/${CATEGORY}/${PN}/iconv.m4.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
-IUSE="examples kernel_linux kernel_FreeBSD static-libs"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
+IUSE="examples static-libs"
 
-PDEPEND="kernel_FreeBSD? ( sys-fs/fuse4bsd )"
-BDEPEND="virtual/pkgconfig"
+BDEPEND="sys-devel/gettext
+	virtual/pkgconfig"
 RDEPEND=">=sys-fs/fuse-common-3.3.0-r1"
 
 PATCHES=(
@@ -23,9 +26,6 @@ PATCHES=(
 
 pkg_setup() {
 	if use kernel_linux ; then
-		if kernel_is lt 2 6 9 ; then
-			die "Your kernel is too old."
-		fi
 		CONFIG_CHECK="~FUSE_FS"
 		WARNING_FUSE_FS="You need to have FUSE module built to use user-mode utils"
 		linux-info_pkg_setup
@@ -35,14 +35,19 @@ pkg_setup() {
 src_prepare() {
 	default
 
+	# Can be dropped along with additional SRC_URI if dropping eautoreconf
+	cp "${WORKDIR}"/iconv.m4 m4/ || die
 	eautoreconf
 }
 
 src_configure() {
 	# lto not supported yet -- https://github.com/libfuse/libfuse/issues/198
-	# gcc-9 with -flto leads to link failures: #663518,
+	# gcc-9 with -flto leads to link failures: #663518 (see also #863899)
 	# https://gcc.gnu.org/PR91186
-	filter-flags -flto*
+	filter-lto
+	# ... and strict aliasing warnings, bug #863899
+	append-flags -fno-strict-aliasing
+	append-cflags -D_GNU_SOURCE
 
 	econf \
 		INIT_D_PATH="${EPREFIX}/etc/init.d" \
@@ -59,11 +64,6 @@ src_install() {
 	if use examples ; then
 		docinto examples
 		dodoc example/*
-	fi
-
-	if use kernel_FreeBSD ; then
-		insinto /usr/include/fuse
-		doins include/fuse_kernel.h
 	fi
 
 	find "${ED}" -name '*.la' -delete || die

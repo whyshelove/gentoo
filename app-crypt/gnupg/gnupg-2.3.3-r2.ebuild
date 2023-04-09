@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-SUFFIX="_0"
+DSUFFIX="_0"
 inherit autotools flag-o-matic systemd toolchain-funcs rhel9
 
 MY_P="${P/_/-}"

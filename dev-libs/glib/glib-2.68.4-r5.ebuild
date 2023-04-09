@@ -1,8 +1,8 @@
 # Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
-PYTHON_COMPAT=( python3_{7..10} )
+EAPI=8
+PYTHON_COMPAT=( python3_{9..11} )
 
 inherit flag-o-matic gnome.org gnome2-utils linux-info meson-multilib multilib python-any-r1 toolchain-funcs xdg rhel9
 
@@ -135,7 +135,7 @@ src_prepare() {
 	chmod a+x "${T}/glib-test-ld-wrapper" || die
 	sed -i -e "s|'ld'|'${T}/glib-test-ld-wrapper'|g" gio/tests/meson.build || die
 
-	xdg_src_prepare
+	default
 	gnome2_environment_reset
 	# TODO: python_name sedding for correct python shebang? Might be relevant mainly for glib-utils only
 }

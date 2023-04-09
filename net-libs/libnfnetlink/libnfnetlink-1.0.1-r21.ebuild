@@ -1,24 +1,16 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit linux-info rhel9
 
-PATCH_BLOB=04aef8a4dedf267dd5744afb134ef8046e77f613
-PATCH_FN=${PATCH_BLOB}-musl-fix-includes.patch
-
 DESCRIPTION="the low-level library for netfilter related kernel/userspace communication"
 HOMEPAGE="http://www.netfilter.org/projects/libnfnetlink/"
-SRC_URI="
-	${SRC_URI}
-	https://git.alpinelinux.org/cgit/aports/plain/main/libnfnetlink/musl-fix-includes.patch -> ${PATCH_FN}"
 
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
-
-PATCHES=( "${DISTDIR}/${PATCH_FN}" )
 
 pkg_setup() {
 	linux-info_pkg_setup
@@ -40,13 +32,9 @@ pkg_setup() {
 	check_extra_config
 }
 
-src_configure() {
-	econf --disable-static
-}
-
 src_install() {
 	default
 
-	# no static archives
-	find "${D}" -name '*.la' -delete || die
+	# No static archives
+	find "${ED}" -name '*.la' -delete || die
 }

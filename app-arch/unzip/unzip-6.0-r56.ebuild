@@ -87,7 +87,7 @@ src_configure() {
 }
 
 src_compile() {
-	CF_NOOPT="-I. -DUNIX $CFLAGS -DNOMEMCPY -DIZ_HAVE_UXUIDGID -DNO_LCHMOD"
+	CF_NOOPT="-I. -DUNIX ${CFLAGS} -DNOMEMCPY -DIZ_HAVE_UXUIDGID -DNO_LCHMOD"
 
 	ASFLAGS="${ASFLAGS} $(get_abi_CFLAGS)" emake -f unix/Makefile ${TARGET} CF_NOOPT="${CF_NOOPT}" LFLAGS2="${LDFLAGS}" generic_gcc
 

@@ -1,7 +1,7 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="7"
+EAPI=8
 
 inherit linux-info systemd toolchain-funcs multilib-minimal rhel9-a
 
@@ -21,7 +21,7 @@ LICENSE="GPL-2+ LGPL-2.1"
 # SUBSLOT based on SONAME of libsensors.so
 SLOT="0/5.0.0"
 
-KEYWORDS="~alpha amd64 arm arm64 ~ia64 ~mips ppc ppc64 ~riscv sparc x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~alpha amd64 arm arm64 ~ia64 ~loong ~mips ppc ppc64 ~riscv sparc x86 ~amd64-linux ~x86-linux"
 IUSE="contrib sensord static-libs"
 
 COMMON_DEPS="
@@ -43,7 +43,9 @@ WARNING_HWMON="${PN} requires CONFIG_HWMON to be enabled for use."
 WARNING_I2C_CHARDEV="sensors-detect requires CONFIG_I2C_CHARDEV to be enabled."
 WARNING_I2C="${PN} requires CONFIG_I2C to be enabled for most sensors."
 
-PATCHES=( "${FILESDIR}"/${PN}-3.5.0-sensors-detect-gentoo.patch )
+PATCHES=(
+	"${FILESDIR}"/${PN}-3.5.0-sensors-detect-gentoo.patch
+)
 
 DOCS=( CHANGES CONTRIBUTORS INSTALL README )
 DOCS+=( doc/{donations,fancontrol.txt,fan-divisors,libsensors-API.txt,progs,temperature-sensors,vid} )
@@ -129,16 +131,28 @@ multilib_src_compile() {
 		CC="$(tc-getCC)" \
 		CXX="$(tc-getCXX)" \
 		LD="$(tc-getLD)" \
-		AR="$(tc-getAR)"
+		AR="$(tc-getAR)" \
+		PREFIX="/usr" \
+		MANDIR="/usr/share/man" \
+		LIBDIR="/usr/$(get_libdir)" \
+		EXLDFLAGS="$LDFLAGS" \
+		BUILD_STATIC_LIB=0
 }
 
 multilib_src_install() {
+	# We need to set CC and friends again here to avoid recompilation for cross
+	# bug #799851
 	emake \
+		CC="$(tc-getCC)" \
+		CXX="$(tc-getCXX)" \
+		LD="$(tc-getLD)" \
+		AR="$(tc-getAR)" \
 		DESTDIR="${ED}" \
 		PREFIX="/usr" \
 		MANDIR="/usr/share/man" \
 		ETCDIR="/etc" \
 		LIBDIR="/usr/$(get_libdir)" \
+		BUILD_STATIC_LIB=0 \
 		install
 }
 
@@ -146,6 +160,9 @@ multilib_src_install_all() {
 	newinitd "${FILESDIR}"/lm_sensors.initd lm_sensors
 	newconfd "${FILESDIR}"/lm_sensors.confd lm_sensors
 	systemd_dounit prog/init/lm_sensors.service
+
+	insinto ${_sysconfdir}/sysconfig
+	newins "${WORKDIR}"/lm_sensors.sysconfig lm_sensors
 
 	newinitd "${FILESDIR}"/fancontrol.initd fancontrol
 	newconfd "${FILESDIR}"/fancontrol.confd fancontrol
@@ -155,6 +172,9 @@ multilib_src_install_all() {
 		newconfd "${FILESDIR}"/sensord.confd sensord
 		newinitd "${FILESDIR}"/sensord.initd sensord
 		systemd_newunit "${FILESDIR}"/sensord.service-r1 sensord.service
+
+		insinto ${_sysconfdir}/sysconfig
+		newins "${WORKDIR}"/sensord.sysconfig sensord
 	fi
 
 	einstalldocs
@@ -166,6 +186,10 @@ multilib_src_install_all() {
 		insinto /usr/share/lm_sensors
 		doins -r "${S}"/configs
 	fi
+
+	exeinto ${_libexecdir}/${PN}
+	doexe "${WORKDIR}"/lm_sensors-{modprobe-{,r-},}wrapper
+	doexe "${WORKDIR}"/sensord-service-wrapper
 }
 
 pkg_postinst() {
@@ -209,7 +233,6 @@ pkg_postinst() {
 		elog "sure the sensors get initialized on the next startup."
 		elog ""
 		elog "Be warned, the probing of hardware in your system performed by"
-		elog "sensors-detect could freeze your system. Also make sure you read"
-		elog "the documentation before running ${PN} on IBM ThinkPads."
+		elog "sensors-detect could freeze your system."
 	fi
 }

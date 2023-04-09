@@ -41,7 +41,6 @@ src_prepare() {
 multilib_src_configure() {
 	local myeconfargs=(
 		--disable-static
-		--disable-silent-rules
 		cc_cv_cflags__g=no
 	)
 

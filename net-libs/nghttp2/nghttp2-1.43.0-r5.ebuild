@@ -51,7 +51,6 @@ multilib_src_configure() {
 		--disable-python-bindings
 		--disable-werror
 		--without-cython
-		--without-spdylay
 		$(use_enable cxx asio-lib)
 		$(use_enable debug)
 		$(multilib_native_use_enable hpack-tools)

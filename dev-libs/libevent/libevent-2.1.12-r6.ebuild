@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-inherit autotools multilib-minimal rhel9
+inherit libtool multilib-minimal rhel9
 
 DESCRIPTION="Library to execute a function when a specific event occurs on a file descriptor"
 HOMEPAGE="
@@ -14,10 +14,10 @@ HOMEPAGE="
 LICENSE="BSD"
 
 SLOT="0/2.1-7"
-KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~x64-solaris ~x86-solaris"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~x64-solaris ~x86-solaris"
 IUSE="
 	+clock-gettime debug malloc-replacement +ssl static-libs test
-	+threads verbose-debug
+	verbose-debug
 "
 RESTRICT="!test? ( test )"
 
@@ -39,6 +39,10 @@ src_prepare() {
 	default
 	# bug #767472
 	elibtoolize
+
+	# We're patching doxygen.am, so regenerate the autotools stuff to be
+	# safe
+	./autogen.sh
 }
 
 multilib_src_configure() {
@@ -53,7 +57,6 @@ multilib_src_configure() {
 		$(use_enable ssl openssl) \
 		$(use_enable static-libs static) \
 		$(use_enable test libevent-regress) \
-		$(use_enable threads thread-support) \
 		$(use_enable verbose-debug) \
 		--disable-samples
 }

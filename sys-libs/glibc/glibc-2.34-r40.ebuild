@@ -8,7 +8,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{9..10} )
 TMPFILES_OPTIONAL=1
-SUFFIX="_1.1"
+DSUFFIX="_1.1"
 
 inherit python-any-r1 prefix preserve-libs toolchain-funcs flag-o-matic gnuconfig \
 	multilib systemd multiprocessing tmpfiles rhel9

@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-DIST=el9.3
+DSUFFIX=".3"
 inherit libtool multilib-minimal preserve-libs usr-ldscript rhel9
 
 DESCRIPTION="Perl-compatible regular expression library"
@@ -39,7 +39,6 @@ src_prepare() {
 
 multilib_src_configure() {
 	local myeconfargs=(
-		--disable-silent-rules
 		--with-match-limit-recursion=$(usex recursion-limit 8192 MATCH_LIMIT)
 		$(multilib_native_use_enable bzip2 pcregrep-libbz2)
 		$(use_enable cxx cpp)

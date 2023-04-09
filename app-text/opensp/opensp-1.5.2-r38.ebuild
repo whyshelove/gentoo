@@ -1,28 +1,25 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=5
-inherit epatch flag-o-matic autotools rhel9-a
+EAPI=8
+
+inherit autotools flag-o-matic rhel9-c
 
 MY_P=${P/opensp/OpenSP}
-
 DESCRIPTION="A free, object-oriented toolkit for SGML parsing and entity management"
-HOMEPAGE="http://openjade.sourceforge.net/"
-if [[ ${PV} != *8888 ]]; then
-	S=${WORKDIR}/${MY_P}
-fi
+HOMEPAGE="https://openjade.sourceforge.net/"
+
+S=${WORKDIR}/${MY_P}
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-IUSE="doc elibc_glibc nls static-libs test"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+IUSE="doc nls static-libs test"
 RESTRICT="!test? ( test )"
 
-RDEPEND="
-	elibc_glibc? ( net-libs/libnsl:0= )
-"
-DEPEND="${RDEPEND}
-	nls? ( sys-devel/gettext )
+RDEPEND="elibc_glibc? ( net-libs/libnsl:0= )"
+DEPEND="${RDEPEND}"
+BDEPEND="nls? ( sys-devel/gettext )
 	doc? (
 		app-text/xmlto
 		app-text/docbook-xml-dtd:4.1.2
@@ -33,8 +30,13 @@ DEPEND="${RDEPEND}
 		app-text/sgml-common
 	)"
 
+PATCHES=(
+	"${FILESDIR}"/${P}-c11-using.patch
+	"${FILESDIR}"/${P}-configure-clang16.patch
+)
+
 src_prepare() {
-	epatch "${FILESDIR}"/${P}-c11-using.patch
+	default
 	use prefix && eautoreconf
 }
 
@@ -48,8 +50,9 @@ src_configure() {
 	#ALLOWED_FLAGS="-O -O1 -O2 -pipe -g -march"
 	strip-flags
 
+	append-cxxflags -std=gnu++11
+
 	econf \
-		--disable-dependency-tracking \
 		--enable-http \
 		--enable-default-catalog="${EPREFIX}"/etc/sgml/catalog \
 		--enable-default-search-path="${EPREFIX}"/usr/share/sgml:"${EPREFIX}"/usr/share/xml \

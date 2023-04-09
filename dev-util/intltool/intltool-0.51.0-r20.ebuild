@@ -1,7 +1,7 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=8
 
 inherit rhel9-a
 
@@ -10,20 +10,18 @@ HOMEPAGE="https://launchpad.net/intltool/"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-IUSE=""
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 
-DEPEND="
+BDEPEND="
 	dev-lang/perl
-	dev-perl/XML-Parser
-"
-RDEPEND="${DEPEND}
-	sys-devel/gettext
-"
-DOCS=( AUTHORS ChangeLog NEWS README TODO doc/I18N-HOWTO )
+	dev-perl/XML-Parser"
+RDEPEND="${BDEPEND}
+	sys-devel/gettext"
 
 PATCHES=(
 	# Fix handling absolute paths in single file key output, bug #470040
 	# https://bugs.launchpad.net/intltool/+bug/1168941
 	"${FILESDIR}"/${PN}-0.50.2-absolute-paths.patch
 )
+
+DOCS=( AUTHORS ChangeLog NEWS README TODO doc/I18N-HOWTO )

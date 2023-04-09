@@ -22,6 +22,8 @@ fi
 if [ -z ${MY_PF} ] ; then
 	MY_PR=${PVR##*r}
 
+	S="${WORKDIR}/${P/_p*}"
+
 	if [ ${CATEGORY} == "dev-python" ] ; then
 		case ${PN} in
 			cython )  MY_P=${P^} ;;
@@ -71,8 +73,7 @@ if [ -z ${MY_PF} ] ; then
 			gtk+ ) MY_P=${P/+/$(ver_cut 1)} ;;
 			xz-utils ) MY_P="${PN/-utils}-${PV/_}" ;;
 			glib-utils ) MY_P="${PN/-utils}2-${PV}" ;;	
-			python ) MY_P=${P%_p*};  MY_P=${MY_P/-/3.$(ver_cut 2)-} ;;
-			nspr ) MY_P=nss-3.71.0; S="${WORKDIR}/${MY_P/.0}";;
+			nspr ) MY_P=nss-3.79.0; S="${WORKDIR}/${MY_P/.0}";;
 			qtgui | qtcore | qtwidgets | qtdbus | qtnetwork | qttest | qtxml \
 			| linguist-tools | qtsql | qtconcurrent | qdbus | qtpaths \
 			| qtprintsupport | designer ) MY_P="qt5-${QT5_MODULE}-${PV}" ;;
@@ -91,8 +92,14 @@ if [ -z ${MY_PF} ] ; then
 		esac
 	fi
 
+		MY_P=${MY_P/_p*}
+
 		case ${PN} in
 			asciidoc ) S="${WORKDIR}/${P/-/-py-}" ;;
+			libyaml ) S="${WORKDIR}/${MY_P/lib}" ;;
+			nss ) S="${WORKDIR}/${MY_P/.0}/${PN}" ;;
+			mit-krb5 ) MY_P=${MY_P/mit-}; S="${WORKDIR}/${MY_P}/src" ;;
+			python ) MY_PV=${PV%_p*}; S="${WORKDIR}/${MY_P^^[p]}"; MY_P=${MY_P/-/3.$(ver_cut 2)-} ;;
 			*)  ;;
 		esac
 
@@ -102,7 +109,7 @@ if [ -z ${MY_PF} ] ; then
 	REPO_SRC="${baseurl}/source/SRPMS/Packages"
 	REPO_BIN="${baseurl}/os/Packages"
 
-	MY_PF=${MY_P/_p*}-${MY_PR} 
+	MY_PF=${MY_P}-${MY_PR} 
 	DIST_PRE_SUF_CATEGORY=${MY_P:0:1}/${MY_PF}.${DPREFIX}${DIST:=el9}${DSUFFIX}
 
 	[ ${CATEGORY} != "dev-qt" ] && SRC_URI=""

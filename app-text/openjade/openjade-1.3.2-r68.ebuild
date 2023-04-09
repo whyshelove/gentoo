@@ -1,8 +1,8 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit autotools flag-o-matic sgml-catalog-r1 toolchain-funcs rhel9-a
+inherit autotools flag-o-matic sgml-catalog-r1 toolchain-funcs rhel9-c
 
 DESCRIPTION="Jade is an implementation of DSSSL for formatting SGML and XML documents"
 HOMEPAGE="http://openjade.sourceforge.net"
@@ -50,7 +50,7 @@ src_prepare() {
 src_configure() {
 	cp -p ${WORKDIR}/{"config.guess","config.sub"} config/
 	# more info: rhbz#1306162
-	export CXXFLAGS="$CFLAGS -fno-lifetime-dse"
+	append-cxxflags -fno-lifetime-dse
 
 	# avoids dead-store elimination optimization
 	# leading to segfaults on GCC 6

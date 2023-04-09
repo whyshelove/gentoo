@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="7"
@@ -16,14 +16,16 @@ KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~riscv sparc x86"
 IUSE="+epoll ssl static-libs test thread-names"
 RESTRICT="!test? ( test )"
 
-RDEPEND="ssl? ( >net-libs/gnutls-2.12.20:= )"
+RDEPEND="ssl? ( >net-libs/gnutls-2.12.20:=[${MULTILIB_USEDEP}] )"
 
 DEPEND="${RDEPEND}
 	test?	( net-misc/curl[ssl?] )
 	virtual/pkgconfig
 	"
 
-PATCHES=( "${FILESDIR}"/${PN}-0.9.73-test-ssl3.patch )
+PATCHES=(
+	"${FILESDIR}"/${PN}-0.9.73-test-ssl3.patch
+)
 
 S=${WORKDIR}/${MY_P}
 

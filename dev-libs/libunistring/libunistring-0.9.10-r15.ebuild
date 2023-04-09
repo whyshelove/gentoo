@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -15,6 +15,7 @@ IUSE="doc static-libs"
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-nodocs.patch
+	"${FILESDIR}"/${PN}-test.patch
 )
 
 src_prepare() {
@@ -24,7 +25,7 @@ src_prepare() {
 
 multilib_src_configure() {
 	ECONF_SOURCE="${S}" \
-	econf $(use_enable static-libs static --disable-static --disable-rpath)
+	econf $(use_enable static-libs static)
 }
 
 multilib_src_install_all() {

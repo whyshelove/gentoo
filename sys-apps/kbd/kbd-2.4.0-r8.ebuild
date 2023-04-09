@@ -1,7 +1,7 @@
 # Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit pam rhel9
 
@@ -65,7 +65,6 @@ src_install() {
 		${D}${_bindir}/unicode_start
 
 	# Install PAM configuration for vlock
-	dodir ${_sysconfdir}/pam.d
 	insinto ${_sysconfdir}/pam.d/
 	newins ${WORKDIR}/vlock.pamd vlock
 

@@ -3,11 +3,11 @@
 
 EAPI=7
 
-inherit flag-o-matic systemd toolchain-funcs udev usr-ldscript multilib-minimal
+inherit flag-o-matic systemd toolchain-funcs udev usr-ldscript multilib-minimal rhel9
 
 DESCRIPTION="Standard EXT2/EXT3/EXT4 filesystem utilities"
 HOMEPAGE="http://e2fsprogs.sourceforge.net/"
-SRC_URI="https://www.kernel.org/pub/linux/kernel/people/tytso/e2fsprogs/v${PV}/${P}.tar.xz"
+
 
 LICENSE="GPL-2 BSD"
 SLOT="0"
@@ -63,6 +63,7 @@ multilib_src_configure() {
 
 	# needs open64() prototypes and friends
 	append-cppflags -D_GNU_SOURCE
+	append-cflags -fno-strict-aliasing
 
 	local myeconfargs=(
 		--with-root-prefix="${EPREFIX}"
@@ -77,6 +78,7 @@ multilib_src_configure() {
 		$(multilib_native_use_enable tools e2initrd-helper)
 		--disable-fsck
 		--disable-uuidd
+		--disable-e2initrd-helper
 		$(use_enable lto)
 		$(use_with threads pthread)
 	)
@@ -130,7 +132,9 @@ multilib_src_test() {
 
 multilib_src_install() {
 	if multilib_is_native_abi && use tools ; then
-		emake STRIP=':' V=1 DESTDIR="${D}" install
+		emake STRIP=':' V=1 DESTDIR="${D}" \
+			root_libdir="${EPREFIX}/usr/$(get_libdir)" \
+			root_sbindir=${EPREFIX}${_sbindir} install
 	else
 		emake -C lib/et V=1 DESTDIR="${D}" install
 		emake -C lib/ss V=1 DESTDIR="${D}" install

@@ -5,7 +5,7 @@
 # virtual/texi2dvi package to pull in all the right deps.  The tool is not
 # usable out-of-the-box because it requires the large tex packages.
 
-EAPI=7
+EAPI=8
 
 inherit flag-o-matic toolchain-funcs rhel9
 
@@ -64,4 +64,12 @@ src_configure() {
 		)
 	fi
 	econf "${myeconfargs[@]}"
+
+	export MAKEOPTS="-j1"
+}
+
+src_install() {
+	default
+
+	dosbin contrib/fix-info-dir
 }

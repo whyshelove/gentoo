@@ -4,7 +4,7 @@
 EAPI=7
 
 VERIFY_SIG_OPENPGP_KEY_PATH=${BROOT}/usr/share/openpgp-keys/danielveillard.asc
-inherit libtool multilib-minimal verify-sig rhel9-a
+inherit libtool multilib-minimal verify-sig autotools rhel9-a
 
 # Note: Please bump this in sync with dev-libs/libxml2.
 DESCRIPTION="XSLT libraries and tools"
@@ -38,7 +38,7 @@ src_prepare() {
 
 	# Prefix always needs elibtoolize if not eautoreconf'd.
 	elibtoolize
-	eautoreconf -vfi
+	eautoreconf
 }
 
 multilib_src_configure() {

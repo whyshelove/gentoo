@@ -33,6 +33,7 @@ mymake() {
 		PREFIX="${EPREFIX}/usr" \
 		LIBDIR="${EPREFIX}/usr/$(get_libdir)" \
 		V=1 \
+		ZSTD_NO_ASM=1 \
 		"${@}"
 }
 
@@ -44,6 +45,7 @@ multilib_src_compile() {
 	if multilib_is_native_abi ; then
 		mymake HAVE_LZ4="$(usex lz4 1 0)" zstd
 
+		build_cxxflags
 		mymake -C contrib/pzstd
 	fi
 }

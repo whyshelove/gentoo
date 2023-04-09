@@ -4,7 +4,7 @@
 EAPI=7
 
 VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/libidn.asc
-inherit multilib-minimal toolchain-funcs verify-sig rhel9
+inherit multilib-minimal toolchain-funcs rhel9
 
 DESCRIPTION="An implementation of the IDNA2008 specifications (RFCs 5890, 5891, 5892, 5893)"
 HOMEPAGE="https://www.gnu.org/software/libidn/#libidn2 https://gitlab.com/libidn/libidn2"
@@ -22,7 +22,6 @@ DEPEND="${RDEPEND}"
 BDEPEND="
 	dev-lang/perl
 	sys-apps/help2man
-	verify-sig? ( app-crypt/openpgp-keys-libidn )
 "
 
 src_prepare() {

@@ -1,32 +1,39 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit autotools rhel9-a
 
 DESCRIPTION="rpcsvc protocol definitions from glibc"
 HOMEPAGE="https://github.com/thkukuk/rpcsvc-proto"
 
-SLOT="0"
 LICENSE="LGPL-2.1+ BSD"
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
-IUSE=""
+SLOT="0"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
 
+RDEPEND="!<sys-libs/glibc-2.26
+	virtual/libintl"
 # sys-devel/gettext is only for libintl detection macros.
-DEPEND="sys-devel/gettext"
-RDEPEND="
-	!<sys-libs/glibc-2.26
-	virtual/libintl
-"
+BDEPEND="sys-devel/gettext"
 
 src_prepare() {
 	default
-	eautoreconf
 
-	# Use ${CHOST}-cpp, not 'cpp': bug #718138
-	# Ideally we should use @CPP@ but rpcgen makes it hard to use '${CHOST}-gcc -E'
-	sed -i -s "s/CPP = \"cpp\";/CPP = \"${CHOST}-cpp\";/" rpcgen/rpc_main.c || die
+	# Search for a valid 'cpp' command.
+	# The CPP envvar might contain '${CC} -E', which does not work for rpcgen.
+	# Bug 718138, 870031, 870061.
+	local x cpp=
+	for x in {${CHOST}-,}{,clang-}cpp; do
+		if type -P "${x}" >/dev/null; then
+			cpp=${x}
+			break
+		fi
+	done
+	[[ -n ${cpp} ]] || die "Unable to find cpp"
+	sed -i -e "s/CPP = \"cpp\";/CPP = \"${cpp}\";/" rpcgen/rpc_main.c || die
+
+	eautoreconf
 }
 
 src_install() {

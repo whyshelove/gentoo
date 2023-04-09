@@ -3,7 +3,7 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7..10} )
+PYTHON_COMPAT=( python3_{9..11} )
 
 inherit autotools bash-completion-r1 multilib python-r1 rhel9
 
@@ -172,6 +172,11 @@ src_install() {
 	doins "${T}"/usb-load-ehci-first.conf #260139
 
 	newinitd "${FILESDIR}"/kmod-static-nodes-r1 kmod-static-nodes
+
+	dosbin "${WORKDIR}"/weak-modules
+
+	insinto ${_sysconfdir}/depmod.d
+	newins "${WORKDIR}"/depmod.conf.dist dist.conf
 }
 
 pkg_postinst() {

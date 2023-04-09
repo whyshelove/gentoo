@@ -1,15 +1,20 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # Note: Keep version bumps in sync with dev-libs/libintl.
 
 EAPI=7
 
+if [[ ${PV} != 0.21 ]] ; then
+	die "Please check if https://savannah.gnu.org/bugs/?63193 is fixed before bumping!"
+fi
+
+VERIFY_SIG_OPENPGP_KEY_PATH="${BROOT}"/usr/share/openpgp-keys/gettext.asc
 inherit mono-env libtool java-pkg-opt-2 multilib-minimal rhel9
 
 DESCRIPTION="GNU locale utilities"
 HOMEPAGE="https://www.gnu.org/software/gettext/"
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris ~x86-winnt"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris ~x86-winnt"
 
 # Only libasprintf is under the LGPL (and libintl is in a sep package),
 # so put that license behind USE=cxx.
@@ -30,14 +35,14 @@ DEPEND=">=virtual/libiconv-0-r1[${MULTILIB_USEDEP}]
 	dev-libs/expat
 	acl? ( virtual/acl )
 	ncurses? ( sys-libs/ncurses:0= )
-	java? ( >=virtual/jdk-1.8:= )"
+	java? ( virtual/jdk:1.8 )"
 RDEPEND="${DEPEND}
 	!git? ( cvs? ( dev-vcs/cvs ) )
 	git? ( dev-vcs/git )
-	java? ( >=virtual/jre-1.8 )"
+	java? ( virtual/jre:1.8 )"
 BDEPEND="
-	git? ( dev-vcs/git )
-"
+	!git? ( cvs? ( dev-vcs/cvs ) )
+	git? ( dev-vcs/git )"
 PDEPEND="emacs? ( app-emacs/po-mode )"
 
 MULTILIB_WRAPPED_HEADERS=(
@@ -60,20 +65,19 @@ QA_SONAME_NO_SYMLINK=".*/preloadable_libintl.so"
 pkg_setup() {
 	mono-env_pkg_setup
 	java-pkg-opt-2_pkg_setup
-
-	export CPPFLAGS="-I/usr/include/libxml2"
 	export LIBS="-lxml2"
 }
 
 src_prepare() {
 	java-pkg-opt-2_src_prepare
-
 	default
-
 	elibtoolize
+	use elibc_musl && eapply "${FILESDIR}"/${PN}-0.21-musl-omit_setlocale_lock.patch
 }
 
 multilib_src_configure() {
+	append-cflags "-I${_includedir}/libxml2"
+
 	local myconf=(
 		# switches common to runtime and top-level
 		--cache-file="${BUILD_DIR}"/config.cache
@@ -103,7 +107,7 @@ multilib_src_configure() {
 		$(use_enable cxx libasprintf)
 		$(use_with git)
 		$(usex git --without-cvs $(use_with cvs))
-		$(use_enable java)
+		$(multilib_native_use_enable java)
 		$(use_enable ncurses curses)
 		$(use_enable nls)
 		$(use_enable openmp)
@@ -117,13 +121,6 @@ multilib_src_configure() {
 	fi
 
 	econf "${myconf[@]}"
-
-	# Eliminate hardcoded rpaths; workaround libtool reordering -Wl,--as-needed
-	# after all the libraries.
-	sed -e 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' \
-	    -e 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' \
-	    -e 's|CC=.g..|& -Wl,--as-needed|' \
-	    -i $(find . -name libtool)
 }
 
 multilib_src_install() {
@@ -133,11 +130,13 @@ multilib_src_install() {
 		dosym msgfmt /usr/bin/gmsgfmt #43435
 		dobin gettext-tools/misc/gettextize
 	fi
+
+	newbin ${WORKDIR}/msghack.py msghack
+	doman ${WORKDIR}/msghack.1
 }
 
 multilib_src_install_all() {
 	find "${ED}" -type f -name "*.la" -delete || die
-	install -pm 755 ${WORKDIR}/msghack.py ${D}/usr/bin/msghack
 
 	if use java ; then
 		java-pkg_dojar "${ED}"/usr/share/${PN}/*.jar

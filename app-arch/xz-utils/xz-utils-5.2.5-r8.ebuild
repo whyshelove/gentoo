@@ -5,7 +5,7 @@
 #           to avoid circular deps with autotools
 
 EAPI=7
-SUFFIX="_0"
+DSUFFIX="_0"
 inherit libtool multilib multilib-minimal preserve-libs usr-ldscript rhel9
 
 if [[ ${PV} == 9999 ]] ; then

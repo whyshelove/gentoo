@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic libtool multilib-minimal toolchain-funcs rhel9
+inherit flag-o-matic libtool multilib-minimal toolchain-funcs autotools rhel9
 
 MY_PV=${PV/_p*}
 MY_PV=${MY_PV/_/-}
@@ -14,7 +14,7 @@ PLEVEL=${PV/*p}
 DESCRIPTION="Library for arbitrary-precision arithmetic on different type of numbers"
 HOMEPAGE="https://gmplib.org/"
 if [[ ${PV} != *8888 ]]; then
-	SRC_URI="${SRC_URI}
+	SRC_URI+="
 	doc? ( https://gmplib.org/${PN}-man-${MANUAL_PV}.pdf )"
 fi
 
@@ -22,7 +22,7 @@ LICENSE="|| ( LGPL-3+ GPL-2+ )"
 # The subslot reflects the C & C++ SONAMEs.
 SLOT="0/10.4"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-IUSE="+asm doc +cxx pic static-libs"
+IUSE="asm doc +cxx pic static-libs"
 
 BDEPEND="sys-devel/m4
 	app-arch/xz-utils"
@@ -39,7 +39,6 @@ PATCHES=(
 )
 
 src_prepare() {
-	autoreconf -ifv
 	default
 
 	# note: we cannot run autotools here as gcc depends on this package
@@ -59,14 +58,10 @@ src_prepare() {
 	EOF
 	# Patches to original configure might have lost the +x bit.
 	chmod a+rx configure{,.wrapped} || die
+
 }
 
 multilib_src_configure() {
-	if as --help | grep -q execstack; then
-	  # the object files do not require an executable stack
-	  export CCAS="gcc -c -Wa,--noexecstack"
-	fi
-
 	# Because of our 32-bit userland, 1.0 is the only HPPA ABI that works
 	# https://gmplib.org/manual/ABI-and-ISA.html#ABI-and-ISA (bug #344613)
 	if [[ ${CHOST} == hppa2.0-* ]] ; then
@@ -93,7 +88,6 @@ multilib_src_configure() {
 		CC_FOR_BUILD="$(tc-getBUILD_CC)" \
 		--localstatedir="${EPREFIX}"/var/state/gmp \
 		--enable-shared \
-		--enable-fat \
 		$(use_enable asm assembly) \
 		$(use_enable cxx) \
 		$(use pic && echo --with-pic) \
@@ -116,9 +110,10 @@ multilib_src_install() {
 
 	# Rename files and install wrappers
 	mv ${ED}/usr/include/gmp.h ${ED}/usr/include/gmp-x86_${GMPABI}.h
-	install -m644 ${WORKDIR}/gmp.h ${ED}/usr/include/gmp.h
+	doheader ${WORKDIR}/gmp.h
+
 	mv ${ED}/usr/include/gmp-mparam.h ${ED}/usr/include/gmp-mparam-x86_${GMPABI}.h
-	install -m644 ${WORKDIR}/gmp-mparam.h ${ED}/usr/include/gmp-mparam.h
+	doheader ${WORKDIR}/gmp-mparam.h
 
 	# should be a standalone lib
 	rm -f "${ED}"/usr/$(get_libdir)/lib{gmp,mp,gmpxx}.la

@@ -1,7 +1,7 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 PLOCALES="da de eo es fr fur hu ja nb nl pl pt_BR ru sr sv uk vi zh_CN zh_TW"
 
@@ -10,10 +10,12 @@ inherit plocale toolchain-funcs rhel9
 DESCRIPTION="Convert DOS or MAC text files to UNIX format or vice versa"
 HOMEPAGE="http://www.xs4all.nl/~waterlan/dos2unix.html https://sourceforge.net/projects/dos2unix/"
 
+S="${WORKDIR}/${P/_/-}"
+
 LICENSE="BSD-2"
 SLOT="0"
 [[ "${PV}" == *_beta* ]] || \
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris"
 IUSE="debug nls test"
 
 RDEPEND="
@@ -30,8 +32,6 @@ BDEPEND="
 "
 
 RESTRICT="!test? ( test )"
-
-S="${WORKDIR}/${P/_/-}"
 
 handle_locales() {
 	# Make sure locale list is kept up-to-date.
@@ -73,7 +73,7 @@ src_prepare() {
 
 lintl() {
 	# same logic as from virtual/libintl
-	use !elibc_glibc && use !elibc_uclibc && use !elibc_musl && echo "-lintl"
+	use !elibc_glibc && use !elibc_musl && echo "-lintl"
 }
 
 src_compile() {

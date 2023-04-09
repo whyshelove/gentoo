@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="8"
@@ -35,7 +35,6 @@ BDEPEND="app-text/docbook-xml-dtd:4.1.2
 		virtual/latex-base
 	)"
 
-PATCHES=( "${FILESDIR}"/${PN}-man.patch )
 
 DIST_TEST="do"
 
@@ -48,4 +47,5 @@ src_prepare() {
 	plocale_for_each_disabled_locale rm_locale
 
 	perl-module_src_prepare
+	export PO4AFLAGS="-v -v -v"
 }
