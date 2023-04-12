@@ -137,6 +137,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-6.0.0-fix_paths_in_libvirt-guests_sh.patch
 	"${FILESDIR}"/${PN}-8.2.0-do-not-use-sysconfig.patch
 	"${FILESDIR}"/${PN}-8.2.0-fix-paths-for-apparmor.patch
+	"${FILESDIR}"/${PN}-8.7.0-meson-Stop-detecting-Wl-version-script.patch
 )
 
 pkg_setup() {
@@ -271,6 +272,7 @@ src_configure() {
 
 		-Dnetcf=disabled
 		-Dsanlock=disabled
+		-Dopenwsman=disabled
 
 		-Ddriver_esx=enabled
 		-Dinit_script=systemd

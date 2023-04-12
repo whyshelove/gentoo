@@ -2,8 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-USE_RUBY="ruby27 ruby30"
-NEED_EMACS="24.3"
+USE_RUBY="ruby27 ruby30 ruby31"
 
 inherit elisp ruby-single vcs-snapshot
 
