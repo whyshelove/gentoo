@@ -176,10 +176,8 @@ src_install() {
 
 	default
 
-	rm -f ${D}/usr/share/info/dir
-
 	dodir /bin
-	cp "${ED}"/usr/bin/bash "${ED}"/bin/ || die
+	mv "${ED}"/usr/bin/bash "${ED}"/bin/ || die
 	dosym bash /bin/rbash
 
 	insinto /etc/bash
@@ -190,7 +188,7 @@ src_install() {
 
 	insinto /etc/skel
 	for f in bash{_logout,_profile,rc} ; do
-		newins "${WORKDIR}"/dot-${f} .${f}
+		newins "${FILESDIR}"/dot-${f} .${f}
 	done
 
 	local sed_args=(

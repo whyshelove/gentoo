@@ -4,7 +4,7 @@
 EAPI=8
 
 ALTERNATIVES=(
-	"bison:>=sys-devel/bison-3.8.2-r1"
+	"bison:>=sys-devel/bison-3.7.4-r1"
 	byacc:dev-util/byacc
 	"reference:>=dev-util/yacc-1.9.1-r7"
 )
@@ -16,7 +16,7 @@ KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv 
 
 RDEPEND="
 	!<dev-util/yacc-1.9.1-r7
-	!<sys-devel/bison-3.8.2-r1
+	!<sys-devel/bison-3.7.4-r1
 "
 
 src_install() {

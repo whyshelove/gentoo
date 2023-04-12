@@ -52,6 +52,7 @@ run_emake() {
 		CC="$(tc-getCC)"
 		AR="$(tc-getAR)"
 		RANLIB="$(tc-getRANLIB)"
+		MAKEOPTS="-j1"
 	)
 	emake "${args[@]}" "$@"
 }

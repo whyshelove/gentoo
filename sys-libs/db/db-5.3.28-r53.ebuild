@@ -1,50 +1,51 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
+inherit autotools db flag-o-matic multilib multilib-minimal toolchain-funcs rhel9
 
-inherit autotools db flag-o-matic java-pkg-opt-2 multilib multilib-minimal toolchain-funcs rhel9
+#Number of official patches
+#PATCHNO=`echo ${PV}|sed -e "s,\(.*_p\)\([0-9]*\),\2,"`
+PATCHNO="${PV/*.*.*_p}"
+if [[ ${PATCHNO} == "${PV}" ]] ; then
+	MY_PV="${PV}"
+	MY_P="${P}"
+	PATCHNO=0
+else
+	MY_PV="${PV/_p${PATCHNO}}"
+	MY_P="${PN}-${MY_PV}"
+fi
 
 RESTRICT="!test? ( test )"
 
+S_BASE="${WORKDIR}/${MY_P}"
+S="${S_BASE}/build_unix"
 DESCRIPTION="Oracle Berkeley DB"
 HOMEPAGE="http://www.oracle.com/technetwork/database/database-technologies/berkeleydb/overview/index.html"
 
-S_BASE="${S}"
-S="${S_BASE}/build_unix"
+for (( i=1 ; i<=${PATCHNO} ; i++ )) ; do
+	export SRC_URI="${SRC_URI} http://www.oracle.com/technology/products/berkeley-db/db/update/${MY_PV}/patch.${MY_PV}.${i}"
+done
 
 LICENSE="Sleepycat"
 SLOT="$(ver_cut 1-2)"
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ppc ppc64 ~riscv ~s390 sparc x86"
-IUSE="doc java cxx tcl test"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ppc ppc64 ~riscv ~s390 sparc x86"
+IUSE="doc cxx tcl test"
 
 REQUIRED_USE="test? ( tcl )"
 
 # the entire testsuite needs the TCL functionality
 DEPEND="tcl? ( >=dev-lang/tcl-8.5.15-r1:0=[${MULTILIB_USEDEP}] )
-	test? ( >=dev-lang/tcl-8.5.15-r1:0=[${MULTILIB_USEDEP}] )
-	java? ( >=virtual/jdk-1.7 )"
-RDEPEND="tcl? ( >=dev-lang/tcl-8.5.15-r1:0=[${MULTILIB_USEDEP}] )
-	java? ( >=virtual/jre-1.7 )"
+	test? ( >=dev-lang/tcl-8.5.15-r1:0=[${MULTILIB_USEDEP}] )"
+RDEPEND="tcl? ( >=dev-lang/tcl-8.5.15-r1:0=[${MULTILIB_USEDEP}] )"
+# bug #841698
+BDEPEND="sys-devel/autoconf-archive"
 
 MULTILIB_WRAPPED_HEADERS=(
 	/usr/include/db${SLOT}/db.h
 )
 
-src_unpack() {
-	rhel_unpack ${A}
-	sed -i "/%patch32 -p1/d" ${WORKDIR}/*.spec
-	rpmbuild --rmsource -bp $WORKDIR/*.spec --nodeps
-}
-
 PATCHES=(
-	# bug #510506
-	"${FILESDIR}"/${PN}-4.8.24-java-manifest-location.patch
-
-	# use the includes from the prefix
-	"${FILESDIR}"/${PN}-4.6-jni-check-prefix-first.patch
-	"${FILESDIR}"/${PN}-4.2-listen-to-java-options.patch
-
 	# sqlite configure call has an extra leading ..
 	# upstreamed:5.2.36, missing in 5.3.x
 	"${FILESDIR}"/${PN}-5.2.28-sqlite-configure-path.patch
@@ -52,10 +53,19 @@ PATCHES=(
 	# The upstream testsuite copies .lib and the binaries for each parallel test
 	# core, ~300MB each. This patch uses links instead, saves a lot of space.
 	"${FILESDIR}"/${PN}-6.0.20-test-link.patch
+
+	# Needed when compiling with clang
+	#"${FILESDIR}"/${PN}-5.1.29-rename-atomic-compare-exchange.patch
+	"${FILESDIR}"/${PN}-5.3.28-clang16.patch
 )
 
 src_prepare() {
 	cd "${S_BASE}" || die
+	for (( i=1 ; i<=${PATCHNO} ; i++ ))
+	do
+		eapply -p0 "${DISTDIR}"/patch."${MY_PV}"."${i}"
+	done
+
 	default
 
 	# Upstream release script grabs the dates when the script was run, so lets
@@ -67,12 +77,6 @@ src_prepare() {
 		-e "/^DB_RELEASE_DATE=/s~=.*~='${REAL_DB_RELEASE_DATE}'~g" \
 		-i dist/RELEASE || die
 
-	# Include the SLOT for Java JAR files
-	# This supersedes the unused jarlocation patches.
-	sed -r \
-		-e '/jarfile=.*\.jar$/s,(.jar$),-$(LIBVERSION)\1,g' \
-		-i dist/Makefile.in || die
-
 	cd dist || die
 	rm aclocal/libtool.m4 || die
 	sed \
@@ -82,9 +86,9 @@ src_prepare() {
 		-e '/^AC_PATH_TOOL/s/ sh, none/ bash, none/' \
 		-i aclocal/programs.m4 || die
 
-	AT_M4DIR="aclocal aclocal_java" eautoreconf
+	AT_M4DIR="aclocal" eautoreconf
 
-	# Upstream sucks - they do autoconf and THEN replace the version variables.
+	# They do autoconf and THEN replace the version variables :(
 	. ./RELEASE
 	local v ev
 	for v in \
@@ -119,14 +123,12 @@ multilib_src_configure() {
 		--disable-sql_codegen
 		--disable-sql_compat
 		--disable-static
+		--disable-java
 		$([[ ${ABI} == amd64 ]] && echo --with-mutex=x86/gcc-assembly)
 		$(use_enable cxx)
 		$(use_enable cxx stl)
-		$(multilib_native_use_enable java)
 		$(use_enable test)
 	)
-
-	append-cflags -fno-strict-aliasing
 
 	tc-ld-force-bfd #470634 #729510
 
@@ -137,12 +139,13 @@ multilib_src_configure() {
 		is-flagq -O[s123] || append-flags -O2
 	fi
 
-	if multilib_is_native_abi && use java ; then
-		myconf+=(
-			--with-java-prefix="${JAVA_HOME}"
-			--with-javac-flags="$(java-pkg_javac-args)"
-		)
-	fi
+	# Add linker versions to the symbols. Easier to do, and safer than header file
+	# mumbo jumbo.
+	append-ldflags -Wl,--default-symver
+
+	append-cflags -fno-strict-aliasing -DSHAREDSTATEDIR='\"${_sharedstatedir}\"' \
+	-DSQLITE_ENABLE_COLUMN_METADATA=1 -DSQLITE_DISABLE_DIRSYNC=1 -DSQLITE_ENABLE_FTS3=3 -DSQLITE_ENABLE_RTREE=1 \
+	-DSQLITE_SECURE_DELETE=1 -DSQLITE_ENABLE_UNLOCK_NOTIFY=1 -I../../../lang/sql/sqlite/ext/fts3/
 
 	# Bug #270851: test needs TCL support
 	if use tcl || use test ; then
@@ -173,12 +176,6 @@ multilib_src_install() {
 	db_src_install_headerslot
 
 	db_src_install_usrlibcleanup
-
-	if multilib_is_native_abi && use java; then
-		java-pkg_regso "${ED}"/usr/"$(get_libdir)"/libdb_java*.so
-		java-pkg_dojar "${ED}"/usr/"$(get_libdir)"/*.jar
-		rm -f "${ED}"/usr/"$(get_libdir)"/*.jar
-	fi
 }
 
 multilib_src_install_all() {

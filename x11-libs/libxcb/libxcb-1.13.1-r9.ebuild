@@ -1,16 +1,16 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{8..10} )
-PYTHON_REQ_USE=xml
+PYTHON_COMPAT=( python3_{9..11} )
+PYTHON_REQ_USE="xml(+)"
 
 XORG_TARBALL_SUFFIX="xz"
 XORG_MULTILIB=yes
 XORG_DOC=doc
 
-inherit python-any-r1 xorg-3 rhel9-a
+inherit python-any-r1 xorg-3 autotools rhel9-a
 
 DESCRIPTION="X C-language Bindings library"
 HOMEPAGE="https://xcb.freedesktop.org/ https://gitlab.freedesktop.org/xorg/lib/libxcb"
@@ -25,7 +25,6 @@ RDEPEND="
 	>=x11-libs/libXdmcp-1.1.1-r1[${MULTILIB_USEDEP}]
 "
 DEPEND="${RDEPEND}
-	>=x11-misc/util-macros-1.18.1
 	>=x11-base/xcb-proto-1.14[${MULTILIB_USEDEP}]
 	elibc_Darwin? ( dev-libs/libpthread-stubs )
 	test? ( dev-libs/check[${MULTILIB_USEDEP}] )
@@ -38,7 +37,7 @@ BDEPEND="${PYTHON_DEPS}
 "
 
 python_check_deps() {
-	has_version -b ">=x11-base/xcb-proto-1.14[${PYTHON_USEDEP}]"
+	python_has_version -b ">=x11-base/xcb-proto-1.14[${PYTHON_USEDEP}]"
 }
 
 pkg_setup() {
@@ -46,17 +45,18 @@ pkg_setup() {
 	xorg-3_pkg_setup
 }
 
+src_prepare() {
+	default
+	eautoreconf
+}
+
 src_configure() {
 	sed -i 's/pthread-stubs //' configure.ac
-
-	# autoreconf -f needed to expunge rpaths
-	autoreconf -v -f --install
 
 	local XORG_CONFIGURE_OPTIONS=(
 		 --enable-xkb
 		 --enable-xinput
 		 --disable-xprint
-		 --disable-silent-rules
 		$(use_enable doc devel-docs)
 		$(use_enable selinux)
 	)

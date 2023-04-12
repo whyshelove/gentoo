@@ -21,7 +21,7 @@ RESTRICT="test"
 
 RDEPEND="
 	dev-libs/libbsd[${MULTILIB_USEDEP}]
-	>=sys-libs/talloc-2.3.4[${MULTILIB_USEDEP}]
+	>=sys-libs/talloc-2.3.3[${MULTILIB_USEDEP}]
 	python? (
 		${PYTHON_DEPS}
 		sys-libs/talloc[python,${PYTHON_SINGLE_USEDEP}]

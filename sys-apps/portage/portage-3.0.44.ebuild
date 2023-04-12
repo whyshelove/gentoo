@@ -72,7 +72,7 @@ PDEPEND="
 	!build? (
 		>=net-misc/rsync-2.6.4
 		>=sys-apps/coreutils-6.4
-		>=sys-apps/file-5.44-r3
+		>=sys-apps/file-5.39-r3
 	)
 "
 # coreutils-6.4 rdep is for date format in emerge-webrsync #164532

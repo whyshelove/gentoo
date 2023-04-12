@@ -1,12 +1,11 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{9..11} )
 XORG_TARBALL_SUFFIX="xz"
 XORG_MODULE=proto/
-XORG_MULTILIB=yes
 
 inherit python-r1 xorg-3 rhel9-c
 
@@ -28,7 +27,7 @@ BDEPEND="
 
 ECONF_SOURCE="${S}"
 
-multilib_src_configure() {
+src_configure() {
 	# Don't use Python to find sitedir here.
 	PYTHON=true default
 }
@@ -43,8 +42,8 @@ xcbgen_install() {
 	python_optimize
 }
 
-multilib_src_install() {
+src_install() {
 	# Restrict SUBDIRS to prevent xcbgen with empty sitedir.
 	emake install DESTDIR="${D}" SUBDIRS=src
-	multilib_is_native_abi && python_foreach_impl xcbgen_install
+	python_foreach_impl xcbgen_install
 }

@@ -53,6 +53,9 @@ BDEPEND="
 	virtual/pkgconfig"
 
 PATCHES=(
+	# Gentoo specific modification(s):
+	"${FILESDIR}"/${PN}-2.03.06-example.conf.in.patch
+
 	# For upstream -- review and forward:
 	"${FILESDIR}"/${PN}-2.02.56-lvm2create_initrd.patch
 	"${FILESDIR}"/${PN}-2.02.67-createinitrd.patch #301331
@@ -239,6 +242,7 @@ src_install() {
 
 		# install dm unconditionally
 		install_device-mapper
+		install_system_dirs
 	)
 	emake V=1 DESTDIR="${D}" "${INSTALL_TARGETS[@]}"
 

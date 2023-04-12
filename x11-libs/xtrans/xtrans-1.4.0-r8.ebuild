@@ -1,10 +1,7 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-
-MY_PR=${PVR##*r}
-MY_PF=xorg-x11-${PN}-devel-${PV}-${MY_PR}
 
 XORG_PACKAGE_NAME="lib${PN}"
 # this package just installs some .c and .h files, no libraries

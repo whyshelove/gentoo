@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{8..9} )
+PYTHON_COMPAT=( python3_{9..11} )
 DISTUTILS_OPTIONAL=1
 
 inherit distutils-r1 multilib-minimal rhel9
@@ -21,7 +21,7 @@ fi
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-IUSE="python static-libs"
+IUSE="python static-libs test"
 
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 

@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7..10} )
+PYTHON_COMPAT=( python3_{9..11} )
 inherit meson python-any-r1 rhel9-a
 
 DESCRIPTION="X keyboard configuration database"
@@ -24,6 +24,7 @@ DEPEND=""
 RDEPEND=""
 BDEPEND="
 	${PYTHON_DEPS}
+	dev-lang/perl
 	dev-libs/libxslt
 	sys-devel/gettext
 "

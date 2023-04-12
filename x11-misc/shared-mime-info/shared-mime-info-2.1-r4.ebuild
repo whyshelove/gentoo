@@ -11,7 +11,7 @@ HOMEPAGE="https://gitlab.freedesktop.org/xdg/shared-mime-info"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 
 # requires installed xdgmime binary
 RESTRICT="test"
@@ -19,7 +19,6 @@ RESTRICT="test"
 BDEPEND="
 	app-text/docbook-xml-dtd:4.1.2
 	app-text/xmlto
-	dev-util/itstool
 	sys-devel/gettext
 	virtual/pkgconfig
 "
@@ -30,6 +29,10 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 DOCS=( HACKING.md NEWS README.md )
+
+PATCHES=(
+	"${FILESDIR}/shared-mime-info-2.1-itstool.patch"
+)
 
 src_install() {
 	meson_src_install

@@ -22,8 +22,6 @@ fi
 if [ -z ${MY_PF} ] ; then
 	MY_PR=${PVR##*r}
 
-	S="${WORKDIR}/${P/_p*}"
-
 	if [ ${CATEGORY} == "dev-python" ] ; then
 		case ${PN} in
 			cython )  MY_P=${P^} ;;
@@ -42,6 +40,7 @@ if [ -z ${MY_PF} ] ; then
 		 MY_P=perl-${PN}-${MY_PV}
 		[[ ${PN} == Locale-gettext ]] &&  MY_P=perl-${PN/Locale-}-${DIST_VERSION}
 	else
+		S="${WORKDIR}/${P/_p*}"
 		case ${PN} in
 			tiff | db | appstream-glib | mpc \
 			| talloc | tdb | tevent | ldb )  MY_P=lib${P} ;;
@@ -70,6 +69,7 @@ if [ -z ${MY_PF} ] ; then
 			libnsl ) MY_P=${P/-/2-};  MY_P=${MY_P} ;;
 			libpcre* ) MY_P=${P/lib};  MY_P=${MY_P} ;;
 			xorg-proto )  MY_P=${PN/-/-x11-}-devel-${PV} ;;
+			xtrans )  MY_P=xorg-x11-${PN}-devel-${PV} ;;
 			gtk+ ) MY_P=${P/+/$(ver_cut 1)} ;;
 			xz-utils ) MY_P="${PN/-utils}-${PV/_}" ;;
 			glib-utils ) MY_P="${PN/-utils}2-${PV}" ;;	

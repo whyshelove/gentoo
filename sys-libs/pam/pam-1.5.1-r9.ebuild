@@ -1,25 +1,21 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-
-MY_P="Linux-${PN^^}-${PV}"
 
 # Avoid QA warnings
 # Can reconsider w/ EAPI 8 and IDEPEND, bug #810979
 TMPFILES_OPTIONAL=1
 
-inherit autotools db-use fcaps toolchain-funcs usr-ldscript multilib-minimal rhel9
+inherit autotools db-use fcaps flag-o-matic toolchain-funcs usr-ldscript multilib-minimal rhel9
 
+MY_P="Linux-${PN^^}-${PV}"
 DESCRIPTION="Linux-PAM (Pluggable Authentication Modules)"
 HOMEPAGE="https://github.com/linux-pam/linux-pam"
 
-SRC_URI="${SRC_URI} https://github.com/linux-pam/linux-pam/releases/download/v${PV}/${MY_P}-docs.tar.xz"
-S="${WORKDIR}/${MY_P}"
-
 LICENSE="|| ( BSD GPL-2 )"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
 IUSE="audit berkdb debug nis selinux"
 
 BDEPEND="
@@ -27,7 +23,7 @@ BDEPEND="
 	sys-devel/flex
 	sys-devel/gettext
 	virtual/pkgconfig
-	virtual/yacc
+	app-alternatives/yacc
 "
 
 DEPEND="
@@ -43,6 +39,13 @@ RDEPEND="${DEPEND}"
 
 PDEPEND=">=sys-auth/pambase-20200616"
 
+S="${WORKDIR}/${MY_P}"
+
+PATCHES=(
+	"${FILESDIR}"/${PN}-1.5.1-musl.patch
+	"${FILESDIR}"/${PN}-1.5.2-clang-15-configure-implicit-func.patch
+)
+
 src_prepare() {
 	default
 	touch ChangeLog || die
@@ -53,19 +56,26 @@ multilib_src_configure() {
 	# Do not let user's BROWSER setting mess us up. #549684
 	unset BROWSER
 
-	# Disable automatic detection of libxcrypt; we _don't_ want the
-	# user to link libxcrypt in by default, since we won't track the
-	# dependency and allow to break PAM this way.
+	# This whole weird has_version libxcrypt block can go once
+	# musl systems have libxcrypt[system] if we ever make
+	# that mandatory. See bug #867991.
+	if use elibc_musl && ! has_version sys-libs/libxcrypt[system] ; then
+		# Avoid picking up symbol-versioned compat symbol on musl systems
+		export ac_cv_search_crypt_gensalt_rn=no
 
-	export ac_cv_header_xcrypt_h=no
+		# Need to avoid picking up the libxcrypt headers which define
+		# CRYPT_GENSALT_IMPLEMENTS_AUTO_ENTROPY.
+		cp "${ESYSROOT}"/usr/include/crypt.h "${T}"/crypt.h || die
+		append-cppflags -I"${T}"
+	fi
 
 	local myconf=(
 		CC_FOR_BUILD="$(tc-getBUILD_CC)"
 		--with-db-uniquename=-$(db_findver sys-libs/db)
-		--with-xml-catalog=/etc/xml/catalog
-		--enable-securedir=/$(get_libdir)/security
-		--includedir=/usr/include/security
-		--libdir=/usr/$(get_libdir)
+		--with-xml-catalog="${EPREFIX}"/etc/xml/catalog
+		--enable-securedir="${EPREFIX}"/$(get_libdir)/security
+		--includedir="${EPREFIX}"/usr/include/security
+		--libdir="${EPREFIX}"/usr/$(get_libdir)
 		--enable-pie
 		--enable-unix
 		--disable-prelude
@@ -74,7 +84,7 @@ multilib_src_configure() {
 		--disable-static
 		--disable-Werror
 		--disable-rpath
-		--enable-vendordir=${_datadir}
+		--enable-vendordir="${EPREFIX}"${_datadir}
 		$(use_enable audit)
 		$(use_enable berkdb db)
 		$(use_enable debug)
@@ -86,27 +96,29 @@ multilib_src_configure() {
 }
 
 multilib_src_compile() {
+	MAKEOPTS="-j1"
+
 	emake -C po update-gmo
-	emake sepermitlockdir="/run/sepermit"
+	emake sepermitlockdir="/run/sepermit" LDCONFIG=:
 }
 
 multilib_src_install() {
 	emake DESTDIR="${D}" install \
-		sepermitlockdir="/run/sepermit" LDCONFIG=:
+		sepermitlockdir="/run/sepermit"
 
 	rm -rf ${D}${_datadir}/doc/Linux-PAM
 	# Included in setup package
-	rm -f ${D}${_sysconfdir}/environment
+	#rm -f ${D}${_sysconfdir}/environment
 
 	_moduledir="${EPREFIX}"/$(get_libdir)/security
 	_pamconfdir=${_sysconfdir}/pam.d
 	_pamvendordir=${_datadir}/pam.d
 
-	dosym ${_moduledir} ${_libdir}/security
+	#dosym ${_moduledir} ${_libdir}/security
 
 	# Install default configuration files.
-	diropts -m 0755 && dodir ${_pamconfdir} ${_pamvendordir} ${_sysconfdir}/motd.d /usr/lib/motd.d ${_moduledir}
-	insinto ${_pamconfdir}/
+	diropts -m 0755 && dodir ${_pamvendordir} ${_sysconfdir}/motd.d /usr/lib/motd.d ${_moduledir}
+	insinto ${_pamconfdir}
 
 	for pamconf in other system-auth password-auth fingerprint-auth smartcard-auth config-util postlogin ; do
 		newins "${WORKDIR}"/${pamconf}.pamd ${pamconf}
@@ -123,8 +135,7 @@ multilib_src_install() {
 	done
 
 	# Install the file for autocreation of /var/run subdirectories on boot
-	insinto ${_prefix}/lib/tmpfiles.d/
-	newins "${WORKDIR}"/pamtmp.conf pam.conf
+	#newtmpfiles "${WORKDIR}"/pamtmp.conf pam.conf
 
 	gen_usr_ldscript -a pam pam_misc pamc
 }
@@ -152,6 +163,8 @@ multilib_src_install_all() {
 }
 
 pkg_postinst() {
+	tmpfiles_process
+
 	ewarn "Some software with pre-loaded PAM libraries might experience"
 	ewarn "warnings or failures related to missing symbols and/or versions"
 	ewarn "after any update. While unfortunate this is a limit of the"
@@ -159,7 +172,7 @@ pkg_postinst() {
 	ewarn "restart the software manually after the update."
 	ewarn ""
 	ewarn "You can get a list of such software running a command like"
-	ewarn "  lsof / | egrep -i 'del.*libpam\\.so'"
+	ewarn "  lsof / | grep -E -i 'del.*libpam\\.so'"
 	ewarn ""
 	ewarn "Alternatively, simply reboot your system."
 
