@@ -7,9 +7,6 @@ inherit autotools libtool rhel8
 
 DESCRIPTION="YAML 1.1 parser and emitter written in C"
 HOMEPAGE="https://github.com/yaml/libyaml"
-if [[ ${PV} != *8888 ]]; then
-	S="${WORKDIR}/${P/lib}"
-fi
 
 LICENSE="MIT"
 SLOT="0"

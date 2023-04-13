@@ -4,7 +4,7 @@
 EAPI=7
 
 PYTHON_COMPAT=( python3_{6,8,9} )
-inherit python-any-r1 rhel8-a
+inherit python-any-r1 autotools rhel8-a
 
 DESCRIPTION="X keyboard configuration database"
 HOMEPAGE="https://www.freedesktop.org/wiki/Software/XKeyboardConfig https://gitlab.freedesktop.org/xkeyboard-config/xkeyboard-config"
@@ -37,7 +37,7 @@ pkg_setup() {
 
 src_prepare() {
 	default
-	[[ ${PV} == 9999 ]] && eautoreconf
+	eautoreconf
 }
 
 src_configure() {

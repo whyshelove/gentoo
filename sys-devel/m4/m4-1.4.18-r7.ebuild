@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit rhel8
+inherit autotools rhel8
 
 DESCRIPTION="GNU macro processor"
 HOMEPAGE="https://www.gnu.org/software/m4/m4.html"
@@ -19,6 +19,11 @@ BDEPEND="app-arch/xz-utils"
 PATCHES=(
 	"${FILESDIR}"/${P}-darwin17-printf-n.patch
 )
+
+src_prepare() {
+	default
+	eautoreconf
+}
 
 src_configure() {
 	local -a myeconfargs=(

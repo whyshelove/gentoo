@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit rhel8
+inherit autotools rhel8
 
 DESCRIPTION="Excellent text file viewer"
 HOMEPAGE="http://www.greenwoodsoftware.com/less/"
@@ -18,7 +18,15 @@ DEPEND=">=app-misc/editor-wrapper-3
 	pcre? ( dev-libs/libpcre2 )"
 RDEPEND="${DEPEND}"
 
+src_prepare() {
+	default
+	rm -f ./configure
+	eautoreconf
+}
+
 src_configure() {
+	append-cflags -D_GNU_SOURCE -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+
 	export ac_cv_lib_ncursesw_initscr=$(usex unicode)
 	export ac_cv_lib_ncurses_initscr=$(usex !unicode)
 	local myeconfargs=(
@@ -33,6 +41,11 @@ src_install() {
 
 	newbin "${FILESDIR}"/lesspipe-r1.sh lesspipe
 	newenvd "${FILESDIR}"/less.envd 70less
+
+	dobin "${WORKDIR}"/lesspipe.sh
+
+	insinto /etc/profile.d
+	doins "${WORKDIR}"/less.{c,}sh
 }
 
 pkg_preinst() {

@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -9,11 +9,10 @@ MY_P="${PN^^}_${PV}"
 
 DESCRIPTION="An ultra-fast, ultra-compact key-value embedded data store"
 HOMEPAGE="https://symas.com/lmdb/technical/"
-#SRC_URI="https://github.com/LMDB/lmdb/archive/${MY_P}.tar.gz"
 
 LICENSE="OPENLDAP"
 SLOT="0/${PV}"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x64-solaris ~x86-solaris"
+KEYWORDS="amd64 arm64 ~ppc64 ~s390"
 IUSE="static-libs"
 
 DEPEND=""
@@ -23,18 +22,12 @@ S="${WORKDIR}/${PN}-${MY_P}/libraries/liblmdb"
 
 src_prepare() {
 	default
-	if [[ ${CHOST} == *-darwin* && ${CHOST#*-darwin} -lt 10 ]] ; then
-		# posix_memalign isn't available before 10.6, but on OSX
-		# malloc is always aligned for any addressable type
-		sed -i -e '/(__APPLE__)/a#define HAVE_MEMALIGN 1\n#define memalign(X,Y) malloc(X)' mdb.c || die
-	fi
 	multilib_copy_sources
 }
 
 multilib_src_configure() {
 	local soname="-Wl,-soname,liblmdb$(get_libname 0)"
-	[[ ${CHOST} == *-darwin* ]] && \
-		soname="-dynamiclib -install_name ${EPREFIX}/usr/$(get_libdir)/liblmdb$(get_libname 0)"
+
 	sed -i -e "s!^CC.*!CC = $(tc-getCC)!" \
 		-e "s!^CFLAGS.*!CFLAGS = ${CFLAGS}!" \
 		-e "s!^AR.*!AR = $(tc-getAR)!" \
@@ -43,15 +36,10 @@ multilib_src_configure() {
 		-e "/^libdir/s!lib\$!$(get_libdir)!" \
 		-e "s!shared!shared ${soname}!" \
 		"Makefile" || die
-
-	if [[ ${CHOST} == *-solaris* ]] ; then
-		# fdatasync lives in -lrt on Solaris 10
-		[[ ${CHOST#*-solaris2.} -le 10 ]] && append-ldflags -lrt
-	fi
 }
 
 multilib_src_compile() {
-	emake LDLIBS+=" -pthread"
+	emake LDLIBS+=" -pthread" XCFLAGS="${optflags}"
 }
 
 multilib_src_install() {
@@ -67,8 +55,4 @@ multilib_src_install() {
 		-e "s!@prefix@!${EPREFIX}/usr!g" \
 		-e "s!@libdir@!$(get_libdir)!" \
 		"${ED}"/usr/$(get_libdir)/pkgconfig/lmdb.pc || die
-
-	if ! use static-libs; then
-		rm "${ED}"/usr/$(get_libdir)/liblmdb.a || die
-	fi
 }

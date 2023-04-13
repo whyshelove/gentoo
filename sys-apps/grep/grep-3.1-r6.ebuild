@@ -56,6 +56,8 @@ src_configure() {
 		--bindir="${EPREFIX}"/bin
 		$(use_enable nls)
 		$(use_enable pcre perl-regexp)
+		CPPFLAGS="-I${_includedir}/pcre"
+		CFLAGS="${optflags} ${CFLAGS}"
 	)
 	econf "${myeconfargs[@]}"
 }

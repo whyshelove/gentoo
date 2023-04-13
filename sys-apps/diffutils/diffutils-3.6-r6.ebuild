@@ -20,10 +20,11 @@ DOCS=( AUTHORS ChangeLog NEWS README THANKS TODO )
 
 src_configure() {
 	use static && append-ldflags -static
+	append-cflags -Dlint
 
 	# Disable automagic dependency over libsigsegv; see bug #312351.
 	export ac_cv_libsigsegv=no
-	export CFLAGS="$CFLAGS -Dlint"
+
 	# required for >=glibc-2.26, bug #653914
 	use elibc_glibc && export gl_cv_func_getopt_gnu=yes
 

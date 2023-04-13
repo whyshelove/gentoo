@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -7,7 +7,6 @@ inherit multilib toolchain-funcs multilib-minimal flag-o-matic rhel8
 
 DESCRIPTION="Various utilities dealing with the PCI bus"
 HOMEPAGE="https://mj.ucw.cz/sw/pciutils/ https://git.kernel.org/?p=utils/pciutils/pciutils.git"
-#SRC_URI="https://mj.ucw.cz/download/linux/pci/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"

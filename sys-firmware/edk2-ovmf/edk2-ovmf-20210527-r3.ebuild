@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_REQ_USE="sqlite"
 PYTHON_COMPAT=( python3_{6,8,9} )
-GITCOMMIT=e1999b264f1f
+GIT_COMMIT=e1999b264f1f
 
 inherit python-any-r1 readme.gentoo-r1 rhel8-a
 
@@ -22,11 +22,11 @@ BUNDLED_BROTLI_SUBMODULE_SHA="666c3280cc11dc433c303d79a83d4ffbdd12cc8d"
 
 SRC_URI="
 	!binary? (
-		${REPO_URI}/${MY_PF/-ovmf}.${DIST}.src.rpm
+		${REPO_URI}/${MY_PN:0:1}/${MY_PF/-ovmf}.${DIST}.src.rpm
 		https://github.com/openssl/openssl/archive/${BUNDLED_OPENSSL_SUBMODULE_SHA}.tar.gz -> openssl-${BUNDLED_OPENSSL_SUBMODULE_SHA}.tar.gz
 		https://github.com/google/brotli/archive/${BUNDLED_BROTLI_SUBMODULE_SHA}.tar.gz -> brotli-${BUNDLED_BROTLI_SUBMODULE_SHA}.tar.gz
 	)
-	binary? ( ${REPO_BIN}/${MY_PF}.${DIST}.noarch.rpm )
+	binary? ( ${REPO_BIN}/${MY_PN:0:1}/${MY_PF}.${DIST}.noarch.rpm )
 "
 
 LICENSE="BSD-2 MIT"

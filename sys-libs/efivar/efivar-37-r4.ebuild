@@ -23,8 +23,6 @@ src_prepare() {
 }
 
 src_configure() {
-	append-cflags -flto
-	append-ldflags -flto
 	tc-export CC
 	export CC_FOR_BUILD=$(tc-getBUILD_CC)
 	tc-ld-disable-gold

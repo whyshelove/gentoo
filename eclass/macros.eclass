@@ -3,12 +3,43 @@
 
 # @ECLASS: macros.eclass
 
+inherit flag-o-matic
+
+if [[ ${_hardened_build} != "undefine" ]]; then
+	if [[ ${_strip_cflags} != "undefine" ]]; then
+		_hardening_cflags="-specs=/usr/lib/rpm/redhat/redhat-hardened-cc1"
+	fi
+
+	if [[ ${_strip_ldflags} != "undefine" ]]; then
+		_hardening_ldflags="-Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld"
+	fi
+fi
+
+if [[ ${_annotated_build} != "undefine" ]]; then
+	_annobin_cflags="-specs=/usr/lib/rpm/redhat/redhat-annobin-cc1"
+fi
+
+if [[ ${_strict_symbol_defs_build} == "enable" ]]; then
+	_ld_symbols_flags="-Wl,-z,defs"
+fi
+
+_hardened_cflags="${_hardening_cflags}"
+_hardened_ldflags="${_hardening_ldflags}"
+
+_annotated_cflags="${_annobin_cflags}"
+
+__global_compiler_flags="-O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -fexceptions -fstack-protector-strong -grecord-gcc-switches ${_hardened_cflags} ${_annotated_cflags}"
+
+optflags="${__global_compiler_flags} -m64 -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection"
+
+fflags="-I/usr/lib64/gfortran/modules"
+
 _fixperms="/bin/chmod -Rf a+rX,u+w,g-w,o-w"
 
 _rpmconfigdir=/usr/lib/rpm
 rpmmacrodir=${_rpmconfigdir}/macros.d
 rpmluadir=${_rpmconfigdir}/lua
-rpm_macros_dir=$(d=${_rpmconfigdir}/macros.d; [ -d $d ] || d=${_sysconfdir}/rpm; echo $d)
+rpm_macros_dir=$(d=${rpmmacrodir}; [ -d $d ] || d=${_sysconfdir}/rpm; echo $d)
 
 _usr=/usr
 _var=/var
@@ -41,6 +72,46 @@ _presetdir=/lib/systemd/system-preset
 _udevrulesdir=/lib/udev/rules.d
 
 rubygems_dir=${_datadir}/rubygems
+
+build_cflags(){
+	append-cflags ${optflags} "$@"
+
+	return 0
+}
+
+build_cxxflags(){
+	append-cxxflags ${optflags} "$@"
+
+	return 0
+}
+
+build_ldflags(){
+	append-ldflags '-Wl,-z,relro' ${_ld_symbols_flags} ${_hardened_ldflags} "$@"
+
+	return 0
+}
+
+set_build_flags(){
+	append-flags ${optflags}
+	append-fflags ${fflags}
+	build_ldflags
+
+	return 0
+}
+
+	case ${PN} in
+		tree | keyutils | nvme-cli | pciutils | dmidecode | efibootmgr | os-prober | binutils* \
+		| gdb | libsepol | libutempter | crash | ninja | trace-cmd | ipcalc) build_cflags; build_ldflags ;;
+		efivar ) build_cflags -flto; build_ldflags -flto ;;
+		boost ) OPT_FLAGS="-fno-strict-aliasing -Wno-unused-local-typedefs -Wno-deprecated-declarations"
+			build_cflags $OPT_FLAGS; build_cxxflags $OPT_FLAGS; build_ldflags ;;
+		shadow) build_cflags -fpie; build_ldflags -pie  '-Wl,-z,now' ;;
+		lmdb | zlib ) build_ldflags ;;
+		gdb ) build_cxxflags ;;
+		squashfs-tools ) build_cflags ;;
+		liburing | libcap | dos2unix | pesign )  ;;
+		*) set_build_flags ;;
+	esac
 
 systemd_post(){
 	# Initial installation 

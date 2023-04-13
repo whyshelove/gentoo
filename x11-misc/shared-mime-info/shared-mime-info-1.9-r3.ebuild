@@ -6,7 +6,6 @@ inherit flag-o-matic xdg-utils rhel8
 
 DESCRIPTION="The Shared MIME-info Database specification"
 HOMEPAGE="https://freedesktop.org/wiki/Software/shared-mime-info"
-#SRC_URI="https://people.freedesktop.org/~hadess/${P}.tar.xz"
 
 LICENSE="GPL-2"
 SLOT="0"

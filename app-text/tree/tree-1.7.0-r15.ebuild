@@ -6,11 +6,10 @@ inherit toolchain-funcs flag-o-matic bash-completion-r1 rhel8
 
 DESCRIPTION="Lists directories recursively, and produces an indented listing of files"
 HOMEPAGE="http://mama.indstate.edu/users/ice/tree/"
-#SRC_URI="ftp://mama.indstate.edu/linux/tree/${P}.tgz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~x64-macos"
+KEYWORDS="amd64 arm64 ~ppc64 ~s390"
 IUSE=""
 
 RDEPEND=""

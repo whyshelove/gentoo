@@ -13,7 +13,7 @@ if [[ ${PV} == 9999 ]] ; then
 	EGIT_REPO_URI="https://github.com/SELinuxProject/selinux.git"
 	S="${WORKDIR}/${P}/${PN}"
 else
-	KEYWORDS="amd64 ~arm ~arm64 ~mips ~riscv x86"
+	KEYWORDS="amd64 ~arm arm64 ~mips ~riscv x86"
 fi
 
 LICENSE="GPL-2"
@@ -27,6 +27,7 @@ BDEPEND="sys-devel/flex
 RDEPEND=">=sys-libs/libsepol-${PV}"
 
 src_compile() {
+	set_build_flags
 	emake \
 		CC="$(tc-getCC)" \
 		YACC="bison -y" \

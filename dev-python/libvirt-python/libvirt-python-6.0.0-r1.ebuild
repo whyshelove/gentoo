@@ -8,7 +8,7 @@ PYTHON_COMPAT=( python3_{6..9} )
 DISTUTILS_USE_SETUPTOOLS=no
 MY_P="${P/_rc/-rc}"
 
-inherit distutils-r1 verify-sig rhel8-a
+inherit distutils-r1 rhel8-a
 
 if [[ ${PV} = *9999* ]]; then
 	inherit git-r3
@@ -33,8 +33,7 @@ RESTRICT="!test? ( test )"
 DEPEND="${RDEPEND}
 	virtual/pkgconfig
 	test? ( dev-python/lxml[${PYTHON_USEDEP}]
-		dev-python/nose[${PYTHON_USEDEP}] )
-	verify-sig? ( app-crypt/openpgp-keys-libvirt )"
+		dev-python/nose[${PYTHON_USEDEP}] )"
 
 python_test() {
 	esetup.py test

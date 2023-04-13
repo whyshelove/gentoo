@@ -40,6 +40,7 @@ src_prepare() {
 
 src_configure() {
 	append-cflags -Wno-unused-but-set-variable
+
 	use elibc_uclibc && append-libs -liconv
 	econf \
 		$(use_enable debug) \
@@ -49,7 +50,6 @@ src_configure() {
 		$(use_enable static-libs static) \
 		$(use_with readline) \
 		--disable-rpath \
-		--disable-silent-rules \
 		--disable-gcc-warnings
 }
 

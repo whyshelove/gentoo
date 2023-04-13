@@ -13,7 +13,7 @@ HOMEPAGE="https://sourceware.org/bzip2/"
 
 LICENSE="BZIP2"
 SLOT="0/1" # subslot = SONAME
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv s390 sparc x86"
+KEYWORDS="amd64 arm64 ~ppc64 ~s390"
 IUSE="static static-libs"
 
 DOCS=( CHANGES README{,.COMPILATION.PROBLEMS,.XML.STUFF} manual.pdf )
@@ -44,13 +44,17 @@ bemake() {
 
 multilib_src_compile() {
 	export O3=""
+
 	filter-ldflags -Wl,-O2 -Wl,--as-needed -Wl,--hash-style=gnu -Wl,--sort-common
-	OPTFLAGS=$CFLAGS
+
 	cd ${S}
-	bemake -f Makefile-libbz2_so all CFLAGS="$OPTFLAGS -D_FILE_OFFSET_BITS=64 -fpic -fPIC $O3"
+
+	bemake -f Makefile-libbz2_so all LDFLAGS="${LDFLAGS}" CFLAGS="$CFLAGS -D_FILE_OFFSET_BITS=64 -fpic -fPIC $O3"
+
 	# Make sure we link against the shared lib #504648
 	ln -s libbz2.so.${PV} libbz2.so || die
-	bemake -f Makefile all LDFLAGS="${LDFLAGS} $(usex static -static '')" CFLAGS="$OPTFLAGS -D_FILE_OFFSET_BITS=64 $O3"
+
+	bemake -f Makefile all LDFLAGS="${LDFLAGS} $(usex static -static '')" CFLAGS="$CFLAGS -D_FILE_OFFSET_BITS=64 $O3"
 }
 
 multilib_src_install() {

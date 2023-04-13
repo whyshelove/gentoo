@@ -28,7 +28,7 @@ src_prepare() {
 		sed -i "s@cat /usr@cat ${EPREFIX}/usr@" bindings/python*/Makefile.am || die
 		eautomake #668722
 	fi
-	autoreconf -fiv
+	eautoreconf
 }
 
 src_configure() {

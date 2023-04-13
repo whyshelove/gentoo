@@ -5,7 +5,7 @@ EAPI=7
 
 # Note: ideally bump with sys-apps/cracklib-words
 
-PYTHON_COMPAT=( python3_{6..10} )
+PYTHON_COMPAT=( python3_{6..9} )
 DISTUTILS_OPTIONAL=1
 
 inherit distutils-r1 libtool multilib-minimal usr-ldscript rhel8
@@ -48,6 +48,9 @@ pkg_setup() {
 }
 
 src_prepare() {
+	# Use the dictionary from the build to test
+	sed -i 's,util/cracklib-check <,util/cracklib-check $(DESTDIR)/$(DEFAULT_CRACKLIB_DICT) <,' Makefile.in
+
 	eapply_user
 	elibtoolize #269003
 	do_python
@@ -56,6 +59,7 @@ src_prepare() {
 multilib_src_configure() {
 	local myeconfargs=(
 		# use /usr/lib so that the dictionary is shared between ABIs
+		--with-pic
 		--with-default-dict='/usr/lib/cracklib_dict'
 		--without-python
 		$(use_enable nls)

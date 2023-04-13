@@ -351,6 +351,9 @@ src_configure() {
 	# connectionless ldap per bug #342439
 	append-cppflags -DLDAP_CONNECTIONLESS
 
+	set_build_flags
+	append-cflags ${LDFLAGS} '-Wl,--as-needed' -DLDAP_USE_NON_BLOCKING_TLS -DOPENSSL_NO_MD2
+
 	multilib-minimal_src_configure
 }
 
@@ -499,8 +502,7 @@ multilib_src_compile() {
 	emake CC="${CC}" AR="${AR}" SHELL="${EPREFIX}"/bin/sh
 	local lt="${BUILD_DIR}/libtool"
 	export echo="echo"
-	# enable experimental support for LDAP over UDP (LDAP_CONNECTIONLESS)
-	export CFLAGS="${CFLAGS} ${LDFLAGS} -Wl,--as-needed -DLDAP_CONNECTIONLESS -DLDAP_USE_NON_BLOCKING_TLS"
+
 	if ! use minimal && multilib_is_native_abi ; then
 		if use cxx ; then
 			einfo "Building contrib library: ldapc++"

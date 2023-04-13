@@ -3,9 +3,8 @@
 
 EAPI=7
 
-DIST=20180605git4a062cf.el8
-
-inherit multilib-minimal rhel8
+DPREFIX="20180605git4a062cf."
+inherit multilib-minimal autotools rhel8
 
 DESCRIPTION="Public client interface for NIS(YP) and NIS+ in a IPv6 ready version"
 HOMEPAGE="https://github.com/thkukuk/libnsl"
@@ -32,9 +31,7 @@ src_unpack() {
 
 src_prepare() {
 	default
-	export CFLAGS="$CFLAGS"
-
-	autoreconf -fiv
+	eautoreconf -fiv
 }
 
 multilib_src_configure() {

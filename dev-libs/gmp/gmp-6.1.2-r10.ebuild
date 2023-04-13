@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit flag-o-matic libtool multilib-minimal toolchain-funcs rhel8
+inherit flag-o-matic multilib-minimal toolchain-funcs autotools rhel8
 
 MY_PV=${PV/_p*}
 MY_PV=${MY_PV/_/-}
@@ -14,10 +14,8 @@ PLEVEL=${PV/*p}
 DESCRIPTION="Library for arbitrary-precision arithmetic on different type of numbers"
 HOMEPAGE="https://gmplib.org/"
 
-if [[ ${PV} != *8888 ]]; then
-	SRC_URI="${SRC_URI}
+SRC_URI+="
 	doc? ( https://gmplib.org/${PN}-man-${MANUAL_PV}.pdf )"
-fi
 
 LICENSE="|| ( LGPL-3+ GPL-2+ )"
 # The subslot reflects the C & C++ SONAMEs.
@@ -40,10 +38,8 @@ PATCHES=(
 
 src_prepare() {
 	default
-	export LD_LIBRARY_PATH=`pwd`/.libs
-	# note: we cannot run autotools here as gcc depends on this package
-	elibtoolize
 
+	eautoreconf -ifv
 	# https://bugs.gentoo.org/536894
 	if [[ ${CHOST} == *-darwin* ]] ; then
 		eapply "${FILESDIR}"/${PN}-6.1.2-gcc-apple-4.0.1.patch
@@ -67,6 +63,8 @@ multilib_src_configure() {
 	fi
 
 	export CCAS="$CCAS -Wa,--generate-missing-build-notes=yes"
+	append-cflags "-fplugin=annobin"
+	append-cxxflags "-fplugin=annobin"
 
 	# Because of our 32-bit userland, 1.0 is the only HPPA ABI that works
 	# https://gmplib.org/manual/ABI-and-ISA.html#ABI-and-ISA (bug #344613)
@@ -103,21 +101,22 @@ multilib_src_configure() {
 	    -e 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' \
 	    -e 's|-lstdc++ -lm|-lstdc++|' \
 	    -i libtool
+	export LD_LIBRARY_PATH=`pwd`/.libs
 }
 
 multilib_src_install() {
 	emake DESTDIR="${D}" install
 
-	install -m 644 gmp-mparam.h ${ED}/usr/include
-	rm -f ${ED}/usr/share/info/dir
-	/sbin/ldconfig -n ${ED}/usr/$(get_libdir)
-	ln -sf libgmpxx.so.4 ${ED}/usr/$(get_libdir)/libgmpxx.so
+	install -m 644 gmp-mparam.h ${RPM_BUILD_ROOT}${_includedir}
+
+	rm -f "${ED}"${_infodir}/dir
 
 	# Rename files and install wrappers
 	mv ${ED}/usr/include/gmp.h ${ED}/usr/include/gmp-x86_${GMPABI}.h
-	install -m644 ${WORKDIR}/gmp.h ${ED}/usr/include/gmp.h
+	doheader ${WORKDIR}/gmp.h
+
 	mv ${ED}/usr/include/gmp-mparam.h ${ED}/usr/include/gmp-mparam-x86_${GMPABI}.h
-	install -m644 ${WORKDIR}/gmp-mparam.h ${ED}/usr/include/gmp-mparam.h
+	doheader ${WORKDIR}/gmp-mparam.h
 
 	# should be a standalone lib
 	rm -f "${ED}"/usr/$(get_libdir)/lib{gmp,mp,gmpxx}.la

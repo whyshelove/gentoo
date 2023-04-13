@@ -8,27 +8,25 @@ inherit perl-module plocale rhel8-p
 
 DESCRIPTION="Tools to ease the translation of documentation"
 HOMEPAGE="https://po4a.org/"
-#SRC_URI="https://github.com/mquinson/${PN}/releases/download/v${PV}/${P}.tar.gz"
 
 LICENSE="GPL-2+"
 SLOT="0"
-KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+KEYWORDS="amd64 arm64 ~ppc64 ~s390"
 IUSE="test"
 RESTRICT="!test? ( test )"
 
 RDEPEND="app-text/opensp
 	dev-libs/libxslt
 	dev-perl/Locale-gettext
+	dev-perl/Pod-Parser
 	dev-perl/SGMLSpm
 	dev-perl/TermReadKey
 	dev-perl/Text-WrapI18N
 	dev-perl/Unicode-LineBreak
 	dev-perl/YAML-Tiny
-	sys-devel/gettext
-	dev-perl/Pod-Parser"
+	sys-devel/gettext"
 DEPEND="${RDEPEND}"
-BDEPEND="
-	app-text/docbook-xml-dtd:4.1.2
+BDEPEND="app-text/docbook-xml-dtd:4.1.2
 	app-text/docbook-xsl-stylesheets
 	dev-perl/Module-Build
 	test? (
@@ -37,7 +35,7 @@ BDEPEND="
 		virtual/latex-base
 	)"
 
-PATCHES=( "${FILESDIR}"/${PN}-0.60-man.patch )
+PATCHES=( "${FILESDIR}"/${PN}-man.patch )
 
 DIST_TEST="do"
 

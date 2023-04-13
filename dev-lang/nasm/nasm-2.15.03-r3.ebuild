@@ -7,11 +7,10 @@ inherit flag-o-matic rhel8-p
 
 DESCRIPTION="groovy little assembler"
 HOMEPAGE="https://www.nasm.us/"
-#SRC_URI="https://www.nasm.us/pub/nasm/releasebuilds/${PV/_}/${P/_}.tar.xz"
 
 LICENSE="BSD-2"
 SLOT="0"
-KEYWORDS="amd64 ~arm64 ~ia64 ~ppc64 x86 ~amd64-linux ~x86-linux"
+KEYWORDS="amd64 arm64 ~ppc64 ~s390"
 IUSE="doc"
 
 RDEPEND=""
@@ -25,7 +24,8 @@ BDEPEND="
 		app-text/ghostscript-gpl
 		dev-perl/Font-TTF
 		dev-perl/Sort-Versions
-		media-fonts/source-pro
+		media-fonts/source-code-pro
+		media-fonts/source-sans:3
 		virtual/perl-File-Spec
 	)
 "
@@ -35,6 +35,16 @@ S=${WORKDIR}/${P/_}
 PATCHES=(
 	"${FILESDIR}"/${PN}-2.15-bsd-cp-doc.patch
 )
+
+src_prepare() {
+	default
+
+	# https://bugs.gentoo.org/870214
+	# During the split of media-fonts/source-pro, the source-sans files
+	# were renamed. Currently depend on media-fonts/source-sans:3 which works
+	# with this sed.
+	sed -i 's/SourceSansPro/SourceSans3/g' doc/psfonts.ph || die
+}
 
 src_compile() {
 	default

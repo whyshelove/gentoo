@@ -28,7 +28,8 @@ PATCHES=(
 
 src_configure() {
 	use static && append-ldflags -static
-	CFLAGS="$CFLAGS -D_GNU_SOURCE"
+	append-cflags -D_GNU_SOURCE
+
 	local myeconfargs=(
 		$(use_enable xattr)
 		--program-prefix="$(use userland_BSD && echo g)"

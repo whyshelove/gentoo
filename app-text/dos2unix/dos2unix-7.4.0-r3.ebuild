@@ -12,8 +12,7 @@ HOMEPAGE="http://www.xs4all.nl/~waterlan/dos2unix.html https://sourceforge.net/p
 
 LICENSE="BSD-2"
 SLOT="0"
-[[ "${PV}" == *_beta* ]] || \
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris"
+KEYWORDS="amd64 arm64 ~ppc64 ~s390"
 IUSE="debug nls test"
 
 RDEPEND="

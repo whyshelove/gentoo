@@ -4,6 +4,7 @@
 EAPI=7
 
 CMAKE_ECLASS=cmake
+
 inherit cmake-multilib rhel8
 
 DESCRIPTION="A high-speed compression/decompression library by Google"
@@ -11,7 +12,7 @@ HOMEPAGE="https://github.com/google/snappy"
 
 LICENSE="BSD"
 SLOT="0/${PV%%.*}"
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~s390 ~sparc x86 ~amd64-linux ~x86-linux ~x64-macos"
+KEYWORDS="amd64 arm64 ~ppc64 ~s390"
 IUSE="test"
 RESTRICT="!test? ( test )"
 

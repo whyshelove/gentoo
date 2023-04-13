@@ -9,66 +9,79 @@
 if [[ -z ${_RHEL8_ECLASS} ]] ; then
 _RHEL8_ECLASS=1
 
-if [[ ${PV} == *8888 ]]; then
-	inherit git-r3
-	CENTOS_GIT_REPO_URI="https://gitlab.com/redhat/centos-stream/src"
-	EGIT_REPO_URI="${CENTOS_GIT_REPO_URI}/${PN}.git"
-	S="${WORKDIR}/${P}"
-else
-	inherit rhel
-	if [ -z ${MIRROR} ] ; then MIRROR="https://vault.centos.org"; fi
-	RELEASE="8-stream"
-	REPO_URI="${MIRROR}/${RELEASE}/${REPO:-BaseOS}/Source/SPackages"
-
-	if [ -z ${MIRROR_BIN} ] ; then MIRROR_BIN="http://mirror.centos.org/centos"; fi
-	REPO_BIN="${MIRROR_BIN}/${RELEASE}/${REPO:-BaseOS}/x86_64/os/Packages"
-
-	if [ -z ${MY_PF} ] ; then
+	if [[ ${PV} == *8888 ]]; then
+		inherit git-r3
+		CENTOS_GIT_REPO_SRC="https://gitlab.com/redhat/centos-stream/src"
+		EGIT_REPO_SRC="${CENTOS_GIT_REPO_SRC}/${PN}.git"
+		S="${WORKDIR}/${P}"
+	else
+		inherit rhel
 		MY_PR=${PVR##*r}
 
+		S="${WORKDIR}/${P/_p*}"
+
 		case ${PN} in
-			tiff | db | appstream-glib ) MY_PF=lib${P}-${MY_PR} ;;
-			docbook-xsl-stylesheets ) MY_PF=docbook-style-xsl-${PV}-${MY_PR} ;;
-			thin-provisioning-tools ) MY_PF=device-mapper-persistent-data-${PV}-${MY_PR} ;;
-			multipath-tools ) MY_PF=device-mapper-multipath-${PV}-${MY_PR} ;;
-			iproute2 ) MY_PF=${P/2}-${MY_PR} ;;
-			mit-krb5 ) MY_PF=${P/mit-}-${MY_PR} ;;
-			lxml ) MY_PF=python-${P}-${MY_PR} ;;
-			ninja) MY_PF=${P/-/-build-}-${MY_PR} ;;
-			shadow ) MY_PF=${P/-/-utils-}-${MY_PR} ;;
-			binutils-libs ) MY_PF=${P/-libs}-${MY_PR} ;;
-			webkit-gtk ) MY_PF=${P/-gtk/2gtk3}-${MY_PR} ;;
-			libpcre* ) MY_P=${P/lib}; MY_PF=${MY_P}-${MY_PR} ;;
-			libnsl ) MY_P=${P/-/2-}; MY_PF=${MY_P}-${MY_PR} ;;
-			xorg-proto ) MY_PF=${PN/-/-x11-}-devel-${PV}-${MY_PR} ;;
-			xorg-server ) MY_PF=${P/-/-x11-}-${MY_PR} ;;
-			gtk+ ) MY_P=${P/+/$(ver_cut 1)}; MY_PF=${MY_P}-${MY_PR} ;;
-			xz-utils ) MY_P="${PN/-utils}-${PV/_}"; MY_PF=${MY_P}-${MY_PR} ;;
-			python ) MY_PR=${PVR##*p}; MY_P=${P%_p*}; MY_PF=${MY_P/-/3$(ver_cut 2)-}-${MY_PR} ;;
+			tiff | db | appstream-glib ) MY_P=lib${P} ;;
+			docbook-xsl-stylesheets ) MY_P=docbook-style-xsl-${PV} ;;
+			thin-provisioning-tools ) MY_P=device-mapper-persistent-data-${PV} ;;
+			multipath-tools ) MY_P=device-mapper-multipath-${PV} ;;
+			iproute2 ) MY_P=${P/2} ;;
+			lxml ) MY_P=python-${P} ;;
+			ninja) MY_P=${P/-/-build-} ;;
+			shadow ) MY_P=${P/-/-utils-} ;;
+			binutils-libs ) MY_P=${P/-libs} ;;
+			webkit-gtk ) MY_P=${P/-gtk/2gtk3} ;;
+			libpcre* ) MY_P=${P/lib}; S="${WORKDIR}/${MY_P/_p*}" ;;
+			libnsl ) MY_P=${P/-/2-} ;;
+			xorg-proto ) MY_P=${PN/-/-x11-}-devel-${PV} ;;
+			xorg-server ) MY_P=${P/-/-x11-} ;;
+			gtk+ ) MY_P=${P/+/$(ver_cut 1)} ;;
+			xz-utils ) MY_P="${P/-utils}"; S="${WORKDIR}/${MY_P/_p*}" ;;
 			udisks | gnupg | grub | lcms | glib | enchant | gstreamer \
-			| gtksourceview ) MY_P=${P/-/$(ver_cut 1)-}; MY_PF=${MY_P}-${MY_PR} ;;
-			mpc | talloc | tdb | tevent | ldb ) MY_PF=lib${P}-${MY_PR}; [[ ${PN} == mpc ]] && MY_PF=${MY_PF}.1 ;;
-			go ) MY_PF=${P/-/lang-}-${MY_PR} ;;
-			cunit ) MY_PF=${P^^[cu]}-${MY_PR} ;;
-			libusb ) MY_PF=${P/-/x-}-${MY_PR} ;;
-			gtk-doc-am ) MY_PF=${P/-am}-${MY_PR} ;;
-			e2fsprogs-libs ) MY_PF=${P/-libs}-${MY_PR} ;;
-			openssh ) PARCH=${P/_}; MY_PF=${PARCH}-${MY_PR} ;;
-			procps ) MY_P=${P/-/-ng-}; MY_PF=${MY_P}-${MY_PR} ;;
+			| gtksourceview ) MY_P=${P/-/$(ver_cut 1)-} ;;
+			mpc | talloc | tdb | tevent | ldb ) MY_P=lib${P}; [[ ${PN} == mpc ]] && MY_P=${MY_P}.1 ;;
+			go ) MY_P=${P/-/lang-} ;;
+			cunit ) MY_P=${P^^[cu]} ;;
+			libusb ) MY_P=${P/-/x-} ;;
+			gtk-doc-am ) MY_P=${P/-am}; S="${WORKDIR}/${MY_P/_p*}" ;;
+			e2fsprogs-libs ) MY_P=${P/-libs} ;;
+			openssh ) MY_P=${P/_} ;;
+			procps ) MY_P=${P/-/-ng-}; MY_P=${MY_P} ;;
 			qtgui | qtcore | qtdbus | qtnetwork | qttest | qtxml \
 			| linguist-tools | qtsql | qtconcurrent | qdbus | qtpaths \
-			| qtprintsupport | designer ) MY_P="qt5-${QT5_MODULE}-${PV}"; MY_PF=${MY_P}-${MY_PR} ;;
+			| qtprintsupport | designer ) MY_P="qt5-${QT5_MODULE}-${PV}" ;;
 			qtdeclarative | qtsvg | qtscript | qtgraphicaleffects | qtwayland | qtquickcontrols* \
-			| qtxmlpatterns | qtwebchannel | qtsensors ) MY_PF=qt5-${P}-${MY_PR} ;;
-			gst-plugins* ) MY_PF=${P/-/reamer1-}-${MY_PR} ;;
-			edk2-ovmf ) MY_PF=${P}git${GITCOMMIT}-${MY_PR} ;;
-			ipxe ) MY_PF=${P}-${MY_PR}.${GIT_REV} ;;
-			vte ) MY_PF=${P/-/291-}-${MY_PR} ;;
-			rhel-kernel ) MY_P=${P/rhel-}; MY_PF=${MY_P}-${MY_PR}; MY_KVP=${PVR/r}.${DIST:-el8} ;;
-			*) MY_PF=${P}-${MY_PR} ;;
+			| qtxmlpatterns | qtwebchannel | qtsensors ) MY_P=qt5-${P} ;;
+			gst-plugins* ) MY_P=${P/-/reamer1-} ;;
+			edk2-ovmf ) MY_P=${P}git${GITCOMMIT} ;;
+			ipxe ) MY_P=${P}.${GIT_REV} ;;
+			vte ) MY_P=${P/-/291-} ;;
+			rhel-kernel ) MY_P=${P/rhel-} ;;
+			*) MY_P=${P} ;;
 		esac
+
+		MY_P=${MY_P/_p*}
+
+		case ${PN} in
+			libyaml ) S="${WORKDIR}/${MY_P/lib}" ;;
+			nspr ) S="${WORKDIR}/${MY_P/.0}" ;;
+			nss ) S="${WORKDIR}/${MY_P/.0}/${PN}" ;;
+			mit-krb5 ) MY_P=${MY_P/mit-}; S="${WORKDIR}/${MY_P}/src" ;;
+			python ) MY_PV=${PV%_p*}; S="${WORKDIR}/${MY_P^^[p]}"; MY_P=${MY_P/-/3$(ver_cut 2)-} ;;
+			*)  ;;
+		esac
+
+		releasever="8"
+		baseurl="https://cdn.redhat.com/content/dist/rhel${releasever}/${releasever}/x86_64/${REPO:-baseos}"
+
+		REPO_SRC="${baseurl}/source/SRPMS/Packages"
+		REPO_BIN="${baseurl}/os/Packages"
+
+		MY_PF=${MY_P}-${MY_PR}
+		DIST_PRE_SUF_CATEGORY=${MY_P:0:1}/${MY_PF}.${DPREFIX}${DIST:=el8}${DSUFFIX}
+
+		SRC_URI="${REPO_SRC}/${DIST_PRE_SUF_CATEGORY}.src.rpm"
+		BIN_URI="${REPO_BIN}/${DIST_PRE_SUF_CATEGORY}.${WhatArch:=x86_64}.rpm"
 	fi
-	SRC_URI="${REPO_URI}/${MY_PF}.${DIST:=el8}.src.rpm"
-fi
 
 fi

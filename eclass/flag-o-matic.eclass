@@ -192,6 +192,14 @@ filter-flags() {
 	return 0
 }
 
+# @FUNCTION: filter-lto
+# @DESCRIPTION:
+# Remove flags that enable LTO and those that depend on it
+filter-lto() {
+	[[ $# -ne 0 ]] && die "filter-lto takes no arguments"
+	filter-flags '-flto*' -fwhole-program-vtables '-fsanitize=cfi*'
+}
+
 # @FUNCTION: filter-lfs-flags
 # @DESCRIPTION:
 # Remove flags that enable Large File Support.

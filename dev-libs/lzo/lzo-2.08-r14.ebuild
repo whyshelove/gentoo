@@ -7,7 +7,6 @@ inherit multilib-minimal usr-ldscript rhel8
 
 DESCRIPTION="An extremely fast compression and decompression library"
 HOMEPAGE="https://www.oberhumer.com/opensource/lzo/"
-#SRC_URI="https://www.oberhumer.com/opensource/lzo/download/${P}.tar.gz"
 
 LICENSE="GPL-2+"
 SLOT="2"

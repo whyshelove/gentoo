@@ -17,7 +17,7 @@ fi
 # so put that license behind USE=cxx.
 LICENSE="GPL-3+ cxx? ( LGPL-2.1+ )"
 SLOT="0"
-IUSE="acl cvs +cxx doc emacs git java ncurses nls openmp static-libs"
+IUSE="acl cvs cxx doc emacs git java ncurses nls openmp static-libs"
 
 # only runtime goes multilib
 # Note: The version of libxml2 corresponds to the version bundled via gnulib.
@@ -73,6 +73,8 @@ src_prepare() {
 }
 
 multilib_src_configure() {
+	filter-flags '-Werror=format-security'
+
 	local myconf=(
 		# switches common to runtime and top-level
 		--cache-file="${BUILD_DIR}"/config.cache
@@ -125,6 +127,9 @@ multilib_src_install() {
 		dosym msgfmt /usr/bin/gmsgfmt #43435
 		dobin gettext-tools/misc/gettextize
 	fi
+
+	newbin "${WORKDIR}"/msghack.py msghack
+	doman "${WORKDIR}"/msghack.1
 }
 
 multilib_src_install_all() {

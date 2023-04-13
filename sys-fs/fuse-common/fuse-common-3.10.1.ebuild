@@ -30,5 +30,5 @@ src_install() {
 	fi
 
 	insinto /etc
-	doins util/fuse.conf
+	doins"${WORKDIR}"/fuse.conf
 }

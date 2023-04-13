@@ -15,12 +15,12 @@ HOMEPAGE="https://github.com/besser82/libxcrypt"
 LICENSE="LGPL-2.1+ public-domain BSD BSD-2"
 SLOT="0/1"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86"
-IUSE="+compat split-usr static-libs +system test"
+IUSE="compat split-usr static-libs system test"
 REQUIRED_USE="split-usr? ( system )"
 RESTRICT="!test? ( test )"
 
 DEPEND="system? (
-		elibc_glibc? ( sys-libs/glibc[-crypt(+)] )
+		elibc_glibc? ( sys-libs/glibc )
 		!sys-libs/musl
 	)"
 RDEPEND="${DEPEND}"

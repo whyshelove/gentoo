@@ -6,7 +6,7 @@
 # usable out-of-the-box because it requires the large tex packages.
 
 EAPI=7
-DIST=el8_5
+
 inherit flag-o-matic toolchain-funcs rhel8
 
 DESCRIPTION="The GNU info program and utilities"
@@ -77,7 +77,6 @@ src_install() {
 
 	dosbin contrib/fix-info-dir
 
-	dodir ${_rpmconfigdir}/macros.d/
 	insinto ${_rpmconfigdir}/macros.d
 	doins "${WORKDIR}"/macros.info
 }

@@ -7,11 +7,10 @@ inherit toolchain-funcs flag-o-matic rhel8
 
 DESCRIPTION="A parallel implementation of gzip"
 HOMEPAGE="https://www.zlib.net/pigz/"
-#SRC_URI="https://www.zlib.net/pigz/${P}.tar.gz"
 
 LICENSE="ZLIB"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~s390 sparc x86 ~amd64-linux ~ppc-macos ~sparc64-solaris"
+KEYWORDS="amd64 arm64 ~ppc64 ~s390"
 IUSE="static symlink test"
 RESTRICT="!test? ( test )"
 

@@ -7,7 +7,6 @@ inherit autotools rhel8-a
 
 DESCRIPTION="Script for converting XML and DocBook documents to a variety of output formats"
 HOMEPAGE="https://pagure.io/xmlto"
-#SRC_URI="https://releases.pagure.org/${PN}/${P}.tar.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"

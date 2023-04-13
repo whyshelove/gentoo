@@ -5,8 +5,8 @@ EAPI=7
 
 inherit flag-o-matic toolchain-funcs rhel8-a
 
-SRC_URI="!binary? ( ${REPO_URI}/${MY_PF}.${DIST}.src.rpm )
-        binary? ( ${REPO_BIN}/${MY_PF}.${DIST}.x86_64.rpm )"
+SRC_URI="!binary? ( ${SRC_URI} )
+        binary? ( ${BIN_URI} )"
 DESCRIPTION="Tools for manipulating signed PE-COFF binaries"
 HOMEPAGE="https://github.com/rhboot/pesign"
 
@@ -42,8 +42,13 @@ src_prepare() {
 }
 
 src_compile() {
+	unset CFLAGS
+	unset LDFLAGS
+	unset ASFLAGS
+	unset CPPFLAGS
 	append-cflags -O1 #721934
 	use binary && return
+
 	emake AR="$(tc-getAR)" \
 		ARFLAGS="-cvqs" \
 		AS="$(tc-getAS)" \

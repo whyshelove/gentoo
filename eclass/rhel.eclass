@@ -58,7 +58,9 @@ srcrhel_unpack() {
 		-e "/%python_provide/d" \
 		${WORKDIR}/*.spec
  
-	rpmbuild -bp $WORKDIR/*.spec --nodeps
+	if [[ ${STAGE} != "unprep" ]]; then
+		rpmbuild -bp $WORKDIR/*.spec --nodeps
+	fi
 
 	eshopts_pop
 

@@ -1,14 +1,14 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: font.eclass
 # @MAINTAINER:
 # fonts@gentoo.org
-# @SUPPORTED_EAPIS: 7
+# @SUPPORTED_EAPIS: 7 8
 # @BLURB: Eclass to make font installation uniform
 
 case ${EAPI:-0} in
-	7) ;;
+	[7-8]) ;;
 	*) die "EAPI ${EAPI} is not supported by font.eclass." ;;
 esac
 
@@ -17,34 +17,40 @@ _FONT_ECLASS=1
 
 EXPORT_FUNCTIONS pkg_setup src_install pkg_postinst pkg_postrm
 
-# @ECLASS-VARIABLE: FONT_SUFFIX
+# @ECLASS_VARIABLE: FONT_SUFFIX
 # @DEFAULT_UNSET
 # @REQUIRED
 # @DESCRIPTION:
 # Space delimited list of font suffixes to install.
 FONT_SUFFIX=${FONT_SUFFIX:-}
 
-# @ECLASS-VARIABLE: FONT_S
+# @ECLASS_VARIABLE: FONT_S
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # Directory containing the fonts.  If unset, ${S} is used instead.
 # Can also be an array of several directories.
 
-# @ECLASS-VARIABLE: FONT_PN
+# @ECLASS_VARIABLE: FONT_PN
 # @DESCRIPTION:
 # Font name (ie. last part of FONTDIR).
 FONT_PN=${FONT_PN:-${PN}}
 
-# @ECLASS-VARIABLE: FONTDIR
+# @ECLASS_VARIABLE: FONTDIR
 # @DESCRIPTION:
 # Full path to installation directory.
 FONTDIR=${FONTDIR:-/usr/share/fonts/${FONT_PN}}
 
-# @ECLASS-VARIABLE: FONT_CONF
+# @ECLASS_VARIABLE: FONT_CONF
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # Array containing fontconfig conf files to install.
 FONT_CONF=( "" )
+
+# @ECLASS_VARIABLE: FONT_OPENTYPE_COMPAT
+# @DEFAULT_UNSET
+# @DESCRIPTION:
+# Determines whether detected BDF and PCF font files should be converted
+# to an SFNT wrapper, for use with newer Pango.
 
 if [[ ${CATEGORY}/${PN} != media-fonts/encodings ]]; then
 	IUSE="X"
@@ -53,6 +59,31 @@ if [[ ${CATEGORY}/${PN} != media-fonts/encodings ]]; then
 			media-fonts/encodings
 	)"
 fi
+
+if [[ -n ${FONT_OPENTYPE_COMPAT} ]] ; then
+	IUSE+=" +opentype-compat"
+	BDEPEND+=" opentype-compat? ( x11-apps/fonttosfnt )"
+fi
+
+# @FUNCTION: font_wrap_opentype_compat
+# @DESCRIPTION:
+# Converts .bdf and .pcf fonts detected within ${ED} to the OTB wrapper format
+# using x11-apps/fonttosfnt.  Handles optional .gz extension.
+font_wrap_opentype_compat() {
+	local file tmpfile
+
+	while IFS= read -rd '' file; do
+		if [[ ${file} == *.gz ]] ; then
+			tmpfile=${file%.*}
+
+			gzip -cd -- "${file}" > "${tmpfile}" \
+			&& fonttosfnt -v -o "${file%.*}.otb" -- "${tmpfile}" \
+			&& rm -- "${tmpfile}"
+		else
+			fonttosfnt -v -o "${file%.*}.otb" -- "${file}"
+		fi || ! break
+	done < <(find "${ED}" \( -name '*.bdf' -o -name '*.bdf.gz' -o -name '*.pcf' -o -name '*.pcf.gz' \) -type f ! -type l -print0) || die
+}
 
 # @FUNCTION: font_xfont_config
 # @DESCRIPTION:
@@ -150,6 +181,10 @@ font_pkg_setup() {
 font_src_install() {
 	local dir suffix commondoc
 
+	if [[ -n ${FONT_OPENTYPE_COMPAT} ]] && in_iuse opentype-compat && use opentype-compat ; then
+		font_wrap_opentype_compat
+	fi
+
 	if [[ $(declare -p FONT_S 2>/dev/null) == "declare -a"* ]]; then
 		# recreate the directory structure if FONT_S is an array
 		for dir in "${FONT_S[@]}"; do
@@ -186,10 +221,6 @@ font_src_install() {
 # @DESCRIPTION:
 # Updates fontcache if !prefix and media-libs/fontconfig installed
 _update_fontcache() {
-	# unreadable font files = fontconfig segfaults
-	find "${EROOT}"/usr/share/fonts/ -type f '!' -perm 0644 \
-		-exec chmod -v 0644 2>/dev/null {} + || die "failed to fix font files perms"
-
 	if [[ -z ${ROOT} ]] ; then
 		if has_version media-libs/fontconfig ; then
 			ebegin "Updating global fontcache"

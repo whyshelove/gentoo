@@ -38,58 +38,51 @@ BDEPEND="
 "
 
 _target_cpu=$(rhel-kernel-install_get_qemu_arch)
-KVERREL=${MY_KVP/_*}.${_target_cpu}
-S=${WORKDIR}/${MY_PF}.${DIST}/linux-${KVERREL}
+
+K_PV=${PV}-${MY_PR}.${subrelease}
+K_PVD=${K_PV}.${DIST}${DSUFFIX}
+
+KVERREL=${K_PVD}.${_target_cpu}
+
+MY_PN=${PN/rhel-}
+
+S=${WORKDIR}/kernel-${K_PVD}/linux-${K_PV}.${_target_cpu}
 
 rhel-kernel-build_pkg_setup() {
     export make_target=bzImage
     export all_arch_configs=${MY_P}-*.config
-    export hdmarch=${_target_cpu}
+    export hdrarch=${_target_cpu}
     export asmarch=${_target_cpu}
     export image_install_path=boot
     export modsign_cmd="${WORKDIR}"/mod-sign.sh
     use gcov && export with_gcov=1
     use vdso && export with_vdso_install=1
-    use zipmodules && zipsed="-e 's/\.ko$/\.ko.xz/'"
     use ipaclones && ( use amd64 || use ppc64 ) && export kpatch_kcflags=-fdump-ipa-clones
 
-	if use test; then
-		S10=${WORKDIR}/centossecurebootca2.der
-		S11=${WORKDIR}/centos-ca-secureboot.der
-		S12=${WORKDIR}/centossecureboot201.der
-		S13=${WORKDIR}/centossecureboot001.der
+    	# released_kernel
+	S10=${WORKDIR}/redhatsecurebootca3.cer
+	S11=${WORKDIR}/redhatsecurebootca5.cer
+	S12=${WORKDIR}/redhatsecureboot301.cer
+	S13=${WORKDIR}/redhatsecureboot501.cer
 
-		secureboot_ca_0=${S11}
-		secureboot_ca_1=${S10}
-		if use arm64 || use amd64; then
-		    secureboot_key_0=${S13}
-		    pesign_name_0=centossecureboot001
-		    secureboot_key_1=${S12}
-		    pesign_name_1=centossecureboot201
-		fi
-    		# released_kernel
-	fi
-		S11=${WORKDIR}/centossecurebootca2.der
-		S12=${WORKDIR}/centos-ca-secureboot.der
-		S13=${WORKDIR}/centossecureboot201.der
-		S14=${WORKDIR}/centossecureboot001.der
-
-		secureboot_ca_0=${S12}
-		secureboot_ca_1=${S11}
-		secureboot_key_0=${S14}
-		pesign_name_0=centossecureboot001
+	secureboot_ca_0=${S10}
+	secureboot_ca_1=${S11}
+	if use arm64 || use amd64; then
+		secureboot_key_0=${S12}
+		pesign_name_0=redhatsecureboot301
 		secureboot_key_1=${S13}
-		pesign_name_1=centossecureboot201
+		pesign_name_1=redhatsecureboot501
+	fi
 
 	case ${ARCH} in
 		amd64|x86)
 			export asmarch=x86
-			[[ ${ARCH} == x86 ]] && export hdmarch=i386
+			[[ ${ARCH} == x86 ]] && export hdrarch=i386
 			;;
 		arm64)
 			export perf_build_extra_opts='CORESIGHT=1'
 			export asmarch=arm64
-			export hdmarch=arm64
+			export hdrarch=arm64
 			export make_target=Image.gz
 			;;
 		ppc64)
@@ -192,6 +185,9 @@ rhel-kernel-build_src_compile() {
                 emake
                 popd
                 pushd tools/power/x86/intel-speed-select
+                emake CFLAGS+="-D_GNU_SOURCE -Iinclude -I/usr/include/libnl3"
+                popd
+                pushd tools/arch/x86/intel_sdsi
                 emake
                 popd
             fi
@@ -211,9 +207,13 @@ rhel-kernel-build_src_compile() {
         popd
     fi
 
+	if [ -f $DevelDir/vmlinux.h ]; then
+	  _VMLINUX_H=$DevelDir/vmlinux.h
+	fi
+
     if use bpf; then
         pushd tools/bpf/bpftool
-        emake EXTRA_CFLAGS="${OPT_FLAGS}" EXTRA_LDFLAGS="${LDFLAGS}" DESTDIR="${ED}" V=1
+        emake EXTRA_CFLAGS="${OPT_FLAGS}" EXTRA_LDFLAGS="${LDFLAGS}" DESTDIR="${ED}" VMLINUX_H="${_VMLINUX_H}" V=1
         popd
     fi
 }
@@ -250,7 +250,7 @@ rhel-kernel-build_src_install() {
 
     if use perf; then
         # perf tool binary and supporting scripts/binaries
-        ${perf_make[@]} DESTDIR="${ED}" lib=${_lib} install-bin install-traceevent-plugins
+        ${perf_make[@]} DESTDIR="${ED}" lib=${_lib} install-bin
         # remove the 'trace' symlink.
         rm -f "${ED}"${_bindir}/trace
 
@@ -285,7 +285,10 @@ rhel-kernel-build_src_install() {
                 emake DESTDIR="${ED}" install
                 popd
                 pushd tools/power/x86/intel-speed-select
-                emake CFLAGS+="-D_GNU_SOURCE -Iinclude" DESTDIR="${ED}" install
+                emake CFLAGS+="-D_GNU_SOURCE -Iinclude -I/usr/include/libnl3" DESTDIR="${ED}" install
+                popd
+                pushd tools/arch/x86/intel_sdsi
+                emake DESTDIR="${ED}" install
                 popd
             fi
             fperms  0755 ${_libdir}/libcpupower.so*
@@ -308,18 +311,37 @@ rhel-kernel-build_src_install() {
         emake INSTALL_ROOT="${ED}" install-man
         systemd_dounit "${WORKDIR}"/'kvm_stat.service'
         popd
+
+	# install VM tools
+	pushd tools/vm/
+	insinto ${buildroot}${_bindir}/
+	doins slabinfo page_owner_sort
+	popd
     fi
+
+	# We don't call InitBuildVars in install section so $DevelDir
+	# variable is not defined. Using the $DevelDir definition
+	# directly.
+	if [ -f /usr/src/kernels/${KVERREL}/vmlinux.h ]; then
+	   _VMLINUX_H=/usr/src/kernels/${KVERREL}/vmlinux.h
+	fi
 
     if use bpf; then
         pushd tools/bpf/bpftool
         emake prefix="${EPREFIX}/usr" bash_compdir=${_sysconfdir}/bash_completion.d/ mandir=${_mandir} install doc-install
         popd
+
+	# bpf-helpers.7 manpage has been moved under samples
+	# a01d935b2e09 ("tools/bpf: Remove bpf-helpers from bpftool docs")
+	pushd tools/testing/selftests/bpf
+	  emake -f Makefile.docs DESTDIR="${ED}" mandir=${_mandir} docs-install
+	popd
     fi
 
 	# strip empty directories
 	find "${D}" -type d -empty -exec rmdir {} + || die
 
-#	save_config .config
+	save_config .config
 }
 
 # @FUNCTION: rhel-kernel-build_pkg_postinst
@@ -335,9 +357,7 @@ rhel-kernel-build_pkg_postinst() {
         find "${ED}"/lib/modules/ -type f -name '*.ko' | "${WORKDIR}"/parallel_xz.sh;
     fi
 
-	grub-mkconfig -o /boot/efi/EFI/gentoo/grub.cfg || die
-	grub-mkconfig -o /boot/grub/grub.cfg || die
-#	kernel-install_pkg_postinst
+	rhel-kernel-install_pkg_postinst
 #	savedconfig_pkg_postinst
 }
 

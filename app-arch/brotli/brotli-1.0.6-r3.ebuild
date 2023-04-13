@@ -3,7 +3,7 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7,8,9} )
+PYTHON_COMPAT=( python3_{6,8,9} )
 DISTUTILS_OPTIONAL="1"
 DISTUTILS_IN_SOURCE_BUILD="1"
 
@@ -29,12 +29,7 @@ KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x
 # tests are currently broken, see https://github.com/google/brotli/issues/850
 RESTRICT="test"
 
-src_unpack() {
-	rpm_src_unpack ${A}
-}
-
 src_prepare() {
-	eapply ${WORKDIR}
 	use python && distutils-r1_src_prepare
 	cmake-utils_src_prepare
 }

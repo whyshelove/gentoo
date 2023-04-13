@@ -6,8 +6,7 @@ inherit readme.gentoo-r1 toolchain-funcs rhel8
 
 DESCRIPTION="Utility to detect other OSs on a set of drives"
 HOMEPAGE="https://packages.debian.org/source/sid/os-prober"
-#SRC_URI="mirror://debian/pool/main/${PN::1}/${PN}/${PN}_${PV}.tar.xz"
-
+S="${WORKDIR}/${PN/_p*}"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="amd64 x86"

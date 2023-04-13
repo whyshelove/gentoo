@@ -4,7 +4,7 @@
 EAPI=7
 
 DATE=20180224
-DIST=${DATE}.el8
+DPREFIX="${DATE}."
 
 inherit toolchain-funcs multilib multilib-minimal preserve-libs usr-ldscript rhel8
 

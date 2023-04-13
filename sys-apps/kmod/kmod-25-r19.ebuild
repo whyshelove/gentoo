@@ -131,13 +131,10 @@ src_install() {
 	emake -C "${BUILD_DIR}" DESTDIR="${D}" install
 	einstalldocs
 
-	mkdir -p ${ED}/etc/modprobe.d
-	mkdir -p ${ED}/etc/depmod.d
-	mkdir -p ${ED}/usr/lib/modprobe.d
+	dosbin ${WORKDIR}/weak-modules
 
-	mkdir -p ${ED}/usr/sbin
-	install -m 755 ${WORKDIR}/weak-modules ${ED}/usr/sbin/weak-modules
-	install -m 0644 ${WORKDIR}/depmod.conf.dist ${ED}/etc/depmod.d/dist.conf
+	insinto /etc/depmod.d
+	newins "${WORKDIR}"/depmod.conf.dist depmod.conf
 
 	if use python; then
 		local native_builddir=${BUILD_DIR}

@@ -3,13 +3,13 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{6,8,9,10} )
+PYTHON_COMPAT=( python3_{6,8,9} )
 
 DISTUTILS_USE_SETUPTOOLS=no
 
 MY_P="${P/_rc/-rc}"
 
-inherit distutils-r1 verify-sig rhel8-a
+inherit distutils-r1 rhel8-a
 
 if [[ ${PV} = *9999* ]]; then
 	inherit git-r3
@@ -36,7 +36,6 @@ BDEPEND="
 		dev-python/lxml[${PYTHON_USEDEP}]
 		dev-python/pytest[${PYTHON_USEDEP}]
 	)
-	verify-sig? ( sec-keys/openpgp-keys-libvirt )
 "
 
 distutils_enable_tests setup.py

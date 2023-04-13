@@ -7,7 +7,6 @@ inherit flag-o-matic toolchain-funcs rhel8
 
 DESCRIPTION="Library that allows non-privileged apps to write utmp (login) info"
 HOMEPAGE="https://altlinux.org/index.php?module=sisyphus&package=libutempter"
-#SRC_URI="ftp://ftp.altlinux.org/pub/people/ldv/${PN}/${P}.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0"

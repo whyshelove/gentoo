@@ -7,7 +7,6 @@ inherit flag-o-matic toolchain-funcs rhel8-p
 
 DESCRIPTION="Library for build EFI Applications"
 HOMEPAGE="https://sourceforge.net/projects/gnu-efi/"
-#SRC_URI="mirror://sourceforge/gnu-efi/${P}.tar.bz2"
 
 # inc/, lib/ dirs (README.efilib)
 # - BSD-2

@@ -133,7 +133,7 @@ rhel-kernel-install_update_symlink() {
 
 	if rhel-kernel-install_can_update_symlink "${target}"; then
 		ebegin "Updating ${target} symlink"
-		ln -f -n -s "${target##*/}-${version}" "${target}"
+		ln -f -n -s "kernels/${version}" "${target}"
 		eend ${?}
 	else
 		elog "${target} points at another kernel, leaving it as-is."
@@ -395,8 +395,8 @@ rhel-kernel-install_src_test() {
 rhel-kernel-install_pkg_preinst() {
 	debug-print-function ${FUNCNAME} "${@}"
 
-	local ver="${KVERREL/linux}"
-	local kdir="${ED}/usr/src/kernels/${KVERREL}"
+	local ver="${KVERREL}"
+	local kdir="${ED}/usr/src/kernels/${ver}"
 	local relfile="${kdir}/include/config/kernel.release"
 	[[ ! -d ${kdir} ]] && die "Kernel directory ${kdir} not installed!"
 	[[ ! -f ${relfile} ]] && die "Release file ${relfile} not installed!"
@@ -419,18 +419,10 @@ rhel-kernel-install_install_all() {
 	while :; do
 		nonfatal mount-boot_check_status || break
 
-		local image_path=$(rhel-kernel_get_image_path)
 		if use initramfs; then
-			# putting it alongside kernel image as 'initrd' makes
-			# rhel-kernel-install happier
-			nonfatal rhel-kernel_build_initramfs \
-				"${EROOT}/usr/src/linux-${ver}/${image_path%/*}/initrd" \
-				"${ver}" || break
+			/usr/bin/kernel-install add ${ver} \
+			/lib/modules/${ver}/vmlinuz || break
 		fi
-
-		nonfatal rhel-kernel_install_kernel "${ver}" \
-			"${EROOT}/usr/src/linux-${ver}/${image_path}" \
-			"${EROOT}/usr/src/linux-${ver}/System.map" || break
 
 		success=1
 		break
@@ -454,7 +446,7 @@ rhel-kernel-install_install_all() {
 rhel-kernel-install_pkg_postinst() {
 	debug-print-function ${FUNCNAME} "${@}"
 
-	local ver="${PV}${KV_LOCALVERSION}"
+	local ver="${KVERREL}"
 	rhel-kernel-install_update_symlink "${EROOT}/usr/src/linux" "${ver}"
 
 	if [[ -z ${ROOT} ]]; then
@@ -478,11 +470,11 @@ rhel-kernel-install_pkg_postrm() {
 	debug-print-function ${FUNCNAME} "${@}"
 
 	if [[ -z ${ROOT} ]] && use initramfs; then
-		local ver="${PV}${KV_LOCALVERSION}"
+		local ver="${KVERREL}"
 		local image_path=$(rhel-kernel_get_image_path)
 		ebegin "Removing initramfs"
-		rm -f "${EROOT}/usr/src/linux-${ver}/${image_path%/*}"/initrd{,.uefi} &&
-			find "${EROOT}/usr/src/linux-${ver}" -depth -type d -empty -delete
+		rm -f "${EROOT}/usr/src/kernels/${ver}/${image_path%/*}"/initrd{,.uefi} &&
+			find "${EROOT}/usr/src/kernels/${ver}" -depth -type d -empty -delete
 		eend ${?}
 	fi
 }
@@ -493,7 +485,7 @@ rhel-kernel-install_pkg_postrm() {
 rhel-kernel-install_pkg_config() {
 	[[ -z ${ROOT} ]] || die "ROOT!=/ not supported currently"
 
-	rhel-kernel-install_install_all "${PV}${KV_LOCALVERSION}"
+	rhel-kernel-install_install_all "${KVERREL}"
 }
 
 _KERNEL_INSTALL_ECLASS=1

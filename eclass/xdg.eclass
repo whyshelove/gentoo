@@ -15,7 +15,7 @@
 inherit xdg-utils
 
 case "${EAPI:-0}" in
-	4|5|6|7)
+	4|5|6|7|8)
 		EXPORT_FUNCTIONS src_prepare pkg_preinst pkg_postinst pkg_postrm
 		;;
 	*) die "EAPI=${EAPI} is not supported" ;;
@@ -107,4 +107,3 @@ xdg_pkg_postrm() {
 		debug-print "No mime info files to add to database"
 	fi
 }
-

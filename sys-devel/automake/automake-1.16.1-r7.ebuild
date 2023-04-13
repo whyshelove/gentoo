@@ -6,9 +6,7 @@ PYTHON_COMPAT=( python3_{6,8,9} )
 
 inherit python-any-r1 rhel8-a
 
-if [[ ${PV} != *8888 ]]; then
-	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-fi
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 
 DESCRIPTION="Used to generate Makefile.in from Makefile.am"
 HOMEPAGE="https://www.gnu.org/software/automake/"

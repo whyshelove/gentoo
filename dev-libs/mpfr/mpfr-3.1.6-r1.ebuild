@@ -7,7 +7,6 @@ inherit multilib-minimal rhel8
 
 DESCRIPTION="library for multiple-precision floating-point computations with exact rounding"
 HOMEPAGE="https://www.mpfr.org/"
-#SRC_URI="https://www.mpfr.org/mpfr-${PV}/${P}.tar.xz"
 
 LICENSE="LGPL-2.1"
 SLOT="0/6" # libmpfr.so version

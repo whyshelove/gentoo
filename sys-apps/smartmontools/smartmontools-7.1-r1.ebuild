@@ -53,8 +53,9 @@ src_prepare() {
 }
 
 src_configure() {
-	append-cppflags -fpie
+	append-cxxflags -fpie
 	append-ldflags -pie -Wl,-z,relro,-z,now
+
 	use static && append-ldflags -static
 	# The build installs /etc/init.d/smartd, but we clobber it
 	# in our src_install, so no need to manually delete it.

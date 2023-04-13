@@ -168,10 +168,10 @@ InitBuildVars() {
     Flav=${Flavour:++${Flavour}}
 
     # Pick the right kernel config file
-    Config=${MY_P}-${_target_cpu}${Flavour:+-${Flavour}}.config
+    #Config=${MY_P}-${_target_cpu}${Flavour:+-${Flavour}}.config
     DevelDir=/usr/src/kernels/${KVERREL}${Flav}
 
-    KernelVer=${MY_KVP}.${_target_cpu}${Flav}
+    KernelVer=${K_PVD}.${_target_cpu}${Flav}
 
     # make sure EXTRAVERSION says what we want it to say
     release=${MY_PR}.${DIST}
@@ -241,7 +241,7 @@ BuildKernel() {
 }
 
 perf_make=(
-    emake EXTRA_CFLAGS="${OPT_FLAGS}" LDFLAGS="${LDFLAGS}" -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 ${perf_build_extra_opts} prefix="${EPREFIX}/usr" PYTHON=${EPYTHON}
+    emake EXTRA_CFLAGS="${OPT_FLAGS}" LDFLAGS="${LDFLAGS}" -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 LIBTRACEEVENT_DYNAMIC=1 ${perf_build_extra_opts} prefix="${EPREFIX}/usr" PYTHON=${EPYTHON}
 )
 
 InstallKernel(){
@@ -249,9 +249,6 @@ InstallKernel(){
     dodir /${image_install_path} /lib/modules/$KernelVer
     insinto /boot && newins .config config-$KernelVer && newins System.map System.map-$KernelVer
     insinto /lib/modules/$KernelVer && newins .config config && doins System.map
-    # We estimate the size of the initramfs because rpm needs to take this size
-    # into consideration when performing disk space calculations. (See bz #530778)
-    use initramfs && dd if=/dev/zero of=${ED}/boot/initramfs-$KernelVer.img bs=1M count=20
 
     if [ -f arch/$Arch/boot/zImage.stub ]; then
         cp arch/$Arch/boot/zImage.stub ${ED}/${image_install_path}/zImage.stub-$KernelVer || :
@@ -468,18 +465,19 @@ InstallKernel(){
     pushd ${ED}/lib/modules/$KernelVer/
         rm -f modules.{alias*,builtin.bin,dep*,*map,symbols*,devname,softdep}
     popd
-    if use modules; then
-	    mod-blacklist="${WORKDIR}/mod-blacklist.sh"
-	    # Identify modules in the kernel-modules-extras package
-	    sh ${mod-blacklist} ${ED} lib/modules/$KernelVer "${WORKDIR}/mod-extra.list"
-	    # Identify modules in the kernel-modules-internal package
-	    sh ${mod-blacklist} ${ED} lib/modules/$KernelVer "${WORKDIR}/centossecureboot001.der" internal
 
-	    if use realtime; then
+    #if use modules; then
+	#    mod-blacklist='${WORKDIR}/mod-blacklist.sh'
+	    # Identify modules in the kernel-modules-extras package
+	 #   ${mod-blacklist} ${ED} lib/modules/$KernelVer "${WORKDIR}/mod-extra.list"
+	    # Identify modules in the kernel-modules-internal package
+	  #  ${mod-blacklist} ${ED} lib/modules/$KernelVer "${WORKDIR}/mod-internal.list" internal
+
+	   # if use realtime; then
 		# Identify modules in the kernel-rt-kvm package
-		sh ${mod-blacklist} ${ED} lib/modules/$KernelVer "${WORKDIR}/mod-kvm.list" kvm
-	    fi
-    fi
+		#${mod-blacklist} ${ED} lib/modules/$KernelVer "${WORKDIR}/mod-kvm.list" kvm
+	    #fi
+    #fi
     #
     # Generate the kernel-core and kernel-modules files lists
     #
@@ -490,6 +488,7 @@ InstallKernel(){
     pushd ${ED}
     mkdir restore
     cp -r lib/modules/$KernelVer/* restore/.
+
     if use modules; then
 	    # don't include anything going into kernel-modules-extra in the file lists
 	    xargs rm -rf < mod-extra.list
@@ -548,15 +547,15 @@ InstallKernel(){
 
     # Make sure the files lists start with absolute paths or rpmbuild fails.
     # Also add in the dir entries
-    if use modules; then
-	sed -e 's/^lib*/\/lib/' ${zipsed} ${ED}/k-d.list > ../${MY_PN}${Flavour:+-${Flavour}}-modules.list
-	sed -e 's/^lib*/%dir \/lib/' ${zipsed} ${ED}/module-dirs.list > ../${MY_PN}${Flavour:+-${Flavour}}-core.list
-	sed -e 's/^lib*/\/lib/' ${zipsed} ${ED}/modules.list >> ../${MY_PN}${Flavour:+-${Flavour}}-core.list
-	sed -e 's/^lib*/\/lib/' ${zipsed} ${ED}/mod-extra.list >> ../${MY_PN}${Flavour:+-${Flavour}}-modules-extra.list
-	sed -e 's/^lib*/\/lib/' ${zipsed} ${ED}/mod-internal.list >> ../${MY_PN}${Flavour:+-${Flavour}}-modules-internal.list
-    fi
+    #if use modules; then
+	#sed -e 's/^lib*/\/lib/' -${zipsed} ${ED}/k-d.list > ../${MY_PN}${Flavour:+-${Flavour}}-modules.list
+	#sed -e 's/^lib*/%dir \/lib/' ${zipsed} ${ED}/module-dirs.list > ../${MY_PN}${Flavour:+-${Flavour}}-core.list
+	#sed -e 's/^lib*/\/lib/' ${zipsed} ${ED}/modules.list >> ../${MY_PN}${Flavour:+-${Flavour}}-core.list
+	#sed -e 's/^lib*/\/lib/' ${zipsed} ${ED}/mod-extra.list >> ../${MY_PN}${Flavour:+-${Flavour}}-modules-extra.list
+	#sed -e 's/^lib*/\/lib/' ${zipsed} ${ED}/mod-internal.list >> ../${MY_PN}${Flavour:+-${Flavour}}-modules-internal.list
+    #fi
 
-    use realtime && sed -e 's/^lib*/\/lib/' ${zipsed} ${ED}/mod-kvm.list >> ../${MY_PN}${Flavour:+-${Flavour}}-kvm.list
+    #use realtime && sed -e 's/^lib*/\/lib/' ${zipsed} ${ED}/mod-kvm.list >> ../${MY_PN}${Flavour:+-${Flavour}}-kvm.list
 
     # Cleanup
     rm -f ${ED}/{k-d,modules,module-dirs,mod-extra,mod-internal}.list
@@ -577,6 +576,11 @@ InstallKernel(){
     # when kernel-devel is installed, and a relative link doesn't work across
     # the F17 UsrMove feature.
     ln -sf $DevelDir ${ED}/lib/modules/$KernelVer/build
+
+    # Generate vmlinux.h and put it to kernel-devel path
+    if use bpf; then
+      bpftool btf dump file vmlinux format c > ${ED}/$DevelDir/vmlinux.h
+    fi
 
     # prune junk from kernel-devel
     find ${ED}/usr/src/kernels -name ".*.cmd" -exec rm -f {} \;

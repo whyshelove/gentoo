@@ -42,7 +42,9 @@ src_prepare() {
 
 src_configure() {
 	use static && append-ldflags -static
-	export CFLAGS="$CFLAGS -D__SUPPORT_SNAN__"
+
+	append-cflags -D__SUPPORT_SNAN__
+
 	program_prefix=$(usex userland_GNU '' g)
 	econf \
 		--with-packager="Gentoo" \

@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="7"
@@ -12,21 +12,24 @@ HOMEPAGE="https://www.gnu.org/software/libmicrohttpd/"
 SRC_URI="mirror://gnu/${PN}/${MY_P}.tar.gz"
 S="${WORKDIR}"/${MY_P}
 
-PATCHES=( "${FILESDIR}"/${PN}-0.9.73-test-ssl3.patch )
-
 LICENSE="LGPL-2.1+"
 SLOT="0/12"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~riscv sparc x86"
 IUSE="+epoll ssl static-libs test thread-names"
 RESTRICT="!test? ( test )"
 
-RDEPEND="ssl? ( >net-libs/gnutls-2.12.20:= )"
+RDEPEND="ssl? ( >net-libs/gnutls-2.12.20:=[${MULTILIB_USEDEP}] )"
 # libcurl and the curl binary are used during tests on CHOST
 DEPEND="${RDEPEND}
 	test? ( net-misc/curl[ssl?] )"
 BDEPEND="ssl? ( virtual/pkgconfig )"
 
 DOCS=( AUTHORS NEWS README ChangeLog )
+
+PATCHES=(
+	"${FILESDIR}"/${PN}-0.9.73-test-ssl3.patch
+	"${FILESDIR}"/${PN}-0.9.75-fix-testsuite-with-lto.patch
+)
 
 multilib_src_configure() {
 	ECONF_SOURCE="${S}" \

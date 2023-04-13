@@ -6,7 +6,7 @@ EAPI=7
 PYTHON_COMPAT=( python3_{6,8,9} )
 
 DIST=module_el8.6.0+1046+bd8eec5e
-inherit meson bash-completion-r1 linux-info python-any-r1 readme.gentoo-r1 tmpfiles rhel8-a
+inherit meson bash-completion-r1 linux-info python-any-r1 readme.gentoo-r1 tmpfiles systemd rhel8-a
 
 if [[ ${PV} = *9999* ]]; then
 	inherit git-r3

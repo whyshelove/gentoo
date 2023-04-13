@@ -120,8 +120,7 @@ src_configure() {
 		myeconfargs+=( --with-dracutstap=${dracutstap} --with-dracutbindir=${_bindir} )
 	fi
 
-	PYTHON3="${PYTHON}" \
-	econf "${myeconfargs[@]}"
+	PYTHON3="${PYTHON}" econf "${myeconfargs[@]}"
 }
 
 src_install() {

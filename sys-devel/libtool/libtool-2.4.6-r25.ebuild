@@ -7,9 +7,7 @@ LIBTOOLIZE="true" #225559
 WANT_LIBTOOL="none"
 inherit autotools prefix rhel8
 
-if [[ ${PV} != *8888 ]]; then
-	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris ~x86-winnt"
-fi
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris ~x86-winnt"
 
 DESCRIPTION="A shared library tool for developers"
 HOMEPAGE="https://www.gnu.org/software/libtool/"
@@ -72,6 +70,8 @@ src_prepare() {
 }
 
 src_configure() {
+	append-cflags -fPIC
+
 	# the libtool script uses bash code in it and at configure time, tries
 	# to find a bash shell.  if /bin/sh is bash, it uses that.  this can
 	# cause problems for people who switch /bin/sh on the fly to other
@@ -86,8 +86,7 @@ src_configure() {
 }
 
 src_compile() {
-	emake CUSTOM_LTDL_CFLAGS="-specs=/usr/lib/rpm/redhat/redhat-hardened-cc1" \
-	CUSTOM_LTDL_LDFLAGS="-Wl,-z,now -specs=/usr/lib/rpm/redhat/redhat-hardened-ld"
+	emake CUSTOM_LTDL_CFLAGS="${_hardening_cflags}" CUSTOM_LTDL_LDFLAGS="${_hardening_ldflags}"
 }
 
 src_test() {

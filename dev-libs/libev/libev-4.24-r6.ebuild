@@ -26,6 +26,7 @@ multilib_src_configure() {
 	ECONF_SOURCE="${S}" \
 	econf \
 		--disable-maintainer-mode \
+		--with-pic \
 		$(use_enable static-libs static)
 }
 

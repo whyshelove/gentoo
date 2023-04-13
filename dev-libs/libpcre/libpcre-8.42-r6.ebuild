@@ -7,9 +7,6 @@ inherit libtool multilib-minimal preserve-libs usr-ldscript rhel8
 
 DESCRIPTION="Perl-compatible regular expression library"
 HOMEPAGE="http://www.pcre.org/"
-if [[ ${PV} != *8888 ]]; then
-	S="${WORKDIR}/${MY_P}"
-fi
 
 LICENSE="BSD"
 SLOT="3"
