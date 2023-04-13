@@ -7,6 +7,7 @@ PYTHON_COMPAT=( python3_{9..10} )
 # NEED_BOOTSTRAP is for developers to quickly generate a tarball
 # for publishing to the tree.
 NEED_BOOTSTRAP="yes"
+_strict_symbol_defs_build="enable"
 inherit eapi8-dosym multibuild multilib python-any-r1 flag-o-matic toolchain-funcs multilib-minimal rhel9
 
 DESCRIPTION="Extended crypt library for descrypt, md5crypt, bcrypt, and others"
@@ -125,7 +126,9 @@ src_configure() {
 	# bug #821496
 	tc-ld-disable-gold
 
+	filter-flags -m64
 	append-cflags -flto=auto
+
 	strip-unsupported-flags
 
 	# ideally we want !tc-ld-is-bfd for best future-proofing, but it needs
@@ -208,13 +211,13 @@ multilib_src_configure() {
 				--disable-static
 				--disable-xcrypt-compat-files
 				--enable-obsolete-api=glibc
-				--enable-obsolete-api-enosys=yes
+				--enable-obsolete-api-enosys=no
 			)
 			;;
 		xcrypt_nocompat-*)
 			myconf+=(
 				--enable-obsolete-api=no
-				--enable-obsolete-api-enosys=no
+				--enable-obsolete-api-enosys=yes
 				$(use_enable static-libs static)
 			)
 		;;
