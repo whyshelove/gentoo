@@ -39,7 +39,7 @@ _RHEL8_ECLASS=1
 			xz-utils ) MY_P="${P/-utils}"; S="${WORKDIR}/${MY_P/_p*}" ;;
 			udisks | gnupg | grub | lcms | glib | enchant | gstreamer \
 			| gtksourceview ) MY_P=${P/-/$(ver_cut 1)-} ;;
-			mpc | talloc | tdb | tevent | ldb ) MY_P=lib${P}; [[ ${PN} == mpc ]] && MY_P=${MY_P}.1 ;;
+			mpc | talloc | tdb | tevent | ldb ) MY_P=lib${P} ;;
 			go ) MY_P=${P/-/lang-} ;;
 			cunit ) MY_P=${P^^[cu]} ;;
 			libusb ) MY_P=${P/-/x-} ;;
@@ -54,7 +54,6 @@ _RHEL8_ECLASS=1
 			| qtxmlpatterns | qtwebchannel | qtsensors ) MY_P=qt5-${P} ;;
 			gst-plugins* ) MY_P=${P/-/reamer1-} ;;
 			edk2-ovmf ) MY_P=${P}git${GITCOMMIT} ;;
-			ipxe ) MY_P=${P}.${GIT_REV} ;;
 			vte ) MY_P=${P/-/291-} ;;
 			rhel-kernel ) MY_P=${P/rhel-} ;;
 			*) MY_P=${P} ;;

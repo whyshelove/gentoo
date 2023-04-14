@@ -261,7 +261,8 @@ llvm.org_set_globals() {
 			;;
 		rpm)
 			DPREFIX="module+"
-			DSUFFIX=".$(ver_cut 5).0+${VER_COMMIT}"
+			#DSUFFIX=".$(ver_cut 5).0+${VER_COMMIT}"
+			DSUFFIX=".7.0+${VER_COMMIT}"
 			inherit rhel8-a
 			;;
 		snapshot)
@@ -277,7 +278,7 @@ llvm.org_set_globals() {
 	S=${WORKDIR}/${LLVM_COMPONENTS[0]}
 
 	if [[ ${_LLVM_SOURCE_TYPE} == rpm ]]; then
-		S=${S}-${PV/_p*}.src
+		S=${S}-${PV}.src
 	fi
 
 	if [[ -n ${LLVM_TEST_COMPONENTS+1} ]]; then
@@ -292,7 +293,7 @@ llvm.org_set_globals() {
 			IUSE+=" doc"
 			SRC_URI+="
 				!doc? (
-					https://dev.gentoo.org/~mgorny/dist/llvm/llvm-${PV/_p*}-manpages.tar.bz2
+					https://dev.gentoo.org/~mgorny/dist/llvm/llvm-${PV}-manpages.tar.bz2
 				)
 			"
 		else
@@ -484,6 +485,6 @@ llvm_install_manpages() {
 	if ! llvm_are_manpages_built; then
 		# (doman does not support custom paths)
 		insinto "/usr/lib/llvm/${LLVM_MAJOR}/share/man/man1"
-		doins "${WORKDIR}/llvm-${PV/_p*}-manpages/${LLVM_COMPONENTS[0]}"/*.1
+		doins "${WORKDIR}/llvm-${PV}-manpages/${LLVM_COMPONENTS[0]}"/*.1
 	fi
 }

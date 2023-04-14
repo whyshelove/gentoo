@@ -3,7 +3,7 @@
 
 EAPI=7
 
-PREFIX="1."
+DPREFIX="1."
 
 inherit multilib-minimal rhel8-a
 
