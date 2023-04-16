@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: virtualx.eclass
@@ -11,24 +11,24 @@
 
 case ${EAPI} in
 	6|7|8) ;;
-	*) die "${ECLASS}: EAPI ${EAPI:-0} is not supported." ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
-if [[ ! ${_VIRTUALX_ECLASS} ]]; then
+if [[ -z ${_VIRTUALX_ECLASS} ]]; then
 _VIRTUALX_ECLASS=1
 
-# @ECLASS-VARIABLE: VIRTUALX_REQUIRED
+# @ECLASS_VARIABLE: VIRTUALX_REQUIRED
 # @PRE_INHERIT
 # @DESCRIPTION:
 # Variable specifying the dependency on xorg-server and xhost.
 # Possible special values are "always" and "manual", which specify
-# the dependency to be set unconditionaly or not at all.
+# the dependency to be set unconditionally or not at all.
 # Any other value is taken as useflag desired to be in control of
 # the dependency (eg. VIRTUALX_REQUIRED="kde" will add the dependency
 # into "kde? ( )" and add kde into IUSE.
-: ${VIRTUALX_REQUIRED:=test}
+: "${VIRTUALX_REQUIRED:=test}"
 
-# @ECLASS-VARIABLE: VIRTUALX_DEPEND
+# @ECLASS_VARIABLE: VIRTUALX_DEPEND
 # @OUTPUT_VARIABLE
 # @DESCRIPTION:
 # Standard dependencies string that is automatically added to BDEPEND
@@ -53,7 +53,7 @@ case ${VIRTUALX_REQUIRED} in
 	*)
 		BDEPEND="${VIRTUALX_REQUIRED}? ( ${VIRTUALX_DEPEND} )"
 		IUSE="${VIRTUALX_REQUIRED}"
-		[[ ${VIRTUALX_REQUIRED} == test ]] &&
+		[[ ${VIRTUALX_REQUIRED} == "test" ]] &&
 			RESTRICT+=" !test? ( test )"
 		;;
 esac
@@ -107,68 +107,37 @@ virtx() {
 
 	local i=0
 	local retval=0
-	local OLD_SANDBOX_ON="${SANDBOX_ON}"
-	local XVFB XHOST XDISPLAY
-	local xvfbargs="-screen 0 1280x1024x24 +extension RANDR"
-	XVFB=$(type -p Xvfb) || die
-	XHOST=$(type -p xhost) || die
+	local xvfbargs=( -screen 0 1280x1024x24 +extension RANDR )
 
 	debug-print "${FUNCNAME}: running Xvfb hack"
 	export XAUTHORITY=
-	# The following is derived from Mandrake's hack to allow
-	# compiling without the X display
 
-	einfo "Scanning for an open DISPLAY to start Xvfb ..."
-	# If we are in a chrooted environment, and there is already a
-	# X server started outside of the chroot, Xvfb will fail to start
-	# on the same display (most cases this is :0 ), so make sure
-	# Xvfb is started, else bump the display number
-	#
-	# Azarah - 5 May 2002
-	# GNOME GDM may have started X on DISPLAY :0 with a
-	# lock file /tmp/.X1024-lock, therefore start the search at 1.
-	# Else a leftover /tmp/.X1-lock will prevent finding an available display.
-	XDISPLAY=$(i=1; while [[ -f /tmp/.X${i}-lock ]] ; do ((i++));done; echo ${i})
-	debug-print "${FUNCNAME}: XDISPLAY=${XDISPLAY}"
+	einfo "Starting Xvfb ..."
 
-	# We really do not want SANDBOX enabled here
-	export SANDBOX_ON="0"
+	debug-print "${FUNCNAME}: Xvfb -displayfd 1 ${xvfbargs[*]}"
+	local logfile=${T}/Xvfb.log
+	local pidfile=${T}/Xvfb.pid
+	# NB: bash command substitution blocks until Xvfb prints fd to stdout
+	# and then closes the fd; only then it backgrounds properly
+	export DISPLAY=:$(
+		Xvfb -displayfd 1 "${xvfbargs[@]}" 2>"${logfile}" &
+		echo "$!" > "${pidfile}"
+	)
 
-	debug-print "${FUNCNAME}: ${XVFB} :${XDISPLAY} ${xvfbargs}"
-	${XVFB} :${XDISPLAY} ${xvfbargs} &>/dev/null &
-	sleep 2
+	if [[ ${DISPLAY} == : ]]; then
+		eerror "Xvfb failed to start, reprinting error log"
+		cat "${logfile}"
+		die "Xvfb failed to start"
+	fi
 
-	local start=${XDISPLAY}
-	while [[ ! -f /tmp/.X${XDISPLAY}-lock ]]; do
-		# Stop trying after 15 tries
-		if ((XDISPLAY - start > 15)) ; then
-			eerror "'${XVFB} :${XDISPLAY} ${xvfbargs}' returns:"
-			echo
-			${XVFB} :${XDISPLAY} ${xvfbargs}
-			echo
-			eerror "If possible, correct the above error and try your emerge again."
-			die "Unable to start Xvfb"
-		fi
-			((XDISPLAY++))
-		debug-print "${FUNCNAME}: ${XVFB} :${XDISPLAY} ${xvfbargs}"
-		${XVFB} :${XDISPLAY} ${xvfbargs} &>/dev/null &
-		sleep 2
-	done
-
-	# Now enable SANDBOX again if needed.
-	export SANDBOX_ON="${OLD_SANDBOX_ON}"
-
-	einfo "Starting Xvfb on \$DISPLAY=${XDISPLAY} ..."
-
-	export DISPLAY=:${XDISPLAY}
-	# Do not break on error, but setup $retval, as we need
-	# to kill Xvfb
+	# Do not break on error, but setup $retval, as we need to kill Xvfb
+	einfo "Xvfb started on DISPLAY=${DISPLAY}"
 	debug-print "${FUNCNAME}: $@"
 	nonfatal "$@"
 	retval=$?
 
 	# Now kill Xvfb
-	kill $(cat /tmp/.X${XDISPLAY}-lock)
+	kill "$(<"${pidfile}")"
 
 	# die if our command failed
 	[[ ${retval} -ne 0 ]] && die "Failed to run '$@'"

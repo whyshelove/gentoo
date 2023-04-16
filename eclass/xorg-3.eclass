@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: xorg-3.eclass
@@ -8,7 +8,8 @@
 # Author: Tomáš Chvátal <scarabeus@gentoo.org>
 # Author: Donnie Berkholz <dberkholz@gentoo.org>
 # Author: Matt Turner <mattst88@gentoo.org>
-# @SUPPORTED_EAPIS: 7
+# @SUPPORTED_EAPIS: 7 8
+# @PROVIDES: multilib-minimal
 # @BLURB: Reduces code duplication in the modularized X11 ebuilds.
 # @DESCRIPTION:
 # This eclass makes trivial X ebuilds possible for apps, drivers,
@@ -21,10 +22,18 @@
 # with the other X packages, you don't need to set SRC_URI. Pretty much
 # everything else should be automatic.
 
+case ${EAPI} in
+	7|8) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
+esac
+
+if [[ -z ${_XORG_3_ECLASS} ]]; then
+_XORG_3_ECLASS=1
+
 GIT_ECLASS=""
 if [[ ${PV} == *9999* ]]; then
 	GIT_ECLASS="git-r3"
-	XORG_EAUTORECONF="yes"
+	: "${XORG_EAUTORECONF:="yes"}"
 fi
 
 # If we're a font package, but not the font.alias one
@@ -41,53 +50,41 @@ if [[ ${CATEGORY} = media-fonts ]]; then
 	esac
 fi
 
-# @ECLASS-VARIABLE: XORG_MULTILIB
+# @ECLASS_VARIABLE: XORG_MULTILIB
 # @PRE_INHERIT
 # @DESCRIPTION:
 # If set to 'yes', the multilib support for package will be enabled. Set
 # before inheriting this eclass.
-: ${XORG_MULTILIB:="no"}
+: "${XORG_MULTILIB:="no"}"
 
 # we need to inherit autotools first to get the deps
 inherit autotools libtool multilib toolchain-funcs flag-o-matic \
 	${FONT_ECLASS} ${GIT_ECLASS}
+unset FONT_ECLASS GIT_ECLASS
 
-if [[ ${XORG_MULTILIB} == yes ]]; then
-	inherit multilib-minimal
-fi
+[[ ${XORG_MULTILIB} == yes ]] && inherit multilib-minimal
 
-EXPORTED_FUNCTIONS="src_prepare src_configure src_unpack src_compile src_install pkg_postinst pkg_postrm"
-case "${EAPI:-0}" in
-	7) ;;
-	*) die "EAPI=${EAPI} is not supported" ;;
-esac
-
-# exports must be ALWAYS after inherit
-EXPORT_FUNCTIONS ${EXPORTED_FUNCTIONS}
-
-IUSE=""
-
-# @ECLASS-VARIABLE: XORG_EAUTORECONF
+# @ECLASS_VARIABLE: XORG_EAUTORECONF
 # @PRE_INHERIT
 # @DESCRIPTION:
 # If set to 'yes' and configure.ac exists, eautoreconf will run. Set
 # before inheriting this eclass.
-: ${XORG_EAUTORECONF:="no"}
+: "${XORG_EAUTORECONF:="no"}"
 
-# @ECLASS-VARIABLE: XORG_BASE_INDIVIDUAL_URI
+# @ECLASS_VARIABLE: XORG_BASE_INDIVIDUAL_URI
 # @PRE_INHERIT
 # @DESCRIPTION:
 # Set up SRC_URI for individual modular releases. If set to an empty
 # string, no SRC_URI will be provided by the eclass.
-: ${XORG_BASE_INDIVIDUAL_URI="https://www.x.org/releases/individual"}
+: "${XORG_BASE_INDIVIDUAL_URI="https://www.x.org/releases/individual"}"
 
-# @ECLASS-VARIABLE: XORG_MODULE
+# @ECLASS_VARIABLE: XORG_MODULE
 # @PRE_INHERIT
 # @DESCRIPTION:
 # The subdirectory to download source from. Possible settings are app,
 # doc, data, util, driver, font, lib, proto, xserver. Set above the
 # inherit to override the default autoconfigured module.
-: ${XORG_MODULE:="auto"}
+: "${XORG_MODULE:="auto"}"
 if [[ ${XORG_MODULE} == auto ]]; then
 	case "${CATEGORY}/${P}" in
 		app-doc/*)               XORG_MODULE=doc/     ;;
@@ -102,34 +99,34 @@ if [[ ${XORG_MODULE} == auto ]]; then
 	esac
 fi
 
-# @ECLASS-VARIABLE: XORG_PACKAGE_NAME
+# @ECLASS_VARIABLE: XORG_PACKAGE_NAME
 # @PRE_INHERIT
 # @DESCRIPTION:
 # For git checkout the git repository might differ from package name.
 # This variable can be used for proper directory specification
-: ${XORG_PACKAGE_NAME:=${PN}}
+: "${XORG_PACKAGE_NAME:=${PN}}"
 
 HOMEPAGE="https://www.x.org/wiki/ https://gitlab.freedesktop.org/xorg/${XORG_MODULE}${XORG_PACKAGE_NAME}"
 
-# @ECLASS-VARIABLE: XORG_TARBALL_SUFFIX
+# @ECLASS_VARIABLE: XORG_TARBALL_SUFFIX
 # @PRE_INHERIT
 # @DESCRIPTION:
 # Most X11 projects provide tarballs as tar.bz2 or tar.xz. This eclass defaults
 # to bz2.
-: ${XORG_TARBALL_SUFFIX:="bz2"}
+: "${XORG_TARBALL_SUFFIX:="bz2"}"
 
-if [[ -n ${GIT_ECLASS} ]]; then
-	: ${EGIT_REPO_URI:="https://gitlab.freedesktop.org/xorg/${XORG_MODULE}${XORG_PACKAGE_NAME}.git"}
+if [[ ${PV} == *9999* ]]; then
+	: "${EGIT_REPO_URI:="https://gitlab.freedesktop.org/xorg/${XORG_MODULE}${XORG_PACKAGE_NAME}.git"}"
 elif [[ -n ${XORG_BASE_INDIVIDUAL_URI} ]]; then
 	SRC_URI="${XORG_BASE_INDIVIDUAL_URI}/${XORG_MODULE}${P}.tar.${XORG_TARBALL_SUFFIX}"
 fi
 
-: ${SLOT:=0}
+: "${SLOT:=0}"
 
 # Set the license for the package. This can be overridden by setting
 # LICENSE after the inherit. Nearly all FreeDesktop-hosted X packages
 # are under the MIT license. (This is what Red Hat does in their rpms)
-: ${LICENSE:=MIT}
+: "${LICENSE:=MIT}"
 
 # Set up autotools shared dependencies
 # Remember that all versions here MUST be stable
@@ -142,16 +139,22 @@ if [[ ${PN} != util-macros ]] ; then
 	# Required even by xorg-server
 	[[ ${PN} == "font-util" ]] || EAUTORECONF_DEPEND+=" >=media-fonts/font-util-1.2.0"
 fi
-WANT_AUTOCONF="latest"
-WANT_AUTOMAKE="latest"
 for arch in ${XORG_EAUTORECONF_ARCHES}; do
 	EAUTORECONF_DEPENDS+=" ${arch}? ( ${EAUTORECONF_DEPEND} )"
 done
-unset arch
+unset arch XORG_EAUTORECONF_ARCHES
 BDEPEND+=" ${EAUTORECONF_DEPENDS}"
 [[ ${XORG_EAUTORECONF} != no ]] && BDEPEND+=" ${EAUTORECONF_DEPEND}"
 unset EAUTORECONF_DEPENDS
 unset EAUTORECONF_DEPEND
+
+# @ECLASS_VARIABLE: FONT_DIR
+# @PRE_INHERIT
+# @DESCRIPTION:
+# If you're creating a font package and the suffix of PN is not equal to
+# the subdirectory of /usr/share/fonts/ it should install into, set
+# FONT_DIR to that directory or directories.  Set before inheriting this
+# eclass.
 
 if [[ ${FONT} == yes ]]; then
 	RDEPEND+=" media-fonts/encodings
@@ -161,13 +164,6 @@ if [[ ${FONT} == yes ]]; then
 		>=x11-apps/mkfontscale-1.2.0"
 	BDEPEND+=" x11-apps/bdftopcf"
 
-	# @ECLASS-VARIABLE: FONT_DIR
-	# @PRE_INHERIT
-	# @DESCRIPTION:
-	# If you're creating a font package and the suffix of PN is not equal to
-	# the subdirectory of /usr/share/fonts/ it should install into, set
-	# FONT_DIR to that directory or directories. Set before inheriting this
-	# eclass.
 	[[ -z ${FONT_DIR} ]] && FONT_DIR=${PN##*-}
 
 	# Fix case of font directories
@@ -178,14 +174,14 @@ if [[ ${FONT} == yes ]]; then
 fi
 BDEPEND+=" virtual/pkgconfig"
 
-# @ECLASS-VARIABLE: XORG_DRI
+# @ECLASS_VARIABLE: XORG_DRI
 # @PRE_INHERIT
 # @DESCRIPTION:
 # Possible values are "always" or the value of the useflag DRI capabilities
 # are required for. Default value is "no"
 #
 # Eg. XORG_DRI="opengl" will pull all dri dependent deps for opengl useflag
-: ${XORG_DRI:="no"}
+: "${XORG_DRI:="no"}"
 
 DRI_COMMON_DEPEND="
 	x11-base/xorg-server[-minimal]
@@ -212,20 +208,19 @@ if [[ ${PN} == xf86-video-* || ${PN} == xf86-input-* ]]; then
 fi
 
 
-# @ECLASS-VARIABLE: XORG_DOC
+# @ECLASS_VARIABLE: XORG_DOC
 # @PRE_INHERIT
 # @DESCRIPTION:
 # Possible values are "always" or the value of the useflag doc packages
 # are required for. Default value is "no"
 #
 # Eg. XORG_DOC="manual" will pull all doc dependent deps for manual useflag
-: ${XORG_DOC:="no"}
+: "${XORG_DOC:="no"}"
 
 DOC_DEPEND="
 	doc? (
 		|| ( app-text/asciidoc dev-ruby/asciidoctor )
 		app-text/xmlto
-		app-doc/doxygen
 		app-text/docbook-xml-dtd:4.1.2
 		app-text/docbook-xml-dtd:4.2
 		app-text/docbook-xml-dtd:4.3
@@ -268,13 +263,13 @@ xorg-3_pkg_setup() {
 xorg-3_src_unpack() {
 	debug-print-function ${FUNCNAME} "$@"
 
-	if [[ -n ${GIT_ECLASS} ]]; then
+	if [[ ${PV} == *9999* ]]; then
 		git-r3_src_unpack
 	else
 		unpack ${A}
 	fi
 
-	[[ -n ${FONT_OPTIONS} ]] && einfo "Detected font directory: ${FONT_DIR}"
+	[[ -n ${FONT} ]] && einfo "Detected font directory: ${FONT_DIR}"
 }
 
 # @FUNCTION: xorg-3_reconf_source
@@ -316,13 +311,17 @@ xorg-3_src_prepare() {
 xorg-3_font_configure() {
 	debug-print-function ${FUNCNAME} "$@"
 
+	# Pass --with-fontrootdir to override pkgconf SYSROOT behavior.
+	# https://bugs.gentoo.org/815520
+	if grep -q -s "with-fontrootdir" "${ECONF_SOURCE:-.}"/configure; then
+		FONT_OPTIONS+=( --with-fontrootdir="${EPREFIX}"/usr/share/fonts )
+	fi
+
 	if has nls ${IUSE//+} && ! use nls; then
 		if ! grep -q -s "disable-all-encodings" ${ECONF_SOURCE:-.}/configure; then
 			die "--disable-all-encodings option not available in configure"
 		fi
-		FONT_OPTIONS+="
-			--disable-all-encodings
-			--enable-iso8859-1"
+		FONT_OPTIONS+=( --disable-all-encodings --enable-iso8859-1 )
 	fi
 }
 
@@ -334,9 +333,12 @@ xorg-3_flags_setup() {
 
 	# Win32 require special define
 	[[ ${CHOST} == *-winnt* ]] && append-cppflags -DWIN32 -D__STDC__
-	# hardened ldflags
-	[[ ${PN} == xorg-server || ${PN} == xf86-video-* || ${PN} == xf86-input-* ]] \
-		&& append-ldflags -Wl,-z,lazy
+
+	# Hardened flags break module autoloading et al (also fixes #778494)
+	if [[ ${PN} == xorg-server || ${PN} == xf86-video-* || ${PN} == xf86-input-* ]]; then
+		filter-flags -fno-plt
+		append-ldflags -Wl,-z,lazy
+	fi
 
 	# Quite few libraries fail on runtime without these:
 	if has static-libs ${IUSE//+}; then
@@ -350,6 +352,11 @@ multilib_src_configure() {
 	ECONF_SOURCE="${S}" econf "${econfargs[@]}"
 }
 
+# @VARIABLE: XORG_CONFIGURE_OPTIONS
+# @DESCRIPTION:
+# Array of an additional options to pass to configure.
+# @DEFAULT_UNSET
+
 # @FUNCTION: xorg-3_src_configure
 # @DESCRIPTION:
 # Perform any necessary pre-configuration steps, then run configure
@@ -358,18 +365,15 @@ xorg-3_src_configure() {
 
 	xorg-3_flags_setup
 
-	# @VARIABLE: XORG_CONFIGURE_OPTIONS
-	# @DESCRIPTION:
-	# Array of an additional options to pass to configure.
-	# @DEFAULT_UNSET
 	local xorgconfadd=("${XORG_CONFIGURE_OPTIONS[@]}")
 
+	local FONT_OPTIONS=()
 	[[ -n "${FONT}" ]] && xorg-3_font_configure
 
 	# Check if package supports disabling of dep tracking
 	# Fixes warnings like:
 	#    WARNING: unrecognized options: --disable-dependency-tracking
-	if grep -q -s "disable-depencency-tracking" ${ECONF_SOURCE:-.}/configure; then
+	if grep -q -s "disable-dependency-tracking" ${ECONF_SOURCE:-.}/configure; then
 		local dep_track="--disable-dependency-tracking"
 	fi
 
@@ -387,7 +391,7 @@ xorg-3_src_configure() {
 		${dep_track}
 		${selective_werror}
 		${no_static}
-		${FONT_OPTIONS}
+		"${FONT_OPTIONS[@]}"
 		"${xorgconfadd[@]}"
 	)
 
@@ -407,7 +411,7 @@ xorg-3_src_configure() {
 }
 
 multilib_src_compile() {
-	emake "$@" || die 'emake failed'
+	emake "$@"
 }
 
 # @FUNCTION: xorg-3_src_compile
@@ -419,12 +423,12 @@ xorg-3_src_compile() {
 	if [[ ${XORG_MULTILIB} == yes ]]; then
 		multilib-minimal_src_compile "$@"
 	else
-		emake "$@" || die 'emake failed'
+		emake "$@"
 	fi
 }
 
 multilib_src_install() {
-	emake DESTDIR="${D}" "${install_args[@]}" "$@" install || die "emake install failed"
+	emake DESTDIR="${D}" "${install_args[@]}" "$@" install
 }
 
 # @FUNCTION: xorg-3_src_install
@@ -438,7 +442,7 @@ xorg-3_src_install() {
 	if [[ ${XORG_MULTILIB} == yes ]]; then
 		multilib-minimal_src_install "$@"
 	else
-		emake DESTDIR="${D}" "${install_args[@]}" "$@" install || die "emake install failed"
+		emake DESTDIR="${D}" "${install_args[@]}" "$@" install
 		einstalldocs
 	fi
 
@@ -455,7 +459,13 @@ xorg-3_src_install() {
 	# Don't install libtool archives (even for modules)
 	find "${D}" -type f -name '*.la' -delete || die
 
-	[[ -n ${FONT} ]] && remove_font_metadata
+	if [[ -n ${FONT} ]] ; then
+		if [[ -n ${FONT_OPENTYPE_COMPAT} ]] && in_iuse opentype-compat && use opentype-compat ; then
+			font_wrap_opentype_compat
+		fi
+
+		remove_font_metadata
+	fi
 }
 
 # @FUNCTION: xorg-3_pkg_postinst
@@ -532,3 +542,7 @@ create_fonts_dir() {
 				-- "${EROOT}/usr/share/fonts/${FONT_DIR}"
 	eend $?
 }
+
+fi
+
+EXPORT_FUNCTIONS src_prepare src_configure src_unpack src_compile src_install pkg_postinst pkg_postrm

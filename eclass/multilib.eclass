@@ -1,17 +1,16 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: multilib.eclass
 # @MAINTAINER:
 # toolchain@gentoo.org
-# @SUPPORTED_EAPIS: 5 6 7 8
+# @SUPPORTED_EAPIS: 6 7 8
 # @BLURB: This eclass is for all functions pertaining to handling multilib configurations.
 # @DESCRIPTION:
 # This eclass is for all functions pertaining to handling multilib configurations.
 
-case ${EAPI:-0} in
-	# EAPI=0 is still used by crossdev, bug #797367
-	0|5|6|7|8) ;;
+case ${EAPI} in
+	6|7|8) ;;
 	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
@@ -40,32 +39,6 @@ has_multilib_profile() {
 	[ -n "${MULTILIB_ABIS}" -a "${MULTILIB_ABIS}" != "${MULTILIB_ABIS/ /}" ]
 }
 
-# @FUNCTION: get_libdir
-# @RETURN: the libdir for the selected ABI
-# @DESCRIPTION:
-# This function simply returns the desired lib directory. With portage
-# 2.0.51, we now have support for installing libraries to lib32/lib64
-# to accomidate the needs of multilib systems. It's no longer a good idea
-# to assume all libraries will end up in lib. Replace any (sane) instances
-# where lib is named directly with $(get_libdir) if possible.
-#
-# Jeremy Huddleston <eradicator@gentoo.org> (23 Dec 2004):
-#   Added support for ${ABI} and ${DEFAULT_ABI}.  If they're both not set,
-#   fall back on old behavior.  Any profile that has these set should also
-#   depend on a newer version of portage (not yet released) which uses these
-#   over CONF_LIBDIR in econf, dolib, etc...
-if [[ ${EAPI} == [05] ]] ; then
-	get_libdir() {
-		local CONF_LIBDIR
-		if [ -n  "${CONF_LIBDIR_OVERRIDE}" ] ; then
-			# if there is an override, we want to use that... always.
-			echo ${CONF_LIBDIR_OVERRIDE}
-		else
-			get_abi_LIBDIR
-		fi
-	}
-fi
-
 # @FUNCTION: get_abi_var
 # @USAGE: <VAR> [ABI]
 # @RETURN: returns the value of ${<VAR>_<ABI>} which should be set in make.defaults
@@ -74,7 +47,7 @@ fi
 # ex:
 # CFLAGS=$(get_abi_var CFLAGS sparc32) # CFLAGS=-m32
 #
-# Note that the prefered method is to set CC="$(tc-getCC) $(get_abi_CFLAGS)"
+# Note that the preferred method is to set CC="$(tc-getCC) $(get_abi_CFLAGS)"
 # This will hopefully be added to portage soon...
 #
 # If <ABI> is not specified, ${ABI} is used.
@@ -299,8 +272,13 @@ get_modname() {
 	echo ".${modname}"
 }
 
+# @FUNCTION: multilib_env
+# @USAGE:
+# @DESCRIPTION:
 # This is for the toolchain to setup profile variables when pulling in
 # a crosscompiler (and thus they aren't set in the profile).
+#
+# This must only be used by toolchain packages.
 multilib_env() {
 	local CTARGET=${1:-${CTARGET}}
 	local cpu=${CTARGET%%*-}
@@ -310,8 +288,8 @@ multilib_env() {
 		# - https://bugs.gentoo.org/675954
 		# - https://gcc.gnu.org/PR90077
 		# - https://github.com/gentoo/musl/issues/245
-		: ${MULTILIB_ABIS=default}
-		: ${DEFAULT_ABI=default}
+		: "${MULTILIB_ABIS=default}"
+		: "${DEFAULT_ABI=default}"
 		export MULTILIB_ABIS DEFAULT_ABI
 		return
 	fi
@@ -333,8 +311,8 @@ multilib_env() {
 			export CTARGET_arm64=${CHOST_arm64}
 			export LIBDIR_arm64="lib64"
 
-			: ${MULTILIB_ABIS=arm64}
-			: ${DEFAULT_ABI=arm64}
+			: "${MULTILIB_ABIS=arm64}"
+			: "${DEFAULT_ABI=arm64}"
 		;;
 		x86_64*)
 			export CFLAGS_x86=${CFLAGS_x86--m32}
@@ -359,14 +337,23 @@ multilib_env() {
 
 			case ${CTARGET} in
 			*-gnux32)
-				: ${MULTILIB_ABIS=x32 amd64 x86}
-				: ${DEFAULT_ABI=x32}
+				: "${MULTILIB_ABIS=x32 amd64 x86}"
+				: "${DEFAULT_ABI=x32}"
 				;;
 			*)
-				: ${MULTILIB_ABIS=amd64 x86}
-				: ${DEFAULT_ABI=amd64}
+				: "${MULTILIB_ABIS=amd64 x86}"
+				: "${DEFAULT_ABI=amd64}"
 				;;
 			esac
+		;;
+		loongarch64*)
+			export CFLAGS_lp64d=${CFLAGS_lp64d--mabi=lp64d}
+			export CHOST_lp64d=${CTARGET}
+			export CTARGET_lp64d=${CTARGET}
+			export LIBDIR_lp64d=${LIBDIR_lp64d-lib64}
+
+			: "${MULTILIB_ABIS=lp64d}"
+			: "${DEFAULT_ABI=lp64d}"
 		;;
 		mips64*|mipsisa64*)
 			export CFLAGS_o32=${CFLAGS_o32--mabi=32}
@@ -385,8 +372,8 @@ multilib_env() {
 			export CTARGET_n64=${CHOST_n64}
 			export LIBDIR_n64="lib64"
 
-			: ${MULTILIB_ABIS=n64 n32 o32}
-			: ${DEFAULT_ABI=n32}
+			: "${MULTILIB_ABIS=n64 n32 o32}"
+			: "${DEFAULT_ABI=n32}"
 		;;
 		powerpc64*)
 			export CFLAGS_ppc=${CFLAGS_ppc--m32}
@@ -399,11 +386,22 @@ multilib_env() {
 			export CTARGET_ppc64=${CHOST_ppc64}
 			export LIBDIR_ppc64="lib64"
 
-			: ${MULTILIB_ABIS=ppc64 ppc}
-			: ${DEFAULT_ABI=ppc64}
+			: "${MULTILIB_ABIS=ppc64 ppc}"
+			: "${DEFAULT_ABI=ppc64}"
 		;;
 		riscv64*)
-			export CFLAGS_lp64d=${CFLAGS_lp64d--mabi=lp64d -march=rv64imafdc}
+			: "${MULTILIB_ABIS=lp64d lp64 ilp32d ilp32}"
+			: "${DEFAULT_ABI=lp64d}"
+
+			# the default abi is set to the 1-level libdir default
+
+			local _libdir_riscvdefaultabi_variable="LIBDIR_${DEFAULT_ABI}"
+			local _libdir_riscvdefaultabi=${!_libdir_riscvdefaultabi_variable}
+			export ${_libdir_riscvdefaultabi_variable}=${_libdir_riscvdefaultabi:-lib64}
+
+			# all other abi are set to the 2-level libdir default
+
+			export CFLAGS_lp64d=${CFLAGS_lp64d--mabi=lp64d -march=rv64gc}
 			export CHOST_lp64d=${CTARGET}
 			export CTARGET_lp64d=${CTARGET}
 			export LIBDIR_lp64d=${LIBDIR_lp64d-lib64/lp64d}
@@ -422,12 +420,20 @@ multilib_env() {
 			export CHOST_ilp32=${CTARGET/riscv64/riscv32}
 			export CTARGET_ilp32=${CTARGET/riscv64/riscv32}
 			export LIBDIR_ilp32=${LIBDIR_ilp32-lib32/ilp32}
-
-			: ${MULTILIB_ABIS=lp64d lp64 ilp32d ilp32}
-			: ${DEFAULT_ABI=lp64d}
 		;;
 		riscv32*)
-			export CFLAGS_ilp32d=${CFLAGS_ilp32d--mabi=ilp32d}
+			: "${MULTILIB_ABIS=ilp32d ilp32}"
+			: "${DEFAULT_ABI=ilp32d}"
+
+			# the default abi is set to the 1-level libdir default
+
+			local _libdir_riscvdefaultabi_variable="LIBDIR_${DEFAULT_ABI}"
+			local _libdir_riscvdefaultabi=${!_libdir_riscvdefaultabi_variable}
+			export ${_libdir_riscvdefaultabi_variable}=${_libdir_riscvdefaultabi:-lib}
+
+			# all other abi are set to the 2-level libdir default
+
+			export CFLAGS_ilp32d=${CFLAGS_ilp32d--mabi=ilp32d -march=rv32imafdc}
 			export CHOST_ilp32d=${CTARGET}
 			export CTARGET_ilp32d=${CTARGET}
 			export LIBDIR_ilp32d=${LIBDIR_ilp32d-lib32/ilp32d}
@@ -436,9 +442,6 @@ multilib_env() {
 			export CHOST_ilp32=${CTARGET}
 			export CTARGET_ilp32=${CTARGET}
 			export LIBDIR_ilp32=${LIBDIR_ilp32-lib32/ilp32}
-
-			: ${MULTILIB_ABIS=ilp32d ilp32}
-			: ${DEFAULT_ABI=ilp32d}
 		;;
 		s390x*)
 			export CFLAGS_s390=${CFLAGS_s390--m31} # the 31 is not a typo
@@ -451,8 +454,8 @@ multilib_env() {
 			export CTARGET_s390x=${CHOST_s390x}
 			export LIBDIR_s390x="lib64"
 
-			: ${MULTILIB_ABIS=s390x s390}
-			: ${DEFAULT_ABI=s390x}
+			: "${MULTILIB_ABIS=s390x s390}"
+			: "${DEFAULT_ABI=s390x}"
 		;;
 		sparc64*)
 			export CFLAGS_sparc32=${CFLAGS_sparc32--m32}
@@ -465,12 +468,12 @@ multilib_env() {
 			export CTARGET_sparc64=${CHOST_sparc64}
 			export LIBDIR_sparc64="lib64"
 
-			: ${MULTILIB_ABIS=sparc64 sparc32}
-			: ${DEFAULT_ABI=sparc64}
+			: "${MULTILIB_ABIS=sparc64 sparc32}"
+			: "${DEFAULT_ABI=sparc64}"
 		;;
 		*)
-			: ${MULTILIB_ABIS=default}
-			: ${DEFAULT_ABI=default}
+			: "${MULTILIB_ABIS=default}"
+			: "${DEFAULT_ABI=default}"
 		;;
 	esac
 
@@ -496,6 +499,7 @@ multilib_toolchain_setup() {
 		FC
 		LD
 		NM
+		OBJCOPY
 		OBJDUMP
 		PKG_CONFIG
 		RANLIB
@@ -544,6 +548,7 @@ multilib_toolchain_setup() {
 		export FC="$(tc-getFC) $(get_abi_CFLAGS)"
 		export LD="$(tc-getLD) $(get_abi_LDFLAGS)"
 		export NM="$(tc-getNM)" # Avoid 'nm', use '${CHOST}-nm'
+		export OBJCOPY="$(tc-getOBJCOPY)" # Avoid 'objcopy', use '${CHOST}-objcopy'
 		export OBJDUMP="$(tc-getOBJDUMP)" # Avoid 'objdump', use '${CHOST}-objdump'
 		export PKG_CONFIG="$(tc-getPKG_CONFIG)"
 		export RANLIB="$(tc-getRANLIB)" # Avoid 'ranlib', use '${CHOST}-ranlib'

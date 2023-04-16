@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: lua.eclass
@@ -9,6 +9,7 @@
 # Marek Szuba <marecki@gentoo.org>
 # Based on python-r1.eclass by Michał Górny <mgorny@gentoo.org> et al.
 # @SUPPORTED_EAPIS: 7 8
+# @PROVIDES: lua-utils
 # @BLURB: A common eclass for Lua packages
 # @DESCRIPTION:
 # A common eclass providing helper functions to build and install
@@ -51,22 +52,20 @@
 # @CODE
 
 case ${EAPI} in
-	7|8)
-		;;
+	7|8) ;;
 	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
-if [[ ! ${_LUA_R0} ]]; then
+if [[ -z ${_LUA_ECLASS} ]]; then
+_LUA_ECLASS=1
 
-if [[ ${_LUA_SINGLE_R0} ]]; then
+if [[ ${_LUA_SINGLE_ECLASS} ]]; then
 	die 'lua.eclass cannot be used with lua-single.eclass.'
 fi
 
 inherit multibuild lua-utils
 
-fi
-
-# @ECLASS-VARIABLE: LUA_COMPAT
+# @ECLASS_VARIABLE: LUA_COMPAT
 # @REQUIRED
 # @PRE_INHERIT
 # @DESCRIPTION:
@@ -84,7 +83,7 @@ fi
 # LUA_COMPAT=( lua5-{1..3} )
 # @CODE
 
-# @ECLASS-VARIABLE: LUA_COMPAT_OVERRIDE
+# @ECLASS_VARIABLE: LUA_COMPAT_OVERRIDE
 # @USER_VARIABLE
 # @DEFAULT_UNSET
 # @DESCRIPTION:
@@ -104,7 +103,7 @@ fi
 # LUA_COMPAT_OVERRIDE='luajit' emerge -1v dev-lua/foo
 # @CODE
 
-# @ECLASS-VARIABLE: LUA_REQ_USE
+# @ECLASS_VARIABLE: LUA_REQ_USE
 # @DEFAULT_UNSET
 # @PRE_INHERIT
 # @DESCRIPTION:
@@ -124,7 +123,7 @@ fi
 # lua_targets_luaX-Y? ( dev-lang/lua:X.Y[deprecated] )
 # @CODE
 
-# @ECLASS-VARIABLE: BUILD_DIR
+# @ECLASS_VARIABLE: BUILD_DIR
 # @OUTPUT_VARIABLE
 # @DEFAULT_UNSET
 # @DESCRIPTION:
@@ -141,7 +140,7 @@ fi
 # ${WORKDIR}/foo-1.3-lua5-1
 # @CODE
 
-# @ECLASS-VARIABLE: LUA_DEPS
+# @ECLASS_VARIABLE: LUA_DEPS
 # @OUTPUT_VARIABLE
 # @DESCRIPTION:
 # This is an eclass-generated Lua dependency string for all
@@ -157,10 +156,10 @@ fi
 # Example value:
 # @CODE
 # lua_targets_lua5-1? ( dev-lang/lua:5.1 )
-# lua_targets_lua5-3? ( dev-lang/lua:5.2 )
+# lua_targets_lua5-3? ( dev-lang/lua:5.3 )
 # @CODE
 
-# @ECLASS-VARIABLE: LUA_REQUIRED_USE
+# @ECLASS_VARIABLE: LUA_REQUIRED_USE
 # @OUTPUT_VARIABLE
 # @DESCRIPTION:
 # This is an eclass-generated required-use expression which ensures at
@@ -179,7 +178,7 @@ fi
 # || ( lua_targets_lua5-1 lua_targets_lua5-3 )
 # @CODE
 
-# @ECLASS-VARIABLE: LUA_USEDEP
+# @ECLASS_VARIABLE: LUA_USEDEP
 # @OUTPUT_VARIABLE
 # @DESCRIPTION:
 # This is an eclass-generated USE-dependency string which can be used to
@@ -195,8 +194,6 @@ fi
 # @CODE
 # lua_targets_lua5-1(-)?,lua_targets_lua5-3(-)?
 # @CODE
-
-if [[ ! ${_LUA_R0} ]]; then
 
 # @FUNCTION: _lua_validate_useflags
 # @INTERNAL
@@ -313,9 +310,6 @@ lua_foreach_impl() {
 	multibuild_foreach_variant _lua_multibuild_wrapper "${@}"
 }
 
-_LUA_R0=1
-fi
-
 # @FUNCTION: _lua_set_globals
 # @INTERNAL
 # @DESCRIPTION:
@@ -374,3 +368,5 @@ _lua_set_globals() {
 
 _lua_set_globals
 unset -f _lua_set_globals
+
+fi

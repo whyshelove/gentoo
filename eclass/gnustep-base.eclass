@@ -1,21 +1,20 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: gnustep-base.eclass
 # @MAINTAINER:
 # GNUstep Herd <gnustep@gentoo.org>
-# @SUPPORTED_EAPIS: 5 6 7 8
-# @BLURB: Internal handling of GNUstep pacakges
+# @SUPPORTED_EAPIS: 6 7 8
+# @BLURB: Internal handling of GNUstep packages
 # @DESCRIPTION:
 # Inner gnustep eclass, should only be inherited directly by gnustep-base
 # packages
 
-case ${EAPI:-0} in
-	[5678]) inherit eutils ;;
+case ${EAPI} in
+	6|7) inherit eutils ;;
+	8) ;;
 	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
-
-EXPORT_FUNCTIONS pkg_setup src_prepare src_configure src_compile src_install pkg_postinst
 
 if [[ -z ${_GNUSTEP_BASE_ECLASS} ]] ; then
 _GNUSTEP_BASE_ECLASS=1
@@ -66,7 +65,7 @@ gnustep-base_src_prepare() {
 		eend $?
 	fi
 
-	! has ${EAPI} 5 && default
+	default
 }
 
 gnustep-base_src_configure() {
@@ -173,7 +172,7 @@ egnustep_env() {
 # Make utilizing GNUstep Makefiles
 egnustep_make() {
 	if [[ -f ./Makefile || -f ./makefile || -f ./GNUmakefile ]] ; then
-		emake ${*} "${GS_ENV[@]}" all || die "package make failed"
+		emake ${*} "${GS_ENV[@]}" all
 		return 0
 	fi
 	die "no Makefile found"
@@ -186,7 +185,7 @@ egnustep_install() {
 		mkdir -p "${D}"${GNUSTEP_SYSTEM_TOOLS}
 	fi
 	if [[ -f ./[mM]akefile || -f ./GNUmakefile ]] ; then
-		emake ${*} "${GS_ENV[@]}" install || die "package install failed"
+		emake ${*} "${GS_ENV[@]}" install
 		return 0
 	fi
 	die "no Makefile found"
@@ -198,8 +197,8 @@ egnustep_doc() {
 		# Check documentation presence
 		pushd "${S}"/Documentation || die
 		if [[ -f ./[mM]akefile || -f ./GNUmakefile ]] ; then
-			emake "${GS_ENV[@]}" all || die "doc make failed"
-			emake "${GS_ENV[@]}" install || die "doc install failed"
+			emake "${GS_ENV[@]}" all
+			emake "${GS_ENV[@]}" install
 		fi
 		popd || die
 	fi
@@ -257,9 +256,11 @@ EOF
 	if [[ -d ${EPREFIX}/usr/share/GNUstep/Makefiles ]]; then
 		exeinto /usr/bin
 	else
-		exeinto ${GNUSTEP_SYSTEM_TOOLS#${EPREFIX}}/Gentoo
+		exeinto "${GNUSTEP_SYSTEM_TOOLS#${EPREFIX}}"/Gentoo
 	fi
 	doexe "${T}"/${cfile}
 }
 
 fi
+
+EXPORT_FUNCTIONS src_{prepare,configure,compile,install} pkg_{setup,postinst}

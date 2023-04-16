@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: lua-single.eclass
@@ -9,6 +9,7 @@
 # Marek Szuba <marecki@gentoo.org>
 # Based on python-single-r1.eclass by Michał Górny <mgorny@gentoo.org> et al.
 # @SUPPORTED_EAPIS: 7 8
+# @PROVIDES: lua-utils
 # @BLURB: An eclass for Lua packages not installed for multiple implementations.
 # @DESCRIPTION:
 # An extension of lua.eclass suite for packages which don't support being
@@ -51,7 +52,7 @@
 # "
 # BDEPEND="virtual/pkgconfig"
 #
-# # Only neeed if the setup phase has to do more than just call lua-single_pkg_setup
+# # Only need if the setup phase has to do more than just call lua-single_pkg_setup
 # pkg_setup() {
 #     lua-single_pkg_setup
 #     [...]
@@ -63,24 +64,20 @@
 # @CODE
 
 case ${EAPI} in
-	7|8)
-		;;
+	7|8) ;;
 	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
-if [[ ! ${_LUA_SINGLE_R0} ]]; then
+if [[ -z ${_LUA_SINGLE_ECLASS} ]]; then
+_LUA_SINGLE_ECLASS=1
 
-if [[ ${_LUA_R0} ]]; then
+if [[ ${_LUA_ECLASS} ]]; then
 	die 'lua-single.eclass cannot be used with lua.eclass.'
 fi
 
 inherit lua-utils
 
-fi
-
-EXPORT_FUNCTIONS pkg_setup
-
-# @ECLASS-VARIABLE: LUA_COMPAT
+# @ECLASS_VARIABLE: LUA_COMPAT
 # @REQUIRED
 # @PRE_INHERIT
 # @DESCRIPTION:
@@ -98,7 +95,7 @@ EXPORT_FUNCTIONS pkg_setup
 # LUA_COMPAT=( lua5-{1..3} )
 # @CODE
 
-# @ECLASS-VARIABLE: LUA_COMPAT_OVERRIDE
+# @ECLASS_VARIABLE: LUA_COMPAT_OVERRIDE
 # @USER_VARIABLE
 # @DEFAULT_UNSET
 # @DESCRIPTION:
@@ -118,7 +115,7 @@ EXPORT_FUNCTIONS pkg_setup
 # LUA_COMPAT_OVERRIDE='luajit' emerge -1v dev-lua/foo
 # @CODE
 
-# @ECLASS-VARIABLE: LUA_REQ_USE
+# @ECLASS_VARIABLE: LUA_REQ_USE
 # @DEFAULT_UNSET
 # @PRE_INHERIT
 # @DESCRIPTION:
@@ -138,7 +135,7 @@ EXPORT_FUNCTIONS pkg_setup
 # lua_targets_luaX-Y? ( dev-lang/lua:X.Y[deprecated] )
 # @CODE
 
-# @ECLASS-VARIABLE: LUA_DEPS
+# @ECLASS_VARIABLE: LUA_DEPS
 # @OUTPUT_VARIABLE
 # @DESCRIPTION:
 # This is an eclass-generated Lua dependency string for all
@@ -154,10 +151,10 @@ EXPORT_FUNCTIONS pkg_setup
 # Example value:
 # @CODE
 # lua_targets_lua5-1? ( dev-lang/lua:5.1 )
-# lua_targets_lua5-3? ( dev-lang/lua:5.2 )
+# lua_targets_lua5-3? ( dev-lang/lua:5.3 )
 # @CODE
 
-# @ECLASS-VARIABLE: LUA_REQUIRED_USE
+# @ECLASS_VARIABLE: LUA_REQUIRED_USE
 # @OUTPUT_VARIABLE
 # @DESCRIPTION:
 # This is an eclass-generated required-use expression which ensures at
@@ -176,7 +173,7 @@ EXPORT_FUNCTIONS pkg_setup
 # || ( lua_targets_lua5-1 lua_targets_lua5-3 )
 # @CODE
 
-# @ECLASS-VARIABLE: LUA_SINGLE_USEDEP
+# @ECLASS_VARIABLE: LUA_SINGLE_USEDEP
 # @OUTPUT_VARIABLE
 # @DESCRIPTION:
 # This is an eclass-generated USE-dependency string which can be used
@@ -196,7 +193,7 @@ EXPORT_FUNCTIONS pkg_setup
 # lua_single_target_lua5-1(-)?
 # @CODE
 
-# @ECLASS-VARIABLE: LUA_USEDEP
+# @ECLASS_VARIABLE: LUA_USEDEP
 # @OUTPUT_VARIABLE
 # @DESCRIPTION:
 # This is an eclass-generated USE-dependency string which can be used to
@@ -274,8 +271,6 @@ _lua_single_set_globals() {
 
 _lua_single_set_globals
 unset -f _lua_single_set_globals
-
-if [[ ! ${_LUA_SINGLE_R0} ]]; then
 
 # @FUNCTION: _lua_gen_usedep
 # @USAGE: [<pattern>...]
@@ -531,5 +526,6 @@ lua-single_pkg_setup() {
 	[[ ${MERGE_TYPE} != binary ]] && lua_setup
 }
 
-_LUA_SINGLE_R0=1
 fi
+
+EXPORT_FUNCTIONS pkg_setup

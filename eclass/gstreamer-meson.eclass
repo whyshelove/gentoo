@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: gstreamer-meson.eclass
@@ -13,6 +13,7 @@
 # zaheerm <zaheerm@gentoo.org>
 # Steven Newbury
 # @SUPPORTED_EAPIS: 7
+# @PROVIDES: meson multilib-minimal
 # @BLURB: Helps building core & split gstreamer plugins
 # @DESCRIPTION:
 # Eclass to make external gst-plugins emergable on a per-plugin basis
@@ -36,13 +37,13 @@ case "${EAPI:-0}" in
 		;;
 esac
 
-# @ECLASS-VARIABLE: GST_PLUGINS_ENABLED
+# @ECLASS_VARIABLE: GST_PLUGINS_ENABLED
 # @DESCRIPTION:
 # Defines the plugins to be built.
-# May be set by an ebuild and contain more than one indentifier, space
-# separated (only src_configure can handle mutiple plugins at this time).
+# May be set by an ebuild and contain more than one identifier, space
+# separated (only src_configure can handle multiple plugins at this time).
 
-# @ECLASS-VARIABLE: GST_PLUGINS_NOAUTO
+# @ECLASS_VARIABLE: GST_PLUGINS_NOAUTO
 # @DESCRIPTION:
 # Space-separated list defined by the ebuild for plugin options which shouldn't
 # be automatically defined by gstreamer_multilib_src_configure.
@@ -137,20 +138,20 @@ gstreamer_system_library() {
 	done
 }
 
-# @ECLASS-VARIABLE: GST_PLUGINS_BUILD_DIR
+# @ECLASS_VARIABLE: GST_PLUGINS_BUILD_DIR
 # @DESCRIPTION:
 # Actual build directories of the plugins.
 # Most often the same as the configure switch name.
 # FIXME: Change into a bash array
-: ${GST_PLUGINS_BUILD_DIR:=${PN/gst-plugins-/}}
+: "${GST_PLUGINS_BUILD_DIR:=${PN/gst-plugins-/}}"
 
-# @ECLASS-VARIABLE: GST_TARBALL_SUFFIX
+# @ECLASS_VARIABLE: GST_TARBALL_SUFFIX
 # @DESCRIPTION:
 # Most projects hosted on gstreamer.freedesktop.org mirrors provide
 # tarballs as tar.bz2 or tar.xz. This eclass defaults to xz. This is
 # because the gstreamer mirrors are moving to only have xz tarballs for
 # new releases.
-: ${GST_TARBALL_SUFFIX:="xz"}
+: "${GST_TARBALL_SUFFIX:="xz"}"
 
 # Even though xz-utils are in @system, they must still be added to BDEPEND; see
 # https://archives.gentoo.org/gentoo-dev/msg_a0d4833eb314d1be5d5802a3b710e0a4.xml
@@ -158,17 +159,17 @@ if [[ ${GST_TARBALL_SUFFIX} == "xz" ]]; then
 	BDEPEND="${BDEPEND} app-arch/xz-utils"
 fi
 
-# @ECLASS-VARIABLE: GST_ORG_MODULE
+# @ECLASS_VARIABLE: GST_ORG_MODULE
 # @DESCRIPTION:
 # Name of the module as hosted on gstreamer.freedesktop.org mirrors.
 # Leave unset if package name matches module name.
-: ${GST_ORG_MODULE:=${PN}}
+: "${GST_ORG_MODULE:=${PN}}"
 
-# @ECLASS-VARIABLE: GST_ORG_PVP
+# @ECLASS_VARIABLE: GST_ORG_PVP
 # @INTERNAL
 # @DESCRIPTION:
 # Major and minor numbers of the version number.
-: ${GST_ORG_PVP:=$(ver_cut 1-2)}
+: "${GST_ORG_PVP:=$(ver_cut 1-2)}"
 
 
 DESCRIPTION="${BUILD_GST_PLUGINS} plugin for gstreamer"
@@ -183,7 +184,6 @@ RDEPEND="
 	>=dev-libs/glib-2.40.0:2[${MULTILIB_USEDEP}]
 "
 BDEPEND="
-	>=sys-apps/sed-4
 	virtual/pkgconfig
 	virtual/perl-JSON-PP
 "
@@ -201,7 +201,7 @@ multilib_src_compile() { gstreamer_multilib_src_compile; }
 multilib_src_install() { gstreamer_multilib_src_install; }
 
 if [[ "${PN}" != "${GST_ORG_MODULE}" ]]; then
-	# Do not run test phase for invididual plugin ebuilds.
+	# Do not run test phase for individual plugin ebuilds.
 	RESTRICT="test"
 	RDEPEND="${RDEPEND}
 		>=media-libs/${GST_ORG_MODULE}-${PV}:${SLOT}[${MULTILIB_USEDEP}]"
@@ -327,12 +327,15 @@ gstreamer_multilib_src_configure() {
 		fi
 	fi
 
+	if grep -qF "option('package-name'" "${EMESON_SOURCE}"/meson_options.txt ; then
+		gst_conf+=( -Dpackage-name="Gentoo GStreamer ebuild" )
+	fi
+	if grep -qF "option('package-origin'" "${EMESON_SOURCE}"/meson_options.txt ; then
+		gst_conf+=( -Dpackage-origin="https://www.gentoo.org" )
+	fi
+	gst_conf+=( "${@}" )
+
 	einfo "Configuring to build ${GST_PLUGINS_ENABLED} plugin(s) ..."
-	gst_conf+=(
-		-Dpackage-name="Gentoo GStreamer ebuild"
-		-Dpackage-origin="https://www.gentoo.org"
-		"${@}"
-	)
 	meson_src_configure "${gst_conf[@]}"
 }
 
@@ -379,12 +382,20 @@ gstreamer_multilib_src_compile() {
 	if [[ "${PN}" == "${GST_ORG_MODULE}" ]]; then
 		eninja
 	else
-		local plugin_dir plugin
+		local plugin_dir plugin build_dir
 
 		for plugin_dir in ${GST_PLUGINS_BUILD_DIR} ; do
 			plugin=$(_gstreamer_get_target_filename $(gstreamer_get_plugin_dir ${plugin_dir}))
+			# Read full link of build directory. Outputs symlink's true link.
+			# We want to get the full file path so it can be removed later.
+			# Working around ninja issues w/ symlinks (e.g. PORTAGE_TMPDIR as a symlink)
+
+			# https://github.com/ninja-build/ninja/issues/1251
+			# https://github.com/ninja-build/ninja/issues/1330
+			build_dir=$(readlink -f "${BUILD_DIR}")
+
 			plugin_path="${plugin%%:*}"
-			eninja "${plugin_path/"${BUILD_DIR}/"}"
+			eninja "${plugin_path/"${build_dir}/"/}"
 		done
 	fi
 }
@@ -408,6 +419,7 @@ gstreamer_multilib_src_install() {
 		for plugin_dir in ${GST_PLUGINS_BUILD_DIR} ; do
 			for plugin in $(_gstreamer_get_target_filename $(gstreamer_get_plugin_dir ${plugin_dir})); do
 				local install_filename="${plugin##*:}"
+				install_filename="${install_filename#${EPREFIX}}"
 				insinto "${install_filename%/*}"
 				doins "${plugin%%:*}"
 			done

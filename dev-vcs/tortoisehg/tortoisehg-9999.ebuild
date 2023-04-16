@@ -1,30 +1,31 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
-PYTHON_COMPAT=( python3_{8..9} )
+EAPI=8
 
-DISTUTILS_USE_SETUPTOOLS=no
+PYTHON_COMPAT=( python3_{9..11} )
+DISTUTILS_USE_PEP517=setuptools
 
 inherit desktop distutils-r1 optfeature xdg-utils
 
 if [[ ${PV} != *9999* ]]; then
 	KEYWORDS="~amd64 ~arm64 ~x86"
 	SRC_URI="https://foss.heptapod.net/mercurial/${PN}/thg/-/archive/${PV}/thg-${PV}.tar.gz -> ${P}.tar.gz"
-	HG_DEPEND=">=dev-vcs/mercurial-5.7[${PYTHON_USEDEP}]
-		<dev-vcs/mercurial-5.9[${PYTHON_USEDEP}]"
+	HG_DEPEND=">=dev-vcs/mercurial-5.9[${PYTHON_USEDEP}]
+		$(python_gen_cond_dep '>=dev-vcs/mercurial-6.3.2[${PYTHON_USEDEP}]' python3_11 )
+		<dev-vcs/mercurial-6.4[${PYTHON_USEDEP}]"
 	S="${WORKDIR}/thg-${PV}"
 else
 	inherit mercurial
 	EHG_REPO_URI="https://foss.heptapod.net/mercurial/${PN}/thg"
 	EHG_REVISION="stable"
-	HG_DEPEND=">=dev-vcs/mercurial-5.7[${PYTHON_USEDEP}]"
+	HG_DEPEND=">=dev-vcs/mercurial-5.9[${PYTHON_USEDEP}]"
 fi
 
 DESCRIPTION="Set of graphical tools for Mercurial"
 HOMEPAGE="https://tortoisehg.bitbucket.io/"
 
-LICENSE="GPL-2"
+LICENSE="GPL-2+"
 SLOT="0"
 IUSE="test"
 RESTRICT="!test? ( test )"
@@ -34,13 +35,13 @@ RDEPEND="
 	dev-python/iniparse[${PYTHON_USEDEP}]
 	dev-python/pygments[${PYTHON_USEDEP}]
 	dev-python/PyQt5[network,svg,${PYTHON_USEDEP}]
-	>=dev-python/qscintilla-python-2.9.4[qt5(+),${PYTHON_USEDEP}]
+	>=dev-python/qscintilla-python-2.11.6[qt5(+),${PYTHON_USEDEP}]
 "
-DEPEND="
+BDEPEND="
 	${RDEPEND}
 	test? (
-		dev-python/mock
-		dev-python/pytest
+		dev-python/mock[${PYTHON_USEDEP}]
+		dev-python/pytest[${PYTHON_USEDEP}]
 	)
 "
 
@@ -55,8 +56,8 @@ python_prepare_all() {
 }
 
 python_test() {
-	${EPYTHON} tests/run-tests.py -m 'not largefiles' --doctest-modules tests || die
-	${EPYTHON} tests/run-tests.py -m largefiles tests || die
+	${EPYTHON} tests/run-tests.py -m 'not largefiles' --disable-pytest-warnings --doctest-modules tests || die "Tests failed with ${EPYTHON}"
+	${EPYTHON} tests/run-tests.py -m largefiles --disable-pytest-warnings tests || die "Tests failed with ${EPYTHON}"
 }
 
 python_install_all() {

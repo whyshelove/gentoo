@@ -1,7 +1,7 @@
 # Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 GNOME2_LA_PUNT="yes"
 
 inherit gnome2 vala rhel8-a
@@ -12,7 +12,7 @@ HOMEPAGE="http://libvirt.org/git/?p=libvirt-glib.git"
 LICENSE="LGPL-2.1"
 SLOT="0"
 KEYWORDS="amd64 ~arm64 ~ppc64 x86"
-IUSE="+introspection nls +vala"
+IUSE="+introspection nls vala"
 REQUIRED_USE="vala? ( introspection )"
 
 RDEPEND="

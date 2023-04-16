@@ -6,6 +6,7 @@ WANT_LIBTOOL="none"
 
 suffix_ver=$(ver_cut 5)
 [[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}.1"
+unused_patches=( "patch132 -p1" "patch251 -p1" "patch329 -p1" )
 
 inherit autotools flag-o-matic multiprocessing pax-utils \
 	python-utils-r1 toolchain-funcs rhel8
@@ -54,27 +55,15 @@ BDEPEND="
 PDEPEND="app-eselect/eselect-python"
 RDEPEND+=" !build? ( app-misc/mime-types )"
 
-src_unpack() {
-	rpm_src_unpack ${A}
-	rm ${WORKDIR}/{"00329-fips.patch","00132-add-rpmbuild-hooks-to-unittest.patch","00251-change-user-install-location.patch"}
-}
-
 src_prepare() {
 	# Ensure that internal copies of expat, libffi and zlib are not used.
 	rm -fr Modules/expat || die
 	rm -fr Modules/_ctypes/libffi* || die
 	rm -fr Modules/zlib || die
 
-	rm Lib/ensurepip/_bundled/*.whl || die
+	#rm Lib/ensurepip/_bundled/*.whl || die
 	find -name '*.exe' -print -delete || die
-	rm configure pyconfig.h.in || die
-
-	git apply ${WORKDIR}/00351-avoid-infinite-loop-in-the-tarfile-module.patch || die
-	rm ${WORKDIR}/00351-avoid-infinite-loop-in-the-tarfile-module.patch
-
-	local PATCHES=(
-		${WORKDIR}
-	)
+	#rm configure pyconfig.h.in || die
 
 	default
 

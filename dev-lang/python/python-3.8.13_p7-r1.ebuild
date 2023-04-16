@@ -7,6 +7,7 @@ WANT_LIBTOOL="none"
 DPREFIX="module+"
 suffix_ver=$(ver_cut 5)
 [[ ${suffix_ver} ]] && DSUFFIX=".${suffix_ver}.0+15641+2ece4388"
+unused_patches=( "patch102 -p1" "patch251 -p1" )
 
 inherit autotools flag-o-matic multiprocessing pax-utils
 inherit python-utils-r1 toolchain-funcs rhel8-a
@@ -257,7 +258,7 @@ src_test() {
 }
 
 src_install() {
-	local libdir=${ED}/usr/$(get_libdir)/python${PYVER}
+	local libdir=${ED}/usr/lib/python${PYVER}
 
 	emake DESTDIR="${D}" altinstall
 

@@ -1,4 +1,4 @@
-# Copyright 2004-2021 Gentoo Authors
+# Copyright 2004-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: xdg-utils.eclass
@@ -22,17 +22,17 @@ case ${EAPI} in
 	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
-# @ECLASS-VARIABLE: DESKTOP_DATABASE_DIR
+# @ECLASS_VARIABLE: DESKTOP_DATABASE_DIR
 # @INTERNAL
 # @DESCRIPTION:
 # Directory where .desktop files database is stored
-: ${DESKTOP_DATABASE_DIR="/usr/share/applications"}
+: "${DESKTOP_DATABASE_DIR="/usr/share/applications"}"
 
-# @ECLASS-VARIABLE: MIMEINFO_DATABASE_DIR
+# @ECLASS_VARIABLE: MIMEINFO_DATABASE_DIR
 # @INTERNAL
 # @DESCRIPTION:
 # Directory where .desktop files database is stored
-: ${MIMEINFO_DATABASE_DIR:="/usr/share/mime"}
+: "${MIMEINFO_DATABASE_DIR:="/usr/share/mime"}"
 
 # @FUNCTION: xdg_environment_reset
 # @DESCRIPTION:
@@ -42,9 +42,10 @@ xdg_environment_reset() {
 	export XDG_DATA_HOME="${HOME}/.local/share"
 	export XDG_CONFIG_HOME="${HOME}/.config"
 	export XDG_CACHE_HOME="${HOME}/.cache"
+	export XDG_STATE_HOME="${HOME}/.local/state"
 	export XDG_RUNTIME_DIR="${T}/run"
 	mkdir -p "${XDG_DATA_HOME}" "${XDG_CONFIG_HOME}" "${XDG_CACHE_HOME}" \
-		"${XDG_RUNTIME_DIR}" || die
+		"${XDG_STATE_HOME}" "${XDG_RUNTIME_DIR}" || die
 	# This directory needs to be owned by the user, and chmod 0700
 	# https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 	chmod 0700 "${XDG_RUNTIME_DIR}" || die
@@ -124,6 +125,9 @@ xdg_mimeinfo_database_update() {
 		debug-print "update-mime-database is not found"
 		return
 	fi
+
+	# https://bugs.gentoo.org/819783
+	local -x PKGSYSTEM_ENABLE_FSYNC=0
 
 	ebegin "Updating shared mime info database"
 	update-mime-database "${EROOT%/}${MIMEINFO_DATABASE_DIR}"

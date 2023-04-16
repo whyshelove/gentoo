@@ -283,6 +283,8 @@ python_check_deps() {
 }
 
 pkg_setup() {
+	export ASFLAGS="--generate-missing-build-notes=yes"
+
 	# warning message for bug 459306
 	if use llvm && has_version sys-devel/llvm[!debug=]; then
 		ewarn "Mismatch between debug USE flags in media-libs/mesa and sys-devel/llvm"

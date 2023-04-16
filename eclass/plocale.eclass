@@ -1,4 +1,4 @@
-# Copyright 2012-2021 Gentoo Authors
+# Copyright 2012-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: plocale.eclass
@@ -6,7 +6,7 @@
 # Ulrich Müller <ulm@gentoo.org>
 # @AUTHOR:
 # Ben de Groot <yngwin@gentoo.org>
-# @SUPPORTED_EAPIS: 6 7 8
+# @SUPPORTED_EAPIS: 7 8
 # @BLURB: convenience functions to handle localizations
 # @DESCRIPTION:
 # The plocale (localization) eclass offers a number of functions to more
@@ -59,7 +59,7 @@ esac
 if [[ -z ${_PLOCALE_ECLASS} ]]; then
 _PLOCALE_ECLASS=1
 
-# @ECLASS-VARIABLE: PLOCALES
+# @ECLASS_VARIABLE: PLOCALES
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # Variable listing the locales for which localizations are offered by
@@ -67,7 +67,7 @@ _PLOCALE_ECLASS=1
 #
 # Example: PLOCALES="cy de el_GR en_US pt_BR vi zh_CN"
 
-# @ECLASS-VARIABLE: PLOCALE_BACKUP
+# @ECLASS_VARIABLE: PLOCALE_BACKUP
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # In some cases the package fails when none of the offered PLOCALES are

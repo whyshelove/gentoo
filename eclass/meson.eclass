@@ -1,4 +1,4 @@
-# Copyright 2017-2021 Gentoo Authors
+# Copyright 2017-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: meson.eclass
@@ -47,8 +47,8 @@ inherit multiprocessing ninja-utils python-utils-r1 toolchain-funcs
 
 EXPORT_FUNCTIONS src_configure src_compile src_test src_install
 
-_MESON_DEPEND=">=dev-util/meson-0.55.3
-	>=dev-util/ninja-1.8.2
+_MESON_DEPEND=">=dev-util/meson-0.58.2
+	${NINJA_DEPEND}
 	dev-util/meson-format-array
 "
 
@@ -58,13 +58,18 @@ else
 	BDEPEND=${_MESON_DEPEND}
 fi
 
-# @ECLASS-VARIABLE: BUILD_DIR
+# @ECLASS_VARIABLE: BUILD_DIR
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # Build directory, location where all generated files should be placed.
 # If this isn't set, it defaults to ${WORKDIR}/${P}-build.
 
-# @ECLASS-VARIABLE: EMESON_SOURCE
+# @ECLASS_VARIABLE: EMESON_BUILDTYPE
+# @DESCRIPTION:
+# The buildtype value to pass to meson setup.
+: ${EMESON_BUILDTYPE=plain}
+
+# @ECLASS_VARIABLE: EMESON_SOURCE
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # The location of the source files for the project; this is the source
@@ -76,12 +81,6 @@ fi
 # @DESCRIPTION:
 # Optional meson arguments as Bash array; this should be defined before
 # calling meson_src_configure.
-
-# @VARIABLE: emesontestargs
-# @DEFAULT_UNSET
-# @DESCRIPTION:
-# Optional meson test arguments as Bash array; this should be defined before
-# calling meson_src_test.
 
 # @VARIABLE: MYMESONARGS
 # @DEFAULT_UNSET
@@ -286,6 +285,8 @@ meson_feature() {
 meson_src_configure() {
 	debug-print-function ${FUNCNAME} "$@"
 
+	[[ -n "${NINJA_DEPEND}" ]] || ewarn "Unknown value '${NINJA}' for \${NINJA}"
+
 	local BUILD_CFLAGS=${BUILD_CFLAGS}
 	local BUILD_CPPFLAGS=${BUILD_CPPFLAGS}
 	local BUILD_CXXFLAGS=${BUILD_CXXFLAGS}
@@ -316,7 +317,6 @@ meson_src_configure() {
 
 	local mesonargs=(
 		meson setup
-		--buildtype plain
 		--libdir "$(get_libdir)"
 		--localstatedir "${EPREFIX}/var/lib"
 		--prefix "${EPREFIX}/usr"
@@ -325,7 +325,21 @@ meson_src_configure() {
 		--build.pkg-config-path "${BUILD_PKG_CONFIG_PATH}${BUILD_PKG_CONFIG_PATH:+:}${EPREFIX}/usr/share/pkgconfig"
 		--pkg-config-path "${PKG_CONFIG_PATH}${PKG_CONFIG_PATH:+:}${EPREFIX}/usr/share/pkgconfig"
 		--native-file "$(_meson_create_native_file)"
+
+		# gcc[pch] is masked in profiles due to consistent bugginess
+		# without forcing this off, some packages may fail too (like gjs,
+		# bug #839549), but in any case, we don't want to bother attempting
+		# this.
+		-Db_pch=false
+
+		# It's Gentoo policy to not have builds die on blanket -Werror, as it's
+		# an upstream development matter. bug #754279.
+		-Dwerror=false
 	)
+
+	if [[ -n ${EMESON_BUILDTYPE} ]]; then
+		mesonargs+=( --buildtype "${EMESON_BUILDTYPE}" )
+	fi
 
 	if tc-is-cross-compiler; then
 		mesonargs+=( --cross-file "$(_meson_create_cross_file)" )
@@ -379,7 +393,17 @@ meson_src_configure() {
 meson_src_compile() {
 	debug-print-function ${FUNCNAME} "$@"
 
-	eninja -C "${BUILD_DIR}" "$@"
+	local mesoncompileargs=(
+		-C "${BUILD_DIR}"
+		--jobs "$(makeopts_jobs "${MAKEOPTS}" 0)"
+		--load-average "$(makeopts_loadavg "${MAKEOPTS}" 0)"
+		--verbose
+		"$@"
+	)
+
+	set -- meson compile "${mesoncompileargs[@]}"
+	echo "$@" >&2
+	"$@" || die "compile failed"
 }
 
 # @FUNCTION: meson_src_test
@@ -391,32 +415,42 @@ meson_src_test() {
 
 	local mesontestargs=(
 		-C "${BUILD_DIR}"
+		--num-processes "$(makeopts_jobs "${MAKEOPTS}")"
+		"$@"
 	)
-	[[ -n ${NINJAOPTS} || -n ${MAKEOPTS} ]] &&
-		mesontestargs+=(
-			--num-processes "$(makeopts_jobs ${NINJAOPTS:-${MAKEOPTS}})"
-		)
 
-	# Append additional arguments from ebuild
-	mesontestargs+=("${emesontestargs[@]}")
-
-	set -- meson test "${mesontestargs[@]}" "$@"
+	set -- meson test "${mesontestargs[@]}"
 	echo "$@" >&2
 	"$@" || die "tests failed"
 }
 
+# @FUNCTION: meson_install
+# @USAGE: [extra meson install arguments]
+# @DESCRIPTION:
+# Calls meson install with suitable arguments
+meson_install() {
+	debug-print-function ${FUNCNAME} "$@"
+
+	local mesoninstallargs=(
+		-C "${BUILD_DIR}"
+		--destdir "${D}"
+		"$@"
+	)
+
+	set -- meson install "${mesoninstallargs[@]}"
+	echo "$@" >&2
+	"$@" || die "install failed"
+}
+
 # @FUNCTION: meson_src_install
-# @USAGE: [extra ninja install arguments]
+# @USAGE: [extra meson install arguments]
 # @DESCRIPTION:
 # This is the meson_src_install function.
 meson_src_install() {
 	debug-print-function ${FUNCNAME} "$@"
 
-	DESTDIR="${D}" eninja -C "${BUILD_DIR}" install "$@"
-
-	pushd "${S}" > /dev/null || die
+	meson_install "$@"
 	einstalldocs
-	popd > /dev/null || die
 }
 
 fi

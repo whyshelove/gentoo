@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: java-virtuals-2.eclass
@@ -6,25 +6,23 @@
 # java@gentoo.org
 # @AUTHOR:
 # Original Author: Alistair John Bush <ali_bush@gentoo.org>
-# @SUPPORTED_EAPIS: 5 6
+# @SUPPORTED_EAPIS: 8
 # @BLURB: Java virtuals eclass
 # @DESCRIPTION:
 # To provide a default (and only) src_install function for ebuilds in the
 # java-virtuals category.
 
-case ${EAPI:-0} in
-	[56]) ;;
+case ${EAPI} in
+	8) ;;
 	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
-
-EXPORT_FUNCTIONS src_install
 
 if [[ -z ${_JAVA_VIRTUALS_2_ECLASS} ]] ; then
 _JAVA_VIRTUALS_2_ECLASS=1
 
 inherit java-utils-2
 
-DEPEND=">=dev-java/java-config-2.2.0-r3"
+DEPEND="dev-java/java-config"
 RDEPEND="${DEPEND}"
 
 S="${WORKDIR}"
@@ -63,3 +61,5 @@ java-virtuals-2_do_write() {
 }
 
 fi
+
+EXPORT_FUNCTIONS src_install

@@ -1,16 +1,17 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: gnome2.eclass
 # @MAINTAINER:
 # gnome@gentoo.org
-# @SUPPORTED_EAPIS: 5 6 7
+# @SUPPORTED_EAPIS: 5 6 7 8
+# @PROVIDES: gnome2-utils
 # @BLURB: Provides phases for Gnome/Gtk+ based packages.
 # @DESCRIPTION:
 # Exports portage base functions used by ebuilds written for packages using the
 # GNOME framework. For additional functions, see gnome2-utils.eclass.
 
-# @ECLASS-VARIABLE: GNOME2_EAUTORECONF
+# @ECLASS_VARIABLE: GNOME2_EAUTORECONF
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # Run eautoreconf instead of only elibtoolize
@@ -20,23 +21,23 @@ GNOME2_EAUTORECONF=${GNOME2_EAUTORECONF:-""}
 [[ ${EAPI} == [56] ]] && inherit eutils ltprune
 inherit libtool gnome.org gnome2-utils xdg
 
-case ${EAPI:-0} in
+case ${EAPI} in
 	5)
 		EXPORT_FUNCTIONS src_unpack src_prepare src_configure src_compile src_install pkg_preinst pkg_postinst pkg_postrm
 		;;
-	6|7)
+	6|7|8)
 		EXPORT_FUNCTIONS src_prepare src_configure src_compile src_install pkg_preinst pkg_postinst pkg_postrm
 		;;
-	*) die "EAPI=${EAPI} is not supported" ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
-# @ECLASS-VARIABLE: ELTCONF
+# @ECLASS_VARIABLE: ELTCONF
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # Extra options passed to elibtoolize
 ELTCONF=${ELTCONF:-""}
 
-# @ECLASS-VARIABLE: G2CONF
+# @ECLASS_VARIABLE: G2CONF
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # Extra configure opts passed to econf.
@@ -46,7 +47,7 @@ if has ${EAPI} 5; then
 	G2CONF=${G2CONF:-""}
 fi
 
-# @ECLASS-VARIABLE: GCONF_DEBUG
+# @ECLASS_VARIABLE: GCONF_DEBUG
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # Whether to handle debug or not.
@@ -64,12 +65,12 @@ if has ${EAPI} 5; then
 	fi
 fi
 
-# @ECLASS-VARIABLE: GNOME2_ECLASS_GIO_MODULES
+# @ECLASS_VARIABLE: GNOME2_ECLASS_GIO_MODULES
 # @INTERNAL
 # @DESCRIPTION:
 # Array containing glib GIO modules
 
-# @ECLASS-VARIABLE: GNOME2_LA_PUNT
+# @ECLASS_VARIABLE: GNOME2_LA_PUNT
 # @DESCRIPTION:
 # In EAPIs 5 and 6, it relies on prune_libtool_files (from ltprune.eclass) for
 # this. Later EAPIs use find ... -delete. Available values for GNOME2_LA_PUNT:
@@ -95,7 +96,7 @@ gnome2_src_unpack() {
 # Prepare environment for build, fix build of scrollkeeper documentation,
 # run elibtoolize.
 gnome2_src_prepare() {
-	xdg_src_prepare
+	[[ ${EAPI} != 5 ]] && default
 
 	# Prevent assorted access violations and test failures
 	gnome2_environment_reset

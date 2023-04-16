@@ -7,8 +7,8 @@ PYTHON_COMPAT=( python3_{6,8,9} )
 
 DISTUTILS_USE_SETUPTOOLS=no
 
-MY_P="${P/_rc/-rc}"
-
+DPREFIX="module+"
+DSUFFIX=".7.0+16689+53d59bc2"
 inherit distutils-r1 rhel8-a
 
 if [[ ${PV} = *9999* ]]; then
@@ -16,7 +16,6 @@ if [[ ${PV} = *9999* ]]; then
 	EGIT_REPO_URI="https://gitlab.com/libvirt/libvirt-python.git"
 	RDEPEND="app-emulation/libvirt:=[-python(-)]"
 else
-	SRC_URI="${REPO_URI}/${MY_PF}.module_el8.7.0+1218+f626c2ff.src.rpm"
 	KEYWORDS="amd64 arm64 ~ppc64 ~x86"
 	RDEPEND="app-emulation/libvirt:0/${PV}"
 fi

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
   <maintainer type="project">
     <email>perl@gentoo.org</email>
@@ -31,5 +31,6 @@
     <remote-id type="cpan-module">Email::Sender::Transport::Test</remote-id>
     <remote-id type="cpan-module">Email::Sender::Transport::Wrapper</remote-id>
     <remote-id type="cpan-module">Email::Sender::Util</remote-id>
+    <remote-id type="github">rjbs/Email-Sender</remote-id>
   </upstream>
 </pkgmetadata>

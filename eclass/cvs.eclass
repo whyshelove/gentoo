@@ -1,10 +1,10 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: cvs.eclass
 # @MAINTAINER:
 # vapier@gentoo.org (and anyone who wants to help)
-# @SUPPORTED_EAPIS: 4 5 6 7
+# @SUPPORTED_EAPIS: 7 8
 # @BLURB: This eclass provides generic cvs fetching functions
 # @DESCRIPTION:
 # This eclass provides the generic cvs fetching functions. To use this from an
@@ -12,6 +12,11 @@
 # inheriting. Then either leave the default src_unpack or extend over
 # cvs_src_unpack. If you find that you need to call the cvs_* functions
 # directly, I'd be interested to hear about it.
+
+case ${EAPI} in
+	7|8) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
+esac
 
 if [[ -z ${_CVS_ECLASS} ]]; then
 _CVS_ECLASS=1
@@ -28,19 +33,19 @@ _CVS_ECLASS=1
 # this eclass will take care of that.  If you want to set the global
 # KDE cvs ebuilds' settings, see the comments in kde-source.eclass.
 
-# @ECLASS-VARIABLE: ECVS_CVS_COMPRESS
+# @ECLASS_VARIABLE: ECVS_CVS_COMPRESS
 # @DESCRIPTION:
 # Set the default compression level.  Has no effect when ECVS_CVS_COMMAND
 # is defined by ebuild/user.
-: ${ECVS_CVS_COMPRESS:=-z1}
+: "${ECVS_CVS_COMPRESS:=-z1}"
 
-# @ECLASS-VARIABLE: ECVS_CVS_OPTIONS
+# @ECLASS_VARIABLE: ECVS_CVS_OPTIONS
 # @DESCRIPTION:
 # Additional options to the cvs commands.  Has no effect when ECVS_CVS_COMMAND
 # is defined by ebuild/user.
-: ${ECVS_CVS_OPTIONS:=-q -f}
+: "${ECVS_CVS_OPTIONS:=-q -f}"
 
-# @ECLASS-VARIABLE: ECVS_CVS_COMMAND
+# @ECLASS_VARIABLE: ECVS_CVS_COMMAND
 # @DESCRIPTION:
 # CVS command to run
 #
@@ -48,35 +53,35 @@ _CVS_ECLASS=1
 # on the cvs connection.  The default of "cvs -q -f -z4" means to be
 # quiet, to disregard the ~/.cvsrc config file and to use maximum
 # compression.
-: ${ECVS_CVS_COMMAND:=cvs ${ECVS_CVS_OPTIONS} ${ECVS_CVS_COMPRESS}}
+: "${ECVS_CVS_COMMAND:=cvs ${ECVS_CVS_OPTIONS} ${ECVS_CVS_COMPRESS}}"
 
-# @ECLASS-VARIABLE: ECVS_UP_OPTS
+# @ECLASS_VARIABLE: ECVS_UP_OPTS
 # @DESCRIPTION:
 # CVS options given after the cvs update command. Don't remove "-dP" or things
 # won't work.
-: ${ECVS_UP_OPTS:=-dP}
+: "${ECVS_UP_OPTS:=-dP}"
 
-# @ECLASS-VARIABLE: ECVS_CO_OPTS
+# @ECLASS_VARIABLE: ECVS_CO_OPTS
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # CVS options given after the cvs checkout command.
 
-# @ECLASS-VARIABLE: ECVS_OFFLINE
+# @ECLASS_VARIABLE: ECVS_OFFLINE
 # @USER_VARIABLE
 # @DESCRIPTION:
 # Set this variable to a non-empty value to disable the automatic updating of
 # a CVS source tree. This is intended to be set outside the cvs source
 # tree by users.
-: ${ECVS_OFFLINE:=${EVCS_OFFLINE}}
+: "${ECVS_OFFLINE:=${EVCS_OFFLINE}}"
 
-# @ECLASS-VARIABLE: ECVS_LOCAL
+# @ECLASS_VARIABLE: ECVS_LOCAL
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # If this is set, the CVS module will be fetched non-recursively.
 # Refer to the information in the CVS man page regarding the -l
 # command option (not the -l global option).
 
-# @ECLASS-VARIABLE: ECVS_LOCALNAME
+# @ECLASS_VARIABLE: ECVS_LOCALNAME
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # Local name of checkout directory
@@ -89,12 +94,12 @@ _CVS_ECLASS=1
 # some such, things will break because the ebuild won't expect it and
 # have e.g. a wrong $S setting.
 
-# @ECLASS-VARIABLE: ECVS_TOP_DIR
+# @ECLASS_VARIABLE: ECVS_TOP_DIR
 # @DESCRIPTION:
 # The directory under which CVS modules are checked out.
-: ${ECVS_TOP_DIR:="${PORTAGE_ACTUAL_DISTDIR-${DISTDIR}}/cvs-src"}
+: "${ECVS_TOP_DIR:="${PORTAGE_ACTUAL_DISTDIR-${DISTDIR}}/cvs-src"}"
 
-# @ECLASS-VARIABLE: ECVS_SERVER
+# @ECLASS_VARIABLE: ECVS_SERVER
 # @DESCRIPTION:
 # CVS path
 #
@@ -105,9 +110,9 @@ _CVS_ECLASS=1
 #
 # Set this to "offline" to disable fetching (i.e. to assume the module
 # is already checked out in ECVS_TOP_DIR).
-: ${ECVS_SERVER:="offline"}
+: "${ECVS_SERVER:="offline"}"
 
-# @ECLASS-VARIABLE: ECVS_MODULE
+# @ECLASS_VARIABLE: ECVS_MODULE
 # @REQUIRED
 # @DESCRIPTION:
 # The name of the CVS module to be fetched
@@ -116,13 +121,13 @@ _CVS_ECLASS=1
 # several directory levels, i.e. "foo/bar/baz"
 #[[ -z ${ECVS_MODULE} ]] && die "$ECLASS: error: ECVS_MODULE not set, cannot continue"
 
-# @ECLASS-VARIABLE: ECVS_DATE
+# @ECLASS_VARIABLE: ECVS_DATE
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # The date of the checkout.  See the -D date_spec option in the cvs
 # man page for more details.
 
-# @ECLASS-VARIABLE: ECVS_BRANCH
+# @ECLASS_VARIABLE: ECVS_BRANCH
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # The name of the branch/tag to use
@@ -131,7 +136,7 @@ _CVS_ECLASS=1
 # branch checkout to head if used.
 #: ${ECVS_BRANCH:="HEAD"}
 
-# @ECLASS-VARIABLE: ECVS_AUTH
+# @ECLASS_VARIABLE: ECVS_AUTH
 # @PRE_INHERIT
 # @DESCRIPTION:
 # Authentication method to use
@@ -147,19 +152,19 @@ _CVS_ECLASS=1
 #  e.g.
 #   "cvs -danoncvs@savannah.gnu.org:/cvsroot/backbone co System"
 #   ( from gnustep-apps/textedit )
-: ${ECVS_AUTH:="pserver"}
+: "${ECVS_AUTH:="pserver"}"
 
-# @ECLASS-VARIABLE: ECVS_USER
+# @ECLASS_VARIABLE: ECVS_USER
 # @DESCRIPTION:
 # Username to use for authentication on the remote server.
-: ${ECVS_USER:="anonymous"}
+: "${ECVS_USER:="anonymous"}"
 
-# @ECLASS-VARIABLE: ECVS_PASS
+# @ECLASS_VARIABLE: ECVS_PASS
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # Password to use for authentication on the remote server
 
-# @ECLASS-VARIABLE: ECVS_SSH_HOST_KEY
+# @ECLASS_VARIABLE: ECVS_SSH_HOST_KEY
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # If SSH is used for `ext' authentication, use this variable to
@@ -169,7 +174,7 @@ _CVS_ECLASS=1
 # WARNING: If a SSH host key is not specified using this variable, the
 # remote host key will not be verified.
 
-# @ECLASS-VARIABLE: ECVS_CLEAN
+# @ECLASS_VARIABLE: ECVS_CLEAN
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # Set this to get a clean copy when updating (passes the
@@ -179,7 +184,7 @@ PROPERTIES+=" live"
 
 # add cvs to deps
 # ssh is used for ext auth
-DEPEND="dev-vcs/cvs"
+BDEPEND="dev-vcs/cvs"
 
 if [[ ${ECVS_AUTH} == "ext" ]] ; then
 	#default to ssh
@@ -187,16 +192,12 @@ if [[ ${ECVS_AUTH} == "ext" ]] ; then
 	if [[ ${CVS_RSH} != "ssh" ]] ; then
 		die "Support for ext auth with clients other than ssh has not been implemented yet"
 	fi
-	DEPEND+=" net-misc/openssh"
+	BDEPEND+=" net-misc/openssh"
 fi
 
-case ${EAPI:-0} in
-	4|5|6) ;;
-	7) BDEPEND="${DEPEND}"; DEPEND="" ;;
-	*) die "${ECLASS}: EAPI ${EAPI:-0} is not supported" ;;
-esac
-
-# called from cvs_src_unpack
+# @FUNCTION: cvs_fetch
+# @DESCRIPTION:
+# Fetch sources from a CVS repository.  Called from cvs_src_unpack.
 cvs_fetch() {
 	# Make these options local variables so that the global values are
 	# not affected by modifications in this function.
@@ -258,10 +259,10 @@ cvs_fetch() {
 		# just remove the last path element in the string)
 
 		debug-print "${FUNCNAME}: checkout mode. creating cvs directory"
-		addwrite /foobar
-		addwrite /
-		mkdir -p "/${ECVS_TOP_DIR}"
-		export SANDBOX_WRITE="${SANDBOX_WRITE//:\/foobar:\/}"
+		(
+			addwrite /
+			mkdir -p "${ECVS_TOP_DIR}" || die "mkdir ${ECVS_TOP_DIR} failed"
+		)
 	fi
 
 	# In case ECVS_TOP_DIR is a symlink to a dir, get the real path,
@@ -422,7 +423,7 @@ EOF
 			# Make sure DISPLAY is set (SSH will not use SSH_ASKPASS
 			# if DISPLAY is not set)
 
-			: ${DISPLAY:="DISPLAY"}
+			: "${DISPLAY:="DISPLAY"}"
 			export DISPLAY
 
 			# Create a dummy executable to echo ${ECVS_PASS}
@@ -535,6 +536,6 @@ cvs_src_unpack() {
 	einfo "CVS module ${ECVS_MODULE} is now in ${WORKDIR}"
 }
 
-EXPORT_FUNCTIONS src_unpack
-
 fi
+
+EXPORT_FUNCTIONS src_unpack

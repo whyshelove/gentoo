@@ -15,6 +15,6 @@ DEPEND="${RDEPEND}
 	x11-base/xorg-proto"
 
 XORG_CONFIGURE_OPTIONS=(
-	--with-encodingsdir="${EPREFIX}/usr/share/fonts/encodings"
 	export CFLAGS="$CFLAGS -Os"
+	--with-encodingsdir="${EPREFIX}/usr/share/fonts/encodings"
 )

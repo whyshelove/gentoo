@@ -1,10 +1,10 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: out-of-source.eclass
 # @MAINTAINER:
 # Michał Górny <mgorny@gentoo.org>
-# @SUPPORTED_EAPIS: 6 7
+# @SUPPORTED_EAPIS: 7 8
 # @BLURB: convenient wrapper to build autotools packages out-of-source
 # @DESCRIPTION:
 # This eclass provides a minimalistic wrapper interface to easily
@@ -33,13 +33,19 @@
 # @CODE
 
 case ${EAPI} in
-	6|7);;
-	*) die "EAPI ${EAPI:-0} unsupported (too old)";;
+	7|8);;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
-EXPORT_FUNCTIONS src_configure src_compile src_test src_install
+if [[ -z ${_OUT_OF_SOURCE_ECLASS} ]]; then
+_OUT_OF_SOURCE_ECLASS=1
 
-if [[ ! ${_OUT_OF_SOURCE_ECLASS} ]]; then
+# @ECLASS_VARIABLE: BUILD_DIR
+# @OUTPUT_VARIABLE
+# @DEFAULT_UNSET
+# @DESCRIPTION:
+# The current build directory.  Defaults to ${WORKDIR}/${P}_build
+# if unset.
 
 # @FUNCTION: out-of-source_src_configure
 # @DESCRIPTION:
@@ -121,5 +127,6 @@ out-of-source_src_install() {
 	fi
 }
 
-_OUT_OF_SOURCE_ECLASS=1
 fi
+
+EXPORT_FUNCTIONS src_configure src_compile src_test src_install

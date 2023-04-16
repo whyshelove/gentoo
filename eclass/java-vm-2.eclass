@@ -1,51 +1,59 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: java-vm-2.eclass
 # @MAINTAINER:
 # java@gentoo.org
-# @SUPPORTED_EAPIS: 5 6
+# @SUPPORTED_EAPIS: 6 7 8
 # @BLURB: Java Virtual Machine eclass
 # @DESCRIPTION:
 # This eclass provides functionality which assists with installing
 # virtual machines, and ensures that they are recognized by java-config.
 
-case ${EAPI:-0} in
-	5|6) ;;
-	*) die "EAPI=${EAPI} is not supported" ;;
+case ${EAPI} in
+	6|7|8) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
+
+if [[ -z ${_JAVA_VM_2_ECLASS} ]]; then
+_JAVA_VM_2_ECLASS=1
 
 inherit multilib pax-utils prefix xdg-utils
 
-EXPORT_FUNCTIONS pkg_setup pkg_postinst pkg_prerm pkg_postrm
-
 RDEPEND="
-	>=dev-java/java-config-2.2.0-r3
-	>=app-eselect/eselect-java-0.4.0"
+	dev-java/java-config
+	app-eselect/eselect-java
+"
 DEPEND="${RDEPEND}"
+BDEPEND="app-arch/unzip"
+IDEPEND="app-eselect/eselect-java"
+
+if [[ ${EAPI} == 6 ]]; then
+	DEPEND+=" ${BDEPEND}"
+fi
 
 export WANT_JAVA_CONFIG=2
 
 
-# @ECLASS-VARIABLE: JAVA_VM_CONFIG_DIR
+# @ECLASS_VARIABLE: JAVA_VM_CONFIG_DIR
 # @INTERNAL
 # @DESCRIPTION:
 # Where to place the vm env file.
 JAVA_VM_CONFIG_DIR="/usr/share/java-config-2/vm"
 
-# @ECLASS-VARIABLE: JAVA_VM_DIR
+# @ECLASS_VARIABLE: JAVA_VM_DIR
 # @INTERNAL
 # @DESCRIPTION:
 # Base directory for vm links.
 JAVA_VM_DIR="/usr/lib/jvm"
 
-# @ECLASS-VARIABLE: JAVA_VM_SYSTEM
+# @ECLASS_VARIABLE: JAVA_VM_SYSTEM
 # @INTERNAL
 # @DESCRIPTION:
 # Link for system-vm
 JAVA_VM_SYSTEM="/etc/java-config-2/current-system-vm"
 
-# @ECLASS-VARIABLE: JAVA_VM_BUILD_ONLY
+# @ECLASS_VARIABLE: JAVA_VM_BUILD_ONLY
 # @DESCRIPTION:
 # Set to YES to mark a vm as build-only.
 JAVA_VM_BUILD_ONLY="${JAVA_VM_BUILD_ONLY:-FALSE}"
@@ -82,14 +90,35 @@ java-vm-2_pkg_postinst() {
 	xdg_desktop_database_update
 }
 
+# @FUNCTION: has_eselect_java-vm_update
+# @INTERNAL
+# @DESCRIPTION:
+# Checks if an eselect-java version providing "eselect java-vm update"
+# is available.
+# @RETURN: 0 if >=app-eselect/eselect-java-0.5 is installed, 1 otherwise.
+has_eselect_java-vm_update() {
+	local has_version_args="-b"
+	if [[ ${EAPI} == 6 ]]; then
+		has_version_args="--host-root"
+	fi
+
+	has_version "${has_version_args}" ">=app-eselect/eselect-java-0.5"
+}
 
 # @FUNCTION: java-vm-2_pkg_prerm
 # @DESCRIPTION:
 # default pkg_prerm
 #
-# Warn user if removing system-vm.
+# Does nothing if eselect-java-0.5 or newer is available.  Otherwise,
+# warn user if removing system-vm.
 
 java-vm-2_pkg_prerm() {
+	if has_eselect_java-vm_update; then
+		# We will potentially switch to a new Java system VM in
+		# pkg_postrm().
+		return
+	fi
+
 	if [[ $(GENTOO_VM= java-config -f 2>/dev/null) == ${VMHANDLE} && -z ${REPLACED_BY_VERSION} ]]; then
 		ewarn "It appears you are removing your system-vm! Please run"
 		ewarn "\"eselect java-vm list\" to list available VMs, then use"
@@ -102,10 +131,14 @@ java-vm-2_pkg_prerm() {
 # @DESCRIPTION:
 # default pkg_postrm
 #
-# Update mime database.
+# Invoke "eselect java-vm update" if eselect-java 0.5, or newer, is
+# available.  Also update the mime database.
 
 java-vm-2_pkg_postrm() {
 	xdg_desktop_database_update
+	if has_eselect_java-vm_update; then
+		eselect java-vm update
+	fi
 }
 
 
@@ -311,10 +344,14 @@ java-vm_sandbox-predict() {
 	[[ -z "${1}" ]] && die "${FUNCNAME} takes at least one argument"
 
 	local path path_arr=("$@")
-	# subshell this to prevent IFS bleeding out dependant on bash version.
+	# subshell this to prevent IFS bleeding out dependent on bash version.
 	# could use local, which *should* work, but that requires a lot of testing.
 	path=$(IFS=":"; echo "${path_arr[*]}")
 	dodir /etc/sandbox.d
 	echo "SANDBOX_PREDICT=\"${path}\"" > "${ED}/etc/sandbox.d/20${VMHANDLE}" \
 		|| die "Failed to write sandbox control file"
 }
+
+fi
+
+EXPORT_FUNCTIONS pkg_setup pkg_postinst pkg_prerm pkg_postrm

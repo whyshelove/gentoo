@@ -1,10 +1,10 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: savedconfig.eclass
 # @MAINTAINER:
 # base-system@gentoo.org
-# @SUPPORTED_EAPIS: 5 6 7
+# @SUPPORTED_EAPIS: 6 7 8
 # @BLURB: common API for saving/restoring complex configuration files
 # @DESCRIPTION:
 # It is not uncommon to come across a package which has a very fine
@@ -30,21 +30,17 @@
 # 4. Emerge the package with just USE=savedconfig to get the custom
 # build.
 
+case ${EAPI} in
+	6|7|8) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
+esac
+
+if [[ -z ${_SAVEDCONFIG_ECLASS} ]]; then
+_SAVEDCONFIG_ECLASS=1
+
 inherit portability
 
 IUSE="savedconfig"
-
-case ${EAPI} in
-	[5-7]) ;;
-	*) die "EAPI=${EAPI:-0} is not supported" ;;
-esac
-
-# @ECLASS-VARIABLE: _SAVEDCONFIG_CONFIGURATION_FILE
-# @DEFAULT_UNSET
-# @INTERNAL
-# @DESCRIPTION:
-# Path of configuration file, relative to /etc/portage/savedconfig,
-# restored by restore_config() and saved by save_config().
 
 # @FUNCTION: save_config
 # @USAGE: <config files to save>
@@ -59,12 +55,7 @@ save_config() {
 	fi
 	[[ $# -eq 0 ]] && die "Usage: save_config <files>"
 
-	local configfile
-	if [[ -n ${_SAVEDCONFIG_CONFIGURATION_FILE} ]] ; then
-		configfile="/etc/portage/savedconfig/${_SAVEDCONFIG_CONFIGURATION_FILE}"
-	else
-		configfile="/etc/portage/savedconfig/${CATEGORY}/${PF}"
-	fi
+	local configfile="/etc/portage/savedconfig/${CATEGORY}/${PF}"
 
 	if [[ $# -eq 1 && -f $1 ]] ; then
 		# Just one file, so have the ${configfile} be that config file
@@ -125,7 +116,6 @@ restore_config() {
 		if [[ -r "${configfile}" ]] ; then
 			einfo "Found \"${configfile}\""
 			found=${configfile}
-			_SAVEDCONFIG_CONFIGURATION_FILE=${configfile#${base}/}
 			break
 		fi
 
@@ -146,14 +136,10 @@ restore_config() {
 		treecopy . "${dest}" || die "Failed to restore ${found} to $1"
 		popd > /dev/null
 	else
-		# maybe the user is screwing around with perms they shouldnt #289168
-		if [[ ! -r ${base} ]] ; then
-			eerror "Unable to read ${base} -- please check its permissions."
-			die "Reading config files failed"
-		fi
 		ewarn "No saved config to restore - please remove USE=savedconfig or"
 		ewarn "provide a configuration file in ${PORTAGE_CONFIGROOT%/}/etc/portage/savedconfig/${CATEGORY}/${PN}"
-		ewarn "Your config file(s) will not be used this time"
+		ewarn "and ensure the build process has permission to access it."
+		ewarn "Your config file(s) will not be used this time."
 	fi
 }
 
@@ -168,5 +154,7 @@ savedconfig_pkg_postinst() {
 			-exec touch {} + 2>/dev/null
 	fi
 }
+
+fi
 
 EXPORT_FUNCTIONS pkg_postinst

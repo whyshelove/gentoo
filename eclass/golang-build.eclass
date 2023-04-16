@@ -1,32 +1,28 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: golang-build.eclass
 # @MAINTAINER:
 # William Hubbs <williamh@gentoo.org>
-# @SUPPORTED_EAPIS: 5 6 7
+# @SUPPORTED_EAPIS: 6 7
+# @PROVIDES: golang-base
 # @BLURB: Eclass for compiling go packages.
+# @DEPRECATED: go-module.eclass
 # @DESCRIPTION:
 # This eclass provides default  src_compile, src_test and src_install
 # functions for software written in the Go programming language.
 
-inherit golang-base
-
-case "${EAPI:-0}" in
-	5|6|7)
-		;;
-	*)
-		die "${ECLASS}: Unsupported eapi (EAPI=${EAPI})"
-		;;
+case ${EAPI} in
+	6|7) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
-EXPORT_FUNCTIONS src_compile src_install src_test
+if [[ -z ${_GOLANG_BUILD_ECLASS} ]]; then
+_GOLANG_BUILD_ECLASS=1
 
-if [[ -z ${_GOLANG_BUILD} ]]; then
+inherit golang-base
 
-_GOLANG_BUILD=1
-
-# @ECLASS-VARIABLE: EGO_BUILD_FLAGS
+# @ECLASS_VARIABLE: EGO_BUILD_FLAGS
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # This allows you to pass build flags to the Go compiler. These flags
@@ -39,7 +35,7 @@ _GOLANG_BUILD=1
 # EGO_BUILD_FLAGS="-ldflags \"-X main.version ${PV}\""
 # @CODE
 
-# @ECLASS-VARIABLE: EGO_PN
+# @ECLASS_VARIABLE: EGO_PN
 # @REQUIRED
 # @DESCRIPTION:
 # This is the import path for the go package(s) to build. Please emerge
@@ -83,3 +79,5 @@ golang-build_src_test() {
 }
 
 fi
+
+EXPORT_FUNCTIONS src_compile src_install src_test

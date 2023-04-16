@@ -1,13 +1,14 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: meson-multilib.eclass
 # @MAINTAINER:
-# Author: Matt Turner <mattst88@gentoo.org>
+# Matt Turner <mattst88@gentoo.org>
 # @AUTHOR:
-# Author: Michał Górny <mgorny@gentoo.org>
-# Author: Matt Turner <mattst88@gentoo.org>
+# Michał Górny <mgorny@gentoo.org>
+# Matt Turner <mattst88@gentoo.org>
 # @SUPPORTED_EAPIS: 7 8
+# @PROVIDES: meson multilib-minimal
 # @BLURB: meson wrapper for multilib builds
 # @DESCRIPTION:
 # The meson-multilib.eclass provides a glue between meson.eclass(5)
@@ -29,8 +30,6 @@ if [[ -z ${_MESON_MULTILIB_ECLASS} ]] ; then
 _MESON_MULTILIB_ECLASS=1
 
 inherit meson multilib-minimal
-
-EXPORT_FUNCTIONS src_configure src_compile src_test src_install
 
 # @FUNCTION: meson_native_use_bool
 # @USAGE: <USE flag> [option name]
@@ -125,7 +124,9 @@ meson-multilib_src_install() {
 }
 
 multilib_src_install() {
-	meson_src_install "${_meson_args[@]}"
+	meson_install "${_meson_args[@]}"
 }
 
 fi
+
+EXPORT_FUNCTIONS src_configure src_compile src_test src_install

@@ -1,4 +1,4 @@
-# Copyright 2018-2021 Gentoo Authors
+# Copyright 2018-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: libretro-core.eclass
@@ -7,7 +7,7 @@
 # @AUTHOR:
 # Cecil Curry <leycec@gmail.com>
 # Craig Andrews <candrews@gentoo.org>
-# @SUPPORTED_EAPIS: 6 7
+# @SUPPORTED_EAPIS: 7
 # @BLURB: Simplify libretro core ebuilds
 # @DESCRIPTION:
 # The libretro eclass is designed to streamline the construction of
@@ -34,12 +34,17 @@
 # SLOT="0"
 # @CODE
 
+case ${EAPI} in
+	7) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
+esac
+
 if [[ -z ${_LIBRETRO_CORE_ECLASS} ]]; then
 _LIBRETRO_CORE_ECLASS=1
 
 IUSE="debug"
 
-# @ECLASS-VARIABLE: LIBRETRO_CORE_NAME
+# @ECLASS_VARIABLE: LIBRETRO_CORE_NAME
 # @REQUIRED
 # @DESCRIPTION:
 # Name of this Libretro core. The libretro-core_src_install() phase function
@@ -52,39 +57,31 @@ if [[ -z "${LIBRETRO_CORE_NAME}" ]]; then
 	LIBRETRO_CORE_NAME=${LIBRETRO_CORE_NAME//-/_}
 fi
 
-# @ECLASS-VARIABLE: LIBRETRO_COMMIT_SHA
+# @ECLASS_VARIABLE: LIBRETRO_COMMIT_SHA
 # @PRE_INHERIT
 # @DESCRIPTION:
 # Commit SHA used for SRC_URI will die if not set in <9999 ebuilds.
 # Needs to be set before inherit.
 
-# @ECLASS-VARIABLE: LIBRETRO_REPO_NAME
+# @ECLASS_VARIABLE: LIBRETRO_REPO_NAME
 # @PRE_INHERIT
 # @REQUIRED
 # @DESCRIPTION:
 # Contains the real repo name of the core formatted as "repouser/reponame".
 # Needs to be set before inherit. Otherwise defaults to "libretro/${PN}"
-: ${LIBRETRO_REPO_NAME:="libretro/libretro-${LIBRETRO_CORE_NAME}"}
+: "${LIBRETRO_REPO_NAME:="libretro/libretro-${LIBRETRO_CORE_NAME}"}"
 
-: ${HOMEPAGE:="https://github.com/${LIBRETRO_REPO_NAME}"}
+: "${HOMEPAGE:="https://github.com/${LIBRETRO_REPO_NAME}"}"
 
 if [[ ${PV} == *9999 ]]; then
-	: ${EGIT_REPO_URI:="https://github.com/${LIBRETRO_REPO_NAME}.git"}
+	: "${EGIT_REPO_URI:="https://github.com/${LIBRETRO_REPO_NAME}.git"}"
 	inherit git-r3
 else
 	[[ -z "${LIBRETRO_COMMIT_SHA}" ]] && die "LIBRETRO_COMMIT_SHA must be set before inherit."
 	S="${WORKDIR}/${LIBRETRO_REPO_NAME##*/}-${LIBRETRO_COMMIT_SHA}"
-	: ${SRC_URI:="https://github.com/${LIBRETRO_REPO_NAME}/archive/${LIBRETRO_COMMIT_SHA}.tar.gz -> ${P}.tar.gz"}
+	: "${SRC_URI:="https://github.com/${LIBRETRO_REPO_NAME}/archive/${LIBRETRO_COMMIT_SHA}.tar.gz -> ${P}.tar.gz"}"
 fi
 inherit flag-o-matic toolchain-funcs
-
-case "${EAPI:-0}" in
-	6|7)
-		EXPORT_FUNCTIONS src_unpack src_prepare src_compile src_install
-		;;
-	*)
-		die "EAPI=${EAPI} is not supported" ;;
-esac
 
 # @FUNCTION: libretro-core_src_unpack
 # @DESCRIPTION:
@@ -210,3 +207,5 @@ libretro-core_src_install() {
 }
 
 fi # end _LIBRETRO_CORE_ECLASS guard
+
+EXPORT_FUNCTIONS src_unpack src_prepare src_compile src_install

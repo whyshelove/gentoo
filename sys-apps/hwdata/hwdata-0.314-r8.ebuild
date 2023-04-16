@@ -2,9 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-DIST=15.el8
+DPREFIX="14."
 inherit rhel8
-S="${WORKDIR}/${P}-${PR/r}.15"
+S="${WORKDIR}/${P}-${PR/r}.14"
 DESCRIPTION="Hardware identification and configuration data"
 HOMEPAGE="https://github.com/vcrhonek/hwdata"
 

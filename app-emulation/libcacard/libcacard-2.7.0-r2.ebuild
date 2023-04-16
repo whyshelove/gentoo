@@ -2,12 +2,11 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-
+DSUFFIX="_1"
 inherit rhel8-a
 
 DESCRIPTION="virtual Common Access Card (CAC) library emulator"
 HOMEPAGE="https://www.spice-space.org/"
-SRC_URI="${REPO_URI}/${MY_PF}.${DIST}_1.src.rpm"
 
 LICENSE="GPL-3"
 SLOT="0"

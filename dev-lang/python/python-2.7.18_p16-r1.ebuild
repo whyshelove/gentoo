@@ -69,7 +69,7 @@ DEPEND="
 	valgrind? ( dev-util/valgrind )
 "
 BDEPEND="
-#	app-alternatives/awk
+	app-alternatives/awk
 	virtual/pkgconfig
 	verify-sig? ( sec-keys/openpgp-keys-python )
 "

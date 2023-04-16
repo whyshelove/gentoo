@@ -34,6 +34,8 @@ BDEPEND="nls? ( >=sys-devel/gettext-0.19.6 )"
 src_prepare() {
 	default
 
+	export MAKEOPTS="-j1"
+
 	if use prefix ; then
 		sed -i -e '1c\#!/usr/bin/env sh' util/texi2dvi util/texi2pdf || die
 		touch doc/{texi2dvi,texi2pdf,pdftexi2dvi}.1

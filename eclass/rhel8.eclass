@@ -53,7 +53,7 @@ _RHEL8_ECLASS=1
 			qtdeclarative | qtsvg | qtscript | qtgraphicaleffects | qtwayland | qtquickcontrols* \
 			| qtxmlpatterns | qtwebchannel | qtsensors ) MY_P=qt5-${P} ;;
 			gst-plugins* ) MY_P=${P/-/reamer1-} ;;
-			edk2-ovmf ) MY_P=${P}git${GITCOMMIT} ;;
+			sgabios | edk2-ovmf ) MY_P=${P}git${GITCOMMIT} ;;
 			vte ) MY_P=${P/-/291-} ;;
 			rhel-kernel ) MY_P=${P/rhel-} ;;
 			*) MY_P=${P} ;;

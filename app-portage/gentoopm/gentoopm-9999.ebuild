@@ -1,29 +1,31 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-DISTUTILS_USE_SETUPTOOLS=no
-PYTHON_COMPAT=( python3_{8..10} )
+DISTUTILS_USE_PEP517=flit
+PYTHON_COMPAT=( python3_{9..11} pypy3 )
 
-EGIT_REPO_URI="https://github.com/mgorny/gentoopm.git"
 inherit distutils-r1 git-r3
 
 DESCRIPTION="A common interface to Gentoo package managers"
-HOMEPAGE="https://github.com/mgorny/gentoopm/"
-SRC_URI=""
+HOMEPAGE="
+	https://github.com/projg2/gentoopm/
+	https://pypi.org/project/gentoopm/
+"
+EGIT_REPO_URI="https://github.com/projg2/gentoopm.git"
 
 LICENSE="BSD-2"
 SLOT="0"
-KEYWORDS=""
-IUSE=""
 
 RDEPEND="
 	|| (
-		>=sys-apps/pkgcore-0.9.4[${PYTHON_USEDEP}]
-		>=sys-apps/portage-2.1.10.3[${PYTHON_USEDEP}] )"
-PDEPEND="app-eselect/eselect-package-manager"
+		>=sys-apps/pkgcore-0.12.19[${PYTHON_USEDEP}]
+		>=sys-apps/portage-2.1.10.3[${PYTHON_USEDEP}]
+	)
+"
+PDEPEND="
+	app-eselect/eselect-package-manager
+"
 
-python_test() {
-	esetup.py test
-}
+distutils_enable_tests pytest

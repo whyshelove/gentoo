@@ -1,15 +1,12 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
-
-inherit user
-EXPORT_FUNCTIONS pkg_setup
 
 # @ECLASS: postgres.eclass
 # @MAINTAINER:
 # PostgreSQL <pgsql-bugs@gentoo.org>
 # @AUTHOR:
 # Aaron W. Swenson <titanofold@gentoo.org>
-# @SUPPORTED_EAPIS: 5 6 7
+# @SUPPORTED_EAPIS: 7
 # @BLURB: An eclass for PostgreSQL-related packages
 # @DESCRIPTION:
 # This eclass provides common utility functions that many
@@ -17,22 +14,24 @@ EXPORT_FUNCTIONS pkg_setup
 # currently selected PostgreSQL slot is within a range, adding a system
 # user to the postgres system group, and generating dependencies.
 
-
-case ${EAPI:-0} in
-	5|6|7) ;;
-	*) die "Unsupported EAPI=${EAPI} (unknown) for ${ECLASS}" ;;
+case ${EAPI} in
+	7) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
-# @ECLASS-VARIABLE: _POSTGRES_ALL_VERSIONS
+if [[ ! ${_POSTGRES_ECLASS} ]]; then
+_POSTGRES_ECLASS=1
+
+# @ECLASS_VARIABLE: _POSTGRES_ALL_VERSIONS
 # @INTERNAL
 # @DESCRIPTION:
 # List of versions to reverse sort POSTGRES_COMPAT slots
 
-_POSTGRES_ALL_VERSIONS=( 9999 13 12 11 10 9.6 9.5 9.4 9.3 9.2 )
+_POSTGRES_ALL_VERSIONS=( 9999 15 14 13 12 11 10 )
 
 
 
-# @ECLASS-VARIABLE: POSTGRES_COMPAT
+# @ECLASS_VARIABLE: POSTGRES_COMPAT
 # @PRE_INHERIT
 # @DEFAULT_UNSET
 # @DESCRIPTION:
@@ -44,13 +43,13 @@ _POSTGRES_ALL_VERSIONS=( 9999 13 12 11 10 9.6 9.5 9.4 9.3 9.2 )
 #POSTGRES_COMPAT=( 9.{2,3} 9.{4..6} 10 ) # Same as previous
 #@CODE
 
-# @ECLASS-VARIABLE: POSTGRES_DEP
+# @ECLASS_VARIABLE: POSTGRES_DEP
 # @DESCRIPTION:
 # An automatically generated dependency string suitable for use in
 # DEPEND and RDEPEND declarations.
 POSTGRES_DEP="dev-db/postgresql:="
 
-# @ECLASS-VARIABLE: POSTGRES_USEDEP
+# @ECLASS_VARIABLE: POSTGRES_USEDEP
 # @PRE_INHERIT
 # @DEFAULT_UNSET
 # @DESCRIPTION:
@@ -58,7 +57,7 @@ POSTGRES_DEP="dev-db/postgresql:="
 # for POSTGRES_DEP. If declared, must be declared before inheriting this eclass.
 declare -p POSTGRES_USEDEP &>/dev/null && POSTGRES_DEP+="[${POSTGRES_USEDEP}]"
 
-# @ECLASS-VARIABLE: POSTGRES_REQ_USE
+# @ECLASS_VARIABLE: POSTGRES_REQ_USE
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # An automatically generated REQUIRED_USE-compatible string built upon
@@ -66,7 +65,7 @@ declare -p POSTGRES_USEDEP &>/dev/null && POSTGRES_DEP+="[${POSTGRES_USEDEP}]"
 # required if the package must build against one of the PostgreSQL slots
 # declared in POSTGRES_COMPAT.
 
-# @ECLASS-VARIABLE: _POSTGRES_COMPAT
+# @ECLASS_VARIABLE: _POSTGRES_COMPAT
 # @INTERNAL
 # @DESCRIPTION:
 # Copy of POSTGRES_COMPAT, reverse sorted
@@ -107,7 +106,7 @@ postgres_check_slot() {
 	fi
 
 	# Don't die because we can't run postgresql-config during pretend.
-	[[ "$EBUILD_PHASE" = "pretend" && -z "$(which postgresql-config 2> /dev/null)" ]] \
+	[[ "$EBUILD_PHASE" = "pretend" && -z "$(type -P postgresql-config 2> /dev/null)" ]] \
 		&& return 0
 
 	if has $(postgresql-config show 2> /dev/null) "${POSTGRES_COMPAT[@]}"; then
@@ -116,32 +115,6 @@ postgres_check_slot() {
 		eerror "PostgreSQL slot must be set to one of: "
 		eerror "    ${POSTGRES_COMPAT[@]}"
 		die "Incompatible PostgreSQL slot eselected"
-	fi
-}
-
-# @FUNCTION: postgres_new_user
-# @USAGE: [user [(uid|-1) [(shell|-1) [(homedir|-1) [groups]]]]]
-# @DESCRIPTION:
-# Creates the "postgres" system group and user -- which is separate from
-# the database user -- and, optionally, the developer defined user. There
-# are no required parameters.
-#
-# When given a user to create, it'll be created with the next available
-# uid, default shell set to /bin/false, default homedir is /dev/null,
-# and added to the "postgres" system group. You can use "-1" to skip any
-# parameter except user or groups.
-postgres_new_user() {
-	enewgroup postgres 70
-	enewuser postgres 70 /bin/bash /var/lib/postgresql postgres
-
-	if [[ $# -gt 0 ]] ; then
-		if [[ "$1" = "postgres" ]] ; then
-			ewarn "Username 'postgres' implied, skipping"
-		else
-			local groups=$5
-			[[ -n "${groups}" ]] && groups+=",postgres" || groups="postgres"
-			enewuser "$1" "${2:--1}" "${3:--1}" "${4:--1}" "${groups}"
-		fi
 	fi
 }
 
@@ -175,7 +148,7 @@ postgres_pkg_setup() {
 	fi
 
 	export PG_SLOT=${best_slot}
-	export PG_CONFIG=$(which pg_config${best_slot//./})
+	export PG_CONFIG=$(type -P pg_config${best_slot//./})
 
 	local pg_pkg_config_path="$(${PG_CONFIG} --libdir)/pkgconfig"
 	if [[ -n "${PKG_CONFIG_PATH}" ]]; then
@@ -186,3 +159,7 @@ postgres_pkg_setup() {
 
 	elog "PostgreSQL Target: ${best_slot}"
 }
+
+fi
+
+EXPORT_FUNCTIONS pkg_setup

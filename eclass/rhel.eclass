@@ -58,6 +58,14 @@ srcrhel_unpack() {
 		-e "/%python_provide/d" \
 		${WORKDIR}/*.spec
  
+	if [[ ${unused_patches} ]]; then
+		local p
+
+		for p in "${unused_patches[@]}"; do
+			sed -i "/${p}/d" ${WORKDIR}/*.spec || die
+		done
+	fi
+
 	if [[ ${STAGE} != "unprep" ]]; then
 		rpmbuild -bp $WORKDIR/*.spec --nodeps
 	fi

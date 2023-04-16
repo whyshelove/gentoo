@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit autotools multilib-minimal optfeature
+inherit autotools multilib-minimal optfeature rhel8-a
 
 DESCRIPTION="Video Acceleration (VA) API for Linux"
 HOMEPAGE="https://01.org/linuxmedia/vaapi"
@@ -17,7 +17,6 @@ else
 	# The upstream provides periodically tarball with pre-built 'configure'.
 	# To simplify updates, portage use tarballs without pre-build 'configure'
 	# which are always available.
-	SRC_URI="https://github.com/intel/libva/archive/${PV}.tar.gz -> ${P}.tar.gz"
 	KEYWORDS="amd64 arm64 ppc64 ~riscv x86 ~amd64-linux ~x86-linux"
 fi
 

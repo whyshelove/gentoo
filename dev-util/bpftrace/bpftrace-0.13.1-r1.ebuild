@@ -16,7 +16,7 @@ if [[ ${PV} =~ 9{4,} ]]; then
 	BDEPEND=""
 else
 	MY_PV="${PV//_/}"
-	KEYWORDS="amd64 arm64 ~x86"
+	KEYWORDS="~amd64 arm64 ~x86"
 	BDEPEND="app-arch/xz-utils "
 fi
 

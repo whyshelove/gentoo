@@ -1,10 +1,10 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: fcaps.eclass
 # @MAINTAINER:
 # base-system@gentoo.org
-# @SUPPORTED_EAPIS: 6 7 8
+# @SUPPORTED_EAPIS: 7 8
 # @BLURB: function to set POSIX file-based capabilities
 # @DESCRIPTION:
 # This eclass provides a function to set file-based capabilities on binaries.
@@ -31,7 +31,7 @@
 
 case ${EAPI} in
 	6|7|8) ;;
-	*) die "EAPI ${EAPI:-0} is unsupported" ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
 if [[ -z ${_FCAPS_ECLASS} ]]; then
@@ -41,12 +41,12 @@ IUSE="+filecaps"
 
 # Since it is needed in pkg_postinst() it must be in IDEPEND
 case ${EAPI} in
-	7) BDEPEND="filecaps? ( sys-libs/libcap )" ;& # fallthrough
-	6) RDEPEND="filecaps? ( sys-libs/libcap )" ;;
+	7) BDEPEND="filecaps? ( sys-libs/libcap )"
+	   RDEPEND="filecaps? ( sys-libs/libcap )" ;;
 	*) IDEPEND="filecaps? ( sys-libs/libcap )" ;;
 esac
 
-# @ECLASS-VARIABLE: FILECAPS
+# @ECLASS_VARIABLE: FILECAPS
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # An array of fcap arguments to use to automatically execute fcaps.  See that
@@ -83,18 +83,18 @@ esac
 #
 # If the system is unable to set capabilities, it will use the specified user,
 # group, and mode (presumably to make the binary set*id).  The defaults there
-# are root:0 and 4711.  Otherwise, the ownership and permissions will be
+# are 0:0 and 4711.  Otherwise, the ownership and permissions will be
 # unchanged.
 fcaps() {
 	debug-print-function ${FUNCNAME} "$@"
 
-	if [[ ${EUID} != 0 ]] ; then
+	if [[ ${EUID} -ne 0 ]] ; then
 		einfo "Insufficient privileges to execute ${FUNCNAME}, skipping."
 		return 0
 	fi
 
 	# Process the user options first.
-	local owner='root'
+	local owner='0'
 	local group='0'
 	local mode='4711'
 	local caps_mode='711'
@@ -191,6 +191,6 @@ fcaps_pkg_postinst() {
 	done
 }
 
-EXPORT_FUNCTIONS pkg_postinst
-
 fi
+
+EXPORT_FUNCTIONS pkg_postinst

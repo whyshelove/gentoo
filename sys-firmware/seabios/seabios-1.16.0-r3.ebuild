@@ -5,6 +5,11 @@ EAPI=8
 
 PYTHON_COMPAT=( python3_{6,8,9} )
 
+DPREFIX="module+"
+VER_COMMIT=16689+53d59bc2
+DSUFFIX=".7.0+${VER_COMMIT}"
+WhatArch=noarch
+
 inherit toolchain-funcs python-any-r1 rhel8-a
 
 # SeaBIOS maintainers sometimes don't release stable tarballs or stable
@@ -17,12 +22,10 @@ if [[ ${PV} == *9999* || -n "${EGIT_COMMIT}" ]] ; then
 	inherit git-r3
 else
 	KEYWORDS="~alpha amd64 arm64 ~loong ~m68k ~mips ~ppc ppc64 x86"
-	DIST=module_el8.7.0+1218+f626c2ff
-	MY_PB=${MY_PF/-/-bin-}
 	SRC_URI="
-		!binary? ( ${REPO_URI}/${MY_PF}.${DIST}.src.rpm )
-		binary? ( ${REPO_BIN}/${MY_PB}.${DIST}.noarch.rpm
-			${REPO_BIN}/${MY_PB/sea/seavga}.${DIST}.noarch.rpm )"
+		!binary? ( ${SRC_URI} )
+		binary? ( ${BIN_URI/-/-bin-}
+			${BIN_URI/bios/vgabios-bin} )"
 fi
 
 DESCRIPTION="Open Source implementation of a 16-bit x86 BIOS"

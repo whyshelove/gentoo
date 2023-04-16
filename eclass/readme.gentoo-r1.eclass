@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: readme.gentoo-r1.eclass
@@ -20,33 +20,32 @@
 if [[ -z ${_README_GENTOO_ECLASS} ]]; then
 _README_GENTOO_ECLASS=1
 
-case "${EAPI:-0}" in
-	0|1|2|3|4|5)
-		die "Unsupported EAPI=${EAPI:-0} (too old) for ${ECLASS}"
-		;;
-	6|7|8)
-		;;
-	*)
-		die "Unsupported EAPI=${EAPI} (unknown) for ${ECLASS}"
-		;;
+case ${EAPI} in
+	6|7|8) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
-# @ECLASS-VARIABLE: DISABLE_AUTOFORMATTING
+# @ECLASS_VARIABLE: DOC_CONTENTS
+# @DEFAULT_UNSET
+# @DESCRIPTION:
+# The information that is used to create the README.gentoo file.
+
+# @ECLASS_VARIABLE: DISABLE_AUTOFORMATTING
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # If non-empty, DOC_CONTENTS information will be strictly respected,
 # not getting it automatically formatted by fmt. If empty, it will
 # rely on fmt for formatting and 'echo -e' options to tweak lines a bit.
 
-# @ECLASS-VARIABLE: FORCE_PRINT_ELOG
+# @ECLASS_VARIABLE: FORCE_PRINT_ELOG
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # If non-empty this variable forces elog messages to be printed.
 
-# @ECLASS-VARIABLE: README_GENTOO_SUFFIX
+# @ECLASS_VARIABLE: README_GENTOO_SUFFIX
 # @DESCRIPTION:
 # If you want to specify a suffix for README.gentoo file please export it.
-: ${README_GENTOO_SUFFIX:=""}
+: "${README_GENTOO_SUFFIX:=""}"
 
 # @FUNCTION: readme.gentoo_create_doc
 # @DESCRIPTION:
@@ -76,7 +75,10 @@ readme.gentoo_create_doc() {
 		die "You are not specifying README.gentoo contents!"
 	fi
 
-	dodoc "${T}"/README.gentoo
+	( # subshell to avoid pollution of calling environment
+		docinto .
+		dodoc "${T}"/README.gentoo
+	) || die
 	README_GENTOO_DOC_VALUE=$(< "${T}/README.gentoo")
 }
 

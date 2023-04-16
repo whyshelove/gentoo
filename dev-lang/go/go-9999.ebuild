@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -27,7 +27,7 @@ case ${PV}  in
 esac
 
 DESCRIPTION="A concurrent garbage collected and typesafe programming language"
-HOMEPAGE="https://golang.org"
+HOMEPAGE="https://go.dev"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
@@ -36,7 +36,6 @@ IUSE="cpu_flags_x86_sse2"
 BDEPEND="|| (
 		dev-lang/go
 		dev-lang/go-bootstrap )"
-RDEPEND="!<dev-go/go-tools-0_pre20150902"
 
 # the *.syso files have writable/executable stacks
 QA_EXECSTACK='*.syso'
@@ -56,23 +55,22 @@ QA_PREBUILT='.*'
 RESTRICT+=" strip"
 
 DOCS=(
-AUTHORS
-CONTRIBUTING.md
-CONTRIBUTORS
-PATENTS
-README.md
+	CONTRIBUTING.md
+	PATENTS
+	README.md
+	SECURITY.md
 )
 
 go_arch() {
 	# By chance most portage arch names match Go
-	local portage_arch=$(tc-arch $@)
-	case "${portage_arch}" in
+	local tc_arch=$(tc-arch $@)
+	case "${tc_arch}" in
 		x86)	echo 386;;
 		x64-*)	echo amd64;;
 		ppc64) [[ $(tc-endian $@) = big ]] && echo ppc64 || echo ppc64le ;;
 		riscv) echo riscv64 ;;
 		s390) echo s390x ;;
-		*)		echo "${portage_arch}";;
+		*)		echo "${tc_arch}";;
 	esac
 }
 

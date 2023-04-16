@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 	<maintainer type="project">
 		<email>perl@gentoo.org</email>
@@ -13,5 +13,6 @@
 		<remote-id type="cpan-module">File::Listing::netware</remote-id>
 		<remote-id type="cpan-module">File::Listing::unix</remote-id>
 		<remote-id type="cpan-module">File::Listing::vms</remote-id>
+		<remote-id type="github">PerlAlien/File-Listing</remote-id>
 	</upstream>
 </pkgmetadata>

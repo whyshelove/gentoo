@@ -1,10 +1,10 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: rust-toolchain.eclass
 # @MAINTAINER:
 # Rust Project <rust@gentoo.org>
-# @SUPPORTED_EAPIS: 6 7
+# @SUPPORTED_EAPIS: 8
 # @BLURB: helps map gentoo arches to rust ABIs
 # @DESCRIPTION:
 # This eclass contains a src_unpack default phase function, and
@@ -12,19 +12,18 @@
 # gentoo arches.
 
 case ${EAPI} in
-	6) : ;;
-	7) : ;;
-	*) die "EAPI=${EAPI:-0} is not supported" ;;
+	7|8) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
 inherit multilib-build
 
-# @ECLASS-VARIABLE: RUST_TOOLCHAIN_BASEURL
+# @ECLASS_VARIABLE: RUST_TOOLCHAIN_BASEURL
 # @DESCRIPTION:
 # This variable specifies the base URL used by the
 # rust_arch_uri and rust_all_arch_uris functions when
 # generating the URI output list.
-: ${RUST_TOOLCHAIN_BASEURL:=https://static.rust-lang.org/dist/}
+: "${RUST_TOOLCHAIN_BASEURL:=https://static.rust-lang.org/dist/}"
 
 # @FUNCTION: rust_abi
 # @USAGE: [CHOST-value]

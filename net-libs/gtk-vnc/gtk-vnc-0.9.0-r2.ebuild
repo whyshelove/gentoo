@@ -1,7 +1,7 @@
 # Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 PYTHON_COMPAT=( python3_{6,8,9} )
 GNOME2_LA_PUNT="yes"
 VALA_MIN_API_VERSION="0.16"
@@ -15,7 +15,7 @@ HOMEPAGE="https://wiki.gnome.org/Projects/gtk-vnc"
 LICENSE="LGPL-2.1+"
 SLOT="0"
 KEYWORDS="~alpha amd64 ~arm arm64 ~ia64 ~ppc ~ppc64 ~sparc x86"
-IUSE="examples +introspection pulseaudio sasl +vala"
+IUSE="examples +introspection pulseaudio sasl vala"
 REQUIRED_USE="
 	vala? ( introspection )
 "
@@ -47,7 +47,7 @@ DEPEND="${RDEPEND}
 		>=dev-libs/gobject-introspection-0.9.4 )
 "
 # eautoreconf requires gnome-common
-S="${WORKDIR}/${P}/${P/vnc/vnc2}"
+S="${WORKDIR}/${P}/${P}"
 src_prepare() {
 	vala_src_prepare
 	gnome2_src_prepare

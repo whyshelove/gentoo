@@ -1,10 +1,11 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: php-ext-pecl-r3.eclass
 # @MAINTAINER:
 # Gentoo PHP team <php-bugs@gentoo.org>
-# @SUPPORTED_EAPIS: 6 7
+# @SUPPORTED_EAPIS: 7 8
+# @PROVIDES: php-ext-source-r3
 # @BLURB: A uniform way to install PECL extensions
 # @DESCRIPTION:
 # This eclass should be used by all dev-php/pecl-* ebuilds as a uniform
@@ -12,16 +13,14 @@
 # see https://pecl.php.net/
 
 case ${EAPI:-0} in
-	[67]) ;;
+	7|8) ;;
 	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
-
-EXPORT_FUNCTIONS src_install src_test
 
 if [[ -z ${_PHP_EXT_PECL_R3_ECLASS} ]] ; then
 _PHP_EXT_PECL_R3_ECLASS=1
 
-# @ECLASS-VARIABLE: PHP_EXT_PECL_PKG
+# @ECLASS_VARIABLE: PHP_EXT_PECL_PKG
 # @PRE_INHERIT
 # @DESCRIPTION:
 # Set in ebuild before inheriting this eclass if the tarball name
@@ -33,7 +32,7 @@ _PHP_EXT_PECL_R3_ECLASS=1
 # use PHP_EXT_PECL_FILENAME instead.
 [[ -z "${PHP_EXT_PECL_PKG}" ]] && PHP_EXT_PECL_PKG="${PN/pecl-/}"
 
-# @ECLASS-VARIABLE: PHP_EXT_PECL_FILENAME
+# @ECLASS_VARIABLE: PHP_EXT_PECL_FILENAME
 # @PRE_INHERIT
 # @DEFAULT_UNSET
 # @DESCRIPTION:
@@ -96,3 +95,5 @@ php-ext-pecl-r3_src_test() {
 }
 
 fi
+
+EXPORT_FUNCTIONS src_install src_test

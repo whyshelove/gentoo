@@ -98,5 +98,5 @@ multilib_src_install_all() {
 
 	newinitd "${FILESDIR}"/gpm.rc6-2 gpm
 	newconfd "${FILESDIR}"/gpm.conf.d gpm
-	systemd_dounit "${FILESDIR}"/gpm.service
+	systemd_dounit "${WORKDIR}"/gpm.service
 }

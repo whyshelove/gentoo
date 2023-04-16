@@ -51,7 +51,6 @@ src_prepare() {
 multilib_src_configure() {
 	export NAFLAGS="-g -Fdwarf"
 	export CCASFLAGS="-Wa,--generate-missing-build-notes=yes"
-	export LDFLAGS="$LDFLAGS -Wl,-z,ibt -Wl,-z,shstk"
 
 	local myconf=()
 	if multilib_is_native_abi; then

@@ -1,7 +1,7 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 ECM_TEST="true"
 ECM_HANDBOOK="forceoptional"
@@ -11,7 +11,7 @@ VIRTUALX_REQUIRED="test"
 inherit ecm
 
 DESCRIPTION="Multiple information organizer - a DropDrawers clone"
-HOMEPAGE="https://github.com/basket-notepads/basket"
+HOMEPAGE="https://userbase.kde.org/BasKet https://invent.kde.org/utilities/basket"
 SRC_URI="https://github.com/${PN}-notepads/${PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="GPL-2"
@@ -19,7 +19,6 @@ SLOT="5"
 KEYWORDS="amd64 ~arm64 x86"
 IUSE="crypt git"
 
-BDEPEND="git? ( virtual/pkgconfig )"
 RDEPEND="
 	>=dev-qt/qtdbus-${QTMIN}:5
 	>=dev-qt/qtgui-${QTMIN}:5
@@ -56,6 +55,7 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	>=dev-qt/qtconcurrent-${QTMIN}:5
 "
+BDEPEND="git? ( virtual/pkgconfig )"
 
 PATCHES=(
 	"${FILESDIR}/${P}-xdg_mime_install_dir.patch"
