@@ -8,7 +8,7 @@
 # @BLURB: output a QA warning
 
 case ${EAPI} in
-	6) ;;
+	5|6) ;;
 	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 

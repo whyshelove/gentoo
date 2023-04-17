@@ -31,7 +31,6 @@ multilib_src_configure() {
 		$(use_enable doc)
 		$(use_enable static-libs static)
 		--enable-hardening
-		--enable-ambisonics
 	)
 
 	local i

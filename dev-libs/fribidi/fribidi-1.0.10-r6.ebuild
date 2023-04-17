@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-
+DSUFFIX=".2"
 inherit multilib-minimal toolchain-funcs autotools flag-o-matic rhel9-a
 
 DESCRIPTION="A free implementation of the unicode bidirectional algorithm"

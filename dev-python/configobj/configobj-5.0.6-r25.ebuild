@@ -6,7 +6,7 @@ EAPI=7
 PYTHON_COMPAT=( python3_{7..10} )
 DISTUTILS_USE_SETUPTOOLS=no
 
-inherit distutils-r1 rhel9
+inherit distutils-r1 rhel9-a
 
 DESCRIPTION="Simple config file reader and writer"
 HOMEPAGE="http://www.voidspace.org.uk/python/configobj.html https://pypi.org/project/configobj/"

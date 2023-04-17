@@ -15,8 +15,7 @@ inherit distutils-r1 flag-o-matic fortran-2 multiprocessing toolchain-funcs rhel
 DOC_PV="1.16.4"
 DESCRIPTION="Fast array and numerical python library"
 HOMEPAGE="https://numpy.org/"
-SRC_URI="
-	${SRC_URI}
+SRC_URI+="
 	doc? (
 		https://numpy.org/doc/$(ver_cut 1-2 ${DOC_PV})/numpy-html.zip -> numpy-html-${DOC_PV}.zip
 		https://numpy.org/doc/$(ver_cut 1-2 ${DOC_PV})/numpy-ref.pdf -> numpy-ref-${DOC_PV}.pdf

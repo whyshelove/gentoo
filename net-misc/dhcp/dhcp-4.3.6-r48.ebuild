@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-
+DSUFFIX="_7.1"
 inherit systemd toolchain-funcs flag-o-matic tmpfiles rhel8
 
 MY_PV="${PV//_alpha/a}"
@@ -115,7 +115,7 @@ src_prepare() {
 	sed '/^SUBDIRS/s@=.*$@= isc dns isccfg irs samples@' \
 		-i bind-*/lib/Makefile.in || die
 
-	eautoreconf --verbose --force --install
+	eautoreconf
 }
 
 src_configure() {

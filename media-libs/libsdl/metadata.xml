@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 	<maintainer type="project">
 		<email>games@gentoo.org</email>
@@ -27,4 +27,7 @@
 		<flag name="tslib">Build with tslib support for touchscreen devices</flag>
 		<flag name="video">Control video support (disable at your own risk)</flag>
 	</use>
+	<upstream>
+		<remote-id type="github">libsdl-org/SDL-1.2</remote-id>
+	</upstream>
 </pkgmetadata>

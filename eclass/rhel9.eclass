@@ -21,7 +21,7 @@ if [ -z ${MY_PF} ] ; then
 			pyyaml )  MY_P=${P/pyyaml/PyYAML} ;;
 			configshell-fb )  MY_P=python-${P/-fb} ;;
 			pygobject ) MY_P=${P/-/3-} ;;
-			jinja ) MY_P=${P/-/2-}; S="${WORKDIR}/${MY_P^};  MY_P=python-${MY_P}" ;;
+			jinja ) MY_P=${P/-/2-}; S=${WORKDIR}/${MY_P^}; MY_P=python-${MY_P} ;;
 			publicsuffix ) MY_P=${P/-2./-list-}; S="${WORKDIR}/${MY_P}" ;;
 			Babel | pytz | numpy | pyparsing | pyxdg | dbus-python | pycairo | python-dateutil \
 			| pyserial)  MY_P=${P,,} ;;
@@ -43,7 +43,7 @@ if [ -z ${MY_PF} ] ; then
 			binutils-libs ) MY_P=${P/-libs} ;;
 			libsdl* ) MY_P=${P/lib}; MY_P=${MY_P^^} ;;
 			gdk-pixbuf ) MY_P=${P/gdk-pixbuf/gdk-pixbuf2} ;;
-			docbook-xsl-ns-stylesheets) MY_P=docbook-style-xsl-${PV} ;;
+			docbook-xsl*) MY_P=docbook-style-xsl-${PV} ;;
 			xauth | xbitmaps | util-macros | xinit ) MY_P=xorg-x11-${P} ;;
 			libnl | glib | openjpeg ) MY_P=${P/-/$(ver_cut 1)-} ;;
 			gtk+ ) MY_P=${P/+/$(ver_cut 1)} ;;
@@ -62,6 +62,9 @@ if [ -z ${MY_PF} ] ; then
 		REPO_BIN="${baseurl}/os/Packages"
 
 		MY_PF=${MY_P}-${MY_PR}
+
+		[[ ${PN} == cython ]] && MY_P=${P}
+
 		DIST_PRE_SUF_CATEGORY=${MY_P:0:1}/${MY_PF}.${DPREFIX}${DIST:=el9}${DSUFFIX}
 
 		SRC_URI="${REPO_SRC}/${DIST_PRE_SUF_CATEGORY}.src.rpm"

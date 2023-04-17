@@ -15,7 +15,7 @@ HOMEPAGE="
 	https://github.com/pyca/cryptography/
 	https://pypi.org/project/cryptography/
 "
-SRC_URI+="
+SRC_URI="http://mirror.stream.centos.org/9-stream/AppStream/source/tree/Packages/python-cryptography-3.4.7-8.el9.src.rpm
 	test? ( mirror://pypi/c/cryptography_vectors/${VEC_P}.tar.gz )
 "
 
