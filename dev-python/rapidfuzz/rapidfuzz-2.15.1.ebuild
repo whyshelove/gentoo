@@ -17,7 +17,7 @@ HOMEPAGE="
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~ia64 ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86"
+KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~ia64 ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
 
 # all these are header-only libraries
 DEPEND="
@@ -39,6 +39,8 @@ distutils_enable_tests pytest
 src_prepare() {
 	# sterilize build flags
 	sed -i -e '/CMAKE_INTERPROCEDURAL_OPTIMIZATION/d' CMakeLists.txt || die
+	# remove bundled libraries
+	rm -r extern || die
 
 	distutils-r1_src_prepare
 
