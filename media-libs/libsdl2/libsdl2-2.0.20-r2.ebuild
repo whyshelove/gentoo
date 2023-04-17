@@ -157,7 +157,7 @@ multilib_src_configure() {
 		$(use_enable pipewire)
 		--disable-pipewire-shared
 		$(use_enable pulseaudio)
-		--enable-sdl-dlopen
+		#--enable-sdl-dlopen
 		--disable-pulseaudio-shared
 		--disable-arts
 		$(use_enable libsamplerate)

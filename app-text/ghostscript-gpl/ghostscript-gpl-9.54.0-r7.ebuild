@@ -10,16 +10,6 @@ HOMEPAGE="https://ghostscript.com/"
 
 MY_PN=${PN/-gpl}
 MY_P="${MY_PN}-${PV/_}"
-PVM=$(ver_cut 1-2)
-PVM_S=$(ver_rs 1-2 "")
-
-MY_PATCHSET="ghostscript-gpl-9.54-patchset-01.tar.xz"
-
-#SRC_URI="https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs${PVM_S}/${MY_P}.tar.xz"
-
-if [[ -n "${MY_PATCHSET}" ]] ; then
-	SRC_URI+=" https://dev.gentoo.org/~whissi/dist/ghostscript-gpl/${MY_PATCHSET}"
-fi
 
 LICENSE="AGPL-3 CPL-1.0"
 SLOT="0/$(ver_cut 1-2)"
@@ -138,7 +128,6 @@ src_configure() {
 		--with-jbig2dec \
 		--with-libpaper \
 		--with-system-libtiff \
-		--without-luratech \
 		--without-versioned-path \
 		$(use_enable cups) \
 		$(use_enable dbus) \

@@ -110,6 +110,7 @@ if [ -z ${MY_PF} ] ; then
 	REPO_BIN="${baseurl}/os/Packages"
 
 	MY_PF=${MY_P}-${MY_PR} 
+	[[ ${PN} == cython ]] && MY_P=${P}
 	DIST_PRE_SUF_CATEGORY=${MY_P:0:1}/${MY_PF}.${DPREFIX}${DIST:=el9}${DSUFFIX}
 
 	[ ${CATEGORY} != "dev-qt" ] && SRC_URI=""
@@ -175,7 +176,17 @@ srcrhel_unpack() {
 	#sed -i -e "/#!%{__python3}/d" \
 	#	${WORKDIR}/*.spec
 	
-	rpmbuild -bp $WORKDIR/*.spec --nodeps
+	if [[ ${unused_patches} ]]; then
+		local p
+
+		for p in "${unused_patches[@]}"; do
+			sed -i "/${p}/d" ${WORKDIR}/*.spec || die
+		done
+	fi
+
+	if [[ ${STAGE} != "unprep" ]]; then
+		rpmbuild -bp $WORKDIR/*.spec --nodeps
+	fi
 
 	eshopts_pop
 

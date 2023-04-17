@@ -1,10 +1,13 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
+XORG_DOC=doc
 XORG_MULTILIB=yes
-inherit xorg-3 rhel9-a
+suffix_ver=$(ver_cut 5)
+[[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}"
+inherit xorg-3 autotools rhel9-a
 
 DESCRIPTION="X.Org Xpm library"
 
@@ -16,4 +19,11 @@ RDEPEND=">=x11-libs/libX11-1.6.2[${MULTILIB_USEDEP}]
 	>=x11-libs/libXt-1.1.4[${MULTILIB_USEDEP}]"
 DEPEND="${RDEPEND}
 	x11-base/xorg-proto"
-BDEPEND="sys-devel/gettext"
+BDEPEND="sys-devel/gettext
+	app-arch/ncompress"
+
+src_prepare() {
+	default
+	eautoreconf
+}
+
