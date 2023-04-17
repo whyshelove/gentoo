@@ -156,8 +156,11 @@ src_configure() {
 	tc-export CC PKG_CONFIG
 
 	cp defconfig .config || die
-	append-flags -fPIE -DPIE
-	filter-flags '*-annobin-cc1'
+
+	append-cflags -fPIE -DPIE
+	append-cxxflags -fPIE -DPIE
+	append-ldflags -pie
+
 	# Basic setup
 	Kconfig_style_config CTRL_IFACE
 	Kconfig_style_config MATCH_IFACE

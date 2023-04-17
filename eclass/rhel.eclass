@@ -110,10 +110,14 @@ if [ -z ${MY_PF} ] ; then
 	REPO_BIN="${baseurl}/os/Packages"
 
 	MY_PF=${MY_P}-${MY_PR} 
-	[[ ${PN} == cython ]] && MY_P=${P}
+
+	case ${PN} in
+		cython | modemmanager ) MY_P=${P} ;;
+		*)  ;;
+	esac
+
 	DIST_PRE_SUF_CATEGORY=${MY_P:0:1}/${MY_PF}.${DPREFIX}${DIST:=el9}${DSUFFIX}
 
-	[ ${CATEGORY} != "dev-qt" ] && SRC_URI=""
 	SRC_URI="${REPO_SRC}/${DIST_PRE_SUF_CATEGORY}.src.rpm"
 	BIN_URI="${REPO_BIN}/${DIST_PRE_SUF_CATEGORY}.${WhatArch:=x86_64}.rpm"
 fi

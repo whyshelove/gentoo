@@ -1,19 +1,19 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-inherit cmake-utils rhel9-a
+inherit cmake rhel9-a
 
 DESCRIPTION="Encode/decode WOFF2 font format"
 HOMEPAGE="https://github.com/google/woff2"
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~x64-macos ~x64-solaris"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~x64-macos ~x64-solaris"
 IUSE=""
 
-RDEPEND="app-arch/brotli"
+RDEPEND="app-arch/brotli:="
 DEPEND="${RDEPEND}"
 BDEPEND="virtual/pkgconfig"
 
@@ -22,15 +22,15 @@ src_configure() {
 		-DCMAKE_SKIP_RPATH=ON # needed, causes QA warnings otherwise
 		-DCANONICAL_PREFIXES=ON #661942
 	)
-	cmake-utils_src_configure
+	cmake_src_configure
 }
 
 src_install() {
-	cmake-utils_src_install
+	cmake_src_install
 
-	dobin ${BUILD_DIR}/woff2_compress
-	dobin ${BUILD_DIR}/woff2_decompress
-	dobin ${BUILD_DIR}/woff2_info
+	dobin "${BUILD_DIR}"/woff2_compress
+	dobin "${BUILD_DIR}"/woff2_decompress
+	dobin "${BUILD_DIR}"/woff2_info
 
 	einstalldocs
 }
