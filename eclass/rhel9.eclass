@@ -43,7 +43,6 @@ if [ -z ${MY_PF} ] ; then
 			binutils-libs ) MY_P=${P/-libs} ;;
 			libsdl* ) MY_P=${P/lib}; MY_P=${MY_P^^} ;;
 			gdk-pixbuf ) MY_P=${P/gdk-pixbuf/gdk-pixbuf2} ;;
-			docbook-xsl*) MY_P=docbook-style-xsl-${PV} ;;
 			xauth | xbitmaps | util-macros | xinit ) MY_P=xorg-x11-${P} ;;
 			libnl | glib | openjpeg ) MY_P=${P/-/$(ver_cut 1)-} ;;
 			gtk+ ) MY_P=${P/+/$(ver_cut 1)} ;;

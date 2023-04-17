@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -7,11 +7,10 @@ inherit autotools flag-o-matic qmake-utils toolchain-funcs rhel9-a
 
 DESCRIPTION="Simple passphrase entry dialogs which utilize the Assuan protocol"
 HOMEPAGE="https://gnupg.org/aegypten2"
-#SRC_URI="mirror://gnupg/${PN}/${P}.tar.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 IUSE="caps efl emacs gnome-keyring gtk ncurses qt5"
 
 DEPEND="
@@ -30,7 +29,7 @@ DEPEND="
 	)
 "
 RDEPEND="${DEPEND}
-	gtk? ( app-crypt/gcr )
+	gtk? ( app-crypt/gcr[gtk] )
 "
 BDEPEND="
 	sys-devel/gettext
@@ -68,7 +67,6 @@ src_configure() {
 		--enable-pinentry-tty \
 		--disable-pinentry-fltk \
 		--disable-pinentry-gtk2 \
-		--disable-rpath \
 		MOC="$(qt5_get_bindir)"/moc \
 		GPG_ERROR_CONFIG="${ESYSROOT}/usr/bin/${CHOST}-gpg-error-config" \
 		LIBASSUAN_CONFIG="${ESYSROOT}/usr/bin/libassuan-config" \
@@ -80,9 +78,6 @@ src_install() {
 	rm "${ED}"/usr/bin/pinentry || die
 
 	use qt5 && dosym pinentry-qt /usr/bin/pinentry-qt5
-
-	exeinto ${_bindir}/
-	doexe "${WORKDIR}"/pinentry-wrapper
 }
 
 pkg_postinst() {

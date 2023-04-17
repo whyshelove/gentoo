@@ -1,12 +1,11 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 GNOME_ORG_MODULE="NetworkManager"
-VALA_USE_DEPEND="vapigen"
-PYTHON_COMPAT=( python3_{6,8,9} )
+PYTHON_COMPAT=( python3_{9..11} )
 
-inherit gnome.org linux-info meson-multilib python-any-r1 readme.gentoo-r1 systemd toolchain-funcs udev vala virtualx rhel9
+inherit gnome.org linux-info meson-multilib python-any-r1 readme.gentoo-r1 systemd toolchain-funcs udev vala virtualx
 
 DESCRIPTION="A set of co-operative tools that make networking simple and straightforward"
 HOMEPAGE="https://wiki.gnome.org/Projects/NetworkManager"
@@ -30,7 +29,7 @@ REQUIRED_USE="
 	?? ( syslog systemd )
 "
 
-KEYWORDS="~alpha amd64 arm arm64 ~ia64 ppc ppc64 ~riscv ~sparc x86"
+KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~ia64 ~loong ~ppc ~ppc64 ~riscv ~sparc ~x86"
 
 COMMON_DEPEND="
 	sys-apps/util-linux[${MULTILIB_USEDEP}]
@@ -41,14 +40,20 @@ COMMON_DEPEND="
 	systemd? ( >=sys-apps/systemd-209:0= )
 	>=dev-libs/glib-2.40:2[${MULTILIB_USEDEP}]
 	introspection? ( >=dev-libs/gobject-introspection-0.10.3:= )
-	selinux? ( sys-libs/libselinux )
+	selinux? (
+		sec-policy/selinux-networkmanager
+		sys-libs/libselinux
+	)
 	audit? ( sys-process/audit )
 	teamd? (
 		>=dev-libs/jansson-2.7:=
 		>=net-misc/libteam-1.9
 	)
 	policykit? ( >=sys-auth/polkit-0.106 )
-	nss? ( >=dev-libs/nss-3.11:=[${MULTILIB_USEDEP}] )
+	nss? (
+		dev-libs/nspr[${MULTILIB_USEDEP}]
+		>=dev-libs/nss-3.11[${MULTILIB_USEDEP}]
+	)
 	gnutls? (
 		>=net-libs/gnutls-2.12:=[${MULTILIB_USEDEP}]
 	)
@@ -57,12 +62,12 @@ COMMON_DEPEND="
 		net-misc/mobile-broadband-provider-info
 		>=net-misc/modemmanager-0.7.991:0=
 	)
-	bluetooth? ( >=net-wireless/bluez-5 )
+	bluetooth? ( >=net-wireless/bluez-5:= )
 	ofono? ( net-misc/ofono )
 	dhclient? ( >=net-misc/dhcp-4[client] )
 	dhcpcd? ( >=net-misc/dhcpcd-9.3.3 )
 	ovs? ( >=dev-libs/jansson-2.7:= )
-	resolvconf? ( net-dns/openresolv )
+	resolvconf? ( virtual/resolvconf )
 	connection-sharing? (
 		net-dns/dnsmasq[dbus,dhcp]
 		iptables? ( net-firewall/iptables )
@@ -90,6 +95,7 @@ RDEPEND="${COMMON_DEPEND}
 DEPEND="${COMMON_DEPEND}
 	>=sys-kernel/linux-headers-3.18
 	net-libs/libndp[${MULTILIB_USEDEP}]
+	ppp? ( elibc_musl? ( net-libs/ppp-defs ) )
 "
 BDEPEND="
 	dev-util/gdbus-codegen
@@ -98,7 +104,6 @@ BDEPEND="
 		dev-util/gtk-doc
 		app-text/docbook-xml-dtd:4.1.2
 	)
-	>=dev-util/intltool-0.40
 	>=sys-devel/gettext-0.17
 	virtual/pkgconfig
 	introspection? (
@@ -117,36 +122,11 @@ BDEPEND="
 
 python_check_deps() {
 	if use introspection; then
-		has_version -b "dev-python/pygobject:3[${PYTHON_USEDEP}]" || return
+		python_has_version "dev-python/pygobject:3[${PYTHON_USEDEP}]" || return
 	fi
 	if use test; then
-		has_version -b "dev-python/dbus-python[${PYTHON_USEDEP}]" &&
-		has_version -b "dev-python/pygobject:3[${PYTHON_USEDEP}]"
-	fi
-}
-
-sysfs_deprecated_check() {
-	ebegin "Checking for SYSFS_DEPRECATED support"
-
-	if { linux_chkconfig_present SYSFS_DEPRECATED_V2; }; then
-		eerror "Please disable SYSFS_DEPRECATED_V2 support in your kernel config and recompile your kernel"
-		eerror "or NetworkManager will not work correctly."
-		eerror "See https://bugs.gentoo.org/333639 for more info."
-		die "CONFIG_SYSFS_DEPRECATED_V2 support detected!"
-	fi
-	eend $?
-}
-
-pkg_pretend() {
-	if use kernel_linux; then
-		get_version
-		if linux_config_exists; then
-			sysfs_deprecated_check
-		else
-			ewarn "Was unable to determine your kernel .config"
-			ewarn "Please note that if CONFIG_SYSFS_DEPRECATED_V2 is set in your kernel .config, NetworkManager will not work correctly."
-			ewarn "See https://bugs.gentoo.org/333639 for more info."
-		fi
+		python_has_version "dev-python/dbus-python[${PYTHON_USEDEP}]" &&
+		python_has_version "dev-python/pygobject:3[${PYTHON_USEDEP}]"
 	fi
 }
 
@@ -204,7 +184,6 @@ multilib_src_configure() {
 		-Diptables=/sbin/iptables
 		-Dnft=/sbin/nft
 		-Ddnsmasq=/usr/sbin/dnsmasq
-		#-Ddnssec_trigger=
 
 		-Ddist_version=${PVR}
 		$(meson_native_use_bool policykit polkit)
@@ -369,6 +348,8 @@ multilib_src_install_all() {
 }
 
 pkg_postinst() {
+	udev_reload
+
 	systemd_reenable NetworkManager.service
 	! use systemd && readme.gentoo_print_elog
 
@@ -405,4 +386,8 @@ pkg_postinst() {
 		ewarn "disabled. If you want to use dhclient or dhcpcd, then you need to tweak"
 		ewarn "the main.dhcp configuration option to use one of them instead of internal."
 	fi
+}
+
+pkg_postrm() {
+	udev_reload
 }

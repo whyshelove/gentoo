@@ -22,7 +22,7 @@ _RHEL8_ECLASS=1
 
 		case ${PN} in
 			tiff | db | appstream-glib ) MY_P=lib${P} ;;
-			docbook-xsl-stylesheets ) MY_P=docbook-style-xsl-${PV} ;;
+			docbook-xsl*) MY_P=docbook-style-xsl-${PV} ;;
 			thin-provisioning-tools ) MY_P=device-mapper-persistent-data-${PV} ;;
 			multipath-tools ) MY_P=device-mapper-multipath-${PV} ;;
 			iproute2 ) MY_P=${P/2} ;;
@@ -47,11 +47,6 @@ _RHEL8_ECLASS=1
 			e2fsprogs-libs ) MY_P=${P/-libs} ;;
 			openssh ) MY_P=${P/_} ;;
 			procps ) MY_P=${P/-/-ng-}; MY_P=${MY_P} ;;
-			qtgui | qtcore | qtdbus | qtnetwork | qttest | qtxml \
-			| linguist-tools | qtsql | qtconcurrent | qdbus | qtpaths \
-			| qtprintsupport | designer ) MY_P="qt5-${QT5_MODULE}-${PV}" ;;
-			qtdeclarative | qtsvg | qtscript | qtgraphicaleffects | qtwayland | qtquickcontrols* \
-			| qtxmlpatterns | qtwebchannel | qtsensors ) MY_P=qt5-${P} ;;
 			gst-plugins* ) MY_P=${P/-/reamer1-} ;;
 			sgabios | edk2-ovmf ) MY_P=${P}git${GITCOMMIT} ;;
 			vte ) MY_P=${P/-/291-} ;;

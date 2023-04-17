@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit rhel9-a
+inherit rhel8-a
 
 DOCBOOKDIR="/usr/share/sgml/${PN/-//}"
 MY_PN="${PN%-ns-stylesheets}"
