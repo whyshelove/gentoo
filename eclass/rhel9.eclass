@@ -44,7 +44,9 @@ if [ -z ${MY_PF} ] ; then
 			libsdl* ) MY_P=${P/lib}; MY_P=${MY_P^^} ;;
 			gdk-pixbuf ) MY_P=${P/gdk-pixbuf/gdk-pixbuf2} ;;
 			xauth | xbitmaps | util-macros | xinit ) MY_P=xorg-x11-${P} ;;
-			libnl | glib | openjpeg ) MY_P=${P/-/$(ver_cut 1)-} ;;
+			sysprof-capture )  MY_P=${P/-capture};S="${WORKDIR}/${MY_P}" ;;
+			gst-plugins* )  MY_P=${P/-/reamer1-} ;;
+			libnl | glib | openjpeg | gstreamer ) MY_P=${P/-/$(ver_cut 1)-} ;;
 			gtk+ ) MY_P=${P/+/$(ver_cut 1)} ;;
 			modemmanager ) MY_P=${P/modemmanager/ModemManager} ;;
 			networkmanager ) MY_P=${P/networkmanager/NetworkManager} ;;
