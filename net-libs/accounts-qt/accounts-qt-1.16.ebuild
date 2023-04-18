@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -12,7 +12,7 @@ S="${WORKDIR}/lib${PN}-VERSION_${PV}"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-KEYWORDS="amd64 ~arm arm64 ~ppc64 x86"
+KEYWORDS="amd64 ~arm arm64 ~loong ~ppc64 ~riscv x86"
 IUSE="doc test"
 
 # dbus problems
@@ -27,13 +27,20 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	test? ( dev-qt/qttest:5 )
 "
-BDEPEND="doc? ( app-doc/doxygen )"
+BDEPEND="
+	doc? (
+		app-doc/doxygen[dot]
+		dev-qt/qthelp:5
+	)
+"
 
 src_prepare() {
 	default
 
 	sed -e "s|share/doc/\$\${PROJECT_NAME}|share/doc/${PF}|" \
 		-i doc/doc.pri || die
+	sed -e "/QHG_LOCATION/s|qhelpgenerator|$(qt5_get_bindir)/&|" \
+		-i doc/doxy.conf || die
 	if ! use doc; then
 		sed -e "/include( doc\/doc.pri )/d" -i ${PN}.pro || die
 	fi

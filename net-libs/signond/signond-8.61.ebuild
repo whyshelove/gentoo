@@ -1,20 +1,23 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit qmake-utils
 
 DESCRIPTION="Signon daemon for libaccounts-glib"
 HOMEPAGE="https://gitlab.com/accounts-sso"
 SRC_URI="https://gitlab.com/accounts-sso/${PN}/-/archive/VERSION_${PV}/${PN}-VERSION_${PV}.tar.gz -> ${P}.tar.gz"
+S="${WORKDIR}/${PN}-VERSION_${PV}"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-KEYWORDS="amd64 ~arm arm64 ~ppc64 x86"
+KEYWORDS="amd64 ~arm arm64 ~loong ~ppc64 ~riscv x86"
 IUSE="doc test"
 
-BDEPEND="doc? ( app-doc/doxygen )"
+# tests are brittle; they all pass when stars align, bug 727666
+RESTRICT="test !test? ( test )"
+
 RDEPEND="
 	dev-qt/qtcore:5
 	dev-qt/qtdbus:5
@@ -26,22 +29,24 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	test? ( dev-qt/qttest:5 )
 "
-
-# tests are brittle; they all pass when stars align, bug 727666
-RESTRICT="test !test? ( test )"
+BDEPEND="
+	doc? (
+		app-doc/doxygen[dot]
+		dev-qt/qthelp:5
+	)
+"
 
 PATCHES=(
-	"${FILESDIR}/${P}-buildsystem.patch"
-	"${FILESDIR}/${P}-consistent-paths.patch" # bug 701142
-	"${FILESDIR}/${P}-crashfix.patch"
-	"${FILESDIR}/${P}-unused-dep.patch" # bug 727346
-	"${FILESDIR}/${P}-drop-fno-rtti.patch" # runtime crashes
+	"${FILESDIR}/${PN}-8.60-buildsystem.patch"
+	"${FILESDIR}/${PN}-8.60-consistent-paths.patch" # bug 701142
+	"${FILESDIR}/${PN}-8.60-unused-dep.patch" # bug 727346
 )
-
-S="${WORKDIR}/${PN}-VERSION_${PV}"
 
 src_prepare() {
 	default
+
+	sed -e "/QHG_LOCATION/s|qhelpgenerator|$(qt5_get_bindir)/&|" \
+		-i {lib/plugins/,lib/SignOn/,}doc/doxy.conf || die
 
 	# install docs to correct location
 	sed -e "s|share/doc/\$\${PROJECT_NAME}|share/doc/${PF}|" \

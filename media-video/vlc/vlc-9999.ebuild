@@ -1,7 +1,7 @@
-# Copyright 2000-2021 Gentoo Authors
+# Copyright 2000-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 LUA_COMPAT=( lua5-{1..2} )
 
@@ -10,10 +10,9 @@ MY_PV="${MY_PV/-beta/-test}"
 MY_P="${PN}-${MY_PV}"
 if [[ ${PV} = *9999 ]] ; then
 	if [[ ${PV%.9999} != ${PV} ]] ; then
-		EGIT_REPO_URI="https://git.videolan.org/git/vlc/vlc-${PV%.9999}.git"
-	else
-		EGIT_REPO_URI="https://git.videolan.org/git/vlc.git"
+		EGIT_BRANCH="3.0.x"
 	fi
+	EGIT_REPO_URI="https://code.videolan.org/videolan/vlc.git"
 	inherit git-r3
 else
 	if [[ ${MY_P} = ${P} ]] ; then
@@ -21,7 +20,7 @@ else
 	else
 		SRC_URI="https://download.videolan.org/pub/videolan/testing/${MY_P}/${MY_P}.tar.xz"
 	fi
-	KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 -sparc ~x86"
+	KEYWORDS="~amd64 ~arm ~arm64 ~loong ~ppc ~ppc64 -sparc ~x86"
 fi
 inherit autotools flag-o-matic lua-single toolchain-funcs virtualx xdg
 
@@ -75,7 +74,7 @@ RDEPEND="
 	bidi? (
 		dev-libs/fribidi
 		media-libs/freetype:2[harfbuzz]
-		media-libs/harfbuzz
+		media-libs/harfbuzz:=
 		virtual/ttf-fonts
 	)
 	bluray? ( >=media-libs/libbluray-1.3.0:= )
@@ -94,20 +93,20 @@ RDEPEND="
 	dts? ( media-libs/libdca )
 	dvbpsi? ( >=media-libs/libdvbpsi-1.2.0:= )
 	dvd? (
-		>=media-libs/libdvdnav-6.1.1:0=
-		>=media-libs/libdvdread-6.1.2:0=
+		>=media-libs/libdvdnav-6.1.1:=
+		>=media-libs/libdvdread-6.1.2:=
 	)
 	faad? ( media-libs/faad2 )
 	fdk? ( media-libs/fdk-aac:= )
-	ffmpeg? ( >=media-video/ffmpeg-3.1.3:0=[postproc,vaapi?,vdpau?] )
+	ffmpeg? ( >=media-video/ffmpeg-3.1.3:=[postproc,vaapi?,vdpau?] )
 	flac? (
-		media-libs/flac
+		media-libs/flac:=
 		media-libs/libogg
 	)
 	fluidsynth? ( media-sound/fluidsynth:= )
 	fontconfig? ( media-libs/fontconfig:1.0 )
 	gcrypt? (
-		dev-libs/libgcrypt:0=
+		dev-libs/libgcrypt:=
 		dev-libs/libgpg-error
 	)
 	gme? ( media-libs/game-music-emu )
@@ -128,7 +127,7 @@ RDEPEND="
 		sys-libs/libraw1394
 	)
 	jack? ( virtual/jack )
-	jpeg? ( virtual/jpeg:0 )
+	jpeg? ( media-libs/libjpeg-turbo:0 )
 	kate? ( media-libs/libkate )
 	kms? ( x11-libs/libdrm )
 	libass? (
@@ -202,9 +201,9 @@ RDEPEND="
 	)
 	twolame? ( media-sound/twolame )
 	udev? ( virtual/udev )
-	upnp? ( net-libs/libupnp:=[ipv6] )
+	upnp? ( net-libs/libupnp:=[ipv6(+)] )
 	v4l? ( media-libs/libv4l:= )
-	vaapi? ( x11-libs/libva:=[drm,wayland?,X?] )
+	vaapi? ( media-libs/libva:=[drm(+),wayland?,X?] )
 	vdpau? ( x11-libs/libvdpau )
 	vnc? ( net-libs/libvncserver )
 	vpx? ( media-libs/libvpx:= )
@@ -214,7 +213,7 @@ RDEPEND="
 	)
 	X? (
 		x11-libs/libX11
-		x11-libs/libxcb[xkb]
+		x11-libs/libxcb
 		x11-libs/libXcursor
 		x11-libs/libxkbcommon[X]
 		x11-libs/xcb-util
@@ -233,10 +232,10 @@ DEPEND="${RDEPEND}
 PATCHES=(
 	"${FILESDIR}"/${PN}-2.1.0-fix-libtremor-libs.patch # build system
 	"${FILESDIR}"/${PN}-2.2.8-freerdp-2.patch # bug 590164
-	"${FILESDIR}"/${PN}-3.0.11.1-configure_lua_version.patch
+	"${FILESDIR}"/${PN}-configure_lua_version.patch
 )
 
-DOCS=( AUTHORS THANKS NEWS README doc/fortunes.txt )
+DOCS=( AUTHORS THANKS NEWS README.md doc/fortunes.txt )
 
 S="${WORKDIR}/${MY_P}"
 
@@ -247,7 +246,10 @@ pkg_setup() {
 }
 
 src_prepare() {
-	xdg_src_prepare # bug 608256
+	default
+
+	# bug 608256
+	xdg_environment_reset
 
 	has_version 'net-libs/libupnp:1.8' && \
 		eapply "${FILESDIR}"/${P}-libupnp-slot-1.8.patch
@@ -282,7 +284,7 @@ src_prepare() {
 }
 
 src_configure() {
-	local -x BUILDCC=$(tc-getBUILD_CC)
+	local -x BUILDCC="$(tc-getBUILD_CC)"
 
 	local myeconfargs=(
 		--disable-optimizations
@@ -442,9 +444,6 @@ src_configure() {
 		replace-flags -Os -O2
 	fi
 
-	# VLC now requires C++11 after commit 4b1c9dcdda0bbff801e47505ff9dfd3f274eb0d8
-	append-cxxflags -std=c++11
-
 	if use omxil; then
 		# bug #723006
 		# https://trac.videolan.org/vlc/ticket/24617
@@ -452,7 +451,12 @@ src_configure() {
 	fi
 
 	# FIXME: Needs libresid-builder from libsidplay:2 which is in another directory...
-	append-ldflags "-L/usr/$(get_libdir)/sidplay/builders/"
+	append-ldflags "-L${ESYSROOT}/usr/$(get_libdir)/sidplay/builders/"
+
+	if use riscv; then
+		# bug #803473
+		append-libs -latomic
+	fi
 
 	if use truetype || use bidi; then
 		myeconfargs+=( --enable-freetype )
@@ -488,12 +492,12 @@ src_install() {
 }
 
 pkg_postinst() {
-	if [[ -z "${ROOT}" ]] && [[ -x "${EROOT}/usr/libexec/vlc/vlc-cache-gen" ]] ; then
-		einfo "Running ${EROOT}/usr/libexec/vlc/vlc-cache-gen on ${EROOT}/usr/libexec/vlc/plugins/"
-		"${EROOT}/usr/libexec/vlc/vlc-cache-gen" "${EROOT}/usr/libexec/vlc/plugins/"
+	if [[ -z "${ROOT}" ]] && [[ -x "${EROOT}/usr/$(get_libdir)/vlc/vlc-cache-gen" ]] ; then
+		einfo "Running ${EPREFIX}/usr/$(get_libdir)/vlc/vlc-cache-gen on ${EROOT}/usr/$(get_libdir)/vlc/plugins/"
+		"${EPREFIX}/usr/$(get_libdir)/vlc/vlc-cache-gen" "${EROOT}/usr/$(get_libdir)/vlc/plugins/"
 	else
 		ewarn "We cannot run vlc-cache-gen (most likely ROOT != /)"
-		ewarn "Please run ${EROOT}/usr/libexec/vlc/vlc-cache-gen manually"
+		ewarn "Please run ${EPREFIX}/usr/$(get_libdir)/vlc/vlc-cache-gen manually"
 		ewarn "If you do not do it, vlc will take a long time to load."
 	fi
 
@@ -501,8 +505,8 @@ pkg_postinst() {
 }
 
 pkg_postrm() {
-	if [[ -e "${EROOT}"/usr/libexec/vlc/plugins/plugins.dat ]]; then
-		rm "${EROOT}"/usr/libexec/vlc/plugins/plugins.dat || die "Failed to rm plugins.dat"
+	if [[ -e "${EROOT}"/usr/$(get_libdir)/vlc/plugins/plugins.dat ]]; then
+		rm "${EROOT}"/usr/$(get_libdir)/vlc/plugins/plugins.dat || die "Failed to rm plugins.dat"
 	fi
 
 	xdg_pkg_postrm

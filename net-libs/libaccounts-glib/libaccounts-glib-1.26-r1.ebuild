@@ -1,21 +1,24 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{7,8,9} )
+PYTHON_COMPAT=( python3_{8..11} )
 inherit meson python-r1 vala
 
 DESCRIPTION="Accounts SSO (Single Sign-On) management library for GLib applications"
 HOMEPAGE="https://gitlab.com/accounts-sso/libaccounts-glib"
 SRC_URI="https://gitlab.com/accounts-sso/${PN}/-/archive/VERSION_${PV}/${PN}-VERSION_${PV}.tar.gz -> ${P}.tar.gz"
+S="${WORKDIR}/${PN}-VERSION_${PV}"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-KEYWORDS="amd64 ~arm arm64 ~ppc64 x86"
+KEYWORDS="amd64 ~arm arm64 ~loong ~ppc64 ~riscv x86"
 IUSE="doc"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
+# fails
+RESTRICT="test"
 
 RDEPEND="${PYTHON_DEPS}
 	dev-db/sqlite:3
@@ -27,22 +30,21 @@ RDEPEND="${PYTHON_DEPS}
 DEPEND="${RDEPEND}"
 BDEPEND="
 	$(vala_depend)
+	dev-libs/check
 	dev-util/gdbus-codegen
 	dev-util/glib-utils
-	dev-libs/check
 	doc? ( dev-util/gtk-doc )
 "
 
-# fails
-RESTRICT="test"
-
-S="${WORKDIR}/${PN}-VERSION_${PV}"
-
-PATCHES=( "${FILESDIR}/${P}-assert-failure.patch" )
+PATCHES=(
+	"${FILESDIR}/${PN}-1.25-assert-failure.patch"
+	"${FILESDIR}/${P}-project-version.patch"
+	"${FILESDIR}/${P}-fix-incorrect-cleanup-in-ag_account_finalize.patch"
+)
 
 src_prepare() {
 	default
-	vala_src_prepare --ignore-use
+	vala_setup --ignore-use
 
 	use doc || sed -e "/^subdir('docs')$/d" -i meson.build || die
 }
