@@ -56,14 +56,17 @@ if [ -z ${MY_PF} ] ; then
 			| udisks | lcms | openjpeg | glib | librsvg | gstreamer | gtksourceview \
 			| gtk | gdk-pixbuf | librsvg ) MY_P=${P/-/$(ver_cut 1)-} ;;
 			libusb )  MY_P=${P/-/x-} ;;
-			sysprof-capture )  MY_P=${P/-capture} ;;
+			sysprof-capture )  MY_P=${P/-capture};S="${WORKDIR}/${MY_P}" ;;
 			e2fsprogs-libs )  MY_P=${P/-libs} ;;
 			procps ) MY_P=${P/-/-ng-} ;;
 			thin-provisioning-tools )  MY_P=device-mapper-persistent-data-${PV} ;;
 			iproute2 )  MY_P=${P/2} ;;
 			mit-krb5 )  MY_P=${P/mit-} ;;
 			ninja )  MY_P=${P/-/-build-} ;;
+			openssl ) [[ ${PV} < 3.0.0 ]] && MY_P=compat-openssl11-${PV} ;;
+			openssh )  MY_P=${P/_} ;;
 			shadow )  MY_P=${P/-/-utils-} ;;
+			cups )  MY_P=${P}op2 ;;
 			binutils-libs )  MY_P=${P/-libs} ;;
 			webkit-gtk )  MY_P=${P/-gtk/2gtk3} ;;
 			libnsl ) MY_P=${P/-/2-};  MY_P=${MY_P} ;;
@@ -72,7 +75,7 @@ if [ -z ${MY_PF} ] ; then
 			xtrans )  MY_P=xorg-x11-${PN}-devel-${PV} ;;
 			gtk+ ) MY_P=${P/+/$(ver_cut 1)} ;;
 			xz-utils ) MY_P="${PN/-utils}-${PV/_}" ;;
-			glib-utils ) MY_P="${PN/-utils}2-${PV}" ;;	
+			glib-utils ) MY_P=${P/-utils}; S=${WORKDIR}/${MY_P}; MY_P="${MY_P/-/2-}" ;;	
 			nspr ) MY_P=nss-3.79.0; S="${WORKDIR}/${MY_P/.0}";;
 			qtgui | qtcore | qtwidgets | qtdbus | qtnetwork | qttest | qtxml \
 			| linguist-tools | qtsql | qtconcurrent | qdbus | qtpaths \

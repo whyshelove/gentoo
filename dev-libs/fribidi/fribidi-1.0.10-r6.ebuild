@@ -22,7 +22,7 @@ DOCS=( AUTHORS NEWS ChangeLog THANKS ) # README points at README.md which wasn't
 
 src_prepare() {
 	default
-	eautoreconf -i
+	eautoreconf
 	export CC_FOR_BUILD="$(tc-getBUILD_CC)"
 }
 

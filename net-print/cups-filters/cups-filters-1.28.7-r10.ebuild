@@ -128,7 +128,7 @@ src_install() {
 
 	find "${ED}" \( -name "*.a" -o -name "*.la" \) -delete || die
 
-	cp "${FILESDIR}"/cups-browsed.init.d-r1 "${T}"/cups-browsed || die
+	cp "${FILESDIR}"/cups-browsed.init.d-r2 "${T}"/cups-browsed || die
 
 	if ! use zeroconf ; then
 		sed -i -e 's:need cupsd avahi-daemon:need cupsd:g' "${T}"/cups-browsed || die

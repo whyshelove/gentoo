@@ -3,7 +3,8 @@
 
 EAPI="7"
 
-inherit multilib-minimal rhel-a
+DSUFFIX=".5"
+inherit multilib-minimal rhel9-a
 
 if [[ "${PV}" == "9999" ]]; then
 	inherit autotools git-r3
@@ -15,8 +16,6 @@ DESCRIPTION="Regular expression library for different character encodings"
 HOMEPAGE="https://github.com/kkos/oniguruma"
 if [[ "${PV}" == "9999" ]]; then
 	SRC_URI=""
-else
-	SRC_URI="${REPO_URI}/${MY_PF}${DIST}.2.src.rpm"
 fi
 
 LICENSE="BSD-2"

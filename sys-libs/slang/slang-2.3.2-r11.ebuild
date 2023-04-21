@@ -51,8 +51,6 @@ src_prepare() {
 multilib_src_configure() {
 	local myeconfargs=(
 		--with-readline=$(usex readline gnu slang)
-		--with-oniglib=${_libdir}
-		--with-oniginc=${_includedir}
 		$(use_with pcre)
 		$(use_with cjk onig)
 		$(use_with png)

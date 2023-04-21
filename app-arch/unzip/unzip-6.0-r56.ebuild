@@ -31,7 +31,7 @@ PATCHES=(
 
 src_prepare() {
 	# bug #275244
-	use natspec && PATCHES+=( "${FILESDIR}"/${PN}-6.0-natspec.patch )
+	#use natspec && PATCHES+=( "${FILESDIR}"/${PN}-6.0-natspec.patch )
 
 	rm "${WORKDIR}"/debian/patches/0{2,5,7,9}-*.patch || die
 	rm "${WORKDIR}"/debian/patches/1{0,1,2,4,6,7,8,9}-*.patch || die

@@ -44,6 +44,7 @@ src_prepare() {
 		# add them here
 		06_all_ia64_note.GNU-stack.patch
 		09_all_nopie-all-flags.patch
+		23_all_EXTRA_OPTIONS-fstack-clash-protection.patch
 		77_all_driver_environ_putenv_PR106624.patch
 	)
 	for p in "${upstreamed_patches[@]}"; do

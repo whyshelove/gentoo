@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-PYTHON_COMPAT=( python3_{8..9} )
+PYTHON_COMPAT=( python3_{9..11} )
 VALA_USE_DEPEND=vapigen
 
 inherit bash-completion-r1 gnome2 meson-multilib python-any-r1 vala virtualx rhel9-a

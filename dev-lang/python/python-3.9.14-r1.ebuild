@@ -4,7 +4,7 @@
 EAPI="7"
 WANT_LIBTOOL="none"
 DSUFFIX="_1.2"
-unused_patches=( PATCH111 PATCH251 PATCH329 PATCH382 )
+unused_patches=( Patch111 Patch251 Patch329 Patch382 )
 inherit autotools check-reqs flag-o-matic multiprocessing pax-utils
 inherit python-utils-r1 toolchain-funcs rhel9
 
@@ -93,18 +93,17 @@ pkg_setup() {
 
 src_prepare() {
 	# Ensure that internal copies of expat and libffi are not used.
-	rm -r Modules/expat || die
+	#rm -r Modules/expat || die
 	rm -r Modules/_ctypes/libffi* || die
 
-	rm Lib/ensurepip/_bundled/*.whl || die
+	#rm Lib/ensurepip/_bundled/*.whl || die
 	find -name '*.exe' -print -delete || die
-	rm configure pyconfig.h.in || die
+	#rm configure pyconfig.h.in || die
 
 	rm ${WORKDIR}/${PATCHSET}/001{3,5}-*.patch
 
 	local PATCHES=(
 		"${WORKDIR}/${PATCHSET}"
-		"${WORKDIR}"
 	)
 
 	default
