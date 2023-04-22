@@ -3,7 +3,9 @@
 
 EAPI="8"
 
-DSUFFIX="_1.1"
+suffix_ver=$(ver_cut 5)
+[[ ${suffix_ver} ]] && DSUFFIX="_1.${suffix_ver}"
+unused_patches=( patch101 )
 inherit autotools prefix multilib-minimal rhel9
 
 DESCRIPTION="A Client that groks URLs"
@@ -102,15 +104,8 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-respect-cflags-3.patch
 )
 
-src_unpack() {
-	rhel_unpack ${A} && unpack ${WORKDIR}/*.tar.*
-	rm -f ${WORKDIR}/0101-curl-7.32.0-multilib.patch
-}
-
 src_prepare() {
 	default
-
-	eapply ${WORKDIR}/*.patch
 
 	sed -i '/LD_LIBRARY_PATH=/d' configure.ac || die #382241
 	sed -i '/CURL_MAC_CFLAGS/d' configure.ac || die #637252

@@ -5,12 +5,12 @@ EAPI=7
 
 DSUFFIX="_0"
 VERIFY_SIG_OPENPGP_KEY_PATH="${BROOT}"/usr/share/openpgp-keys/gnupg.asc
-inherit autotools flag-o-matic linux-info multilib-minimal toolchain-funcs verify-sig rhel9
+suffix_ver=$(ver_cut 5)
+[[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}"
+inherit autotools flag-o-matic linux-info multilib-minimal toolchain-funcs rhel9
 
 DESCRIPTION="General purpose crypto library based on the code used in GnuPG"
 HOMEPAGE="https://www.gnupg.org/"
-
-SRC_URI+=" verify-sig? ( mirror://gnupg/${PN}/${P}.tar.bz2.sig )"
 
 LICENSE="LGPL-2.1 MIT"
 SLOT="0/20" # subslot = soname major version
@@ -39,8 +39,7 @@ RDEPEND=">=dev-libs/libgpg-error-1.25[${MULTILIB_USEDEP}]
 		)
 	)"
 DEPEND="${RDEPEND}"
-BDEPEND="doc? ( virtual/texi2dvi )
-	verify-sig? ( sec-keys/openpgp-keys-gnupg )"
+BDEPEND="doc? ( virtual/texi2dvi )"
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-multilib-syspath.patch

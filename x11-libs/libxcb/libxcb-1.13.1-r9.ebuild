@@ -65,8 +65,8 @@ src_configure() {
 
 src_install() {
 	xorg-3_src_install
-	sed 's,@libdir@,/usr/lib64,;s,@prefix@,/usr,;s,@exec_prefix@,=/usr,' ${WORKDIR}/pthread-stubs.pc.in \
-	    > ${ED}${_libdir}/pkgconfig/pthread-stubs.pc
+	#sed 's,@libdir@,/usr/lib64,;s,@prefix@,/usr,;s,@exec_prefix@,=/usr,' ${WORKDIR}/pthread-stubs.pc.in \
+	#    > ${ED}${_libdir}/pkgconfig/pthread-stubs.pc
 
 	find ${ED} -name '*.la' -delete
 }

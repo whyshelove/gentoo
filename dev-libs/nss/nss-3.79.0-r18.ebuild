@@ -3,7 +3,7 @@
 
 EAPI=8
 
-DSUFFIX="_0"
+DSUFFIX="_1"
 inherit flag-o-matic multilib toolchain-funcs multilib-minimal rhel9-a
 
 NSPR_VER="4.34"

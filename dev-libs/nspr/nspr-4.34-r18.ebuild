@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-DSUFFIX="_0"
+DSUFFIX="_1"
 inherit autotools toolchain-funcs multilib-minimal rhel9-a
 
 MIN_PV="$(ver_cut 2)"
