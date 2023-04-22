@@ -16,7 +16,7 @@ HOMEPAGE="https://github.com/linux-pam/linux-pam"
 LICENSE="|| ( BSD GPL-2 )"
 SLOT="0"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
-IUSE="audit berkdb debug nis selinux"
+IUSE="audit berkdb debug nis +selinux"
 
 BDEPEND="
 	dev-libs/libxslt
@@ -84,12 +84,14 @@ multilib_src_configure() {
 		--disable-static
 		--disable-Werror
 		--disable-rpath
+		--enable-selinux
+		--enable-openssl
 		--enable-vendordir="${EPREFIX}"${_datadir}
 		$(use_enable audit)
 		$(use_enable berkdb db)
 		$(use_enable debug)
 		$(use_enable nis)
-		$(use_enable selinux)
+		#$(use_enable selinux)
 		--enable-isadir='.' #464016
 		)
 	ECONF_SOURCE="${S}" econf "${myconf[@]}"
@@ -107,14 +109,10 @@ multilib_src_install() {
 		sepermitlockdir="/run/sepermit"
 
 	rm -rf ${D}${_datadir}/doc/Linux-PAM
-	# Included in setup package
-	#rm -f ${D}${_sysconfdir}/environment
 
 	_moduledir="${EPREFIX}"/$(get_libdir)/security
 	_pamconfdir=${_sysconfdir}/pam.d
 	_pamvendordir=${_datadir}/pam.d
-
-	#dosym ${_moduledir} ${_libdir}/security
 
 	# Install default configuration files.
 	diropts -m 0755 && dodir ${_pamvendordir} ${_sysconfdir}/motd.d /usr/lib/motd.d ${_moduledir}
@@ -128,7 +126,7 @@ multilib_src_install() {
 	newins /dev/null opasswd
 
 	# Temporary compat link
-	use selinux && dosym ${_moduledir}/pam_sepermit.so ${_moduledir}/pam_selinux_permit.so
+	dosym ${_moduledir}/pam_sepermit.so ${_moduledir}/pam_selinux_permit.so
 
 	for phase in auth acct passwd session ; do
 		dosym ${_moduledir}/pam_unix.so ${_moduledir}/pam_unix_${phase}.so 
@@ -151,7 +149,7 @@ multilib_src_install_all() {
 	cat ->>  "${D}"/usr/lib/tmpfiles.d/${CATEGORY}-${PN}.conf <<-_EOF_
 		d /run/faillock 0755 root root
 	_EOF_
-	use selinux && cat ->>  "${D}"/usr/lib/tmpfiles.d/${CATEGORY}-${PN}-selinux.conf <<-_EOF_
+	cat ->>  "${D}"/usr/lib/tmpfiles.d/${CATEGORY}-${PN}-selinux.conf <<-_EOF_
 		d /run/sepermit 0755 root root
 	_EOF_
 

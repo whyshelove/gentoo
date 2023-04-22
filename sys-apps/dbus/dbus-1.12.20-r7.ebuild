@@ -221,39 +221,34 @@ multilib_src_install_all() {
 	newinitd "${T}"/dbus.initd dbus
 
 	# Delete upstream units
-	rm -f ${D}${_unitdir}/dbus.{socket,service}
-	rm -f ${D}${_unitdir}/sockets.target.wants/dbus.socket
-	rm -f ${D}${_unitdir}/multi-user.target.wants/dbus.service
-	rm -f ${D}${_userunitdir}/dbus.{socket,service}
-	rm -f ${D}${_userunitdir}/sockets.target.wants/dbus.socket
+	#rm -f ${D}${_unitdir}/dbus.{socket,service}
+	#rm -f ${D}${_unitdir}/sockets.target.wants/dbus.socket
+	#rm -f ${D}${_unitdir}/multi-user.target.wants/dbus.service
+	#rm -f ${D}${_userunitdir}/dbus.{socket,service}
+	#rm -f ${D}${_userunitdir}/sockets.target.wants/dbus.socket
 
-	# Install downstream units
-	exeinto ${_sysconfdir}/X11/xinit/xinitrc.d/
-	doexe "${WORKDIR}"/00-start-message-bus.sh
-
-	systemd_dounit -r "${WORKDIR}"/{"dbus.socket","dbus-daemon.service"}
-	systemd_newuserunit "${WORKDIR}"/dbus.user.socket dbus.socket
-	systemd_newuserunit "${WORKDIR}"/dbus-daemon.user.service dbus-daemon.service
-
-	# Obsolete, but still widely used, for drop-in configuration snippets.
-	dodir ${_sysconfdir}/dbus-1/{"session.d","system.d"}
-	dodir ${_datadir}/dbus-1/interfaces
+	#systemd_dounit -r "${WORKDIR}"/{"dbus.socket","dbus-daemon.service"}
+	#systemd_newuserunit "${WORKDIR}"/dbus.user.socket dbus.socket
+	#systemd_newuserunit "${WORKDIR}"/dbus-daemon.user.service dbus-daemon.service
 
 	if use X; then
 		# dbus X session script (#77504)
 		# turns out to only work for GDM (and startx). has been merged into
 		# other desktop (kdm and such scripts)
 		exeinto /etc/X11/xinit/xinitrc.d
-		doexe "${FILESDIR}"/80-dbus
+		newexe "${FILESDIR}"/80-dbus-r1 80-dbus
+
+		# Install downstream units
+		#doexe "${WORKDIR}"/00-start-message-bus.sh
 	fi
 
-	# needs to exist for dbus sessions to launch
+	# Needs to exist for dbus sessions to launch
 	keepdir /usr/share/dbus-1/services
 	keepdir /etc/dbus-1/{session,system}.d
 	# machine-id symlink from pkg_postinst()
 	keepdir /var/lib/dbus
-	# let the init script create the /var/run/dbus directory
-	rm -rf "${ED}"/var/run
+	# Let the init script create the /var/run/dbus directory
+	rm -rf "${ED}"/{,var/}run
 
 	# https://bugs.gentoo.org/761763
 	rm -rf "${ED}"/usr/lib/sysusers.d

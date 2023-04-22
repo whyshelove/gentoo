@@ -56,6 +56,15 @@ src_install() {
 	echo 'CONFIG_PROTECT_MASK="/etc/dconf"' >> 51dconf
 	echo 'GSETTINGS_BACKEND="dconf"' >> 51dconf
 	doenvd 51dconf
+
+	dodir ${_sysconfdir}/dconf/profile ${_sysconfdir}/dconf/db/{local,site,distro}.d/locks
+
+	cat <<-EOF >> "${ED}"${_sysconfdir}/dconf/profile/user
+	user-db:user
+	system-db:local
+	system-db:site
+	system-db:distro
+	EOF
 }
 
 src_test() {
