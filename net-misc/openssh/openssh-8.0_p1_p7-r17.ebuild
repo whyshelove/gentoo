@@ -246,8 +246,8 @@ src_prepare() {
 }
 
 src_configure() {
-	append-cflags ${optflags} -fvisibility=hidden -fpic
-	append-ldflags ${hardening_ldflags} '-pie -z relro -z now'
+	append-cflags -fvisibility=hidden -fpic
+	append-ldflags -pie
 
 	if use kerberos ; then
 		append-cppflags -I${_includedir}/gssapi
