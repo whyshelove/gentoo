@@ -12,7 +12,7 @@ SRC_URI="https://gitlab.freedesktop.org/hadess/${PN}/-/archive/${PV}/${P}.tar.bz
 
 LICENSE="GPL-3+"
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~x86"
 
 IUSE="gtk-doc test"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
@@ -28,7 +28,10 @@ RDEPEND="${PYTHON_DEPS}
 "
 DEPEND="${RDEPEND}"
 BDEPEND="
-	gtk-doc? ( dev-util/gi-docgen )
+	gtk-doc? (
+		dev-util/gi-docgen
+		dev-util/gtk-doc
+	)
 	test? (
 		dev-util/umockdev
 		$(python_gen_cond_dep '

@@ -10,10 +10,6 @@ dev-python/sympy opengl
 # cc invocations)
 dev-python/sympy aesara
 
-# Hans de Graaff <graaff@gentoo.org> (2023-02-27)
-# Depends on virtual/rust
-dev-lang/ruby jit
-
 # WANG Xuerui <xen0n@gentoo.org> (2022-12-06)
 # dev-cpp/glog fails tests, needs checking
 media-libs/opencv glog contribsfm
@@ -71,12 +67,6 @@ dev-cpp/eigen test
 # WANG Xuerui <xen0n@gentoo.org> (2022-12-05)
 # app-misc/tracker fails tests on loong.
 app-cdr/brasero tracker
-
-# WANG Xuerui <xen0n@gentoo.org> (2022-12-05)
-# dev-libs/libcdio fails to build on loong for now.
-gnome-base/gvfs cdda
-media-video/ffmpeg cdio
-media-video/mpv cdda
 
 # WANG Xuerui <xen0n@gentoo.org> (2022-12-05)
 # Respective dependency fails to build, pending investigation, mask for the

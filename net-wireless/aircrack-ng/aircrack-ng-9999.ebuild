@@ -3,7 +3,9 @@
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{9,10} )
+#this doesn't work because of multiple calls to distutils-r1_src_compile
+#DISTUTILS_USE_PEP517=setuptools
+PYTHON_COMPAT=( python3_{9..11} )
 DISTUTILS_OPTIONAL=1
 
 inherit toolchain-funcs distutils-r1 flag-o-matic autotools
@@ -23,19 +25,23 @@ fi
 LICENSE="GPL-2"
 SLOT="0"
 
-IUSE="+airdrop-ng +airgraph-ng +netlink +pcre +sqlite +experimental"
+IUSE="+airdrop-ng +airgraph-ng +experimental +netlink +pcre +sqlite test"
 
-DEPEND="net-libs/libpcap
+CDEPEND="net-libs/libpcap
 	sys-apps/hwloc:0=
 	dev-libs/libbsd
 	dev-libs/openssl:0=
 	netlink? ( dev-libs/libnl:3 )
-	pcre? ( dev-libs/libpcre )
+	pcre? ( dev-libs/libpcre2:= )
 	airdrop-ng? ( ${PYTHON_DEPS} )
 	airgraph-ng? ( ${PYTHON_DEPS} )
 	experimental? ( sys-libs/zlib )
-	sqlite? ( >=dev-db/sqlite-3.4 )"
-RDEPEND="${DEPEND}
+	sqlite? ( >=dev-db/sqlite-3.4:3 )
+	"
+DEPEND="${CDEPEND}
+	test? ( dev-tcltk/expect )
+	"
+RDEPEND="${CDEPEND}
 	kernel_linux? (
 		net-wireless/iw
 		net-wireless/wireless-tools
@@ -44,10 +50,13 @@ RDEPEND="${DEPEND}
 		sys-apps/pciutils )
 	sys-apps/hwdata
 	airdrop-ng? ( net-wireless/lorcon[python,${PYTHON_USEDEP}] )"
+#BDEPEND="airdrop-ng? ( ${DISTUTILS_DEPS} )
+#		airgraph-ng? ( ${DISTUTILS_DEPS} )"
 
-REQUIRED_USE="
-	airdrop-ng? ( ${PYTHON_REQUIRED_USE} )
+REQUIRED_USE="airdrop-ng? ( ${PYTHON_REQUIRED_USE} )
 	airgraph-ng? ( ${PYTHON_REQUIRED_USE} )"
+
+RESTRICT="!test? ( test )"
 
 src_prepare() {
 	default
@@ -61,6 +70,7 @@ src_configure() {
 		--enable-shared \
 		--disable-static \
 		--without-opt \
+		--with-duma=no \
 		$(use_enable netlink libnl) \
 		$(use_with experimental) \
 		$(use_with sqlite sqlite3)
@@ -75,11 +85,11 @@ src_compile() {
 	default
 
 	if use airgraph-ng; then
-		cd "${S}/scripts/airgraph-ng"
+		cd "${S}/scripts/airgraph-ng" || die
 		distutils-r1_src_compile
 	fi
 	if use airdrop-ng; then
-		cd "${S}/scripts/airdrop-ng"
+		cd "${S}/scripts/airdrop-ng" || die
 		distutils-r1_src_compile
 	fi
 }
@@ -88,15 +98,15 @@ src_install() {
 	default
 
 	if use airgraph-ng; then
-		cd "${S}/scripts/airgraph-ng"
+		cd "${S}/scripts/airgraph-ng" || die
 		distutils-r1_src_install
 	fi
 	if use airdrop-ng; then
-		cd "${S}/scripts/airdrop-ng"
+		cd "${S}/scripts/airdrop-ng" || die
 		distutils-r1_src_install
 	fi
 
 	# we don't need aircrack-ng's oui updater, we have our own
-	rm "${ED}"/usr/sbin/airodump-ng-oui-update
+	rm "${ED}"/usr/sbin/airodump-ng-oui-update || die
 	find "${D}" -xtype f -name '*.la' -delete || die
 }

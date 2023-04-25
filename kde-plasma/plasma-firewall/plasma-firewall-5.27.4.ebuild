@@ -14,7 +14,7 @@ HOMEPAGE="https://invent.kde.org/network/plasma-firewall"
 
 LICENSE="GPL-2+"
 SLOT="5"
-KEYWORDS="~amd64 ~arm ~arm64 ~loong ~ppc64 ~riscv ~x86"
+KEYWORDS="amd64 ~arm arm64 ~loong ~ppc64 ~riscv x86"
 IUSE="firewalld +ufw"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE} || ( firewalld ufw )"
@@ -53,6 +53,11 @@ src_configure() {
 		-DBUILD_UFW_BACKEND=$(usex ufw)
 	)
 	ecm_src_configure
+}
+
+src_test() {
+	local -x QT_QPA_PLATFORM=offscreen
+	ecm_src_test
 }
 
 pkg_postinst () {
