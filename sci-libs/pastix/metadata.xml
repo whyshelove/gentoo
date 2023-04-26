@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
   <maintainer type="project">
     <email>sci@gentoo.org</email>
@@ -15,7 +15,7 @@
   blockwise iLU(k) factorization that can be used as a parallel
   preconditioner using approximated supernodes to build a coarser
   block structure of the incomplete factors.
-</longdescription>
+  </longdescription>
   <use>
     <flag name="cuda">Enable GPU support using CUDA kernels</flag>
     <flag name="fortran">Install the Fortran interface</flag>

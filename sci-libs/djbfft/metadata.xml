@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
   <maintainer type="project">
     <email>sci@gentoo.org</email>
@@ -17,5 +17,5 @@
   djbfft provides power-of-2 complex FFTs, real FFTs at twice the speed,
   and fast multiplication of complex arrays. Single precision and double
   precision are equally supported.
-</longdescription>
+  </longdescription>
 </pkgmetadata>

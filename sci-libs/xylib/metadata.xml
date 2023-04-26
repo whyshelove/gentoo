@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
   <maintainer type="project">
     <email>sci@gentoo.org</email>
@@ -9,7 +9,7 @@
   xylib is a portable C++ library for reading files that contain x-y
   data from powder diffraction, spectroscopy or other experimental
   methods. It supports many formats.
-</longdescription>
+  </longdescription>
   <upstream>
     <remote-id type="sourceforge">xylib</remote-id>
   </upstream>

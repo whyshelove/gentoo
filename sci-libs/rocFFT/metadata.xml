@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
   <maintainer type="project">
     <email>sci@gentoo.org</email>
@@ -16,4 +16,8 @@
   <upstream>
     <remote-id type="github">ROCmSoftwarePlatform/rocFFT</remote-id>
   </upstream>
+    <use>
+        <flag name="benchmark">Build and install [dyna-]rocfft-rider.</flag>
+        <flag name="perfscripts">Install rocfft-perf performance visualization suite.</flag>
+    </use>
 </pkgmetadata>

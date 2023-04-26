@@ -5,10 +5,10 @@ EAPI=7
 
 FORTRAN_NEEDED=fortran
 
-inherit flag-o-matic fortran-2 multibuild multilib-minimal toolchain-funcs
+inherit fortran-2 multibuild multilib-minimal toolchain-funcs
 
 DESCRIPTION="Fast C library for the Discrete Fourier Transform"
-HOMEPAGE="http://www.fftw.org/"
+HOMEPAGE="https://www.fftw.org/"
 
 MY_P=${PN}-${PV/_p/-pl}
 
@@ -16,22 +16,21 @@ if [[ ${PV} == *9999 ]]; then
 	inherit autotools git-r3
 	EGIT_REPO_URI="https://github.com/FFTW/fftw3.git"
 else
-	SRC_URI="http://www.fftw.org/${PN}-${PV/_p/-pl}.tar.gz"
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos"
+	SRC_URI="https://www.fftw.org/${PN}-${PV/_p/-pl}.tar.gz"
+	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos"
 fi
+
+S="${WORKDIR}/${MY_P}"
 
 LICENSE="GPL-2+"
 SLOT="3.0/3"
 IUSE="cpu_flags_arm_neon cpu_flags_ppc_altivec cpu_flags_x86_avx cpu_flags_x86_avx2 cpu_flags_x86_fma3 cpu_flags_x86_fma4 cpu_flags_x86_sse cpu_flags_x86_sse2 doc fortran mpi openmp test threads zbus"
 RESTRICT="!test? ( test )"
 
-RDEPEND="
-	mpi? ( >=virtual/mpi-2.0-r4[${MULTILIB_USEDEP}] )"
+RDEPEND="mpi? ( >=virtual/mpi-2.0-r4[${MULTILIB_USEDEP}] )"
 DEPEND="${RDEPEND}"
-BDEPEND="
-	test? ( dev-lang/perl )"
+BDEPEND="test? ( dev-lang/perl )"
 
-S="${WORKDIR}/${MY_P}"
 HTML_DOCS=( doc/html/. )
 
 pkg_pretend() {
@@ -65,6 +64,7 @@ multilib_src_configure() {
 		$(use_enable threads)
 		$(use_enable openmp)
 	)
+
 	[[ ${PV} == *9999 ]] && myconf+=( --enable-maintainer-mode )
 
 	# --enable-quad-precision is a brittle feature that requires
@@ -110,10 +110,6 @@ multilib_src_configure() {
 }
 
 src_configure() {
-	# upstream does not append proper -m flags
-	# https://bugs.gentoo.org/698572
-	use cpu_flags_x86_avx2 && append-flags -mavx2
-
 	multibuild_foreach_variant multilib-minimal_src_configure
 }
 
@@ -147,13 +143,16 @@ src_install() {
 		rm -r "${ED}"/usr/share/doc/${PF}/html || die
 	fi
 
-	local x
-	for x in "${ED}"/usr/lib*/pkgconfig/*.pc; do
-		local u
-		for u in $(usev mpi) $(usev threads) $(usex openmp omp ""); do
-			sed -e "s|-lfftw3[flq]\?|&_${u} &|" "$x" > "${x%.pc}_${u}.pc" || die
+	augment_pc_files() {
+		local x
+		for x in "${ED}"/usr/$(get_libdir)/pkgconfig/*.pc; do
+			local u
+			for u in $(usev mpi) $(usev threads) $(usex openmp omp ""); do
+				sed -e "s|-lfftw3[flq]\?|&_${u} &|" "${x}" > "${x%.pc}_${u}.pc" || die
+			done
 		done
-	done
+	}
+	multilib_foreach_abi augment_pc_files
 
 	# fftw uses pkg-config to record its private dependencies
 	find "${ED}" -name '*.la' -delete || die

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 	<maintainer type="person">
 		<email>aballier@gentoo.org</email>
@@ -7,7 +7,7 @@
 	</maintainer>
 	<longdescription lang="en">
 	The OctoMap library implements a 3D occupancy grid mapping approach, providing data structures and mapping algorithms in C++ particularly suited for robotics.
-</longdescription>
+	</longdescription>
 	<use>
 		<flag name="dynamicEDT3D">Build and install dynamicEDT3D library:  A library for incrementally updatable Euclidean distance transforms in 3D.</flag>
 	</use>

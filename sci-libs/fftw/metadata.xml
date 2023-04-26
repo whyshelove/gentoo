@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
   <maintainer type="project">
     <email>sci@gentoo.org</email>
@@ -13,12 +13,11 @@
   applications. Benchmarks, performed on a variety of platforms, show
   that FFTW's performance is typically superior to that of other
   publicly available FFT software.
-</longdescription>
+  </longdescription>
   <use>
     <flag name="zbus">Adds support for ZBus cycle-counter of mips</flag>
   </use>
   <upstream>
     <remote-id type="github">FFTW/fftw3</remote-id>
-    <remote-id type="freecode">fftw</remote-id>
   </upstream>
 </pkgmetadata>

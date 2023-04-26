@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{8..9} )
+PYTHON_COMPAT=( python3_{8..11} )
 DISTUTILS_OPTIONAL=1
 
 inherit distutils-r1 flag-o-matic libtool qmake-utils toolchain-funcs rhel9
@@ -17,7 +17,7 @@ KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x
 IUSE="common-lisp static-libs +cxx python qt5"
 
 RDEPEND=">=app-crypt/gnupg-2
-	>=dev-libs/libassuan-2.4.2:=
+	>=dev-libs/libassuan-2.5.3:=
 	>=dev-libs/libgpg-error-1.36:=
 	python? ( ${PYTHON_DEPS} )
 	qt5? ( dev-qt/qtcore:5 )"

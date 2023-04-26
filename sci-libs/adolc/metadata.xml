@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
   <maintainer type="project">
     <email>sci@gentoo.org</email>
@@ -10,7 +10,7 @@
   C/C++ function.  It uses C++ overloading to record arithmetic
   operations, which it plays back later in various ways to calculate
   the requested values.
-</longdescription>
+  </longdescription>
   <use>
     <flag name="boost">Use the boost allocator from <pkg>dev-libs/boost</pkg></flag>
     <flag name="sparse">Add support for sparse matrix algebra with <pkg>sci-libs/colpack</pkg></flag>

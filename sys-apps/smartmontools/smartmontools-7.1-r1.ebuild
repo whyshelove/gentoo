@@ -3,6 +3,7 @@
 
 EAPI="6"
 
+_strip_ldflags="undefine"
 inherit autotools flag-o-matic systemd rhel8
 if [[ ${PV} == "9999" ]] ; then
 	ESVN_REPO_URI+="https://svn.code.sf.net/p/smartmontools/code/trunk/smartmontools"
@@ -49,13 +50,12 @@ REQUIRED_USE="(
 
 src_prepare() {
 	default
-	eautoreconf -i
+	eautoreconf
 }
 
 src_configure() {
 	append-cxxflags -fpie
-	append-ldflags -pie -Wl,-z,relro,-z,now
-
+	append-ldflags -pie '-Wl,-z,now'
 	use static && append-ldflags -static
 	# The build installs /etc/init.d/smartd, but we clobber it
 	# in our src_install, so no need to manually delete it.

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
   <maintainer type="project">
     <email>sci@gentoo.org</email>
@@ -13,5 +13,5 @@
   that has found extensive use in the scientific community.
   This package installs the reference C implementation from Netlib,
   generated from f2c. 
-</longdescription>
+  </longdescription>
 </pkgmetadata>

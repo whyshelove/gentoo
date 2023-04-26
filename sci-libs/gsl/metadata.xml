@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
   <maintainer type="project">
     <email>sci@gentoo.org</email>
@@ -17,10 +17,13 @@
   numbers, least-squares fitting, fast Fourier transforms (FFT),
   differential equations, quadrature, Monte Carlo integration, special
   functions, physical constants, and much more. 
-</longdescription>
+  </longdescription>
   <use>
     <flag name="cblas-external">Link gsl with external cblas provided by
     (<pkg>virtual/cblas</pkg>) instead of shipped internal version</flag>
     <flag name="deprecated">Enable deprecated functions</flag>
   </use>
+  <upstream>
+    <remote-id type="savannah">gsl</remote-id>
+  </upstream>
 </pkgmetadata>

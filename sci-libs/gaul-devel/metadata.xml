@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
   <maintainer type="project">
     <email>sci@gentoo.org</email>
@@ -14,7 +14,7 @@
   algorithms. Additional stochastic algorithms are provided for
   comparison to the genetic algorithms. Much of the functionality is
   also available through a simple S-Lang interface.
-</longdescription>
+  </longdescription>
   <upstream>
     <remote-id type="sourceforge">gaul</remote-id>
   </upstream>

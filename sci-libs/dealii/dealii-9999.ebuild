@@ -1,14 +1,14 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
-
-inherit cmake multilib
+EAPI=8
 
 # deal.II uses its own FindLAPACK.cmake file that calls into the system
 # FindLAPACK.cmake module and does additional internal setup. Do not remove
 # any of these modules:
 CMAKE_REMOVE_MODULES_LIST=""
+
+inherit cmake flag-o-matic
 
 DESCRIPTION="Solving partial differential equations with the finite element method"
 HOMEPAGE="https://www.dealii.org/"
@@ -28,32 +28,29 @@ fi
 LICENSE="LGPL-2.1+"
 SLOT="0"
 IUSE="
-	adolc assimp arpack cpu_flags_x86_avx cpu_flags_x86_avx512f
+	adolc arborx assimp arpack cgal cpu_flags_x86_avx cpu_flags_x86_avx512f
 	cpu_flags_x86_sse2 cuda +debug doc +examples ginkgo gmsh +gsl hdf5
-	+lapack metis mpi muparser opencascade p4est petsc
-	scalapack slepc +sparse static-libs sundials symengine trilinos
+	+lapack metis mpi muparser opencascade p4est petsc scalapack slepc
+	+sparse static-libs sundials symengine trilinos
 "
 
 # TODO: add slepc use flag once slepc is packaged for gentoo-science
 REQUIRED_USE="
+	arborx? ( trilinos )
 	p4est? ( mpi )
 	slepc? ( petsc )
 	trilinos? ( mpi )"
 
-# FIXME: The opencascade-7.5.1 ebuild uses a new file system layout where
-# the names of the correct include and library directories are not easily
-# accessible. Just fix the version for the time being.
-CAS_VERSION=7.5.2
-
-RDEPEND="dev-libs/boost
+RDEPEND="dev-libs/boost:=
 	app-arch/bzip2
 	sys-libs/zlib
-	dev-cpp/cpp-taskflow
-	dev-cpp/tbb
+	dev-cpp/tbb:=
+	arborx? ( sci-libs/arborx[mpi=] )
 	adolc? ( sci-libs/adolc )
 	arpack? ( sci-libs/arpack[mpi=] )
-	assimp? ( media-libs/assimp )
-	cuda? ( dev-util/nvidia-cuda-sdk )
+	assimp? ( media-libs/assimp:= )
+	cgal? ( sci-mathematics/cgal )
+	cuda? ( dev-util/nvidia-cuda-toolkit )
 	ginkgo? ( sci-libs/ginkgo )
 	gmsh? ( sci-libs/gmsh )
 	gsl? ( sci-libs/gsl:= )
@@ -63,9 +60,9 @@ RDEPEND="dev-libs/boost
 		>=sci-libs/metis-5
 		mpi? ( >=sci-libs/parmetis-4 )
 	)
-	mpi? ( virtual/mpi )
+	mpi? ( virtual/mpi[cxx] )
 	muparser? ( dev-cpp/muParser )
-	opencascade? ( ~sci-libs/opencascade-${CAS_VERSION}:= )
+	opencascade? ( sci-libs/opencascade:= )
 	p4est? ( sci-libs/p4est[mpi] )
 	petsc? ( sci-mathematics/petsc[mpi=] )
 	scalapack? ( sci-libs/scalapack )
@@ -80,7 +77,6 @@ DEPEND="${RDEPEND}
 	doc? ( app-doc/doxygen[dot] dev-lang/perl )"
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-9.1.1-no-ld-flags.patch
 )
 
 src_configure() {
@@ -91,6 +87,7 @@ src_configure() {
 		-DDEAL_II_PACKAGE_VERSION="${PV}"
 		-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=OFF
 		-DDEAL_II_ALLOW_AUTODETECTION=OFF
+		-DDEAL_II_ALLOW_BUNDLED=OFF
 		-DDEAL_II_ALLOW_PLATFORM_INTROSPECTION=OFF
 		-DDEAL_II_COMPILE_EXAMPLES=OFF
 		-DDEAL_II_DOCHTML_RELDIR="share/doc/${P}/html"
@@ -101,8 +98,10 @@ src_configure() {
 		-DDEAL_II_SHARE_RELDIR="share/${PN}"
 		-DDEAL_II_WITH_ZLIB=ON
 		-DDEAL_II_WITH_ADOLC="$(usex adolc)"
+		-DDEAL_II_WITH_ARBORX="$(usex arborx)"
 		-DDEAL_II_WITH_ASSIMP="$(usex assimp)"
 		-DDEAL_II_WITH_ARPACK="$(usex arpack)"
+		-DDEAL_II_WITH_CGAL="$(usex cgal)"
 		-DDEAL_II_WITH_CUDA="$(usex cuda)"
 		-DDEAL_II_WITH_GINKGO="$(usex ginkgo)"
 		-DDEAL_II_COMPONENT_DOCUMENTATION="$(usex doc)"
@@ -110,6 +109,7 @@ src_configure() {
 		-DDEAL_II_WITH_GMSH="$(usex gmsh)"
 		-DDEAL_II_WITH_GSL="$(usex gsl)"
 		-DDEAL_II_WITH_HDF5="$(usex hdf5)"
+		-DDEAL_II_WITH_KOKKOS="$(usex trilinos)"
 		-DDEAL_II_WITH_LAPACK="$(usex lapack)"
 		-DDEAL_II_WITH_METIS="$(usex metis)"
 		-DDEAL_II_WITH_MPI="$(usex mpi)"
@@ -125,26 +125,32 @@ src_configure() {
 		-DBUILD_SHARED_LIBS="$(usex !static-libs)"
 		-DDEAL_II_PREFER_STATIC_LIBS="$(usex static-libs)"
 		-DDEAL_II_WITH_TBB=ON
-		-DDEAL_II_WITH_TASKFLOW=ON
+		-DDEAL_II_WITH_TASKFLOW=OFF
 		-DDEAL_II_WITH_TRILINOS="$(usex trilinos)"
 	)
 
-	# Do a little dance for purely cosmetic "QA" reasons.
 	use opencascade && mycmakeargs+=(
-		-DOPENCASCADE_DIR="${CASROOT}/$(get_libdir)/opencascade-${CAS_VERSION}"
-		-DOPENCASCADE_INCLUDE_DIR="${CASROOT}/include/opencascade-${CAS_VERSION}"
+		-DCMAKE_PREFIX_PATH="/usr/$(get_libdir)/opencascade"
 	)
 
-	# Do a little dance for purely cosmetic "QA" reasons. The build system
+	# Do a little dance for purely cosmetic QA reasons. The build system
 	# does query for the highest instruction set first and skips the other
 	# variables if a "higher" variant is set
 	if use cpu_flags_x86_avx512f; then
 		mycmakeargs+=( -DDEAL_II_HAVE_AVX512=yes )
+		append-cxxflags "-mavx512f"
 	elif use cpu_flags_x86_avx; then
 		mycmakeargs+=( -DDEAL_II_HAVE_AVX=yes )
+		append-cxxflags "-mavx2"
 	elif use cpu_flags_x86_avx; then
 		mycmakeargs+=( -DDEAL_II_HAVE_SSE2=yes )
+		append-cxxflags "-msse2"
 	fi
+
+	# Unconditionally enable strict C++17 standard. This is necessary for
+	# USE=cgal and USE=kokkos and safe to set for all presently supported
+	# compilers
+	append-cxxflags "-std=c++17"
 
 	cmake_src_configure
 }

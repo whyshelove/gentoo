@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-PYTHON_COMPAT=( python3_{8,9} )
+PYTHON_COMPAT=( python3_{6,8,9} )
 TMPFILES_OPTIONAL=1
 DSUFFIX="_1"
 inherit autotools flag-o-matic linux-info python-any-r1 readme.gentoo-r1 systemd tmpfiles virtualx multilib-minimal rhel9
@@ -231,11 +231,6 @@ multilib_src_install_all() {
 	rm -f ${D}${_userunitdir}/dbus.{socket,service}
 	rm -f ${D}${_userunitdir}/sockets.target.wants/dbus.socket
 
-	# Install downstream units
-	insinto ${_sysconfdir}/X11/xinit/xinitrc.d/
-	insopts -m0755
-	doins "${WORKDIR}"/00-start-message-bus.sh
-
 	systemd_dounit -r "${WORKDIR}"/{"dbus.socket","dbus-daemon.service"}
 	systemd_newuserunit "${WORKDIR}"/dbus.user.socket dbus.socket
 	systemd_newuserunit "${WORKDIR}"/dbus-daemon.user.service dbus-daemon.service
@@ -249,7 +244,10 @@ multilib_src_install_all() {
 		# turns out to only work for GDM (and startx). has been merged into
 		# other desktop (kdm and such scripts)
 		exeinto /etc/X11/xinit/xinitrc.d
-		doexe "${FILESDIR}"/80-dbus
+		newexe "${FILESDIR}"/80-dbus-r1 80-dbus
+
+		# Install downstream units
+		#doexe "${WORKDIR}"/00-start-message-bus.sh
 	fi
 
 	# needs to exist for dbus sessions to launch
@@ -270,9 +268,6 @@ multilib_src_install_all() {
 }
 
 pkg_postinst() {
-	systemd_post dbus.socket dbus-daemon.service
-	systemd_user_post dbus.socket dbus-daemon.service
-
 	readme.gentoo_print_elog
 
 	if use systemd; then

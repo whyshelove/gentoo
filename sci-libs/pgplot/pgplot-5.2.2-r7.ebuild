@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -38,18 +38,6 @@ PATCHES=(
 
 src_prepare() {
 	default
-	# gfortran < 4.3 does not compile gif, pp and wd drivers
-	if [[ $(tc-getFC) == *gfortran* ]] &&
-		[[ $(gcc-major-version)$(gcc-minor-version) -lt 43 ]] ; then
-		ewarn "Warning!"
-		ewarn "gfortran < 4.3 selected: does not compile all drivers"
-		ewarn "disabling gif, wd, and ppd drivers"
-		ewarn "if you want more drivers, use gfortran >= 4.3"
-		sed -e 's/GIDRIV/! GIDRIV/g' \
-			-e 's/PPDRIV/! GIDRIV/g' \
-			-e 's/WDDRIV/! GIDRIV/g' \
-			-i drivers.list || die "sed drivers failed"
-	fi
 
 	# fix pointers for 64 bits
 	if use amd64 || use ia64; then
@@ -161,17 +149,20 @@ src_install() {
 	if use doc; then
 		dodoc cpg/cpgplot.doc applications/curvefit/curvefit.doc pgplot.html
 		dodoc pgplot-routines.pdf pgplot-routines.tex
-		insinto /usr/share/doc/${PF}/examples
-		doins  examples/* cpg/cpgdemo.c
-		insinto /usr/share/doc/${PF}/applications
-		doins -r applications/*
+		docinto examples
+		dodoc -r examples/. cpg/cpgdemo.c
+		docompress -x /usr/share/doc/${PF}/examples
+		dodoc -r applications
+		docompress -x /usr/share/doc/${PF}/applications
 		if use motif; then
-			insinto /usr/share/doc/${PF}/pgm
-			doins pgmf/* drivers/xmotif/pgmdemo.c
+			docinto pgm
+			dodoc -r pgmf/. drivers/xmotif/pgmdemo.c
+			docompress -x /usr/share/doc/${PF}/pgm
 		fi
 		if use tk; then
-			insinto /usr/share/doc/${PF}/pgtk
-			doins drivers/xtk/pgtkdemo.*
+			docinto pgtk
+			dodoc drivers/xtk/pgtkdemo.*
+			docompress -x /usr/share/doc/${PF}/pgtk
 		fi
 	fi
 }
