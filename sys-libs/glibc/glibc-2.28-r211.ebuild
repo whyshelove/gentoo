@@ -3,6 +3,7 @@
 
 EAPI=6
 
+_build_flags="undefine"
 inherit prefix eutils eapi7-ver toolchain-funcs flag-o-matic gnuconfig \
 	multilib systemd multiprocessing rhel8
 
@@ -337,15 +338,58 @@ setup_target_flags() {
 	esac
 }
 
+# Part of inherit_flags.  Is overridden below.
+append_flag ()
+{
+    BuildFlags="$BuildFlags $*"
+}
+
+inherit_flags ()
+{
+	local reference=" $* "
+	local flag
+	for flag in ${optflags} $LDFLAGS ; do
+		if echo "$reference" | grep -q -F " $flag " ; then
+			append_flag "$flag"
+		fi
+	done
+}
+
 setup_flags() {
+# Propagates the listed flags to rpm_append_flag if supplied by
+# redhat-rpm-config.
+BuildFlags="-O2 -g"
+
+inherit_flags \
+	"-Wp,-D_GLIBCXX_ASSERTIONS" \
+	"-fasynchronous-unwind-tables" \
+	"-fstack-clash-protection" \
+	"-funwind-tables" \
+	"-m31" \
+	"-m32" \
+	"-m64" \
+	"-march=i686" \
+	"-march=x86-64" \
+	"-march=z13" \
+	"-march=z14" \
+	"-march=zEC12" \
+	"-mfpmath=sse" \
+	"-msse2" \
+	"-mstackrealign" \
+	"-mtune=generic" \
+	"-mtune=z13" \
+	"-mtune=z14" \
+	"-mtune=zEC12" \
+	"-specs=/usr/lib/rpm/redhat/redhat-annobin-cc1" \
+
+	append-cflags "$BuildFlags"
+
+	ASFLAGS="-g -Wa,--generate-missing-build-notes=yes"
+
 	# Make sure host make.conf doesn't pollute us
 	if is_crosscompile || tc-is-cross-compiler ; then
 		CHOST=${CTARGET} strip-unsupported-flags
 	fi
-
-	filter-flags -pipe -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -flto=auto 
-	append-cflags -Wundef -Wwrite-strings -fmerge-all-constants -frounding-math -Wold-style-definition -fmath-errno -fsignaling-nans -ftls-model=initial-exec 
-	# Store our CFLAGS because it's changed depending on which CTARGET
 
 	# Store our CFLAGS because it's changed depending on which CTARGET
 	# we are building when pulling glibc on a multilib profile
@@ -355,7 +399,7 @@ setup_flags() {
 	CXXFLAGS=${CXXFLAGS_BASE}
 	ASFLAGS_BASE=${ASFLAGS_BASE-${ASFLAGS}}
 	ASFLAGS=${ASFLAGS_BASE}
-	ASFLAGS="${ASFLAGS_BASE} -g -Wa,--generate-missing-build-notes=yes"
+	ASFLAGS=${ASFLAGS_BASE}
 	# Over-zealous CFLAGS can often cause problems.  What may work for one
 	# person may not work for another.  To avoid a large influx of bugs
 	# relating to failed builds, we strip most CFLAGS out to ensure as few
@@ -1080,7 +1124,7 @@ src_configure() {
 }
 
 do_src_compile() {
-	emake -C "$(builddir nptl)" -O -r ASFLAGS="-g -Wa,--generate-missing-build-notes=yes"
+	emake -C "$(builddir nptl)" -O -r
 }
 
 src_compile() {

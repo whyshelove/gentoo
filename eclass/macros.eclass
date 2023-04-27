@@ -92,6 +92,7 @@ build_ldflags(){
 }
 
 set_build_flags(){
+	[[ ${_build_flags} == "undefine" ]] && return 0
 	append-flags ${optflags}
 	append-fflags ${fflags}
 	build_ldflags

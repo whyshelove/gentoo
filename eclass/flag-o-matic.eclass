@@ -90,12 +90,13 @@ _setup-allowed-flags() {
 		'-fuse-ld=*'
 
 		# rpm optflag
+		-fPIE -pie -ffat-lto-objects
 		'-Werror=format-security' -Wformat-security
+		'-Wp,-D_FORTIFY_SOURCE=2' '-Wp,-D_GLIBCXX_ASSERTIONS'
 		-fexceptions -grecord-gcc-switches
-		-fasynchronous-unwind-tables
-		-fstack-clash-protection -fcf-protection
-		'--specs=/usr/lib/rpm/redhat/redhat-*'
-		-fPIE -pie
+		-fasynchronous-unwind-tables -fcf-protection
+		'-specs=/usr/lib/rpm/redhat/redhat-*'
+		'-Wl,-z,now' '-Wl,-z,relro'
 	)
 
 	# allow a bunch of flags that negate features / control ABI
