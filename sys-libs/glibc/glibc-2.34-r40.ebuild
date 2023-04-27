@@ -9,6 +9,7 @@ EAPI=7
 PYTHON_COMPAT=( python3_{9..10} )
 TMPFILES_OPTIONAL=1
 DSUFFIX="_1.1"
+_build_flags="undefine"
 
 inherit python-any-r1 prefix preserve-libs toolchain-funcs flag-o-matic gnuconfig \
 	multilib systemd multiprocessing tmpfiles rhel9
@@ -376,7 +377,72 @@ setup_target_flags() {
 	esac
 }
 
+# Part of inherit_flags.  Is overridden below.
+append_flag ()
+{
+    BuildFlags="$BuildFlags $*"
+}
+
+inherit_flags ()
+{
+	local reference=" $* "
+	local flag
+	for flag in ${optflags} $LDFLAGS ; do
+		if echo "$reference" | grep -q -F " $flag " ; then
+			append_flag "$flag"
+		fi
+	done
+}
+
 setup_flags() {
+# Propagates the listed flags to append_flag if supplied by
+# redhat-rpm-config.
+BuildFlags="-O2 -g"
+
+inherit_flags \
+	"-Wp,-D_GLIBCXX_ASSERTIONS" \
+	"-fasynchronous-unwind-tables" \
+	"-fstack-clash-protection" \
+	"-funwind-tables" \
+	"-m31" \
+	"-m32" \
+	"-m64" \
+	"-march=armv8-a+lse" \
+	"-march=armv8.1-a" \
+	"-march=haswell" \
+	"-march=i686" \
+	"-march=x86-64" \
+	"-march=x86-64-v2" \
+	"-march=x86-64-v3" \
+	"-march=x86-64-v4" \
+	"-march=z13" \
+	"-march=z14" \
+	"-march=z15" \
+	"-march=zEC12" \
+	"-mbranch-protection=standard" \
+	"-mcpu=power10" \
+	"-mcpu=power8" \
+	"-mcpu=power9" \
+	"-mfpmath=sse" \
+	"-msse2" \
+	"-mstackrealign" \
+	"-mtune=generic" \
+	"-mtune=power10" \
+	"-mtune=power8" \
+	"-mtune=power9" \
+	"-mtune=z13" \
+	"-mtune=z14" \
+	"-mtune=z15" \
+	"-mtune=zEC12" \
+	"-specs=/usr/lib/rpm/redhat/redhat-annobin-cc1" \
+
+	append-cflags "$BuildFlags"
+
+	asflag="-Wa,--generate-missing-build-notes=yes"
+	ASFLAGS="-g $asflag"
+
+	BuildFlagsNonshared="-fplugin=annobin -fplugin-arg-annobin-disable $asflag"
+
 	# Make sure host make.conf doesn't pollute us
 	if is_crosscompile || tc-is-cross-compiler ; then
 		CHOST=${CTARGET} strip-unsupported-flags
@@ -389,7 +455,7 @@ setup_flags() {
 	CXXFLAGS_BASE=${CXXFLAGS_BASE-${CXXFLAGS}}
 	CXXFLAGS=${CXXFLAGS_BASE}
 	ASFLAGS_BASE=${ASFLAGS_BASE-${ASFLAGS}}
-	ASFLAGS="${ASFLAGS_BASE} -g -Wa,--generate-missing-build-notes=yes"
+	ASFLAGS=${ASFLAGS_BASE}
 
 	# Allow users to explicitly avoid flag sanitization via
 	# USE=custom-cflags.
@@ -439,7 +505,7 @@ setup_flags() {
 	filter-flags '-fstack-protector*'
 
 	# See end of bug #830454; we handle this via USE=cet
-	filter-flags '-fcf-protection=' '-Wp,-D_FORTIFY_SOURCE=2'
+	filter-flags '-fcf-protection='
 }
 
 use_multiarch() {
@@ -976,17 +1042,6 @@ glibc_do_configure() {
 			libc_cv_c_cleanup=yes \
 			libc_cv_forced_unwind=yes
 	fi
-
-	# Propgate select compiler flags from redhat-rpm-config.  These flags
-	# are target-dependent, so we use only those which are specified in
-	# redhat-rpm-config.  We keep the -m32/-m32/-m64 flags to support
-	# multilib builds.
-	#
-	# Note: For building alternative run-times, care is required to avoid
-	# overriding the architecture flags which go into CC/CXX.  The flags
-	# below are passed in CFLAGS.
-
-	BuildFlagsNonshared="-fplugin=annobin -fplugin-arg-annobin-disable -Wa,--generate-missing-build-notes=yes"
 
 	myconf+=(
 		--with-nonshared-cflags="$BuildFlagsNonshared"
