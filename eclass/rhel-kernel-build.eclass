@@ -39,7 +39,7 @@ BDEPEND="
 
 _target_cpu=$(rhel-kernel-install_get_qemu_arch)
 
-K_PV=${PV}-${MY_PR}.${subrelease}
+K_PV=${PV/_p*}-${MY_PR}.${subrelease}
 K_PVD=${K_PV}.${DIST}${DSUFFIX}
 
 KVERREL=${K_PVD}.${_target_cpu}
@@ -233,7 +233,7 @@ rhel-kernel-build_src_test() {
 	emake O="${WORKDIR}"/build "${MAKEARGS[@]}" \
 		INSTALL_MOD_PATH="${T}" "${targets[@]}"
 
-	local ver="${PV}${KV_LOCALVERSION}"
+	local ver="${PV/_p*}${KV_LOCALVERSION}"
 	kernel-install_test "${ver}" \
 		"${WORKDIR}/build/$(dist-kernel_get_image_path)" \
 		"${T}/lib/modules/${ver}"

@@ -3,7 +3,7 @@
 
 EAPI=7
 
-subrelease="19.2"
+subrelease="$(ver_cut 5).2"
 DPREFIX="${subrelease}."
 DSUFFIX="_7"
 

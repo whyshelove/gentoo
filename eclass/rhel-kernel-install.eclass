@@ -13,7 +13,7 @@
 # kinds of Distribution Kernel packages, including both kernels built
 # from source and distributed as binaries.  The eclass relies on the
 # ebuild installing a subset of built kernel tree into
-# /usr/src/linux-${PV} containing the kernel image in its standard
+# /usr/src/linux-${PV/_p*} containing the kernel image in its standard
 # location and System.map.
 #
 # The eclass exports src_test, pkg_postinst and pkg_postrm.
@@ -42,7 +42,7 @@ esac
 
 inherit rhel-kernel-utils mount-boot toolchain-funcs
 
-SLOT="${PV}"
+SLOT="${PV/_p*}"
 IUSE="+initramfs test"
 RESTRICT+="
 	!test? ( test )
