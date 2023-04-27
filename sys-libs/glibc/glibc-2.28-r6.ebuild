@@ -1,11 +1,10 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
 
-_build_flags="undefine"
 inherit prefix eutils eapi7-ver toolchain-funcs flag-o-matic gnuconfig \
-	multilib systemd multiprocessing tmpfiles rhel8
+	multilib systemd multiprocessing
 
 DESCRIPTION="GNU libc C library"
 HOMEPAGE="https://www.gnu.org/software/libc/"
@@ -14,7 +13,13 @@ SLOT="2.2"
 
 EMULTILIB_PKG="true"
 
-KEYWORDS="~alpha amd64 arm arm64 hppa ia64 m68k ~mips ppc ppc64 s390 sh sparc x86"
+if [[ ${PV} == 9999* ]]; then
+	EGIT_REPO_URI="https://sourceware.org/git/glibc.git"
+	inherit git-r3
+else
+	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 s390 sparc x86"
+	SRC_URI="mirror://gnu/glibc/${P}.tar.xz"
+fi
 
 RELEASE_VER=${PV}
 
@@ -26,7 +31,7 @@ PATCH_VER=9
 SRC_URI+=" https://dev.gentoo.org/~dilfridge/distfiles/${P}-patches-${PATCH_VER}.tar.xz"
 SRC_URI+=" multilib? ( https://dev.gentoo.org/~dilfridge/distfiles/gcc-multilib-bootstrap-${GCC_BOOTSTRAP_VER}.tar.xz )"
 
-IUSE="audit caps compile-locales doc gd headers-only +multiarch multilib nscd profile selinux +ssp suid systemtap test vanilla"
+IUSE="audit caps cet compile-locales doc gd headers-only +multiarch multilib nscd profile selinux +ssp suid systemtap test vanilla"
 
 # Minimum kernel version that glibc requires
 MIN_KERN_VER="3.2.0"
@@ -337,54 +342,7 @@ setup_target_flags() {
 	esac
 }
 
-# Part of inherit_flags.  Is overridden below.
-append_flag ()
-{
-    BuildFlags="$BuildFlags $*"
-}
-
-inherit_flags ()
-{
-	local reference=" $* "
-	local flag
-	for flag in ${optflags} $LDFLAGS ; do
-		if echo "$reference" | grep -q -F " $flag " ; then
-			append_flag "$flag"
-		fi
-	done
-}
-
 setup_flags() {
-# Propagates the listed flags to rpm_append_flag if supplied by
-# redhat-rpm-config.
-BuildFlags="-O2 -g"
-
-inherit_flags \
-	"-Wp,-D_GLIBCXX_ASSERTIONS" \
-	"-fasynchronous-unwind-tables" \
-	"-fstack-clash-protection" \
-	"-funwind-tables" \
-	"-m31" \
-	"-m32" \
-	"-m64" \
-	"-march=i686" \
-	"-march=x86-64" \
-	"-march=z13" \
-	"-march=z14" \
-	"-march=zEC12" \
-	"-mfpmath=sse" \
-	"-msse2" \
-	"-mstackrealign" \
-	"-mtune=generic" \
-	"-mtune=z13" \
-	"-mtune=z14" \
-	"-mtune=zEC12" \
-	"-specs=/usr/lib/rpm/redhat/redhat-annobin-cc1" \
-
-	append-cflags "$BuildFlags"
-
-	ASFLAGS="-g -Wa,--generate-missing-build-notes=yes"
-
 	# Make sure host make.conf doesn't pollute us
 	if is_crosscompile || tc-is-cross-compiler ; then
 		CHOST=${CTARGET} strip-unsupported-flags
@@ -784,7 +742,11 @@ src_unpack() {
 
 	setup_env
 
-	rhel_src_unpack ${A}
+	if [[ -n ${EGIT_REPO_URI} ]] ; then
+		git-r3_src_unpack
+	else
+		unpack ${P}.tar.xz
+	fi
 
 	cd "${S}" || die
 	touch locale/C-translit.h || die #185476 #218003
@@ -796,7 +758,7 @@ src_unpack() {
 src_prepare() {
 	if ! use vanilla ; then
 		elog "Applying Gentoo Glibc Patchset ${RELEASE_VER}-${PATCH_VER}"
-		eapply "${FILESDIR}"/2.28
+		eapply "${WORKDIR}"/patches
 		einfo "Done."
 	fi
 
@@ -887,7 +849,7 @@ glibc_do_configure() {
 
 	# Enable Intel Control-flow Enforcement Technology on amd64 if requested
 	case ${CTARGET} in
-		x86_64-*) myconf+=( --enable-cet --enable-static-pie ) ;;
+		x86_64-*) myconf+=( $(use_enable cet) ) ;;
 		*) ;;
 	esac
 
@@ -922,8 +884,6 @@ glibc_do_configure() {
 	fi
 
 	myconf+=(
-		--with-nonshared-cflags="-Wp,-D_FORTIFY_SOURCE=2"
-		--enable-tunables
 		--without-cvs
 		--disable-werror
 		--enable-bind-now
@@ -1123,7 +1083,7 @@ src_configure() {
 }
 
 do_src_compile() {
-	emake -C "$(builddir nptl)" -r
+	emake -C "$(builddir nptl)"
 }
 
 src_compile() {
@@ -1318,7 +1278,7 @@ glibc_do_src_install() {
 
 		sed -i "${nscd_args[@]}" "${ED}"/etc/init.d/nscd
 
-		systemd_dounit nscd/nscd.{service,socket}
+		systemd_dounit nscd/nscd.service
 		systemd_newtmpfilesd nscd/nscd.tmpfiles nscd.conf
 	else
 		# Do this since extra/etc/*.conf above might have nscd.conf.
