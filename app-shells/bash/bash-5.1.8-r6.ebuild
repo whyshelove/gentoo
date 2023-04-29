@@ -38,7 +38,7 @@ RDEPEND="
 	${DEPEND}
 "
 # We only need yacc when the .y files get patched (bash42-005, bash51-011)
-BDEPEND="app-alternatives/yacc
+BDEPEND="virtual/yacc
 	verify-sig? ( sec-keys/openpgp-keys-chetramey )"
 
 S="${WORKDIR}/${PN}-$(ver_cut 1-2)"

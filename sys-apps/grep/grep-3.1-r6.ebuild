@@ -3,6 +3,7 @@
 
 EAPI=7
 
+_build_flags="undefine"
 inherit flag-o-matic toolchain-funcs rhel8
 
 DESCRIPTION="GNU regular expression matcher"
@@ -60,4 +61,19 @@ src_configure() {
 		CFLAGS="${optflags} ${CFLAGS}"
 	)
 	econf "${myeconfargs[@]}"
+}
+
+src_install() {
+	default
+
+	rm -f "${ED}"/usr/share/info/dir
+
+	insinto ${_sysconfdir}/profile.d
+	doins ${WORKDIR}/colorgrep.{,c}sh
+
+	insinto ${_sysconfdir}
+	doins ${WORKDIR}/GREP_COLORS
+
+	exeinto ${_libexecdir}
+	doexe ${WORKDIR}/grepconf.sh
 }

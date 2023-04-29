@@ -5,8 +5,7 @@ EAPI=8
 
 LUA_COMPAT=( luajit )
 PYTHON_COMPAT=( python3_{6,8,9} )
-LLVM_MAX_SLOT=12
-CMAKE_BUILD_TYPE=RelWithDebInfo
+LLVM_MAX_SLOT=14
 
 inherit cmake linux-info llvm lua-single python-r1 toolchain-funcs rhel8-a
 

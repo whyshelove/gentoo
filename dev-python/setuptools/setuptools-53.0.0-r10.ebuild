@@ -39,6 +39,10 @@ DISTUTILS_IN_SOURCE_BUILD=1
 
 DOCS=( {CHANGES,README}.rst )
 
+src_unpack() {
+	rpm_src_unpack ${A}
+}
+
 python_test() {
 	# keep in sync with python_gen_cond_dep above!
 	has "${EPYTHON}" python3.{7..9} pypy3 || continue

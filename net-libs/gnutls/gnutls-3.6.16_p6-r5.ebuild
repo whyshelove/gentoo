@@ -14,7 +14,7 @@ HOMEPAGE="https://www.gnutls.org/"
 LICENSE="GPL-3 LGPL-2.1+"
 SLOT="0/30" # libgnutls.so number
 KEYWORDS="amd64 arm64 ~ppc64 ~s390"
-IUSE="+cxx +dane doc examples guile +idn nls openssl +pkcs11 seccomp sslv2 sslv3 static-libs test test-full +tls-heartbeat tools valgrind"
+IUSE="+cxx dane doc examples guile +idn nls openssl +pkcs11 seccomp sslv2 sslv3 static-libs test test-full +tls-heartbeat tools valgrind"
 
 REQUIRED_USE="
 	test-full? ( cxx dane doc examples guile idn nls openssl pkcs11 seccomp tls-heartbeat tools )"
