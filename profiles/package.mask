@@ -33,6 +33,19 @@
 
 #--- END OF EXAMPLES ---
 
+# Matt Turner <mattst88@gentoo.org> (2023-04-26)
+# Package contains only a script that runs an X application on a remote system
+# with rsh (use ssh -Y instead), and two scripts that were probably used for
+# converting the old BDF fonts to XLFD names back in the early 90's. None of
+# these are useful today.
+# Removal on 2023-05-26
+x11-apps/scripts
+
+# Mike Gilbert <floppym@gentoo.org> (2023-04-26)
+# Merged into net-libs/ldns.  Bug 828109.
+# Removal on 2023-05-26.
+net-dns/ldns-utils
+
 # Volkmar W. Pogatzki <gentoo@pogatzki.net> (2023-04-22)
 # Unused acct-group. Removal on 2023-05-22
 # The server was removed on 2021-08-24 with commit
@@ -319,14 +332,6 @@ dev-ruby/rspec-mocks:2
 # Removal on 2023-04-28.  Bug #903542.
 dev-ruby/flickraw
 
-# Sam James <sam@gentoo.org> (2023-03-29)
-# Only supports imminently-EOL ruby27, depends on obsolete QtScript instead
-# of QML. Support for other languages was removed long ago, e.g. python support
-# is stuck on python2-only. Kross itself is on the chopping block too:
-# bug #810493, bug #903532.
-# Removal on 2023-04-28.
-kde-apps/kross-interpreters
-
 # Hans de Graaff <graaff@gentoo.org> (2023-03-29)
 # ruby27-only package. app-text/ronn-ng is a drop-in replacement.  it is
 # also the only consumer of dev-ruby/hpricot which has a ruby30 target
@@ -385,12 +390,6 @@ app-editors/le
 # No py3.11.  Last release in 2014.  No revdeps.
 # Removal on 2023-04-25.  Bug #896762.
 dev-python/collective-checkdocs
-
-# Hans de Graaff <graaff@gentoo.org> (2023-03-26)
-# Mask ruby27-only version of puppet for removal. Please upgrade to
-# puppetserver 7 and either puppet-agent 7 or puppet 7.
-# Masked for removal on 2023-04-26.
-=app-admin/puppet-5*
 
 # Sam James <sam@gentoo.org> (2023-03-24)
 # Please upgrade to make-4.4.1 as make-4.4 has a bunch of issues.
