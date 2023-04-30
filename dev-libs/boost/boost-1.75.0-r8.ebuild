@@ -44,7 +44,7 @@ RDEPEND="
 	zlib? ( sys-libs/zlib:=[${MULTILIB_USEDEP}] )
 	zstd? ( app-arch/zstd:=[${MULTILIB_USEDEP}] )"
 DEPEND="${RDEPEND}"
-BDEPEND=">=dev-util/boost-build-${MAJOR_V}-r2"
+BDEPEND=">=dev-util/b2-4.9.2"
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-1.71.0-disable_icu_rpath.patch
@@ -172,7 +172,7 @@ src_configure() {
 		$(usex threads '' '--without-thread')
 		--without-graph_parallel
 		--without-stacktrace
-		--boost-build="${BROOT}"/usr/share/boost-build/src
+		--boost-build="${BROOT}"/usr/share/b2/src
 		--layout=system
 		# building with threading=single is currently not possible
 		# https://svn.boost.org/trac/boost/ticket/7105
