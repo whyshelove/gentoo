@@ -3,6 +3,7 @@
 
 EAPI=7
 
+_build_flags="undefine"
 inherit flag-o-matic toolchain-funcs rhel9
 
 DESCRIPTION="GNU regular expression matcher"
@@ -56,7 +57,7 @@ src_configure() {
 		--bindir="${EPREFIX}"/bin
 		--without-included-regex
 		CPPFLAGS="-I${_includedir}/pcre"
-		CFLAGS="${CFLAGS}"
+		CFLAGS="${optflags} ${CFLAGS}"
 		$(use_enable nls)
 		$(use_enable pcre perl-regexp)
 	)
@@ -68,7 +69,7 @@ src_install() {
 
 	rm -f "${ED}"/usr/share/info/dir
 
-	insinto ${_sysconfdir}/profile.d/
+	insinto ${_sysconfdir}/profile.d
 	doins ${WORKDIR}/colorgrep.{,c}sh
 
 	insinto ${_sysconfdir}
