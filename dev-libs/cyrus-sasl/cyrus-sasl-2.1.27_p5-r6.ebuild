@@ -5,6 +5,7 @@ EAPI=7
 
 suffix_ver=$(ver_cut 5)
 [[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}"
+_build_flags="undefine"
 
 inherit flag-o-matic multilib multilib-minimal autotools pam java-pkg-opt-2 db-use systemd toolchain-funcs tmpfiles rhel8
 
@@ -16,7 +17,7 @@ HOMEPAGE="https://www.cyrusimap.org/sasl/"
 LICENSE="BSD-with-attribution"
 SLOT="2"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-IUSE="authdaemond berkdb gdbm kerberos ldapdb openldap mysql pam postgres sample selinux sqlite srp ssl static-libs urandom"
+IUSE="authdaemond berkdb gdbm +kerberos ldapdb openldap mysql pam postgres sample selinux sqlite srp ssl static-libs urandom"
 
 CDEPEND="
 	net-mail/mailbase
@@ -107,20 +108,25 @@ src_configure() {
 		LDFLAGS="`pkg-config --libs-only-L openssl` $LDFLAGS"; export LDFLAGS
 	fi
 
-	# Find the MySQL libraries used needed by the SQL auxprop plugin.
-	INC_DIR="`mysql_config --include`"
-	if test x"$INC_DIR" != "x-I${_includedir}"; then
-		CPPFLAGS="$INC_DIR $CPPFLAGS"; export CPPFLAGS
-	fi
-	LIB_DIR="`mysql_config --libs | sed -e 's,-[^L][^ ]*,,g' -e 's,^ *,,' -e 's, *$,,' -e 's,  *, ,g'`"
-	if test x"$LIB_DIR" != "x-L${_libdir}"; then
-		LDFLAGS="$LIB_DIR $LDFLAGS"; export LDFLAGS
+	if use mysql ; then
+		# Find the MySQL libraries used needed by the SQL auxprop plugin.
+		INC_DIR="`mysql_config --include`"
+		if test x"$INC_DIR" != "x-I${_includedir}"; then
+			CPPFLAGS="$INC_DIR $CPPFLAGS"; export CPPFLAGS
+		fi
+		LIB_DIR="`mysql_config --libs | sed -e 's,-[^L][^ ]*,,g' -e 's,^ *,,' -e 's, *$,,' -e 's,  *, ,g'`"
+		if test x"$LIB_DIR" != "x-L${_libdir}"; then
+			LDFLAGS="$LIB_DIR $LDFLAGS"; export LDFLAGS
+		fi
 	fi
 
-	# Find the PostgreSQL libraries used needed by the SQL auxprop plugin.
-	INC_DIR="-I`pg_config --includedir`"
-	if test x"$INC_DIR" != "x-I${_includedir}"; then
-		CPPFLAGS="$INC_DIR $CPPFLAGS"; export CPPFLAGS
+
+	if use postgres ; then
+		# Find the PostgreSQL libraries used needed by the SQL auxprop plugin.
+		INC_DIR="-I`pg_config --includedir`"
+		if test x"$INC_DIR" != "x-I${_includedir}"; then
+			CPPFLAGS="$INC_DIR $CPPFLAGS"; export CPPFLAGS
+		fi
 	fi
 
 	# Patch config.sub to support ppc64p7 subarch (Fedora specific)
@@ -129,8 +135,8 @@ src_configure() {
 	  perl -pi -e "s/ppc64-\*/ppc64-\* \| ppc64p7-\*/" $i
 	done
 
-	append-cflags "$CPPFLAGS" -fPIC -pie -Wl,-z,relro -Wl,-z,now
-	append-ldflags -pie
+	append-cflags ${optflags} "$CPPFLAGS" -fPIC -pie -Wl,-z,relro -Wl,-z,now
+	append-ldflags -pie -Wl,-z,now
 
 	append-flags -fno-strict-aliasing
 
