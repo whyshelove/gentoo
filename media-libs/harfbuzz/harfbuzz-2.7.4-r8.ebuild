@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{7..9} )
+PYTHON_COMPAT=( python3_{9..11} )
 
 inherit flag-o-matic meson-multilib python-any-r1 xdg-utils rhel9
 
@@ -19,7 +19,7 @@ fi
 LICENSE="Old-MIT ISC icu"
 SLOT="0/0.9.18" # 0.9.18 introduced the harfbuzz-icu split; bug #472416
 
-IUSE="+cairo debug doc +glib +graphite icu +introspection static-libs test +truetype"
+IUSE="+cairo debug doc +glib +graphite icu +introspection test +truetype"
 RESTRICT="!test? ( test )"
 REQUIRED_USE="introspection? ( glib )"
 
@@ -76,10 +76,9 @@ multilib_src_configure() {
 	local emesonargs=(
 		$(meson_native_use_feature cairo)
 		-Dcoretext="disabled"
-		$(meson_native_use_feature doc)
+		$(meson_native_use_feature doc docs)
 		-Dfontconfig="disabled" #609300
 		$(meson_native_use_feature introspection)
-		$(meson_use static-libs static)
 		$(meson_feature glib)
 		$(meson_feature graphite)
 		$(meson_feature icu)
