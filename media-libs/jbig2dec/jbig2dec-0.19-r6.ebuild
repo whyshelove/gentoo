@@ -3,7 +3,7 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{6,8,9} )
+PYTHON_COMPAT=( python3_{9..11} )
 
 inherit autotools python-any-r1 rhel9-a
 

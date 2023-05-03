@@ -52,7 +52,7 @@ _PYTHON_HISTORICAL_IMPLS=(
 	jython2_7
 	pypy pypy1_{8,9} pypy2_0
 	python2_{5..7}
-	python3_{1..8}
+	python3_{1..9}
 )
 readonly _PYTHON_HISTORICAL_IMPLS
 
@@ -131,7 +131,7 @@ _python_set_impls() {
 			case ${i} in
 				pypy3|python3_9|python3_1[01])
 					;;
-				jython2_7|pypy|pypy1_[89]|pypy2_0|python2_[5-7]|python3_[1-8])
+				jython2_7|pypy|pypy1_[89]|pypy2_0|python2_[5-7]|python3_[1-9])
 					obsolete+=( "${i}" )
 					;;
 				*)
