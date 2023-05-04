@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -8,24 +8,23 @@ inherit flag-o-matic toolchain-funcs multilib-minimal usr-ldscript
 MY_PV=$(ver_cut 1-2)
 DEB_PV=$(ver_cut 3)
 MY_P="${PN//-/_}_${MY_PV}"
+
 DESCRIPTION="TCP Wrappers"
 HOMEPAGE="http://ftp.porcupine.org/pub/security"
 SRC_URI="http://ftp.porcupine.org/pub/security/${MY_P}.tar.gz
-	mirror://debian/pool/main/t/${PN}/${PN}_${MY_PV}.q-${DEB_PV}.debian.tar.xz"
+	mirror://debian/pool/main/t/${PN}/${PN}_${MY_PV}.q-${DEB_PV}.debian.tar.xz
+	https://dev.gentoo.org/~soap/distfiles/${P}-patches.tar.xz"
 S="${WORKDIR}/${MY_P}"
 
 LICENSE="tcp_wrappers_license"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux"
-IUSE="ipv6 netgroups static-libs"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
+IUSE="ipv6 netgroups"
 
 RDEPEND="netgroups? ( net-libs/libnsl:= )"
 DEPEND="${RDEPEND}"
 
-PATCHES=(
-	"${FILESDIR}/${PN}-7.6-redhat-bug11881.patch"
-	"${FILESDIR}/${PN}-7.6.28-no-external-malloc.patch"
-)
+PATCHES=( "${WORKDIR}"/gentoo-patches/ )
 
 src_prepare() {
 	# Apply Debian patchset except for the series file which just lists
@@ -54,7 +53,7 @@ temake() {
 		NETGROUP=$(usex netgroups -DNETGROUPS "")
 		STYLE="-DPROCESS_OPTIONS"
 		LIBS=$(usex netgroups -lnsl "")
-		LIB=$(usex static-libs libwrap.a "")
+		LIB="" # disable static-libs
 		AR="$(tc-getAR)" ARFLAGS=rc
 		CC="$(tc-getCC)"
 		RANLIB="$(tc-getRANLIB)"
@@ -79,7 +78,6 @@ multilib_src_compile() {
 
 multilib_src_install() {
 	into /usr
-	use static-libs && dolib.a libwrap.a
 	dolib.so shared/libwrap.so*
 
 	insinto /usr/include

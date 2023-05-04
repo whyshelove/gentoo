@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -8,7 +8,7 @@ HOMEPAGE="https://wiki.gentoo.org/wiki/Project:X11"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
 
 S="${WORKDIR}"
 
@@ -21,8 +21,8 @@ RDEPEND="
 "
 
 src_install() {
-	newinitd "${FILESDIR}"/display-manager-setup.initd display-manager-setup
-	newinitd "${FILESDIR}"/display-manager.initd-r1 display-manager
+	newinitd "${FILESDIR}"/display-manager-setup.initd-r1 display-manager-setup
+	newinitd "${FILESDIR}"/display-manager.initd-r5 display-manager
 	newinitd "${FILESDIR}"/xdm.initd xdm
 	newconfd "${FILESDIR}"/display-manager.confd display-manager
 	newbin "${FILESDIR}"/startDM-r1 startDM

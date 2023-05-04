@@ -1,28 +1,30 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="7"
+EAPI=8
 
 inherit toolchain-funcs flag-o-matic
 
-code_ver=${PV}
-data_ver=${PV}
+MY_CODE_VER=${PV}
+MY_DATA_VER=${PV}
 DESCRIPTION="Timezone data (/usr/share/zoneinfo) and utilities (tzselect/zic/zdump)"
 HOMEPAGE="https://www.iana.org/time-zones"
-SRC_URI="https://www.iana.org/time-zones/repository/releases/tzdata${data_ver}.tar.gz
-	https://www.iana.org/time-zones/repository/releases/tzcode${code_ver}.tar.gz"
+SRC_URI="https://www.iana.org/time-zones/repository/releases/tzdata${MY_DATA_VER}.tar.gz
+	https://www.iana.org/time-zones/repository/releases/tzcode${MY_CODE_VER}.tar.gz"
 
 LICENSE="BSD public-domain"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-IUSE="nls leaps-timezone elibc_FreeBSD zic-slim"
+KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+IUSE="nls leaps-timezone zic-slim"
 
 DEPEND="nls? ( virtual/libintl )"
-RDEPEND="${DEPEND}
-	!sys-libs/glibc[vanilla(+)]"
+RDEPEND="
+	${DEPEND}
+	!sys-libs/glibc[vanilla(+)]
+"
 
 src_unpack() {
-	mkdir -p "${S}" && cd "${S}" || die
+	mkdir "${S}" && cd "${S}" || die
 	default
 }
 
@@ -33,29 +35,33 @@ src_prepare() {
 	sed -i -e 's/check_tables check_web/check_tables/g' \
 		Makefile || die "Failed to disable check_web"
 
-	tc-is-cross-compiler && cp -pR "${S}" "${S}"-native
+	if tc-is-cross-compiler ; then
+		cp -pR "${S}" "${S}"-native || die
+	fi
 }
 
 src_configure() {
 	tc-export CC
 
-	append-lfs-flags #471102
+	# bug #471102
+	append-lfs-flags
 
-	if use elibc_FreeBSD || use elibc_Darwin ; then
-		append-cppflags -DSTD_INSPIRED #138251
+	if use elibc_Darwin ; then
+		# bug #138251
+		append-cppflags -DSTD_INSPIRED
 	fi
 
 	append-cppflags -DHAVE_GETTEXT=$(usex nls 1 0) -DTZ_DOMAIN='\"libc\"'
 
 	# Upstream default is 'slim', but it breaks quite a few programs
-	# that parse /etc/localtime directly: bug# 747538.
+	# that parse /etc/localtime directly: bug #747538.
 	append-cppflags -DZIC_BLOAT_DEFAULT='\"'$(usex zic-slim slim fat)'\"'
 
 	LDLIBS=""
 	if use nls ; then
-		# See if an external libintl is available. #154181 #578424
+		# See if an external libintl is available. bug #154181, bug #578424
 		local c="${T}/test"
-		echo 'main(){}' > "${c}.c"
+		echo 'main(){}' > "${c}.c" || die
 		if $(tc-getCC) ${CPPFLAGS} ${CFLAGS} ${LDFLAGS} "${c}.c" -o "${c}" -lintl 2>/dev/null ; then
 			LDLIBS+=" -lintl"
 		fi
@@ -78,6 +84,7 @@ src_compile() {
 		CFLAGS="${CFLAGS} -std=gnu99 ${CPPFLAGS}" \
 		LDFLAGS="${LDFLAGS}" \
 		LDLIBS="${LDLIBS}"
+
 	if tc-is-cross-compiler ; then
 		_emake -C "${S}"-native \
 			AR="$(tc-getBUILD_AR)" \
@@ -91,7 +98,7 @@ src_compile() {
 }
 
 src_test() {
-	# VALIDATE_ENV is used for extended/web based tests.  Punt on them.
+	# VALIDATE_ENV is used for extended/web based tests. Punt on them.
 	emake check VALIDATE_ENV=true
 }
 
@@ -116,6 +123,7 @@ get_TIMEZONE() {
 	else
 		tz="FOOKABLOIE"
 	fi
+
 	[[ -z ${tz} ]] && return 1 || echo "${tz}"
 }
 
@@ -131,21 +139,14 @@ pkg_preinst() {
 
 	# Trim the symlink by hand to avoid portage's automatic protection checks.
 	rm -f "${EROOT}"/usr/share/zoneinfo/posix
-
-	if has_version "<=${CATEGORY}/${PN}-2015c" ; then
-		elog "Support for accessing posix/ and right/ directly has been dropped to match"
-		elog "upstream.  There is no need to set TZ=posix/xxx as it is the same as TZ=xxx."
-		elog "For TZ=right/, you can use TZ=../zoneinfo-leaps/xxx instead.  See this post"
-		elog "for details: https://mm.icann.org/pipermail/tz/2015-February/022024.html"
-	fi
 }
 
 configure_tz_data() {
-	# make sure the /etc/localtime file does not get stale #127899
+	# Make sure the /etc/localtime file does not get stale, bug #127899
 	local tz src="${EROOT}/etc/timezone" etc_lt="${EROOT}/etc/localtime"
 
 	# If it's a symlink, assume the user knows what they're doing and
-	# they're managing it themselves. #511474
+	# they're managing it themselves, bug #511474
 	if [[ -L "${etc_lt}" ]] ; then
 		einfo "Assuming your ${etc_lt} symlink is what you want; skipping update."
 		return 0
@@ -164,7 +165,7 @@ configure_tz_data() {
 	local tzpath="${EROOT}/usr/share/zoneinfo/${tz}"
 
 	if [[ ! -e ${tzpath} ]]; then
-		ewarn "The timezone specified in ${src} is not valid."
+		ewarn "The timezone specified in ${src} is not valid!"
 		return 1
 	fi
 
