@@ -8,7 +8,7 @@ for _dir in "$@"; do
 
 			sed -i "/src.rpm/d" /var/db/repos/gentoo/"${_dir}"/Manifest
 
-			repoman manifest
+			pkgdev manifest
 
 			x=$?
 
