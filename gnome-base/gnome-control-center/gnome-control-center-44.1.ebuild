@@ -60,7 +60,7 @@ DEPEND="
 	ibus? ( >=app-i18n/ibus-1.5.2 )
 	networkmanager? (
 		>=net-libs/libnma-1.10.2
-		>=net-misc/networkmanager-1.24.0[modemmanager]
+		>=net-misc/networkmanager-1.24.0
 		>=net-misc/modemmanager-0.7.990:=
 	)
 	bluetooth? ( net-wireless/gnome-bluetooth:3= )
