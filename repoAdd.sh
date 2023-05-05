@@ -7,6 +7,9 @@ for _dir in "$@"; do
 		pushd /var/db/repos/gentoo/"${_dir}"
 
 			sed -i "/src.rpm/d" /var/db/repos/gentoo/"${_dir}"/Manifest
+			sed -i "/<<<<<<</d" /var/db/repos/gentoo/"${_dir}"/Manifest
+			sed -i "/>>>>>>>/d" /var/db/repos/gentoo/"${_dir}"/Manifest
+			sed -i "/=======/d" /var/db/repos/gentoo/"${_dir}"/Manifest
 
 			pkgdev manifest
 
