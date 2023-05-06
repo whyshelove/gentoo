@@ -28,7 +28,7 @@ _hardened_ldflags="${_hardening_ldflags}"
 
 _annotated_cflags="${_annobin_cflags}"
 
-__global_compiler_flags="-O2 -ffat-lto-objects -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -fexceptions -fstack-protector-strong -grecord-gcc-switches ${_hardened_cflags} ${_annotated_cflags}"
+__global_compiler_flags="-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS ${_hardened_cflags} -fstack-protector-strong ${_annotated_cflags}"
 
 optflags="${__global_compiler_flags} -m64 -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection"
 
@@ -84,7 +84,7 @@ build_cxxflags(){
 }
 
 build_ldflags(){
-	append-ldflags '-Wl,-z,relro' ${_ld_symbols_flags} ${_hardened_ldflags} "$@"
+	append-ldflags '-Wl,-z,relro' ${_ld_symbols_flags} ${_hardened_ldflags} ${_annotated_cflags} "$@"
 
 	return 0
 }
