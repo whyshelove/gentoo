@@ -233,6 +233,9 @@ src_install() {
 		python_optimize "${ED}"/usr/share/gdb/python/gdb
 	fi
 
+	#insinto ${_sysconfdir}/gdbinit.d
+	#doins "${FILESDIR}"/gdbinit
+
 	newman "${WORKDIR}"/gdb-gstack.man gstack.1
 	dosym gstack.1 ${_mandir}/man1/pstack.1
 	dosym gstack ${_bindir}/pstack
