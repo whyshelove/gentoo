@@ -133,7 +133,7 @@ src_configure() {
 		--enable-64-bit-bfd
 		--disable-install-libbfd
 		--disable-install-libiberty
-		--with-system-gdbinit="${EPREFIX}${_sysconfdir}/gdbinit"
+		#--with-system-gdbinit="${EPREFIX}${_sysconfdir}/gdbinit"
 		--enable-gdb-build-warnings=,-Wno-unused
 		--enable-build-with-cxx
 		--disable-tui
