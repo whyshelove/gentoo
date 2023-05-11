@@ -3,7 +3,7 @@
 
 EAPI=8
 PYTHON_COMPAT=( python3_{8..10} )
-DSUFFIX="_0"
+
 inherit meson python-any-r1 udev rhel9-a
 
 DESCRIPTION="Library to handle input devices in Wayland"

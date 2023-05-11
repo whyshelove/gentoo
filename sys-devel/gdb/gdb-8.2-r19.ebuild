@@ -116,7 +116,7 @@ src_configure() {
 		--enable-64-bit-bfd
 		--disable-install-libbfd
 		--disable-install-libiberty
-		--with-system-gdbinit="${EPREFIX}${_sysconfdir}/gdbinit"
+		#--with-system-gdbinit="${EPREFIX}${_sysconfdir}/gdbinit"
 		--enable-gdb-build-warnings=,-Wno-unused
 		--enable-build-with-cxx
 		--disable-sim
@@ -211,8 +211,8 @@ src_install() {
 		python_optimize "${ED}"/usr/share/gdb/python/gdb
 	fi
 
-	insinto ${_sysconfdir}/gdbinit.d
-	doins "${FILESDIR}"/gdbinit
+	#insinto ${_sysconfdir}/gdbinit.d
+	#doins "${FILESDIR}"/gdbinit
 
 	newman "${WORKDIR}"/gdb-gstack.man gstack.1
 	dosym gstack.1 ${_mandir}/man1/pstack.1

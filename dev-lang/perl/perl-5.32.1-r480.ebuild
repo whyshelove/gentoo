@@ -5,12 +5,14 @@ EAPI=7
 
 inherit alternatives flag-o-matic toolchain-funcs multilib multiprocessing rhel9-a
 
+PATCH_VER=1
 CROSS_VER=1.3.4
+PATCH_BASE="perl-5.32.0-patches-${PATCH_VER}"
 
 # Yes we can.
 PERL_SINGLE_SLOT=y
 
-if [[ "${PV##*.}" == "8888" ]]; then
+if [[ "${PV##*.}" == "9999" ]]; then
 	DIST_VERSION=5.30.0
 else
 	DIST_VERSION="${PV/_rc/-RC}"
@@ -29,18 +31,17 @@ MY_P="perl-${DIST_VERSION}"
 MY_PV="${DIST_VERSION%-RC*}"
 
 DESCRIPTION="Larry Wall's Practical Extraction and Report Language"
-if [[ ${PV} != *8888 ]]; then
-	SRC_URI="${SRC_URI}
+SRC_URI+="
+	https://github.com/gentoo-perl/perl-patchset/releases/download/${PATCH_BASE}/${PATCH_BASE}.tar.xz
 	https://github.com/arsv/perl-cross/releases/download/${CROSS_VER}/perl-cross-${CROSS_VER}.tar.gz"
-	S="${WORKDIR}/${MY_P}"
-fi
+S="${WORKDIR}/${MY_P}"
 
 HOMEPAGE="https://www.perl.org/"
 
 LICENSE="|| ( Artistic GPL-1+ )"
 SLOT="0/${SUBSLOT}"
 
-if [[ "${PV##*.}" != "8888" ]] && [[ "${PV/rc//}" == "${PV}" ]] ; then
+if [[ "${PV##*.}" != "9999" ]] && [[ "${PV/rc//}" == "${PV}" ]] ; then
 # SOMEWHAT EXPERIMENTAL CODE, DO NOT USE WITHOUT AN ADULT PRESENT, CHECK CHANGELOG
 # FOR DETAILS
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
@@ -369,6 +370,10 @@ apply_patchdir() {
 src_prepare() {
 	local patchdir="${WORKDIR}/patches"
 
+	rm ${WORKDIR}/patches/000{6,7}-*.patch
+	rm ${WORKDIR}/patches/0012-Set-libperl-soname.patch
+	rm ${WORKDIR}/patches/0020-Skip-auto-linking-nsl-and-cl.patch
+
 	# Prepare Patch dir with additional patches / remove unwanted patches
 	# Inject bug/desc entries for perl -V
 	if use hppa ; then
@@ -590,7 +595,7 @@ src_configure() {
 
 	myconf -Dnoextensions="${disabled_extensions}"
 
-	[[ "${PV##*.}" == "8888" ]] && myconf -Dusedevel -Uversiononly
+	[[ "${PV##*.}" == "9999" ]] && myconf -Dusedevel -Uversiononly
 
 	[[ -n "${EXTRA_ECONF}" ]] && ewarn During Perl build, EXTRA_ECONF=${EXTRA_ECONF}
 	# allow fiddling via EXTRA_ECONF, bug 558070

@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-inherit autotools flag-o-matic multilib-minimal rhel9-a
+inherit autotools flag-o-matic multilib-minimal
 
 MY_P="SDL2-${PV}"
 DESCRIPTION="Simple Direct Media Layer"
@@ -12,8 +12,9 @@ SRC_URI="https://www.libsdl.org/release/${MY_P}.tar.gz"
 
 LICENSE="ZLIB"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ppc ppc64 ~riscv sparc x86"
-IUSE="alsa aqua cpu_flags_ppc_altivec cpu_flags_x86_3dnow cpu_flags_x86_mmx cpu_flags_x86_sse cpu_flags_x86_sse2 custom-cflags dbus doc fcitx4 gles1 gles2 haptic ibus jack +joystick kms libsamplerate nas opengl oss pipewire pulseaudio sndio +sound static-libs +threads udev +video video_cards_vc4 vulkan wayland X xinerama xscreensaver"
+KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~ppc ~ppc64 ~riscv ~sparc ~x86"
+
+IUSE="alsa aqua cpu_flags_ppc_altivec cpu_flags_x86_3dnow cpu_flags_x86_mmx cpu_flags_x86_sse cpu_flags_x86_sse2 custom-cflags dbus doc fcitx4 gles1 gles2 haptic ibus jack +joystick kms libsamplerate nas opengl oss pipewire pulseaudio sndio +sound static-libs +threads udev +video video_cards_vc4 vulkan wayland X xscreensaver"
 REQUIRED_USE="
 	alsa? ( sound )
 	fcitx4? ( dbus )
@@ -28,10 +29,10 @@ REQUIRED_USE="
 	sndio? ( sound )
 	vulkan? ( video )
 	wayland? ( gles2 )
-	xinerama? ( X )
 	xscreensaver? ( X )"
 
 CDEPEND="
+	virtual/libiconv[${MULTILIB_USEDEP}]
 	alsa? ( >=media-libs/alsa-lib-1.0.27.2[${MULTILIB_USEDEP}] )
 	dbus? ( >=sys-apps/dbus-1.6.18-r1[${MULTILIB_USEDEP}] )
 	fcitx4? ( app-i18n/fcitx:4 )
@@ -65,10 +66,9 @@ CDEPEND="
 		>=x11-libs/libX11-1.6.2[${MULTILIB_USEDEP}]
 		>=x11-libs/libXcursor-1.1.14[${MULTILIB_USEDEP}]
 		>=x11-libs/libXext-1.3.2[${MULTILIB_USEDEP}]
+		>=x11-libs/libXfixes-6.0.0[${MULTILIB_USEDEP}]
 		>=x11-libs/libXi-1.7.2[${MULTILIB_USEDEP}]
 		>=x11-libs/libXrandr-1.4.2[${MULTILIB_USEDEP}]
-		>=x11-libs/libXxf86vm-1.1.3[${MULTILIB_USEDEP}]
-		xinerama? ( >=x11-libs/libXinerama-1.1.3[${MULTILIB_USEDEP}] )
 		xscreensaver? ( >=x11-libs/libXScrnSaver-1.2.2-r1[${MULTILIB_USEDEP}] )
 	)"
 RDEPEND="${CDEPEND}
@@ -84,6 +84,7 @@ BDEPEND="
 		app-doc/doxygen
 		media-gfx/graphviz
 	)
+	wayland? ( >=dev-util/wayland-scanner-1.20 )
 "
 
 MULTILIB_WRAPPED_HEADERS=(
@@ -110,15 +111,12 @@ src_prepare() {
 	# PACKAGE_NAME. Add AT_NOEAUTOHEADER="yes" to prevent those macros from
 	# being reintroduced.
 	# https://bugs.gentoo.org/764959
-	AT_NOEAUTOHEADER="yes" AT_M4DIR="/usr/share/aclocal acinclude" \
+	AT_NOEAUTOHEADER="yes" AT_M4DIR="${BROOT}/usr/share/aclocal acinclude" \
 		eautoreconf
 }
 
 multilib_src_configure() {
 	use custom-cflags || strip-flags
-
-	# libsdl2-2.0.14 build regression. Please check if still needed
-	append-flags -D__LINUX__
 
 	if use ibus; then
 		local -x IBUS_CFLAGS="-I${ESYSROOT}/usr/include/ibus-1.0 -I${ESYSROOT}/usr/include/glib-2.0 -I${ESYSROOT}/usr/$(get_libdir)/glib-2.0/include"
@@ -127,6 +125,7 @@ multilib_src_configure() {
 	# sorted by `./configure --help`
 	local myeconfargs=(
 		$(use_enable static-libs static)
+		--enable-system-iconv
 		--enable-atomic
 		$(use_enable sound audio)
 		$(use_enable video)
@@ -136,7 +135,7 @@ multilib_src_configure() {
 		$(use_enable haptic)
 		--enable-power
 		--enable-filesystem
-		$(use_enable threads)
+		$(use_enable threads pthreads)
 		--enable-timers
 		--enable-file
 		--enable-loadso
@@ -157,10 +156,10 @@ multilib_src_configure() {
 		$(use_enable pipewire)
 		--disable-pipewire-shared
 		$(use_enable pulseaudio)
-		#--enable-sdl-dlopen
 		--disable-pulseaudio-shared
 		--disable-arts
 		$(use_enable libsamplerate)
+		--disable-werror
 		$(use_enable nas)
 		--disable-nas-shared
 		$(use_enable sndio)
@@ -174,12 +173,11 @@ multilib_src_configure() {
 		--disable-x11-shared
 		$(use_enable X video-x11-xcursor)
 		$(use_enable X video-x11-xdbe)
-		$(use_enable xinerama video-x11-xinerama)
+		$(use_enable X video-x11-xfixes)
 		$(use_enable X video-x11-xinput)
 		$(use_enable X video-x11-xrandr)
 		$(use_enable xscreensaver video-x11-scrnsaver)
 		$(use_enable X video-x11-xshape)
-		$(use_enable X video-x11-vm)
 		$(use_enable aqua video-cocoa)
 		--disable-video-directfb
 		--disable-fusionsound
@@ -228,6 +226,5 @@ multilib_src_install_all() {
 	find "${ED}" -type f -name "*.la" -delete || die
 
 	dodoc {BUGS,CREDITS,README-SDL,TODO,WhatsNew}.txt README.md docs/README*.md
-	doman debian/sdl2-config.1
 	use doc && dodoc -r docs/output/html/
 }
