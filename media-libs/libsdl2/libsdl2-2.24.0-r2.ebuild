@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -12,7 +12,7 @@ SRC_URI="https://www.libsdl.org/release/${MY_P}.tar.gz"
 
 LICENSE="ZLIB"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 arm arm64 ~hppa ~ia64 ~loong ppc ppc64 ~riscv sparc x86"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~loong ppc ppc64 ~riscv sparc x86"
 
 IUSE="alsa aqua cpu_flags_ppc_altivec cpu_flags_x86_3dnow cpu_flags_x86_mmx cpu_flags_x86_sse cpu_flags_x86_sse2 custom-cflags dbus doc fcitx4 gles1 gles2 haptic ibus jack +joystick kms libsamplerate nas opengl oss pipewire pulseaudio sndio +sound static-libs +threads udev +video video_cards_vc4 vulkan wayland X xscreensaver"
 REQUIRED_USE="
@@ -32,7 +32,6 @@ REQUIRED_USE="
 	xscreensaver? ( X )"
 
 CDEPEND="
-	virtual/libiconv[${MULTILIB_USEDEP}]
 	alsa? ( >=media-libs/alsa-lib-1.0.27.2[${MULTILIB_USEDEP}] )
 	dbus? ( >=sys-apps/dbus-1.6.18-r1[${MULTILIB_USEDEP}] )
 	fcitx4? ( app-i18n/fcitx:4 )
@@ -96,6 +95,9 @@ MULTILIB_WRAPPED_HEADERS=(
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-2.0.16-static-libs.patch
+	"${FILESDIR}"/${PN}-2.24.0-clang-15-configure.patch
+	"${FILESDIR}"/${P}-cmake-target-fixes.patch
+	"${FILESDIR}"/${P}-fix-build-without-joystick.patch
 )
 
 S="${WORKDIR}/${MY_P}"
@@ -125,7 +127,6 @@ multilib_src_configure() {
 	# sorted by `./configure --help`
 	local myeconfargs=(
 		$(use_enable static-libs static)
-		--enable-system-iconv
 		--enable-atomic
 		$(use_enable sound audio)
 		$(use_enable video)
@@ -159,7 +160,6 @@ multilib_src_configure() {
 		--disable-pulseaudio-shared
 		--disable-arts
 		$(use_enable libsamplerate)
-		--disable-werror
 		$(use_enable nas)
 		--disable-nas-shared
 		$(use_enable sndio)
