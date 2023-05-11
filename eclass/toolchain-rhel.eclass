@@ -22,6 +22,8 @@ _TOOLCHAIN_ECLASS=1
 DESCRIPTION="The GNU Compiler Collection"
 HOMEPAGE="https://gcc.gnu.org/"
 
+_annotated_build="undefine"
+
 [[ ${EAPI} == 7 ]] && inherit eutils
 inherit edo flag-o-matic gnuconfig libtool multilib pax-utils toolchain-funcs prefix rhel9
 
@@ -1775,7 +1777,7 @@ gcc_do_filter_flags() {
 	if [[ -n ${_RHEL_ECLASS} ]]; then
 		export CONFIG_SITE=NONE
 
-		filter-flags '-D_FORTIFY_SOURCE=[12]' -pipe '-specs=/usr/lib/rpm/redhat/redhat-annobin-cc1' '-flto*' -ffat-lto-objects
+		filter-flags '-Wp,-D_FORTIFY_SOURCE=[12]' -pipe '-flto*' -ffat-lto-objects
 		replace-flags -mfpmath=sse '-mfpmath=sse -msse2'
 		replace-flags -Werror=format-security -Wformat-security
 	fi
@@ -2031,7 +2033,7 @@ gcc_do_make() {
 		STAGE1_CFLAGS="${STAGE1_CFLAGS}" \
 		LIBPATH="${LIBPATH}" \
 		BOOT_CFLAGS="${BOOT_CFLAGS}" \
-   		LDFLAGS_FOR_TARGET="${LDFLAGS}" \
+   		LDFLAGS_FOR_TARGET="-Wl,-z,relro,-z,now profiledbootstrap" \
 		${GCC_MAKE_TARGET}
 
 	if is_ada; then

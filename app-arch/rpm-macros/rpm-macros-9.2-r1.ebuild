@@ -12,7 +12,7 @@ REPO_BIN="${REPO_BIN/baseos/appstream}"
 
 SRC_URI+=" ${REPO_BIN}/e/efi-srpm-macros-6-2.el9_0.noarch.rpm"
 
-for macro in kernel-rpm-macros-185-11 perl-srpm-macros-1-41 redhat-rpm-config-199-1 \
+for macro in kernel-rpm-macros-185-12 perl-srpm-macros-1-41 redhat-rpm-config-199-1 \
 	python-qt5-rpm-macros-5.15.6-1 python-rpm-macros-3.9-52 python-srpm-macros-3.9-52 python3-rpm-macros-3.9-52 \
 	go-srpm-macros-3.2.0-1 qt5-rpm-macros-5.15.3-1 rust-srpm-macros-17-4 ;
 do
