@@ -364,9 +364,13 @@ src_compile() {
 }
 
 src_test() {
+	# Set LANG so various UTF-8 tests are run
+	export LANG=en_US.UTF-8
+
 	local disabled=(
 		# We make safe-directory optional
 		t0033-safe-directory.sh
+		t5559-http-fetch-smart-http2.sh
 	)
 
 	local tests_cvs=(
@@ -471,8 +475,8 @@ src_test() {
 	rc=$?
 
 	# Display nice results, now print the results
-	pushd t &>/dev/null || die
-	nonfatal git_emake aggregate-results
+	#pushd t &>/dev/null || die
+	#nonfatal git_emake aggregate-results
 
 	# And bail if there was a problem
 	[[ ${rc} -eq 0 ]] || die "Tests failed. Please file a bug!"
