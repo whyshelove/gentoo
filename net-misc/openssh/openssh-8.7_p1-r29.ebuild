@@ -14,8 +14,21 @@ PARCH=${P/_}
 #HPN_PV="${PV^^}"
 HPN_PV="8.5_P1"
 
+HPN_VER="15.2"
+HPN_PATCHES=(
+	${PN}-${HPN_PV/./_}-hpn-PeakTput-${HPN_VER}.diff
+)
+
+SCTP_VER="1.2" SCTP_PATCH="${PARCH}-sctp-${SCTP_VER}.patch.xz"
+X509_VER="13.2.1" X509_PATCH="${PARCH}+x509-${X509_VER}.diff.gz"
+
 DESCRIPTION="Port of OpenBSD's free SSH release"
 HOMEPAGE="https://www.openssh.com/"
+SRC_URI+="
+	${SCTP_PATCH:+sctp? ( https://dev.gentoo.org/~chutzpah/dist/openssh/${SCTP_PATCH} )}
+	${HPN_VER:+hpn? ( $(printf "mirror://sourceforge/project/hpnssh/Patches/HPN-SSH%%20${HPN_VER/./v}%%20${HPN_PV/_P/p}/%s\n" "${HPN_PATCHES[@]}") )}
+	${X509_PATCH:+X509? ( https://roumenpetrov.info/openssh/x509-${X509_VER}/${X509_PATCH} )}
+"
 
 S="${WORKDIR}/${PARCH}"
 
@@ -134,7 +147,7 @@ src_prepare() {
 		eapply "${FILESDIR}/${P}-X509-glue-"${X509_VER}".patch"
 		popd &>/dev/null || die
 
-		eapply "${WORKDIR}"/${X509_PATCH%.*}
+		#eapply "${WORKDIR}"/${X509_PATCH%.*}
 
 		# We need to patch package version or any X.509 sshd will reject our ssh client
 		# with "userauth_pubkey: could not parse key: string is too large [preauth]"
@@ -152,7 +165,7 @@ src_prepare() {
 	fi
 
 	if use sctp ; then
-		eapply "${WORKDIR}"/${SCTP_PATCH%.*}
+		#eapply "${WORKDIR}"/${SCTP_PATCH%.*}
 
 		einfo "Patching version.h to expose SCTP patch set ..."
 		sed -i \
@@ -171,9 +184,9 @@ src_prepare() {
 		mkdir "${hpn_patchdir}" || die
 		cp $(printf -- "${DISTDIR}/%s\n" "${HPN_PATCHES[@]}") "${hpn_patchdir}" || die
 		pushd "${hpn_patchdir}" &>/dev/null || die
-		eapply "${FILESDIR}"/${P}-hpn-${HPN_VER}-glue.patch
-		use X509 && eapply "${FILESDIR}"/${PN}-8.7_p1-hpn-${HPN_VER}-X509-glue.patch
-		use sctp && eapply "${FILESDIR}"/${PN}-8.5_p1-hpn-${HPN_VER}-sctp-glue.patch
+		#eapply "${FILESDIR}"/${P}-hpn-${HPN_VER}-glue.patch
+		#use X509 && eapply "${FILESDIR}"/${PN}-8.7_p1-hpn-${HPN_VER}-X509-glue.patch
+		#use sctp && eapply "${FILESDIR}"/${PN}-8.5_p1-hpn-${HPN_VER}-sctp-glue.patch
 		popd &>/dev/null || die
 
 		eapply "${hpn_patchdir}"
@@ -482,9 +495,6 @@ pkg_preinst() {
 }
 
 pkg_postinst() {
-	systemd_post sshd.service sshd.socket
-	systemd_user_post ssh-agent.service
-
 	local old_ver
 	for old_ver in ${REPLACING_VERSIONS}; do
 		if ver_test "${old_ver}" -lt "5.8_p1"; then
