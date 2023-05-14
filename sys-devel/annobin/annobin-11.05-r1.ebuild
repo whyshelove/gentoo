@@ -39,6 +39,10 @@ src_configure() {
 	ANNOBIN_GCC_PLUGIN_DIR=$(gcc --print-file-name=plugin)
 	[[ $(tc-arch) == "amd64" ]] && export CLANG_TARGET_OPTIONS="-fcf-protection"
 
+	if use plugin_rebuild ; then
+		filter-flags '*-annobin-cc1'
+	fi
+
 	local myconf=(
 		$(use_with debuginfod)
 		$(use_with annocheck)
@@ -69,7 +73,6 @@ src_compile() {
 
 	if use plugin_rebuild ; then
 
-		filter-flags '*-annobin-cc1'
 		OPTS="$CFLAGS $LDFLAGS"
 
 		# Rebuild the plugin(s), this time using the plugin itself!  This

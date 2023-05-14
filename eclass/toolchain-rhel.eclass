@@ -2033,7 +2033,7 @@ gcc_do_make() {
 		STAGE1_CFLAGS="${STAGE1_CFLAGS}" \
 		LIBPATH="${LIBPATH}" \
 		BOOT_CFLAGS="${BOOT_CFLAGS}" \
-   		LDFLAGS_FOR_TARGET="-Wl,-z,relro,-z,now profiledbootstrap" \
+   		LDFLAGS_FOR_TARGET="-Wl,-z,relro,-z,now" \
 		${GCC_MAKE_TARGET}
 
 	if is_ada; then

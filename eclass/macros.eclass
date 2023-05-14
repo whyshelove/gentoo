@@ -106,7 +106,7 @@ set_build_flags(){
 			build_cflags $OPT_FLAGS; build_cxxflags $OPT_FLAGS; build_ldflags ;;
 		shadow) build_cflags -fpie; build_ldflags -pie  '-Wl,-z,now' ;;
 		dos2unix | zlib ) build_ldflags ;;
-		squashfs-tools ) build_cflags ;;
+		squashfs-tools | openssh ) build_cflags ;;
 		liburing | libcap )  ;;
 		*) set_build_flags ;;
 	esac
