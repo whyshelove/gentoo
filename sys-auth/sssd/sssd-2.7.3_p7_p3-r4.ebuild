@@ -5,8 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{6..9} )
 
-suffix_ver=$(ver_cut 5).$(ver_cut 7)
-[[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}"
+DSUFFIX="_$(ver_cut 5).$(ver_cut 7)"
 
 inherit autotools linux-info multilib-minimal optfeature python-single-r1 pam systemd toolchain-funcs rhel8
 

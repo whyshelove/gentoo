@@ -10,7 +10,7 @@
 # This eclass is for all functions pertaining to handling multilib configurations.
 
 case ${EAPI} in
-	6|7|8) ;;
+	5|6|7|8) ;;
 	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 

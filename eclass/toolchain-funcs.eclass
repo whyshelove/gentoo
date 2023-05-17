@@ -14,7 +14,7 @@
 # something sane.
 
 case ${EAPI} in
-	6|7|8) ;;
+	5|6|7|8) ;;
 	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 

@@ -6,8 +6,8 @@ EAPI=8
 PYTHON_COMPAT=( python3_{6,8,9} )
 
 DPREFIX="module+"
-VER_COMMIT=16689+53d59bc2
-DSUFFIX=".7.0+${VER_COMMIT}"
+VER_COMMIT=16781+9f4724c2
+DSUFFIX=".8.0+${VER_COMMIT}"
 WhatArch=noarch
 
 inherit toolchain-funcs python-any-r1 rhel8-a

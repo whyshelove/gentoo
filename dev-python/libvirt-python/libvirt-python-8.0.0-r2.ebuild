@@ -8,7 +8,7 @@ PYTHON_COMPAT=( python3_{6,8,9} )
 DISTUTILS_USE_SETUPTOOLS=no
 
 DPREFIX="module+"
-DSUFFIX=".7.0+16689+53d59bc2"
+DSUFFIX=".8.0+18044+0a924b8f"
 inherit distutils-r1 rhel8-a
 
 if [[ ${PV} = *9999* ]]; then

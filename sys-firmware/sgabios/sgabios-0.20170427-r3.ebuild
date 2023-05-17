@@ -4,8 +4,9 @@
 EAPI=7
 
 DPREFIX="module+"
-VER_COMMIT=16689+53d59bc2
-DSUFFIX=".7.0+${VER_COMMIT}"
+suffix_ver=$(ver_cut 4)
+VER_COMMIT=16781+9f4724c2
+DSUFFIX=".8.0+${VER_COMMIT}"
 WhatArch=noarch
 
 inherit toolchain-funcs rhel8-a
