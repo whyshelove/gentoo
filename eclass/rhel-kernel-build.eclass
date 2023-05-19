@@ -268,6 +268,12 @@ rhel-kernel-build_src_install() {
         # perf man pages (note: implicit rpm magic compresses them later)
         dodir ${_mandir}/man1
         ${perf_make[@]} DESTDIR="${ED}" install-man
+
+	# remove any tracevent files, eg. its plugins still gets built and installed,
+	# even if we build against system's libtracevent during perf build (by setting
+	# LIBTRACEEVENT_DYNAMIC=1 above in perf_make macro). Those files should already
+	# ship with libtraceevent package.
+	rm -rf "${ED}"${_libdir}/traceevent
     fi
 
     if use tools; then
@@ -358,7 +364,10 @@ rhel-kernel-build_pkg_postinst() {
     fi
 
 	rhel-kernel-install_pkg_postinst
-#	savedconfig_pkg_postinst
+
+	grub-mkconfig -o /boot/efi/EFI/gentoo/grub.cfg || die
+	# grub-mkconfig -o /boot/grub/grub.cfg || die
+	# savedconfig_pkg_postinst
 }
 
 # @FUNCTION: rhel-kernel-build_merge_configs

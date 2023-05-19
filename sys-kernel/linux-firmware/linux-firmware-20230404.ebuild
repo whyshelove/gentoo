@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit mount-boot savedconfig
+inherit linux-info mount-boot savedconfig multiprocessing
 
 # In case this is a real snapshot, fill in commit below.
 # For normal, tagged releases, leave blank
@@ -19,7 +19,7 @@ else
 		SRC_URI="https://mirrors.edge.kernel.org/pub/linux/kernel/firmware/${P}.tar.xz"
 	fi
 
-	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
+	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
 fi
 
 DESCRIPTION="Linux firmware files"
@@ -29,13 +29,16 @@ LICENSE="GPL-2 GPL-2+ GPL-3 BSD MIT || ( MPL-1.1 GPL-2 )
 	redistributable? ( linux-fw-redistributable BSD-2 BSD BSD-4 ISC MIT )
 	unknown-license? ( all-rights-reserved )"
 SLOT="0"
-IUSE="initramfs +redistributable savedconfig unknown-license"
-REQUIRED_USE="initramfs? ( redistributable )"
+IUSE="compress-xz compress-zstd initramfs +redistributable savedconfig unknown-license"
+REQUIRED_USE="initramfs? ( redistributable )
+	?? ( compress-xz compress-zstd )"
 
 RESTRICT="binchecks strip test
 	unknown-license? ( bindist )"
 
-BDEPEND="initramfs? ( app-arch/cpio )"
+BDEPEND="initramfs? ( app-arch/cpio )
+	compress-xz? ( app-arch/xz-utils )
+	compress-zstd? ( app-arch/zstd )"
 
 #add anything else that collides to this
 RDEPEND="!savedconfig? (
@@ -59,6 +62,23 @@ RDEPEND="!savedconfig? (
 	)"
 
 QA_PREBUILT="*"
+
+pkg_setup() {
+	if use compress-xz || use compress-zstd ; then
+		local CONFIG_CHECK
+
+		if kernel_is -ge 5 19; then
+			use compress-xz && CONFIG_CHECK="~FW_LOADER_COMPRESS_XZ"
+			use compress-zstd && CONFIG_CHECK="~FW_LOADER_COMPRESS_ZSTD"
+		else
+			use compress-xz && CONFIG_CHECK="~FW_LOADER_COMPRESS"
+			if use compress-zstd; then
+				eerror "Kernels <5.19 do not support ZSTD-compressed firmware files"
+			fi
+		fi
+		linux-info_pkg_setup
+	fi
+}
 
 pkg_pretend() {
 	use initramfs && mount-boot_pkg_pretend
@@ -186,14 +206,12 @@ src_prepare() {
 
 	# blacklist of images with unknown license
 	local unknown_license=(
-		atmsar11.fw
 		korg/k1212.dsp
 		ess/maestro3_assp_kernel.fw
 		ess/maestro3_assp_minisrc.fw
 		yamaha/ds1_ctrl.fw
 		yamaha/ds1_dsp.fw
 		yamaha/ds1e_ctrl.fw
-		tr_smctr.bin
 		ttusb-budget/dspbootcode.bin
 		emi62/bitstream.fw
 		emi62/loader.fw
@@ -205,7 +223,6 @@ src_prepare() {
 		mts_mt9234zba.fw
 		whiteheat.fw
 		whiteheat_loader.fw
-		intelliport2.bin
 		cpia2/stv0672_vp4.bin
 		vicam/firmware.fw
 		edgeport/boot.fw
@@ -225,7 +242,6 @@ src_prepare() {
 		adaptec/starfire_tx.bin
 		yam/1200.bin
 		yam/9600.bin
-		3com/3C359.bin
 		ositech/Xilinx7OD.bin
 		qlogic/isp1000.bin
 		myricom/lanai.bin
@@ -305,6 +321,36 @@ src_install() {
 	find * ! -type d >> "${S}"/${PN}.conf || die
 	save_config "${S}"/${PN}.conf
 
+	if use compress-xz || use compress-zstd; then
+		einfo "Compressing firmware ..."
+		local target
+		local ext
+		local compressor
+
+		if use compress-xz; then
+			ext=xz
+			compressor="xz -T1 -C crc32"
+		elif use compress-zstd; then
+			ext=zst
+			compressor="zstd -15 -T1 -C -q --rm"
+		fi
+
+		# rename symlinks
+		while IFS= read -r -d '' f; do
+			# skip symlinks pointing to directories
+			[[ -d ${f} ]] && continue
+
+			target=$(readlink "${f}")
+			[[ $? -eq 0 ]] || die
+			ln -sf "${target}".${ext} "${f}" || die
+			mv -T "${f}" "${f}".${ext} || die
+		done < <(find . -type l -print0) || die
+
+		find . -type f ! -path "./amd-ucode/*" -print0 | \
+			xargs -0 -P $(makeopts_jobs) -I'{}' ${compressor} '{}' || die
+
+	fi
+
 	popd &>/dev/null || die
 
 	if use initramfs ; then
@@ -316,6 +362,11 @@ src_install() {
 pkg_preinst() {
 	if use savedconfig; then
 		ewarn "USE=savedconfig is active. You must handle file collisions manually."
+	fi
+
+	# Fix 'symlink is blocked by a directory' Bug #871315
+	if has_version "<${CATEGORY}/${PN}-20220913-r2" ; then
+		rm -rf "${EROOT}"/lib/firmware/qcom/LENOVO/21BX
 	fi
 
 	# Make sure /boot is available if needed.
