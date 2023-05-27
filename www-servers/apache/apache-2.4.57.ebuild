@@ -144,15 +144,16 @@ HOMEPAGE="https://httpd.apache.org/"
 # some helper scripts are Apache-1.1, thus both are here
 LICENSE="Apache-2.0 Apache-1.1"
 SLOT="2"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x64-macos ~sparc64-solaris ~x64-solaris"
+KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x64-macos ~x64-solaris"
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-2.4.54-no-which.patch # bug #844868
 	"${FILESDIR}"/${PN}-2.4.54-libtool.patch # bug #858836
+	"${FILESDIR}"/${P}-rustls-ffi-0.10.0.patch # bug #906523
 )
 
 pkg_setup() {
-	# dependend critical modules which are not allowed in global scope due
+	# dependent critical modules which are not allowed in global scope due
 	# to USE flag conditionals (bug #499260)
 	use ssl && MODULE_CRITICAL+=" socache_shmcb"
 	use doc && MODULE_CRITICAL+=" alias negotiation setenvif"
