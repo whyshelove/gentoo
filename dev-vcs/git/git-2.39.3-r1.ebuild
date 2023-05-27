@@ -4,7 +4,7 @@
 EAPI=8
 
 GENTOO_DEPEND_ON_PERL=no
-
+DSUFFIX="_2"
 # bug #329479: git-remote-testgit is not multiple-version aware
 PYTHON_COMPAT=( python3_{9..11} )
 
@@ -49,7 +49,7 @@ if [[ ${PV} != *9999 ]]; then
 	SRC_URI+=" doc? ( ${SRC_URI_KORG}/${PN}-htmldocs-${DOC_VER}.tar.${SRC_URI_SUFFIX} )"
 
 	if [[ ${PV} != *_rc* ]] ; then
-		KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+		KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x64-solaris"
 	fi
 fi
 
@@ -57,7 +57,7 @@ S="${WORKDIR}"/${MY_P}
 
 LICENSE="GPL-2"
 SLOT="0"
-IUSE="+blksha1 +curl cgi doc gnome-keyring +gpg highlight +iconv mediawiki +nls +pcre perforce +perl +safe-directory selinux subversion tk +webdav xinetd cvs test"
+IUSE="+blksha1 +curl cgi doc keyring +gpg highlight +iconv mediawiki +nls +pcre perforce +perl +safe-directory selinux subversion tk +webdav xinetd cvs test"
 
 # Common to both DEPEND and RDEPEND
 DEPEND="
@@ -67,7 +67,7 @@ DEPEND="
 		net-misc/curl
 		webdav? ( dev-libs/expat )
 	)
-	gnome-keyring? (
+	keyring? (
 		app-crypt/libsecret
 		dev-libs/glib:2
 	)
@@ -119,7 +119,7 @@ BDEPEND="
 		app-text/xmlto
 		sys-apps/texinfo
 	)
-	gnome-keyring? ( virtual/pkgconfig )
+	keyring? ( virtual/pkgconfig )
 	nls? ( sys-devel/gettext )
 	test? (	app-crypt/gnupg	)
 "
@@ -346,7 +346,7 @@ src_compile() {
 	fi
 	popd &>/dev/null || die
 
-	if use gnome-keyring ; then
+	if use keyring ; then
 		git_emake -C contrib/credential/libsecret
 	fi
 
@@ -550,7 +550,7 @@ src_install() {
 	doexe contrib/contacts/git-contacts
 	#dodoc contrib/contacts/git-contacts.txt
 
-	if use gnome-keyring ; then
+	if use keyring ; then
 		pushd contrib/credential/libsecret &>/dev/null || die
 		dobin git-credential-libsecret
 		popd &>/dev/null || die
