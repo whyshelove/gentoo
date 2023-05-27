@@ -2,7 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-DIST=git1.el9
+
+DPREFIX="git1."
+
 inherit flag-o-matic toolchain-funcs rhel9
 
 DESCRIPTION="tools to create and extract Squashfs filesystems"

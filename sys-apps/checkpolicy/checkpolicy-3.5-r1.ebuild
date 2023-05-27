@@ -16,7 +16,6 @@ if [[ ${PV} == 9999 ]] ; then
 	EGIT_REPO_URI="https://github.com/SELinuxProject/selinux.git"
 	S="${WORKDIR}/${P}/${PN}"
 else
-	SRC_URI="https://github.com/SELinuxProject/selinux/releases/download/${MY_PV}/${MY_P}.tar.gz"
 	KEYWORDS="amd64 arm arm64 ~mips ~riscv x86"
 	S="${WORKDIR}/${MY_P}"
 fi
