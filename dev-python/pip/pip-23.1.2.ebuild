@@ -7,7 +7,7 @@ EAPI=8
 
 DISTUTILS_USE_PEP517=setuptools
 PYTHON_TESTED=( python3_{9..11} )
-PYTHON_COMPAT=( "${PYTHON_TESTED[@]}" pypy3 )
+PYTHON_COMPAT=( "${PYTHON_TESTED[@]}" python3_12 pypy3 )
 PYTHON_REQ_USE="ssl(+),threads(+)"
 
 inherit bash-completion-r1 distutils-r1 multiprocessing
