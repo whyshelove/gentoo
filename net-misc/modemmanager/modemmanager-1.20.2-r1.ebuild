@@ -1,23 +1,24 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
-VALA_USE_DEPEND="vapigen"
-
-inherit gnome2 readme.gentoo-r1 systemd toolchain-funcs udev vala rhel9
+EAPI=8
+PYTHON_COMPAT=( python3_{9..11} )
+inherit gnome2 python-any-r1 readme.gentoo-r1 systemd udev vala autotools rhel9
 
 DESCRIPTION="Modem and mobile broadband management libraries"
 HOMEPAGE="https://www.freedesktop.org/wiki/Software/ModemManager/"
 
 LICENSE="GPL-2+"
 SLOT="0/1" # subslot = dbus interface version, i.e. N in org.freedesktop.ModemManager${N}
-KEYWORDS="~alpha amd64 ~arm arm64 ~ia64 ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86"
+KEYWORDS="~alpha amd64 arm arm64 ~ia64 ~loong ~mips ppc ppc64 ~riscv ~sparc x86"
 
-IUSE="elogind +introspection mbim policykit +qmi systemd +udev vala"
+IUSE="elogind +introspection mbim policykit qmi qrtr systemd test +udev vala"
 REQUIRED_USE="
 	?? ( elogind systemd )
+	qrtr? ( qmi )
 	vala? ( introspection )
 "
+RESTRICT="!test? ( test )"
 
 DEPEND="
 	>=dev-libs/glib-2.56.0:2
@@ -25,7 +26,8 @@ DEPEND="
 	introspection? ( >=dev-libs/gobject-introspection-0.9.6:= )
 	mbim? ( >=net-libs/libmbim-1.26.0 )
 	policykit? ( >=sys-auth/polkit-0.106[introspection?] )
-	qmi? ( >=net-libs/libqmi-1.30.2:= )
+	qmi? ( >=net-libs/libqmi-1.32.0:=[qrtr?] )
+	qrtr? ( >=net-libs/libqrtr-glib-1.0.0:= )
 	elogind? ( sys-auth/elogind )
 	systemd? ( >=sys-apps/systemd-209 )
 "
@@ -38,10 +40,26 @@ BDEPEND="
 	>=dev-util/gtk-doc-am-1
 	>=sys-devel/gettext-0.19.8
 	virtual/pkgconfig
+	test? (
+		${PYTHON_DEPS}
+		$(python_gen_any_dep '
+			dev-python/dbus-python[${PYTHON_USEDEP}]
+			dev-python/pygobject:3[${PYTHON_USEDEP}]
+		')
+	)
 	vala? ( $(vala_depend) )
 "
 
 S="${WORKDIR}/ModemManager-${PV}"
+
+python_check_deps() {
+	python_has_version "dev-python/dbus-python[${PYTHON_USEDEP}]" &&
+	python_has_version "dev-python/pygobject:3[${PYTHON_USEDEP}]"
+}
+
+pkg_setup() {
+	use test && python-any-r1_pkg_setup
+}
 
 src_prepare() {
 	DOC_CONTENTS="
@@ -54,8 +72,10 @@ src_prepare() {
 			add your user account to the 'plugdev' group."
 	fi
 
-	use vala && vala_src_prepare
+	use vala && vala_setup
 	gnome2_src_prepare
+
+	eautoreconf
 }
 
 src_configure() {
@@ -70,7 +90,7 @@ src_configure() {
 		$(use_with policykit polkit)
 		$(use_with systemd systemd-journal)
 		$(use_with qmi)
-		--without-qrtr # libqrtr-glib not packaged
+		$(use_with qrtr)
 		$(use_enable vala)
 	)
 	if use systemd || use elogind; then
@@ -122,7 +142,13 @@ pkg_postinst() {
 		ewarn "about your modem port manually."
 	fi
 
+	use udev && udev_reload
+
 	systemd_reenable ModemManager.service
 
 	readme.gentoo_print_elog
+}
+
+pkg_postrm() {
+	use udev && udev_reload
 }

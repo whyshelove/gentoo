@@ -432,7 +432,9 @@ src_install() {
 	newconfd "${FILESDIR}"/sshd-r1.confd sshd
 
 	if use pam; then
-		newpamd "${FILESDIR}"/sshd.pam_include.2 sshd
+		#newpamd "${FILESDIR}"/sshd.pam_include.2 sshd
+		newpamd ${WORKDIR}/sshd.pam sshd
+		newpamd ${WORKDIR}/ssh-keycat.pam ssh-keycat
 	fi
 
 	tweak_ssh_configs
@@ -451,30 +453,16 @@ src_install() {
 			|| die "failed to remove scp"
 	fi
 
-	diropts -m 0644
-	dodir /etc/pam.d /etc/sysconfig ${_libexecdir}/openssh
-
-	diropts -m 0755
-	dodir /etc/ssh/sshd_config.d /etc/ssh/ssh_config.d
-
-	insinto /etc/pam.d/
-	newins ${WORKDIR}/sshd.pam sshd
-	newins ${WORKDIR}/ssh-keycat.pam ssh-keycat
-
 	insinto /etc/sysconfig/
 	newins ${WORKDIR}/sshd.sysconfig sshd
 
-	insinto /etc/ssh/ssh_config.d/
-	newins ssh_config_redhat 50-redhat.conf
-
-	insinto /etc/ssh/sshd_config.d/
-	newins sshd_config_redhat 50-redhat.conf
+	#insinto /etc/ssh/ssh_config.d/
+	#newins ssh_config_redhat 50-redhat.conf
 
 	systemd_douserunit ${WORKDIR}/ssh-agent.service
 
-	insinto ${_libexecdir}/openssh/
-	insopts -m0744
-	doins ${WORKDIR}/sshd-keygen
+	exeinto ${_libexecdir}/openssh
+	doexe ${WORKDIR}/sshd-keygen
 	
 	diropts -m 0711
 	dodir ${_datadir}/empty.sshd
