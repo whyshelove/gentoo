@@ -1,7 +1,7 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 inherit flag-o-matic
 
 DESCRIPTION="C++ library offering some basic functionality for platform-independent programs"
@@ -9,8 +9,8 @@ HOMEPAGE="https://lib.filezilla-project.org/"
 SRC_URI="https://download.filezilla-project.org/${PN}/${P}.tar.bz2"
 
 LICENSE="GPL-2+"
-SLOT="0/12" # libfilezilla.so version
-KEYWORDS="amd64 ~arm ~ia64 ppc ppc64 x86"
+SLOT="0/31" # libfilezilla.so version
+KEYWORDS="amd64 ~arm ~arm64 ~ia64 ppc ppc64 ~riscv x86"
 IUSE="test"
 
 RESTRICT="!test? ( test )"
@@ -18,11 +18,12 @@ RESTRICT="!test? ( test )"
 RDEPEND="
 	dev-libs/nettle:0=
 	>=net-libs/gnutls-3.5.7:=
+	virtual/libcrypt:=
 "
 DEPEND="${RDEPEND}
 	test? ( dev-util/cppunit )"
 
-PATCHES=( "${FILESDIR}"/${P}-gcc11.patch )
+PATCHES=( "${FILESDIR}"/${PN}-0.37.1-pthread.patch )
 
 pkg_pretend() {
 	if [[ ${MERGE_TYPE} != binary ]]; then
@@ -41,10 +42,10 @@ src_configure() {
 		append-libs -latomic
 	fi
 
-	default
+	econf --disable-static
 }
 
 src_install() {
 	default
-	find "${ED}" -type f \( -name "*.a" -o -name "*.la" \) -delete || die
+	find "${ED}" -type f -name "*.la" -delete || die
 }

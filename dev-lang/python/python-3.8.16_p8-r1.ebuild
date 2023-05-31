@@ -69,7 +69,7 @@ DEPEND="
 # autoconf-archive needed to eautoreconf
 BDEPEND="
 	sys-devel/autoconf-archive
-	app-alternatives/awk
+	virtual/awk
 	virtual/pkgconfig
 "
 RDEPEND+="

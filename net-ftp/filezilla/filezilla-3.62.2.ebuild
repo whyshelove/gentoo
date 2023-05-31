@@ -1,11 +1,11 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 WX_GTK_VER="3.0-gtk3"
 
-inherit autotools flag-o-matic wxwidgets xdg
+inherit autotools wxwidgets xdg
 
 MY_PV="${PV/_/-}"
 MY_P="FileZilla_${MY_PV}"
@@ -17,7 +17,7 @@ S="${WORKDIR}/${PN}-${MY_PV}"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~ia64 ~ppc ~ppc64 ~x86"
+KEYWORDS="~amd64 ~arm ~arm64 ~ia64 ~ppc ~ppc64 ~riscv ~x86"
 IUSE="dbus nls test"
 RESTRICT="!test? ( test )"
 
@@ -26,7 +26,7 @@ RDEPEND="
 	>=app-eselect/eselect-wxwidgets-0.7-r1
 	>=dev-libs/nettle-3.1:=
 	>=dev-db/sqlite-3.7
-	>=dev-libs/libfilezilla-0.30.0:=
+	>=dev-libs/libfilezilla-0.39.2:=
 	>=dev-libs/pugixml-1.7
 	>=net-libs/gnutls-3.5.7
 	>=x11-libs/wxGTK-3.0.4:${WX_GTK_VER}[X]
@@ -44,6 +44,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-3.47.0-metainfo.patch
 	"${FILESDIR}"/${PN}-3.47.0-disable-shellext_conf.patch
 	"${FILESDIR}"/${PN}-3.52.2-slibtool.patch
+	"${FILESDIR}"/${PN}-3.60.1-desktop.patch
 )
 
 src_prepare() {
