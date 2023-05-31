@@ -365,8 +365,7 @@ rhel-kernel-build_pkg_postinst() {
 
 	rhel-kernel-install_pkg_postinst
 
-	grub-mkconfig -o /boot/efi/EFI/gentoo/grub.cfg || die
-	# grub-mkconfig -o /boot/grub/grub.cfg || die
+	grub-mkconfig -o /boot/grub/grub.cfg || die
 	# savedconfig_pkg_postinst
 }
 
