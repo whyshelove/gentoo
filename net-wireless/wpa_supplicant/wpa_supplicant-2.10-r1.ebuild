@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-inherit desktop qmake-utils readme.gentoo-r1 systemd toolchain-funcs
+inherit desktop linux-info qmake-utils readme.gentoo-r1 systemd toolchain-funcs
 
 DESCRIPTION="IEEE 802.1X/WPA supplicant for secure wireless transfers"
 HOMEPAGE="https://w1.fi/wpa_supplicant/"
@@ -13,17 +13,16 @@ if [ "${PV}" = "9999" ]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://w1.fi/hostap.git"
 else
-	KEYWORDS="~alpha amd64 arm arm64 ~ia64 ~mips ppc ppc64 ~riscv ~sparc x86"
+	KEYWORDS="~alpha amd64 arm arm64 ~ia64 ~loong ~mips ppc ppc64 ~riscv ~sparc x86"
 	SRC_URI="https://w1.fi/releases/${P}.tar.gz"
-	SRC_URI+=" https://dev.gentoo.org/~sam/distfiles/${CATEGORY}/${PN}/${PN}-2.9-r3-patches.tar.bz2"
 fi
 
 SLOT="0"
-IUSE="ap bindist broadcom-sta dbus eap-sim eapol-test fasteap +fils +hs2-0 macsec +mbo +mesh p2p privsep ps3 qt5 readline selinux smartcard tdls uncommon-eap-types wimax wps kernel_linux kernel_FreeBSD"
+IUSE="ap +crda broadcom-sta dbus eap-sim eapol-test fasteap +fils +hs2-0 macsec +mbo +mesh p2p privsep ps3 qt5 readline selinux smartcard tdls tkip uncommon-eap-types wep wimax wps"
 
 # CONFIG_PRIVSEP=y does not have sufficient support for the new driver
 # interface functions used for MACsec, so this combination cannot be used
-# at least for now.
+# at least for now. bug #684442
 REQUIRED_USE="
 	macsec? ( !privsep )
 	privsep? ( !macsec )
@@ -31,11 +30,10 @@ REQUIRED_USE="
 "
 
 DEPEND="
-	>=dev-libs/openssl-1.0.2k:0=[bindist(-)=]
+	>=dev-libs/openssl-1.0.2k:=
 	dbus? ( sys-apps/dbus )
 	kernel_linux? (
-		dev-libs/libnl:3
-		net-wireless/crda
+		>=dev-libs/libnl-3.2:3
 		eap-sim? ( sys-apps/pcsc-lite )
 	)
 	!kernel_linux? ( net-libs/libpcap )
@@ -52,6 +50,10 @@ DEPEND="
 "
 RDEPEND="${DEPEND}
 	selinux? ( sec-policy/selinux-networkmanager )
+	kernel_linux? (
+		net-wireless/wireless-regdb
+		crda? ( net-wireless/crda )
+	)
 "
 BDEPEND="virtual/pkgconfig"
 
@@ -75,14 +77,36 @@ Kconfig_style_config() {
 			#first remove any leading "# " if $2 is not n
 			sed -i "/^# *$CONFIG_PARAM=/s/^# *//" .config || echo "Kconfig_style_config error uncommenting $CONFIG_PARAM"
 			#set item = $setting (defaulting to y)
-			sed -i "/^$CONFIG_PARAM/s/=.*/=$setting/" .config || echo "Kconfig_style_config error setting $CONFIG_PARAM=$setting"
+			sed -i "/^$CONFIG_PARAM\>/s/=.*/=$setting/" .config || echo "Kconfig_style_config error setting $CONFIG_PARAM=$setting"
 			if [ -z "$( grep ^$CONFIG_PARAM= .config )" ] ; then
 				echo "$CONFIG_PARAM=$setting" >>.config
 			fi
 		else
 			#ensure item commented out
-			sed -i "/^$CONFIG_PARAM/s/$CONFIG_PARAM/# $CONFIG_PARAM/" .config || echo "Kconfig_style_config error commenting $CONFIG_PARAM"
+			sed -i "/^$CONFIG_PARAM\>/s/$CONFIG_PARAM/# $CONFIG_PARAM/" .config || echo "Kconfig_style_config error commenting $CONFIG_PARAM"
 		fi
+}
+
+pkg_pretend() {
+	CONFIG_CHECK=""
+
+	if use crda ; then
+		CONFIG_CHECK="${CONFIG_CHECK} ~CFG80211_CRDA_SUPPORT"
+		WARNING_CFG80211_CRDA_SUPPORT="REGULATORY DOMAIN PROBLEM: please enable CFG80211_CRDA_SUPPORT for proper regulatory domain support"
+	fi
+
+	check_extra_config
+
+	if ! use crda ; then
+		if linux_config_exists && linux_chkconfig_builtin CFG80211 &&
+			[[ $(linux_chkconfig_string EXTRA_FIRMWARE) != *regulatory.db* ]]
+		then
+			ewarn "REGULATORY DOMAIN PROBLEM:"
+			ewarn "With CONFIG_CFG80211=y (built-in), the driver won't be able to load regulatory.db from"
+			ewarn " /lib/firmware, resulting in broken regulatory domain support.  Please set CONFIG_CFG80211=m"
+			ewarn " or add regulatory.db and regulatory.db.p7s to CONFIG_EXTRA_FIRMWARE."
+		fi
+	fi
 }
 
 src_prepare() {
@@ -126,14 +150,6 @@ src_prepare() {
 
 	# bug (640492)
 	sed -i 's#-Werror ##' wpa_supplicant/Makefile || die
-
-	## Security patches
-	# CVE-2019-16275 (bug #696030)
-	eapply "${FILESDIR}/wpa_supplicant-2.9-AP-Silently-ignore-management-frame-from-unexpected.patch"
-	# 2020-2, 2021-1 security advisories (bug #768759)
-	eapply "${WORKDIR}"/wpa_supplicant-2.9-r3-patches/security-{2020-2,2021-1}/*.patch
-	# CVE-2021-30004 (bug #780138)
-	eapply "${WORKDIR}"/wpa_supplicant-2.9-r3-patches/misc/CVE-2021-30004.patch
 }
 
 src_configure() {
@@ -239,23 +255,36 @@ src_configure() {
 
 	Kconfig_style_config TLS openssl
 	Kconfig_style_config FST
-	if ! use bindist ; then
-		Kconfig_style_config EAP_PWD
-		if use fils; then
-			Kconfig_style_config FILS
-			Kconfig_style_config FILS_SK_PFS
-		fi
-		if use mesh; then
-			Kconfig_style_config MESH
-		else
-			Kconfig_style_config MESH n
-		fi
-		#WPA3
-		Kconfig_style_config OWE
-		Kconfig_style_config SAE
-		Kconfig_style_config DPP
-		Kconfig_style_config SUITEB192
-		Kconfig_style_config SUITEB
+
+	Kconfig_style_config EAP_PWD
+	if use fils; then
+		Kconfig_style_config FILS
+		Kconfig_style_config FILS_SK_PFS
+	fi
+	if use mesh; then
+		Kconfig_style_config MESH
+	else
+		Kconfig_style_config MESH n
+	fi
+	# WPA3
+	Kconfig_style_config OWE
+	Kconfig_style_config SAE
+	Kconfig_style_config DPP
+	Kconfig_style_config DPP2
+	Kconfig_style_config SUITEB192
+	Kconfig_style_config SUITEB
+
+	if use wep ; then
+		Kconfig_style_config WEP
+	else
+		Kconfig_style_config WEP n
+	fi
+
+	# Watch out, reversed logic
+	if use tkip ; then
+		Kconfig_style_config NO_TKIP n
+	else
+		Kconfig_style_config NO_TKIP
 	fi
 
 	if use smartcard ; then
@@ -283,15 +312,15 @@ src_configure() {
 			#Kconfig_style_config DRIVER_MACSEC_QCA
 			Kconfig_style_config DRIVER_MACSEC_LINUX
 			Kconfig_style_config MACSEC
+		else
+			# bug #831369 and bug #684442
+			Kconfig_style_config DRIVER_MACSEC_LINUX n
+			Kconfig_style_config MACSEC n
 		fi
 
 		if use ps3 ; then
 			Kconfig_style_config DRIVER_PS3
 		fi
-
-	elif use kernel_FreeBSD ; then
-		# FreeBSD specific driver
-		Kconfig_style_config DRIVER_BSD
 	fi
 
 	# Wi-Fi Protected Setup (WPS)
@@ -347,11 +376,7 @@ src_configure() {
 		Kconfig_style_config PRIVSEP
 	fi
 
-	# If we are using libnl 2.0 and above, enable support for it
-	# Bug 382159
-	# Removed for now, since the 3.2 version is broken, and we don't
-	# support it.
-	if has_version ">=dev-libs/libnl-3.2"; then
+	if use kernel_linux ; then
 		Kconfig_style_config LIBNL32
 	fi
 
@@ -452,10 +477,19 @@ pkg_postinst() {
 		ewarn "WARNING: your old configuration file ${EROOT}/etc/wpa_supplicant.conf"
 		ewarn "needs to be moved to ${EROOT}/etc/wpa_supplicant/wpa_supplicant.conf"
 	fi
-
-	if use bindist; then
-		ewarn "Using bindist use flag presently breaks WPA3 (specifically SAE, OWE, DPP, and FILS)."
-		ewarn "This is incredibly undesirable"
+	if ! use wep; then
+		einfo "WARNING: You are building with WEP support disabled, which is recommended since"
+		einfo "this protocol is deprecated and insecure.  If you still need to connect to"
+		einfo "WEP-enabled networks, you may turn this flag back on.  With this flag off,"
+		einfo "WEP-enabled networks will not even show up as available."
+		einfo "If your network is missing you may wish to USE=wep"
+	fi
+	if ! use tkip; then
+		ewarn "WARNING: You are building with TKIP support disabled, which is recommended since"
+		ewarn "this protocol is deprecated and insecure.  If you still need to connect to"
+		ewarn "TKIP-enabled networks, you may turn this flag back on.  With this flag off,"
+		ewarn "TKIP-enabled networks, including mixed mode TKIP/AES-CCMP will not even show up"
+		ewarn "as available.  If your network is missing you may wish to USE=tkip"
 	fi
 
 	# Mea culpa, feel free to remove that after some time --mgorny.
