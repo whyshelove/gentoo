@@ -465,7 +465,7 @@ LICENSE+="
 	|| ( GPL-2 GPL-3 LGPL-3 )
 "
 SLOT="0"
-KEYWORDS="~amd64 ~ppc64"
+KEYWORDS="amd64 ~ppc64"
 
 QA_FLAGS_IGNORED="usr/bin/sq"
 
@@ -501,7 +501,7 @@ src_compile() {
 src_install() {
 	cargo_src_install
 
-	doman target/*/build/sequoia-sq-*/out/*.1
+	doman target/$(usex debug debug release)/build/sequoia-sq-*/out/*.1
 
 	newbashcomp target/sq.bash sq
 

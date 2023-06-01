@@ -33,6 +33,16 @@
 
 #--- END OF EXAMPLES ---
 
+# Michał Górny <mgorny@gentoo.org> (2023-05-31)
+# Unmaintained.  Last commit in 2020.  Does not work with Python 3.12.
+# No revdeps.
+# Removal on 2023-06-30.  Bug #907495.
+dev-python/http-parser
+
+# Sam James <sam@gentoo.org> (2023-05-29)
+# Masked until enough reverse dependencies are fixed, bug #901257.
+=media-video/ffmpeg-6*
+
 # Ionen Wolkens <ionen@gentoo.org> (2023-05-28)
 # Both versions are affected by notable regressions, i.e. 2.8.5
 # leaves 100% cpu processes behind, and 2.8.6 has broken positioning
@@ -234,12 +244,6 @@ net-dns/ldns-utils
 # 7a1e8a90fa8a09a84741dc8ef5f774d92ae8433c
 acct-group/resin
 
-# Conrad Kostecki <conikost@gentoo.org> (2023-04-23)
-# Very old package, does not build with modern compilers.
-# It provides BOOTP support, predecessor of DHCP.
-# Removal on 2023-05-23. Bugs #894128, #884335
-sys-boot/netboot
-
 # Jakov Smolić <jsmolic@gentoo.org> (2023-04-21)
 # Does not support python 3.11, uses deprecated dev-python/future,
 # inactive upstream (last commit in 2019).
@@ -281,6 +285,7 @@ dev-java/resin-servlet-api
 # - sys-apps/openrc: https://github.com/OpenRC/openrc/issues/619
 =sys-libs/ncurses-6.4_p20230424
 =sys-libs/ncurses-6.4_p20230506
+=sys-libs/ncurses-6.4_p20230527
 
 # Eray Aslan <eras@gentoo.org> (2023-04-12)
 # Mask experimental software
@@ -447,12 +452,6 @@ dev-qt/qtwebsockets:6
 # Apparently the "b" in version means "beta". 3.24 is available, we
 # should update to that. #841437
 ~sci-physics/bullet-3.22b
-
-# James Beddek <telans@posteo.de> (2022-01-19)
-# FFmpeg 5.0 ABI/API changes break many packages.
-# Masking for tracker/tinderbox. Bug #831437
->=media-video/ffmpeg-5
->=media-sound/spek-0.8.5
 
 # Brian Evans <grknight@gentoo.org> (2022-01-07)
 # The main consumer, phpunit, does not initiate the new timer correctly

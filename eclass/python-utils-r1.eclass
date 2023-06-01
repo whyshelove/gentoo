@@ -443,13 +443,13 @@ _python_export() {
 					python3.9)
 						PYTHON_PKG_DEP=">=dev-lang/python-3.9.14-r1:3.9";;
 					python3.10)
-						PYTHON_PKG_DEP=">=dev-lang/python-3.10.9-r1:3.10";;
+						PYTHON_PKG_DEP=">=dev-lang/python-3.10.11:3.10";;
 					python3.11)
-						PYTHON_PKG_DEP=">=dev-lang/python-3.11.1-r1:3.11";;
+						PYTHON_PKG_DEP=">=dev-lang/python-3.11.3:3.11";;
 					python3.12)
 						PYTHON_PKG_DEP=">=dev-lang/python-3.12.0_beta1:3.12";;
 					pypy3)
-						PYTHON_PKG_DEP='>=dev-python/pypy3-7.3.11-r1:0=';;
+						PYTHON_PKG_DEP='>=dev-python/pypy3-7.3.11_p1:0=';;
 					*)
 						die "Invalid implementation: ${impl}"
 				esac
