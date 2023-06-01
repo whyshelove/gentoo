@@ -324,7 +324,6 @@ src_configure() {
 		--with-ipaddr-display
 		--with-systemd
 		--with-default-pkcs11-provider=yes
-		--with-sandbox=seccomp_filter
 		$(use_with !elibc_Cygwin hardening) #659210
 	)
 
@@ -341,7 +340,8 @@ src_configure() {
 
 	# The seccomp sandbox is broken on x32, so use the older method for now. #553748
 	use amd64 && [[ ${ABI} == "x32" ]] && myconf+=( --with-sandbox=rlimit )
-
+	use audit && use selinux && myconf+=( --with-sandbox=seccomp_filter )
+	
 	econf "${myconf[@]}"
 }
 

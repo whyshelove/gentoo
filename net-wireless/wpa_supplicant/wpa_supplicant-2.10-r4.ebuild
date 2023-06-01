@@ -12,8 +12,8 @@ LICENSE="|| ( GPL-2 BSD )"
 if [ "${PV}" = "9999" ]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://w1.fi/hostap.git"
-else
-	KEYWORDS="~alpha amd64 arm arm64 ~ia64 ~mips ppc ppc64 ~riscv ~sparc x86"
+#else
+#	KEYWORDS="~alpha amd64 arm arm64 ~ia64 ~mips ppc ppc64 ~riscv ~sparc x86"
 fi
 
 SLOT="0"
@@ -430,6 +430,15 @@ src_install() {
 	exeinto /etc/wpa_supplicant/
 	newexe "${FILESDIR}/wpa_cli.sh" wpa_cli.sh
 
+	insinto /etc/wpa_supplicant/
+	doins "${WORKDIR}"/wpa_supplicant.conf
+
+	insinto ${_sysconfdir}/sysconfig
+	newins "${WORKDIR}"/wpa_supplicant.sysconfig wpa_supplicant
+
+	insinto ${_sysconfdir}/logrotate.d
+	newins "${WORKDIR}"/wpa_supplicant.logrotate wpa_supplicant
+
 	readme.gentoo_create_doc
 	dodoc ChangeLog {eap_testing,todo}.txt README{,-WPS} \
 		wpa_supplicant.conf
@@ -460,7 +469,7 @@ src_install() {
 		popd > /dev/null || die
 
 		# This unit relies on dbus support, bug 538600.
-		systemd_dounit systemd/wpa_supplicant.service
+		systemd_dounit "${WORKDIR}"/wpa_supplicant.service
 	fi
 
 	if use eapol-test ; then
