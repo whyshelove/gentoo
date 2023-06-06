@@ -15,7 +15,7 @@ else
 	inherit verify-sig
 	SRC_URI="https://www.infradead.org/openconnect/download/${P}.tar.gz
 		verify-sig? ( https://www.infradead.org/openconnect/download/${P}.tar.gz.asc )"
-	KEYWORDS="~amd64 ~arm ~arm64 ~loong ~ppc64 ~riscv ~x86"
+	KEYWORDS="amd64 arm arm64 ~loong ppc64 ~riscv x86"
 fi
 
 DESCRIPTION="Free client for Cisco AnyConnect SSL VPN software"
@@ -83,17 +83,6 @@ pkg_pretend() {
 
 pkg_setup() {
 	:
-}
-
-src_unpack() {
-	if [[ ${PV} == 9999 ]]; then
-		git-r3_src_unpack
-	else
-		if use verify-sig; then
-			verify-sig_verify_detached "${DISTDIR}/${P}".tar.gz{,.asc}
-		fi
-		unpack "${P}.tar.gz"
-	fi
 }
 
 src_prepare() {
