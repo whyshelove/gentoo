@@ -11,6 +11,6 @@ IUSE="ssl"
 
 RDEPEND="
 	|| (
-		>=net-misc/openssh-9.3_p1-r1[ssl?]
+		>=net-misc/openssh-8.7_p1-r1[ssl?]
 		>=net-misc/openssh-contrib-9.3_p1[ssl?]
 	)"
