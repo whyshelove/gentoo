@@ -168,7 +168,7 @@ InitBuildVars() {
     Flav=${Flavour:++${Flavour}}
 
     # Pick the right kernel config file
-    #Config=${MY_P}-${_target_cpu}${Flavour:+-${Flavour}}.config
+    Config=${MY_P}-${_target_cpu}${Flavour:+-${Flavour}}.config
     DevelDir=/usr/src/kernels/${KVERREL}${Flav}
 
     KernelVer=${K_PVD}.${_target_cpu}${Flav}
