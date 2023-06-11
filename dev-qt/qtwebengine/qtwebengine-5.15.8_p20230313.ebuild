@@ -81,7 +81,7 @@ RDEPEND="
 	kerberos? ( virtual/krb5 )
 	pulseaudio? ( media-libs/libpulse )
 	screencast? ( media-video/pipewire:= )
-	system-icu? ( >=dev-libs/icu-69.1:= )
+	system-icu? ( >=dev-libs/icu-65.1:= )
 	widgets? (
 		=dev-qt/qtdeclarative-${QT5_PV}*[widgets]
 		=dev-qt/qtwidgets-${QT5_PV}*
