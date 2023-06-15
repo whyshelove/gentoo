@@ -13,7 +13,7 @@ EAPI=8
 # continue to move quickly. It's not uncommon for fixes to be made shortly
 # after releases.
 
-PYTHON_COMPAT=( python3_{9..11} )
+PYTHON_COMPAT=( python3_{10..11} )
 
 inherit flag-o-matic meson-multilib optfeature prefix python-any-r1 systemd tmpfiles udev
 
@@ -29,7 +29,7 @@ else
 		SRC_URI="https://gitlab.freedesktop.org/${PN}/${PN}/-/archive/${PV}/${P}.tar.bz2"
 	fi
 
-	KEYWORDS="~amd64 ~arm ~arm64 ~loong ~ppc ~ppc64 ~riscv ~sparc ~x86"
+	KEYWORDS="amd64 arm arm64 ~loong ~ppc ppc64 ~riscv ~sparc x86"
 fi
 
 DESCRIPTION="Multimedia processing graphs"
@@ -402,6 +402,8 @@ pkg_postinst() {
 
 	if [[ ${HAD_SOUND_SERVER} -eq 0 || -z ${REPLACING_VERSIONS} ]] ; then
 		# TODO: We could drop most of this if we set up systemd presets?
+		# They're worth looking into because right now, the out-of-the-box experience
+		# is automatic on OpenRC, while it needs manual intervention on systemd.
 		if use sound-server && use systemd ; then
 			elog
 			elog "When switching from PulseAudio, you may need to disable PulseAudio:"

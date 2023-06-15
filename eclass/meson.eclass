@@ -114,10 +114,7 @@ _meson_get_machine_info() {
 
 	# system roughly corresponds to uname -s (lowercase)
 	case ${tuple} in
-		*-aix*)          system=aix ;;
-		*-cygwin*)       system=cygwin ;;
 		*-darwin*)       system=darwin ;;
-		*-freebsd*)      system=freebsd ;;
 		*-linux*)        system=linux ;;
 		mingw*|*-mingw*) system=windows ;;
 		*-solaris*)      system=sunos ;;

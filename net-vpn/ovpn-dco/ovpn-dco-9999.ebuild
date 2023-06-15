@@ -3,14 +3,14 @@
 
 EAPI=8
 
-inherit linux-mod
+inherit flag-o-matic linux-mod
 
 DESCRIPTION="OpenVPN Data Channel Offload in the linux kernel"
 HOMEPAGE="https://github.com/OpenVPN/ovpn-dco"
 
 if [[ ${PV} != 9999 ]]; then
 	SRC_URI="https://github.com/OpenVPN/${PN}/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux"
+	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~loong ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux"
 else
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/OpenVPN/${PN}.git"
@@ -35,6 +35,13 @@ pkg_setup() {
 		CRYPTO_CHACHA20POLY1305"
 
 	linux-mod_pkg_setup
+}
+
+src_configure() {
+	# Causes build failures because it builds with -pg,
+	# bug #907744
+	filter-flags -fomit-frame-pointer
+	default
 }
 
 src_compile() {
