@@ -3,6 +3,8 @@
 
 EAPI=8
 
+suffix_ver=$(ver_cut 5)
+[[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}.1"
 inherit edo multilib-minimal rhel9
 
 DESCRIPTION="C library that resolves names asynchronously"
