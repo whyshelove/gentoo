@@ -3,6 +3,9 @@
 
 EAPI=7
 
+suffix_ver=$(ver_cut 5)
+[[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}.2"
+
 inherit autotools multilib-minimal rhel8
 
 DESCRIPTION="C library that resolves names asynchronously"
