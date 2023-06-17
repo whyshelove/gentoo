@@ -37,7 +37,6 @@ src_prepare() {
 }
 
 multilib_src_configure() {
-	use userland_BSD && export HOST="${CHOST}"
 	# --includedir= path maintains a few properties:
 	# 1. have stable name across libffi versions: some packages like
 	#    dev-lang/ghc or kde-frameworks/networkmanager-qt embed

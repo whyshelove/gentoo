@@ -77,7 +77,7 @@ DEPEND="
 	screencast? ( >=media-video/pipewire-0.3.21:= )
 	introspection? ( >=dev-libs/gobject-introspection-1.54:= )
 	test? ( >=x11-libs/gtk+-3.19.8:3[X,introspection?] )
-	sysprof? ( >=dev-util/sysprof-capture-3.40.1:4 >=dev-util/sysprof-3.46.0 )
+	sysprof? ( >=dev-util/sysprof-capture-3.40.1:4 >=dev-util/sysprof-3.40.0 )
 "
 # for now upstream has "have_x11 = true" in the meson.build, but sooner or later upstream is going to make X optional.
 #	X? (
