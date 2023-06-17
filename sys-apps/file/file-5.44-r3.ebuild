@@ -39,14 +39,14 @@ DEPEND="
 		${PYTHON_DEPS}
 		dev-python/setuptools[${PYTHON_USEDEP}]
 	)
-	seccomp? ( >=sys-libs/libseccomp-2.5.4[${MULTILIB_USEDEP}] )
+	seccomp? ( >=sys-libs/libseccomp-2.5.2[${MULTILIB_USEDEP}] )
 	zlib? ( >=sys-libs/zlib-1.2.8-r1[${MULTILIB_USEDEP}] )
 	zstd? ( app-arch/zstd:=[${MULTILIB_USEDEP}] )
 "
 RDEPEND="
 	${DEPEND}
 	python? ( !dev-python/python-magic )
-	seccomp? ( >=sys-libs/libseccomp-2.5.4[${MULTILIB_USEDEP}] )
+	seccomp? ( >=sys-libs/libseccomp-2.5.2[${MULTILIB_USEDEP}] )
 "
 BDEPEND+="
 	python? (
