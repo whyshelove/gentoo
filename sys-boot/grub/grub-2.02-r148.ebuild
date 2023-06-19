@@ -253,7 +253,7 @@ grub_configure() {
 		$(usex efiemu '' '--disable-efiemu')
 	)
 
-	 Set up font symlinks
+	# Set up font symlinks
 	ln -s "${WORKDIR}/${UNIFONT}.pcf" unifont.pcf || die
 	if use themes; then
 		ln -s "${WORKDIR}/${DEJAVU}/ttf/DejaVuSans.ttf" DejaVuSans.ttf || die
@@ -347,7 +347,8 @@ do_common_install()
 	touch ${ED}${_sysconfdir}/default/grub
 	dosym ../default/grub ${_sysconfdir}/sysconfig/grub
 
-	exeopts -m0700 && exeinto /${efi_esp_dir}
+	exeinto /${efi_esp_dir}
+	exeopts -m0700
 	doexe ${grubefiname} ${grubeficdname}
 
 	${ED}/${_bindir}/grub2-editenv ${ED}/${efi_esp_dir}/grubenv create
