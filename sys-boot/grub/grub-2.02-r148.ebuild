@@ -9,7 +9,7 @@ if [[ ${PV} == 9999  ]]; then
 fi
 
 if [[ -n ${GRUB_AUTOGEN} || -n ${GRUB_BOOTSTRAP} ]]; then
-	PYTHON_COMPAT=( python{2_7,3_{6,7,8,9}} )
+	PYTHON_COMPAT=( python{2_7,3_{6,8,9}} )
 	inherit python-any-r1
 fi
 
@@ -21,7 +21,6 @@ fi
 #DSUFFIX="_$(ver_cut 4).$(ver_cut 6)"
 _hardened_build="undefine"
 _annotated_build="undefine"
-#STAGE="unprep"
 
 inherit bash-completion-r1 flag-o-matic multibuild optfeature pax-utils toolchain-funcs rhel8
 
@@ -38,10 +37,10 @@ PATCHES=(
 	"${FILESDIR}"/2.02-freetype-pkg-config.patch
 )
 
-#DEJAVU=dejavu-sans-ttf-2.37
-#UNIFONT=unifont-12.1.02
-#SRC_URI+=" fonts? ( mirror://gnu/unifont/${UNIFONT}/${UNIFONT}.pcf.gz )
-#	themes? ( mirror://sourceforge/dejavu/${DEJAVU}.zip )"
+DEJAVU=dejavu-sans-ttf-2.37
+UNIFONT=unifont-12.1.02
+SRC_URI+=" fonts? ( mirror://gnu/unifont/${UNIFONT}/${UNIFONT}.pcf.gz )
+	themes? ( mirror://sourceforge/dejavu/${DEJAVU}.zip )"
 
 DESCRIPTION="GNU GRUB boot loader"
 HOMEPAGE="https://www.gnu.org/software/grub/"
@@ -49,7 +48,7 @@ HOMEPAGE="https://www.gnu.org/software/grub/"
 # Includes licenses for dejavu and unifont
 LICENSE="GPL-3+ BSD MIT fonts? ( GPL-2-with-font-exception ) themes? ( CC-BY-SA-3.0 BitstreamVera )"
 SLOT="2/${PVR}"
-IUSE="device-mapper doc +efiemu +fonts mount nls static sdl test +themes truetype libzfs sign"
+IUSE="device-mapper doc +efiemu +fonts mount nls static sdl test +themes truetype libzfs +sign"
 
 GRUB_ALL_PLATFORMS=( coreboot efi-32 efi-64 emu ieee1275 loongson multiboot qemu qemu-mips pc uboot xen xen-32 )
 IUSE+=" ${GRUB_ALL_PLATFORMS[@]/#/grub_platforms_}"
@@ -139,12 +138,26 @@ pkg_setup() {
     S16="${WORKDIR}/redhatsecureboot502.cer"
 
     GRUB_EFI64_S="${WORKDIR}/${P/_p*}-${package_arch/x}"
-    efi_esp_dir="boot/efi/EFI/gentoo"
+    efi_vendor=gentoo
+    efi_esp_dir="boot/efi/EFI/${efi_vendor}"
     grubefiname="grub${efiarch}.efi"
     grubeficdname="gcd${efiarch}.efi"
 
-    _pesign_cert='Red Hat Test Certificate'
-    _pesign_nssdir="/etc/pki/pesign-rh-test"
+grub_modules="all_video boot blscfg \
+		cat configfile cryptodisk echo ext2 \
+		fat font gcry_rijndael gcry_rsa gcry_serpent \
+		gcry_sha256 gcry_twofish gcry_whirlpool \
+		gfxmenu gfxterm gzio halt http \
+		increment iso9660 jpeg loadenv loopback linux \
+		lvm luks mdraid09 mdraid1x minicmd net \
+		normal part_apple part_msdos part_gpt \
+		password_pbkdf2 png reboot regexp search \
+		search_fs_uuid search_fs_file search_label \
+		serial sleep syslinuxcfg test tftp video xfs"
+
+efi_modules=" efi_netfs efifwsetup efinet lsefi lsefimmap connectefi"
+
+platform_modules=" backtrace chain usb usbserial_common usbserial_pl2303 usbserial_ftdi usbserial_usbdebug keylayouts at_keyboard"
 }
 
 #src_unpack() {
@@ -240,11 +253,11 @@ grub_configure() {
 		$(usex efiemu '' '--disable-efiemu')
 	)
 
-	# Set up font symlinks
-	#ln -s "${WORKDIR}/${UNIFONT}.pcf" unifont.pcf || die
-	#if use themes; then
-	#	ln -s "${WORKDIR}/${DEJAVU}/ttf/DejaVuSans.ttf" DejaVuSans.ttf || die
-	#fi
+	 Set up font symlinks
+	ln -s "${WORKDIR}/${UNIFONT}.pcf" unifont.pcf || die
+	if use themes; then
+		ln -s "${WORKDIR}/${DEJAVU}/ttf/DejaVuSans.ttf" DejaVuSans.ttf || die
+	fi
 
 	local ECONF_SOURCE="${S}"
 	econf "${myeconfargs[@]}"
@@ -282,6 +295,19 @@ src_configure() {
 	grub_do grub_configure
 }
 
+_pesign() {
+    _pesign_cert='Red Hat Test Certificate'
+    _pesign_nssdir="/etc/pki/pesign-rh-test"
+
+	/usr/bin/pesign -c "${_pesign_cert}" --certdir ${_pesign_nssdir} -i ${1} -o ${2} -s || die
+			
+  if [ ! -s -o ${2} ]; then
+    if [ -e "${2}" ]; then
+      rm -f ${2}
+    fi
+    exit 1
+  fi		
+}
 src_compile() {
 	# Sandbox bug 404013.
 	use libzfs && addpredict /etc/dfs:/dev/zfs
@@ -290,13 +316,20 @@ src_compile() {
 	use doc && grub_do_once emake -C docs html
 
     if use sign ; then
+	GRUB_MODULES+=${grub_modules}
+	GRUB_MODULES+=${efi_modules}
+	GRUB_MODULES+=${platform_modules}
+
         cd ${GRUB_EFI64_S}
-        ./grub-mkimage -O ${grub_target_name} -o ${grubefiname}.orig -p /EFI/gentoo -d grub-core || die
-        ./grub-mkimage -O ${grub_target_name} -o ${grubeficdname}.orig -p /EFI/BOOT -d grub-core || die
-        pesign -s -i ${grubefiname}.orig -o ${grubefiname}.one -a "${S13}" -c "${S14}" -n redhatsecureboot301 || die
-        pesign -s -i ${grubeficdname}.orig -o ${grubeficdname}.one -a "${S13}" -c "${S14}" -n redhatsecureboot301 || die
-        pesign -s -i ${grubefiname}.one -o ${grubefiname} -a "${S15}" -c "${S16}" -n redhatsecureboot502 || die
-        pesign -s -i ${grubeficdname}.one -o ${grubeficdname} -a "${S15}" -c "${S16}" -n redhatsecureboot502 || die
+	cp $S/grub-${grub_target_name}-${PV/_p*}/sbat.csv .
+
+        ./grub-mkimage -O ${grub_target_name} -o ${grubefiname}.orig -p /EFI/${efi_vendor} -d grub-core --sbat ./sbat.csv ${GRUB_MODULES} || die
+        ./grub-mkimage -O ${grub_target_name} -o ${grubeficdname}.orig -p /EFI/BOOT -d grub-core --sbat ./sbat.csv ${GRUB_MODULES} || die
+
+        _pesign ${grubefiname}.orig ${grubefiname}.one "${S13}" "${S14}" redhatsecureboot301 || die
+        _pesign ${grubeficdname}.orig ${grubeficdname}.one "${S13}" "${S14}" redhatsecureboot301 || die
+        _pesign ${grubefiname}.one ${grubefiname} "${S15}" "${S16}" redhatsecureboot502 || die
+        _pesign ${grubeficdname}.one ${grubeficdname} "${S15}" "${S16}" redhatsecureboot502 || die
     fi
 }
 
@@ -311,21 +344,16 @@ do_common_install()
 	diropts -m0700
 	dodir /${efi_esp_dir} /boot/grub /boot/loader/entries boot/$PN/themes/system ${_sysconfdir}/{default,sysconfig}
 
-    touch ${ED}${_sysconfdir}/default/grub
-    dosym ../default/grub ${_sysconfdir}/sysconfig/grub
-    touch ${ED}/boot/${PN}/grub.cfg
+	touch ${ED}${_sysconfdir}/default/grub
+	dosym ../default/grub ${_sysconfdir}/sysconfig/grub
 
-    touch ${ED}${efi_esp_dir}/grub.cfg
-    dosym /${efi_esp_dir}/grub.cfg ${_sysconfdir}/${PN}-efi.cfg
+	exeopts -m0700 && exeinto /${efi_esp_dir}
+	doexe ${grubefiname} ${grubeficdname}
 
-	insopts -m0700
-	insinto /${efi_esp_dir}
-	doins ${grubefiname} ${grubeficdname}
-	insinto /${efi_esp_dir}/fonts
-	doins unicode.pf2
+	${ED}/${_bindir}/grub2-editenv ${ED}/${efi_esp_dir}/grubenv create
+	dosym ../efi/EFI/${efi_vendor}/grubenv /boot/grub/grubenv
 
-    {ED}/${_bindir}/${PN}-editenv {ED}/${efi_esp_dir}/grubenv create
-    dosym ../efi/EFI/${efi_vendor}/grubenv /boot/grub/grubenv
+	dosym ./grub2-mkconfig /usr/sbin/grub-mkconfig
 }
 
 src_install() {
@@ -348,8 +376,8 @@ src_install() {
 	newexe /dev/null 90-loaderentry.install
 
 	if use sign ; then
-        cd ${GRUB_EFI64_S}
-        do_common_install
+		cd ${GRUB_EFI64_S}
+		do_common_install
 	fi
 }
 

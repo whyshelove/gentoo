@@ -203,7 +203,7 @@ _pesign(){
     _pesign_nssdir=/etc/pki/pesign-rh-test
     _pesign_cert='Red Hat Test Certificate'
     /usr/bin/pesign -c "${_pesign_cert}" \
-        --certdir ${_pesign_nssdir} -i $1 -o $2 -s || die
+        --certdir ${_pesign_nssdir} -i ${1} -o ${2} -s || die
 }
 
 BuildKernel() {
@@ -296,8 +296,7 @@ InstallKernel(){
         esac
 
         if [ ! -s vmlinuz.signed ]; then
-            echo "pesigning failed"
-            die
+            die "pesigning failed"
         fi
 
         mv vmlinuz.signed $SignImage

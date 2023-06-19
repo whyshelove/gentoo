@@ -74,18 +74,17 @@ src_prepare() {
 }
 
 src_configure() {
-	append-cppflags -DLUA_COMPAT_APIINTCASTS
-	append-cflags  -fsanitize=undefined -DLUA_COMPAT_APIINTCASTS
+	append-flags -DLUA_COMPAT_APIINTCASTS
 
 	econf \
     		--localstatedir="${EPREFIX}"/var \
     		--sharedstatedir="${EPREFIX}"/var/lib \
     		--libdir="${EPREFIX}"/usr/$(get_libdir) \
     		--with-vendor=redhat \
-		--without-selinux \
+		--with-selinux \
 		--with-fapolicyd \
 		--with-external-db \
-		--with-crypto=nss \
+		--with-crypto=openssl \
 		--enable-ndb \
 		--enable-lmdb \
 		--without-archive \

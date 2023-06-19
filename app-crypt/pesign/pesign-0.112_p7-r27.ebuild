@@ -3,17 +3,20 @@
 
 EAPI=7
 
+suffix_ver=$(ver_cut 4)
+[[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}"
+_build_flags="undefine"
+
 inherit flag-o-matic toolchain-funcs rhel8-a
 
-SRC_URI="!binary? ( ${SRC_URI} )
-        binary? ( ${BIN_URI} )"
-DESCRIPTION="Tools for manipulating signed PE-COFF binaries"
+DESCRIPTION="This package contains the pesign utility for signing UEFI binaries as
+well as other associated tools."
 HOMEPAGE="https://github.com/rhboot/pesign"
 
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 ~x86"
-IUSE="+binary"
+IUSE=""
 
 RDEPEND="dev-libs/nspr
 	dev-libs/nss
@@ -29,25 +32,18 @@ BDEPEND="
 	virtual/pkgconfig
 "
 
+PATCHES=(
+	"${FILESDIR}"/${PN}-112-remove-Werror-etc.patch
+)
+
 pkg_setup() {
 	export conf="PREFIX=${EPREFIX}/usr LIBDIR=${EPREFIX}/usr/$(get_libdir)"
 }
 
-src_prepare() {
-	if use binary; then
-		eapply_user
-	else
-        default
-    fi
-}
-
 src_compile() {
-	unset CFLAGS
-	unset LDFLAGS
-	unset ASFLAGS
-	unset CPPFLAGS
+	filter-flags -O*
+	append-ldflags -Wl,-fuse-ld=bfd
 	append-cflags -O1 #721934
-	use binary && return
 
 	emake AR="$(tc-getAR)" \
 		ARFLAGS="-cvqs" \
@@ -61,9 +57,6 @@ src_compile() {
 }
 
 src_install() {
-	rhel_bin_install && return
-
-	dodir ${_libdir}
 	emake $conf INSTALLROOT=${D} \
 		install
 	emake $conf INSTALLROOT=${D} \
@@ -75,9 +68,13 @@ src_install() {
 	insinto /etc/pki/pesign && doins -r etc/pki/pesign/*
 	insinto /etc/pki/pesign-rh-test && doins -r etc/pki/pesign-rh-test/*
 
+	dodir $rpmmacrodir
+	mv "${ED}${_sysconfdir}/rpm/macros.pesign" ${ED}/$rpmmacrodir/
+
 	# remove some files that don't make sense for Gentoo installs
-	rm -rf "${ED}/var" "${ED}/usr/share/doc/${PF}/COPYING" || die
-	insopts -m0755 && insinto /usr/lib/python3.6/site-packages/mockbuild/plugins/
+	rm -rf "${ED}/var" "${ED}/usr/share/doc/${PF}/COPYING" "${ED}${_sysconfdir}/rpm" || die
+
+	insinto /usr/lib/python3.6/site-packages/mockbuild/plugins
 	doins $WORKDIR/pesign.py
 }
 

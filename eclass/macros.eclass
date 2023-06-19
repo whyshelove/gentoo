@@ -101,7 +101,7 @@ set_build_flags(){
 }
 
 	case ${PN} in
-		tree | keyutils | nvme-cli | pciutils | dmidecode | efibootmgr | os-prober | binutils* \
+		rpm | tree | keyutils | nvme-cli | pciutils | dmidecode | efibootmgr | os-prober | binutils* \
 		| gdb | libsepol | libutempter | crash | ninja | trace-cmd | ipcalc) build_cflags; build_ldflags ;;
 		efivar ) build_cflags -flto; build_ldflags -flto ;;
 		boost ) OPT_FLAGS="-fno-strict-aliasing -Wno-unused-local-typedefs -Wno-deprecated-declarations"

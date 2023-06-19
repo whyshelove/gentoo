@@ -14,7 +14,7 @@ HOMEPAGE="https://www.kernel.org/"
 
 LICENSE="GPL-2"
 KEYWORDS="amd64 ~arm ~arm64 ~ppc64 ~x86"
-IUSE="test debug hardened signkernel signmodules zfcpdump +modules +up gcov realtime +zipmodules ipaclones vdso perf tools bpf"
+IUSE="test debug hardened +signkernel +signmodules zfcpdump +modules +up gcov realtime +zipmodules ipaclones vdso perf tools bpf"
 REQUIRED_USE="debug? ( !gcov !up !vdso !ipaclones !perf )
 	    signkernel? ( ^^ ( amd64 arm64 ) )
             zipmodules? ( modules )

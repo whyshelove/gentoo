@@ -216,6 +216,7 @@ multilib_src_configure() {
 		enable-idea \
 		enable-rc5 \
 		enable-seed \
+		enable-md2 \
 		enable-cms \
 		enable-weak-ssl-ciphers \
 		$(use_ssl sslv3 ssl3) \
