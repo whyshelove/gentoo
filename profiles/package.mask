@@ -33,6 +33,17 @@
 
 #--- END OF EXAMPLES ---
 
+# Mike Pagano <mpagano@gentoo.org> (2023-06-18)
+# Last upstream activity in 2018, EAPI 7.
+# See app-crypt/swtpm for an alternative.
+# Removal on 2023-07-18.  Bug #768960, #794547.
+app-crypt/tpm-emulator
+
+# Hans de Graaff <graaff@gentoo.org> (2023-06-18)
+# Obsolete slot. Use the newer slot instead.
+# Masked for removal on 2023-07-18.
+dev-ruby/database_cleaner-active_record:2.0
+
 # Sam James <sam@gentoo.org> (2023-06-16)
 # Please upgrade to >=app-admin/eselect-1.4.22-r1 for a fix to env-update
 # and the files it generates in /etc/env.d: bug #908401, then run env-update
@@ -42,7 +53,7 @@
 # Hans de Graaff <graaff@gentoo.org> (2023-06-16)
 # Obsolete slots without reverse dependencies that require rails 6.0 to
 # be present. Use the newer slots if needed.
-# Masked for removal on 2023-06-16.
+# Masked for removal on 2023-07-16.
 dev-ruby/roadie:4
 dev-ruby/roadie-rails:2
 
@@ -162,8 +173,10 @@ dev-python/ntlm-auth
 ~virtual/perl-File-Spec-3.880.0
 ~virtual/perl-Getopt-Long-2.540.0
 ~virtual/perl-HTTP-Tiny-0.82.0
+~virtual/perl-HTTP-Tiny-0.83.0_rc
 ~virtual/perl-IO-1.520.0
 ~virtual/perl-IO-Compress-2.204.0
+~virtual/perl-IO-Socket-IP-0.410.100_rc
 ~virtual/perl-IO-Zlib-1.140.0
 ~virtual/perl-JSON-PP-4.160.0
 ~virtual/perl-libnet-3.150.0
@@ -175,6 +188,7 @@ dev-python/ntlm-auth
 ~virtual/perl-Memoize-1.160.0
 ~virtual/perl-MIME-Base64-3.160.100_rc
 ~virtual/perl-Module-CoreList-5.202.305.200
+~virtual/perl-Module-CoreList-5.202.306.170
 ~virtual/perl-Net-Ping-2.760.0
 ~virtual/perl-parent-0.241.0
 ~virtual/perl-podlators-5.10.0

@@ -13,7 +13,7 @@ if [[ ${PV} == 9999 ]]; then
 	EGIT_REPO_URI="https://gitlab.gnome.org/GNOME/mutter.git"
 	SRC_URI=""
 else
-	KEYWORDS="~amd64 ~arm arm64 ~ppc64 ~riscv x86"
+	KEYWORDS="amd64 ~arm arm64 ~ppc64 ~riscv x86"
 fi
 
 LICENSE="GPL-2+"
@@ -77,7 +77,7 @@ DEPEND="
 	screencast? ( >=media-video/pipewire-0.3.21:= )
 	introspection? ( >=dev-libs/gobject-introspection-1.54:= )
 	test? ( >=x11-libs/gtk+-3.19.8:3[X,introspection?] )
-	sysprof? ( >=dev-util/sysprof-capture-3.40.1:4 >=dev-util/sysprof-3.46.0 )
+	sysprof? ( >=dev-util/sysprof-capture-3.40.1:4 >=dev-util/sysprof-3.40.0 )
 "
 # for now upstream has "have_x11 = true" in the meson.build, but sooner or later upstream is going to make X optional.
 #	X? (
