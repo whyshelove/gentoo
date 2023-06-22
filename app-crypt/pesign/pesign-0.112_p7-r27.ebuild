@@ -39,9 +39,9 @@ pkg_setup() {
 src_compile() {
 	filter-flags -O*
 	append-ldflags -Wl,-fuse-ld=bfd
-	append-cflags -O0 -g3 -fvar-tracking -fvar-tracking-assignments -Wno-error=cpp
 
-	sed -i 's/--Wl/-Wl/g' Make.defaults
+	sed -i -e 's/--Wl/-Wl/g' \
+		-e 's/CFLAGS	?=/CFLAGS	+=/g' Make.defaults
 
 	emake AR="$(tc-getAR)" \
 		ARFLAGS="-cvqs" \
