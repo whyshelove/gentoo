@@ -38,10 +38,12 @@ pkg_setup() {
 
 src_compile() {
 	filter-flags -O*
-	append-ldflags -Wl,-fuse-ld=bfd
 
-	sed -i -e 's/--Wl/-Wl/g' \
-		-e 's/CFLAGS	?=/CFLAGS	+=/g' Make.defaults
+	#append-ldflags -Wl,-fuse-ld=bfd or tc-ld-disable-gold
+	tc-ld-disable-gold
+
+	sed -e 's/--Wl/-Wl/g' \
+	    -e '/^CFLAGS/s/?=/+=/g' -i Make.defaults
 
 	emake AR="$(tc-getAR)" \
 		ARFLAGS="-cvqs" \
