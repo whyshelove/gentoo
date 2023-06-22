@@ -30,13 +30,16 @@ DEPEND="${RDEPEND}"
 BDEPEND=""
 
 src_install() {
+	rhel_bin_install
+
 	insinto /etc/rhsm/ca
 	doins "${FILESDIR}/redhat-uep.pem"
 
 	dodir /etc/pki/entitlement
 
-	rhel_bin_install
+	sed -i 's/_efi_vendor redhat/_efi_vendor gentoo/g' "${ED}"/${_rpmmacrodir}/macros.efi-srpm
 
-	rm -rf $D/etc/{os-release,issue}
-	rm -rf $D/usr/lib/os-release
+	rm -rf "${ED}"/etc/{os-release,issue} "${ED}"/usr/lib/os-release
+
+	QLIST="enable"
 }

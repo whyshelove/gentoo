@@ -22,7 +22,7 @@ fi
 _hardened_build="undefine"
 _annotated_build="undefine"
 
-inherit bash-completion-r1 flag-o-matic multibuild optfeature pax-utils toolchain-funcs rhel8
+inherit bash-completion-r1 flag-o-matic multibuild optfeature pax-utils toolchain-funcs mount-boot rhel8
 
 if [[ ${PV} != 9999 ]]; then
 	S=${WORKDIR}/${P/_p*}
@@ -89,6 +89,7 @@ BDEPEND="
 		virtual/pkgconfig
 	)
 	truetype? ( virtual/pkgconfig )
+	sys-boot/shim
 "
 DEPEND="
 	app-arch/xz-utils
@@ -138,8 +139,8 @@ pkg_setup() {
     S16="${WORKDIR}/redhatsecureboot502.cer"
 
     GRUB_EFI64_S="${WORKDIR}/${P/_p*}-${package_arch/x}"
-    efi_vendor=gentoo
-    efi_esp_dir="boot/efi/EFI/${efi_vendor}"
+    efi_vendor=$(eval echo $(grep ^ID= /etc/os-release | sed -e 's/^ID=//'))
+    efi_esp_dir="/boot/efi/EFI/${efi_vendor}"
     grubefiname="grub${efiarch}.efi"
     grubeficdname="gcd${efiarch}.efi"
 
@@ -295,19 +296,6 @@ src_configure() {
 	grub_do grub_configure
 }
 
-_pesign() {
-    _pesign_cert='Red Hat Test Certificate'
-    _pesign_nssdir="/etc/pki/pesign-rh-test"
-
-	/usr/bin/pesign -c "${_pesign_cert}" --certdir ${_pesign_nssdir} -i ${1} -o ${2} -s || die
-			
-  if [ ! -s -o ${2} ]; then
-    if [ -e "${2}" ]; then
-      rm -f ${2}
-    fi
-    exit 1
-  fi		
-}
 src_compile() {
 	# Sandbox bug 404013.
 	use libzfs && addpredict /etc/dfs:/dev/zfs
@@ -347,8 +335,8 @@ do_common_install()
 	touch ${ED}${_sysconfdir}/default/grub
 	dosym ../default/grub ${_sysconfdir}/sysconfig/grub
 
-	exeinto /${efi_esp_dir}
 	exeopts -m0700
+	exeinto /${efi_esp_dir}
 	doexe ${grubefiname} ${grubeficdname}
 
 	${ED}/${_bindir}/grub2-editenv ${ED}/${efi_esp_dir}/grubenv create
@@ -398,4 +386,7 @@ pkg_postinst() {
 		optfeature "Create rescue media (grub-mkrescue)" dev-libs/libisoburn
 		optfeature "Enable RAID device detection" sys-fs/mdadm
 	fi
+
+	ewarn "\033[33mYour separate efi partition must be mounted at /boot/efi.\033[0m"
+	ewarn "\033[33mIf use enable sign, Kernel must use sign kernel and modules.\033[0m"
 }

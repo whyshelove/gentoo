@@ -51,6 +51,7 @@ _RHEL8_ECLASS=1
 			sgabios | edk2-ovmf ) MY_P=${P}git${GITCOMMIT} ;;
 			vte ) MY_P=${P/-/291-} ;;
 			rhel-kernel ) MY_P=${P/rhel-} ;;
+			shim-unsigned ) MY_P=${PN}-x64-${PV}; S=${WORKDIR}/${P/-unsigned} ;;
 			*) MY_P=${P} ;;
 		esac
 

@@ -38,6 +38,7 @@ _fixperms="/bin/chmod -Rf a+rX,u+w,g-w,o-w"
 
 _rpmconfigdir=/usr/lib/rpm
 rpmmacrodir=${_rpmconfigdir}/macros.d
+_rpmmacrodir=${_rpmconfigdir}/macros.d
 rpmluadir=${_rpmconfigdir}/lua
 rpm_macros_dir=$(d=${rpmmacrodir}; [ -d $d ] || d=${_sysconfdir}/rpm; echo $d)
 
@@ -113,6 +114,21 @@ set_build_flags(){
 		liburing | libcap | dos2unix | pesign )  ;;
 		*) set_build_flags ;;
 	esac
+
+_pesign() {
+	_pesign_cert='Red Hat Test Certificate'
+	_pesign_nssdir="/etc/pki/pesign-rh-test"
+
+	/usr/bin/pesign -c "${_pesign_cert}" \
+		--certdir ${_pesign_nssdir} -i ${1} -o ${2} -s || die
+			
+  if [ ! -s -o ${2} ]; then
+    if [ -e "${2}" ]; then
+      rm -f ${2}
+    fi
+    exit 1
+  fi		
+}
 
 systemd_post(){
 	# Initial installation 

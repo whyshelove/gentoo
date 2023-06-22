@@ -199,13 +199,6 @@ InitBuildVars() {
     fi
 }
 
-_pesign(){
-    _pesign_nssdir=/etc/pki/pesign-rh-test
-    _pesign_cert='Red Hat Test Certificate'
-    /usr/bin/pesign -c "${_pesign_cert}" \
-        --certdir ${_pesign_nssdir} -i ${1} -o ${2} -s || die
-}
-
 BuildKernel() {
     MakeTarget=$1
     KernelImage=$2

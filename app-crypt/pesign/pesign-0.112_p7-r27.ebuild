@@ -68,7 +68,7 @@ src_install() {
 	insinto /etc/pki/pesign && doins -r etc/pki/pesign/*
 	insinto /etc/pki/pesign-rh-test && doins -r etc/pki/pesign-rh-test/*
 
-	dodir $rpmmacrodir
+	dodir ${_rpmmacrodir}
 	mv "${ED}${_sysconfdir}/rpm/macros.pesign" ${ED}/$rpmmacrodir/
 
 	# remove some files that don't make sense for Gentoo installs
