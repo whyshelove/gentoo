@@ -11,7 +11,7 @@ HOMEPAGE="https://pagure.io/passwd"
 LICENSE="BSD or GPL+"
 SLOT="0"
 KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux"
-IUSE="audit +selinux"
+IUSE="+audit +selinux"
 RDEPEND="${DEPEND}"
 DEPEND="dev-libs/glib
 	dev-libs/popt
@@ -22,8 +22,8 @@ DEPEND="dev-libs/glib
 "
 
 src_configure() {
-	econf 	$(use_enable selinux) \
-		$(use_enable audit) 
+	econf 	$(use_with selinux) \
+		$(use_with audit) 
 }
 
 src_install() {
