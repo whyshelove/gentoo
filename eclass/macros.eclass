@@ -115,6 +115,26 @@ set_build_flags(){
 		*) set_build_flags ;;
 	esac
 
+# @FUNCTION: get_efi_arch
+get_efi_arch() {
+	debug-print-function ${FUNCNAME} "${@}"
+
+	case ${ARCH} in
+		amd64)
+			echo x64
+			;;
+		x86)
+			echo ia32
+			;;
+		arm64)
+			echo aa64
+			;;
+		*)
+			die "${FUNCNAME}: unsupported ARCH=${ARCH}"
+			;;
+	esac
+}
+
 _pesign() {
 	_pesign_cert='Red Hat Test Certificate'
 	_pesign_nssdir="/etc/pki/pesign-rh-test"

@@ -19,7 +19,7 @@ KEYWORDS="amd64 arm64 ~ppc64 ~s390"
 IUSE=""
 
 RDEPEND="dev-libs/nspr
-	dev-libs/nss
+	dev-libs/nss[utils]
 	dev-libs/openssl:0=
 	dev-libs/popt
 	sys-apps/util-linux

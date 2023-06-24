@@ -122,15 +122,11 @@ QA_WX_LOAD="usr/lib/grub/*"
 
 pkg_setup() {
     if use amd64; then
-        efiarch=x64
         grub_target_name=x86_64-efi
-        package_arch=efi-x64
     fi
 
     if use arm64; then
-        efiarch=aa64
         grub_target_name=arm64-efi
-        package_arch=efi-aa64
     fi
 
     S13="${WORKDIR}/redhatsecurebootca3.cer"
@@ -139,10 +135,12 @@ pkg_setup() {
     S16="${WORKDIR}/redhatsecureboot502.cer"
 
     GRUB_EFI64_S="${WORKDIR}/${P/_p*}-${package_arch/x}"
+    efiarch=$(get_efi_arch)
     efi_vendor=$(eval echo $(grep ^ID= /etc/os-release | sed -e 's/^ID=//'))
     efi_esp_dir="/boot/efi/EFI/${efi_vendor}"
     grubefiname="grub${efiarch}.efi"
     grubeficdname="gcd${efiarch}.efi"
+    package_arch=efi-${efiarch}
 
 grub_modules="all_video boot blscfg \
 		cat configfile cryptodisk echo ext2 \

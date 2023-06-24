@@ -207,11 +207,12 @@ multilib_src_compile() {
 	cat ${WORKDIR}/setup-nsssysinit.sh > ./dist/pkgconfig/setup-nsssysinit.sh
 	chmod 755 ./dist/pkgconfig/setup-nsssysinit.sh
 
-	cp ./nss/lib/ckfw/nssck.api ./dist/private/nss/
+	cp ../nss/lib/ckfw/nssck.api ./dist/private/nss/
 
 	date +"%e %B %Y" | tr -d '\n' > date.xml
-	echo -n 3.53.1 > version.xml
+	echo -n ${PV/_p*} > version.xml
 
+	# configuration files and setup script
 	cp  ${WORKDIR}/*.xml .
 
 	for m in nss-config.xml setup-nsssysinit.xml pkcs11.txt.xml; do
@@ -385,6 +386,31 @@ multilib_src_install() {
 		done
 		popd >/dev/null || die
 	fi
+
+	dracutlibdir=${_prefix}/lib/dracut
+	dracut_modules_dir=${dracutlibdir}/modules.d/05nss-softokn/
+	dracut_conf_dir=${dracutlibdir}/dracut.conf.d
+
+	exeinto ${dracut_modules_dir}
+	newexe "${WORKDIR}"/nss-softokn-dracut-module-setup.sh module-setup.sh
+
+	insinto ${dracut_conf_dir}
+	newins "${WORKDIR}"/nss-softokn-dracut.conf 50-nss-softokn.conf
+
+	insinto ${_sysconfdir}/pki/nssdb
+	newins "${WORKDIR}"/system-pkcs11.txt pkcs11.txt
+
+	for m in cert{8,9} key{3,4} secmod ; do
+		newins "${WORKDIR}"/blank-cert8.db cert8.db
+	done
+
+	# Copy the pkcs #11 configuration script
+	dobin ./dist/pkgconfig/setup-nsssysinit.sh
+
+	insinto ${_sysconfdir}/crypto-policies/local.d
+	doins "${WORKDIR}"/nss-p11-kit.config
+
+	doman *.1 *.5
 }
 
 pkg_postinst() {

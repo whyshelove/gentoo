@@ -29,11 +29,7 @@ pkg_setup() {
 	efidir=$(eval echo $(grep ^ID= /etc/os-release | sed -e 's/^ID=//'))
 	shimrootdir=${_datadir}/shim/
 
-	case ${ARCH} in
-		amd64) efiarch=x64 ;;
-		arm64) efiarch=aa64 ;;
-		*)     die "unsupported architecture: ${ARCH}" ;;
-	esac
+	efiarch=$(get_efi_arch)
 
 	use ia32 && efialtarch=ia32
 
@@ -74,15 +70,13 @@ src_install() {
 	cd build-${efiarch}
 	make ${MAKEFLAGS} \
 		DESTDIR="${ED}" \
-		install-as-data install-debuginfo install-debugsource
+		install-as-data #install-debuginfo install-debugsource
 
 
 	if use ia32 ; then
 		cd ../build-${efialtarch}
 		setarch linux32 make ${MAKEFLAGS} ARCH=${efialtarch} \
 			DESTDIR="${ED}" \
-			install-as-data install-debuginfo install-debugsource
+			install-as-data #install-debuginfo install-debugsource
 	fi
-
-	rm -rf "${ED}"/usr/{lib,src} || die
 }

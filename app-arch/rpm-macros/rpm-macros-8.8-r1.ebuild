@@ -30,6 +30,8 @@ DEPEND="${RDEPEND}"
 BDEPEND=""
 
 src_install() {
+	QLIST="enable"
+
 	rhel_bin_install
 
 	insinto /etc/rhsm/ca
@@ -37,9 +39,7 @@ src_install() {
 
 	dodir /etc/pki/entitlement
 
-	sed -i 's/_efi_vendor redhat/_efi_vendor gentoo/g' "${ED}"/${_rpmmacrodir}/macros.efi-srpm
+	sed -i 's/_efi_vendor\ redhat/_efi_vendor\ gentoo/g' "${ED}"/${_rpmmacrodir}/macros.efi-srpm
 
 	rm -rf "${ED}"/etc/{os-release,issue} "${ED}"/usr/lib/os-release
-
-	QLIST="enable"
 }

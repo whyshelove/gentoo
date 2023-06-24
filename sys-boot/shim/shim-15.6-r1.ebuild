@@ -23,13 +23,7 @@ pkg_setup() {
 	ewarn "\033[33mYour separate efi partition must be mounted at /boot/efi.\033[0m"
 	QLIST="enable"
 
-	case ${ARCH} in
-		amd64) efi_arch=x64 ;;
-		arm64) efi_arch=aa64 ;;
-		x86)   efi_arch=ia32 ;;
-		*)     die "unsupported architecture: ${ARCH}" ;;
-	esac
-
+	efi_arch=$(get_efi_arch)
 	efi_vendor=$(eval echo $(grep ^ID= /etc/os-release | sed -e 's/^ID=//'))
 	efi_esp_efi="/boot/efi/EFI"
 	efi_esp_dir="${efi_esp_efi}/${efi_vendor}"
@@ -55,6 +49,10 @@ distrosign() {
 
 	if [[ ${1} == shim ]]; then
 		mv ${1}${efi_arch}-signed.efi ${1}${efi_arch}-${efi_vendor}.efi
+
+		if use arm64; then
+			cp ${1}${efi_arch}-${efi_vendor}.efi ${1}${efi_arch}.efi	
+		fi
 	else
 		mv ${1}${efi_arch}-signed.efi ${1}${efi_arch}.efi
 	fi
