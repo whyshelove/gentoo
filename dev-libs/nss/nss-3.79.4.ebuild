@@ -176,6 +176,8 @@ multilib_src_compile() {
 		export CC_IS_CLANG=1
 	fi
 
+	export MAKEOPTS="-j1"
+
 	export NSS_DISABLE_GTESTS=$(usex !test 1 0)
 
 	# explicitly disable altivec/vsx if not requested

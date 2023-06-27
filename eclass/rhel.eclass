@@ -91,6 +91,7 @@ if [ -z ${MY_PF} ] ; then
 			networkmanager )  MY_P=${P/networkmanager/NetworkManager} ;;
 			vte )  MY_P=${P/-/291-} ;;
 			libltdl )  MY_P=libtool-${PV} ;;
+			shim-unsigned ) MY_P=${PN}-x64-${PV}; S=${WORKDIR}/${P/-unsigned} ;;
 			*) MY_P=${P} ;;
 		esac
 	fi
@@ -239,13 +240,21 @@ rhel_src_install() {
 # @FUNCTION: rhel_bin_install
 # @DESCRIPTION:
 rhel_bin_install() {
-	if use binary; then
-		rm -rf $S ${S_BASE} "${WORKDIR}/usr/lib/.build-id"
-		mv "${WORKDIR}"/* "${D}"/
-		tree "${ED}"
+	rm -rf "${S_BASE}" "${WORKDIR}"/usr/lib/.build-id
+
+	insinto /
+	doins -r "${WORKDIR}"/*
+
+	rm -rf "${ED}"/${P}
+}
+
+rhel_pkg_postinst() {
+	if [[ -n ${QLIST} ]] ; then
+		einfo "\033[31mqlist ${PN}\033[0m"
+		qlist ${PN}
 	fi
 }
 
 fi
 
-EXPORT_FUNCTIONS src_unpack
+EXPORT_FUNCTIONS src_unpack pkg_postinst

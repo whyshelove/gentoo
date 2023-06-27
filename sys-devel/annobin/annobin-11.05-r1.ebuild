@@ -105,5 +105,6 @@ src_install() {
 	fi
 
 	rm -f "${ED}"${_infodir}/dir
-	tree ${ED}
+
+	QLIST="enable"
 }

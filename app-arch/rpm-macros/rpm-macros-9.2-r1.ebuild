@@ -22,19 +22,23 @@ done
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 arm64"
-IUSE="+binary"
+IUSE=""
 
 RDEPEND="app-arch/rpm[lua,python]"
 DEPEND="${RDEPEND}"
 BDEPEND=""
 
 src_install() {
+	QLIST="enable"
+
+	rhel_bin_install
+
 	insinto /etc/rhsm/ca
 	doins "${FILESDIR}/redhat-uep.pem"
 
 	dodir /etc/pki/entitlement
 
-	rhel_bin_install
-	rm -rf $D/etc/{os-release,issue}
-	rm -rf $D/usr/lib/os-release
+	sed -i 's/_efi_vendor\ redhat/_efi_vendor\ gentoo/g' "${ED}"/${_rpmmacrodir}/macros.efi-srpm
+
+	rm -rf "${ED}"/etc/{os-release,issue} "${ED}"/usr/lib/os-release
 }

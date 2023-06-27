@@ -75,6 +75,7 @@ src_prepare() {
 	sed -i "s:@__PYTHON@:${PYTHON}:" macros.in || die "Fixing %__python failed"
 
 	eapply_user
+
 	eautoreconf
 
 	# Prevent automake maintainer mode from kicking in (#450448).
@@ -91,7 +92,8 @@ src_configure() {
     		--libdir="${EPREFIX}"/usr/$(get_libdir) \
     		--with-vendor=redhat \
 		--without-selinux \
-		--with-crypto=libgcrypt \
+		--with-fapolicyd \
+		--with-crypto=openssl \
 		--enable-bdb=yes \
 		--enable-bdb-ro \
 		--without-archive \

@@ -99,7 +99,7 @@ set_build_flags(){
 }
 
 	case ${PN} in
-		dmidecode | zstd | unzip | pigz | perl | tree | keyutils | nvme-cli | pciutils | dmidecode | efibootmgr | os-prober | binutils* \
+		rpm | dmidecode | zstd | unzip | pigz | perl | tree | keyutils | nvme-cli | pciutils | dmidecode | efibootmgr | os-prober | binutils* \
 		| nspr | nss | gdb | libsepol | libutempter | crash | ninja | trace-cmd | ipcalc) build_cflags; build_ldflags ;;
 		efivar ) build_cflags -flto; build_ldflags -flto ;;
 		boost ) OPT_FLAGS="-fno-strict-aliasing -Wno-unused-local-typedefs -Wno-deprecated-declarations"
@@ -112,6 +112,45 @@ set_build_flags(){
 	esac
 
 rubygems_dir=${_datadir}/rubygems
+
+# @FUNCTION: get_efi_arch
+get_efi_arch() {
+	debug-print-function ${FUNCNAME} "${@}"
+
+	case ${ARCH} in
+		amd64)
+			echo x64
+			;;
+		x86)
+			echo ia32
+			;;
+		arm64)
+			echo aa64
+			;;
+		*)
+			die "${FUNCNAME}: unsupported ARCH=${ARCH}"
+			;;
+	esac
+}
+
+_pesign() {
+	_pesign_cert='Red Hat Test Certificate'
+	_target_cpu=$(get_efi_arch)
+
+	${_libexecdir}/pesign/pesign-rpmbuild-helper \
+	${_target_cpu} \
+	"/usr/bin/pesign" \
+	"/usr/bin/pesign-client" \
+	--client-token "OpenSC Card (Fedora Signer)" \
+	--cert "${_pesign_cert}" \
+	--rhelver "9" \
+	--rhelcert ${5} \
+	--rhelcafile ${3} \
+	--rhelcertfile ${4} \
+	--in ${1} \
+	--out ${2} \
+	--sign || die
+}
 
 systemd_post(){
 	# Initial installation 

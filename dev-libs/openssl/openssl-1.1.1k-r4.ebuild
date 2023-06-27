@@ -171,6 +171,7 @@ multilib_src_configure() {
 		enable-rc5 \
 		enable-seed \
 		enable-cms \
+		enable-md2 \
 		enable-weak-ssl-ciphers \
 		$(use_ssl sslv3 ssl3) \
 		$(use_ssl sslv3 ssl3-method) \
@@ -181,6 +182,7 @@ multilib_src_configure() {
 		$(use_ssl tls-heartbeat heartbeats) \
 		--prefix="${EPREFIX}"/usr \
 		--openssldir="${EPREFIX}"${SSL_CNF_DIR} \
+		--system-ciphers-file=${EPREFIX}${_sysconfdir}/crypto-policies/back-ends/openssl.config \
 		--libdir=$(get_libdir) \
 		shared threads \
 		|| die

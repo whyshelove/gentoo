@@ -204,6 +204,24 @@ multilib_src_compile() {
 		NSPR_LIB_DIR="${T}/fakedir" \
 		emake "${makeargs[@]}" -C ${d} OS_TEST="$(nssarch)"
 	done
+
+	# Set up our package files
+	mkdir -p ./dist/pkgconfig
+
+	cat ${WORKDIR}/setup-nsssysinit.sh > ./dist/pkgconfig/setup-nsssysinit.sh
+	chmod 755 ./dist/pkgconfig/setup-nsssysinit.sh
+
+	cp ../nss/lib/ckfw/nssck.api ./dist/private/nss/
+
+	date +"%e %B %Y" | tr -d '\n' > date.xml
+	echo -n ${PV/_p*} > version.xml
+
+	# configuration files and setup script
+	cp  ${WORKDIR}/*.xml .
+
+	for m in nss-config.xml setup-nsssysinit.xml pkcs11.txt.xml cert9.db.xml key4.db.xml; do
+	  xmlto man ${m}
+	done
 }
 
 multilib_src_test() {
@@ -368,6 +386,30 @@ multilib_src_install() {
 		done
 		popd >/dev/null || die
 	fi
+
+	dracutlibdir=${_prefix}/lib/dracut
+	dracut_modules_dir=${dracutlibdir}/modules.d/05nss-softokn/
+	dracut_conf_dir=${dracutlibdir}/dracut.conf.d
+
+	exeinto ${dracut_modules_dir}
+	newexe "${WORKDIR}"/nss-softokn-dracut-module-setup.sh module-setup.sh
+
+	insinto ${dracut_conf_dir}
+	newins "${WORKDIR}"/nss-softokn-dracut.conf 50-nss-softokn.conf
+
+	# Shared db
+	insinto ${_sysconfdir}/pki/nssdb
+	newins "${WORKDIR}"/blank-cert9.db cert9.db
+	newins "${WORKDIR}"/blank-key4.db key4.db
+	newins "${WORKDIR}"/system-pkcs11.txt pkcs11.txt
+
+	# Copy the pkcs #11 configuration script
+	dobin ./dist/pkgconfig/setup-nsssysinit.sh
+
+	insinto ${_sysconfdir}/crypto-policies/local.d
+	doins "${WORKDIR}"/nss-p11-kit.config
+
+	doman *.1 *.5
 }
 
 pkg_postinst() {
@@ -391,4 +433,8 @@ pkg_postrm() {
 	}
 
 	multilib_foreach_abi multilib_pkg_postrm
+
+	# Reverse unwanted disabling of sysinit by faulty preun sysinit scriplet
+	# from previous versions of nss.spec
+	#/usr/bin/setup-nsssysinit.sh on
 }
