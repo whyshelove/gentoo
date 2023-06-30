@@ -3,6 +3,11 @@
 
 EAPI=7
 
+DPREFIX="1."
+
+suffix_ver=$(ver_cut 5)
+[[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}"
+
 inherit eapi8-dosym edo toolchain-funcs rhel8
 
 if [[ ${PV} == 9999 ]] ; then

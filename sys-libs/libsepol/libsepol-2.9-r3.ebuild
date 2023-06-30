@@ -14,7 +14,7 @@ if [[ ${PV} == 8888 ]]; then
 	EGIT_REPO_URI="$EGIT_REPO_URI https://github.com/SELinuxProject/selinux.git"
 	S="${WORKDIR}/${MY_P}/${PN}"
 else
-	KEYWORDS="amd64 ~arm ~arm64 ~mips x86"
+	KEYWORDS="amd64 ~arm arm64 ~mips x86"
 	S="${WORKDIR}/${MY_P}"
 fi
 

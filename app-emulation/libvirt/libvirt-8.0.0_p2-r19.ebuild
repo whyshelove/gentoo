@@ -4,8 +4,8 @@
 EAPI=7
 
 PYTHON_COMPAT=( python3_{6,8,9} )
-DPREFIX="module+"
-DSUFFIX=".8.0+18453+e0bf0d1d"
+DPREFIX="$(ver_cut 5).module+"
+DSUFFIX=".8.0+18944+7f5acf75"
 inherit meson bash-completion-r1 linux-info python-any-r1 readme.gentoo-r1 tmpfiles systemd rhel8-a
 
 if [[ ${PV} = *9999* ]]; then

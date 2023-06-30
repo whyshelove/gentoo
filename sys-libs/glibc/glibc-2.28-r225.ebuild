@@ -29,7 +29,7 @@ SRC_URI+=" multilib? ( https://dev.gentoo.org/~dilfridge/distfiles/gcc-multilib-
 IUSE="audit caps compile-locales doc gd headers-only +multiarch multilib nscd profile selinux +ssp suid systemtap test vanilla"
 
 # Minimum kernel version that glibc requires
-MIN_KERN_VER="3.2.0"
+MIN_KERN_VER="4.14.0"
 
 # Here's how the cross-compile logic breaks down ...
 #  CTARGET - machine that will target the binaries

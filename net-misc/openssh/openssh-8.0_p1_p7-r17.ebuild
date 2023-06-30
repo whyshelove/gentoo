@@ -63,6 +63,7 @@ DEPEND="${RDEPEND}
 	kernel_linux? ( !prefix-guest? ( >=sys-kernel/linux-headers-5.1 ) )
 	static? ( ${LIB_DEPEND} )
 	net-nds/openldap
+	app-crypt/p11-kit
 "
 RDEPEND="${RDEPEND}
 	pam? ( >=sys-auth/pambase-20081028 )

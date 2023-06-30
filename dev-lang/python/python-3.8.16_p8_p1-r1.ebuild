@@ -6,14 +6,14 @@ WANT_LIBTOOL="none"
 
 DPREFIX="module+"
 suffix_ver=$(ver_cut 5)
-[[ ${suffix_ver} ]] && DSUFFIX=".${suffix_ver}.0+17624+9a09af5a"
+[[ ${suffix_ver} ]] && DSUFFIX=".${suffix_ver}.0+18967+20d359ae.$(ver_cut 7)"
 unused_patches=( "patch102 -p1" "patch251 -p1" )
 
 inherit autotools flag-o-matic multiprocessing pax-utils
 inherit prefix python-utils-r1 toolchain-funcs rhel8-a
 
 PYVER=$(ver_cut 1-2)
-PATCHSET="python-gentoo-patches-${MY_PV}_p4"
+PATCHSET="python-gentoo-patches-${MY_PV/_p*}_p4"
 
 DESCRIPTION="An interpreted, interactive, object-oriented programming language"
 HOMEPAGE="

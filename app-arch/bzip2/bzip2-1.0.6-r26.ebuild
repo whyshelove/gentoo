@@ -30,7 +30,10 @@ src_prepare() {
 		-e 's:ln -s -f $(PREFIX)/bin/:ln -s -f :' \
 		-e 's:$(PREFIX)/lib:$(PREFIX)/$(LIBDIR):g' \
 		Makefile || die
-	ln -s ${S} ${WORKDIR}/${P}-abi_x86_64.amd64
+
+	use amd64 && abi_arch=abi_x86_64
+
+	ln -s ${S} ${WORKDIR}/${P}-${abi_arch}.$(tc-arch)
 }
 
 bemake() {

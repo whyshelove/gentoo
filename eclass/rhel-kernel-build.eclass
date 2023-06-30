@@ -46,7 +46,7 @@ KVERREL=${K_PVD}.${_target_cpu}
 
 MY_PN=${PN/rhel-}
 
-S=${WORKDIR}/kernel-${K_PVD}/linux-${K_PV}.${_target_cpu}
+S=${WORKDIR}/kernel-${K_PVD}/linux-${K_PV}.el8.${_target_cpu}
 
 rhel-kernel-build_pkg_setup() {
     export make_target=bzImage

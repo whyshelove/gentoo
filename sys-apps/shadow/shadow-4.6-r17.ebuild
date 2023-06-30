@@ -12,7 +12,7 @@ HOMEPAGE="https://github.com/shadow-maint/shadow"
 LICENSE="BSD GPL-2"
 SLOT="0"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
-IUSE="acl +audit cracklib nls pam selinux +su skey split-usr xattr"
+IUSE="acl audit cracklib nls pam selinux +su skey split-usr xattr"
 # Taken from the man/Makefile.am file.
 LANGS=( cs da de es fi fr hu id it ja ko pl pt_BR ru sv tr zh_CN zh_TW )
 

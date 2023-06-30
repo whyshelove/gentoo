@@ -9,7 +9,7 @@ inherit autotools bash-completion-r1 multilib python-r1 rhel8
 
 if [[ ${PV} != *8888 ]]; then
 	inherit libtool
-	KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
+	KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
 fi
 
 DESCRIPTION="library and tools for managing linux kernel modules"

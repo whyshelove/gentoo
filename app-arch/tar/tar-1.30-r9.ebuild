@@ -3,8 +3,8 @@
 
 EAPI=7
 
-suffix_ver=$(ver_cut 4).$(ver_cut 6)
-[[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}"
+#suffix_ver=$(ver_cut 4).$(ver_cut 6)
+#[[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}"
 
 inherit flag-o-matic rhel8
 

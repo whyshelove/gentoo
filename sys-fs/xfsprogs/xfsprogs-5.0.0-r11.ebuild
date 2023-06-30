@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-
+DSUFFIX="_8"
 inherit flag-o-matic toolchain-funcs systemd usr-ldscript rhel8
 
 DESCRIPTION="xfs filesystem utilities"

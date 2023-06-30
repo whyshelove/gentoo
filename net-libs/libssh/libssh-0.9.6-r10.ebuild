@@ -4,6 +4,7 @@
 EAPI=7
 
 CMAKE_ECLASS=cmake
+DSUFFIX="_8"
 inherit cmake-multilib rhel8
 
 DESCRIPTION="Access a working SSH implementation by means of a library"

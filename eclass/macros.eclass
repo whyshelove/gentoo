@@ -30,7 +30,8 @@ _annotated_cflags="${_annobin_cflags}"
 
 __global_compiler_flags="-O2 -g -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -fexceptions -fstack-protector-strong -grecord-gcc-switches ${_hardened_cflags} ${_annotated_cflags}"
 
-optflags="${__global_compiler_flags} -m64 -fasynchronous-unwind-tables -fstack-clash-protection -fcf-protection"
+optflags="${__global_compiler_flags} -fasynchronous-unwind-tables -fstack-clash-protection"
+[[ $(tc-arch) == "amd64" ]] && optflags+=" -m64 -fcf-protection"
 
 fflags="-I/usr/lib64/gfortran/modules"
 

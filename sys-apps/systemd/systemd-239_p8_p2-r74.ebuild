@@ -7,7 +7,7 @@ KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~riscv sparc x86"
 
 PYTHON_COMPAT=( python3_{6..9} )
 
-suffix_ver=$(ver_cut 3)
+suffix_ver=$(ver_cut 3).$(ver_cut 5)
 [[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}"
 
 inherit bash-completion-r1 linux-info meson-multilib pam python-any-r1 systemd toolchain-funcs udev usr-ldscript rhel8

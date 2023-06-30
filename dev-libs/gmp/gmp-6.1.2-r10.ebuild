@@ -111,11 +111,20 @@ multilib_src_install() {
 
 	rm -f "${ED}"${_infodir}/dir
 
+	local basearch
+	case ${ARCH} in
+		amd64) basearch=x86_64 ;;
+		arm64) basearch=aarch64 ;;
+		arm)   basearch=arm ;;
+		x86)   basearch=i386 ;;
+		*)     die "unsupported architecture: ${ARCH}" ;;
+	esac
+
 	# Rename files and install wrappers
-	mv ${ED}/usr/include/gmp.h ${ED}/usr/include/gmp-x86_${GMPABI}.h
+	mv ${ED}/usr/include/gmp.h ${ED}/usr/include/gmp-${basearch}.h
 	doheader ${WORKDIR}/gmp.h
 
-	mv ${ED}/usr/include/gmp-mparam.h ${ED}/usr/include/gmp-mparam-x86_${GMPABI}.h
+	mv ${ED}/usr/include/gmp-mparam.h ${ED}/usr/include/gmp-mparam-${basearch}.h
 	doheader ${WORKDIR}/gmp-mparam.h
 
 	# should be a standalone lib

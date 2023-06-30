@@ -4,3 +4,6 @@
 # Luke Dashjr <luke-jr+gentoobugs@utopios.org> (2018-11-19)
 # iasl is keyworded ~arm64
 sys-firmware/seabios binary
+
+# rhel must force enable audit
+sys-libs/pam audit
