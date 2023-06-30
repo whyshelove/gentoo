@@ -134,13 +134,12 @@ pkg_setup() {
     S15="${WORKDIR}/redhatsecurebootca5.cer"
     S16="${WORKDIR}/redhatsecureboot502.cer"
 
-    GRUB_EFI64_S="${WORKDIR}/${P/_p*}-${package_arch/x}"
     efiarch=$(get_efi_arch)
+    GRUB_EFI64_S="${WORKDIR}/${P/_p*}-efi-${efiarch/x}"
     efi_vendor=$(eval echo $(grep ^ID= /etc/os-release | sed -e 's/^ID=//'))
     efi_esp_dir="/boot/efi/EFI/${efi_vendor}"
     grubefiname="grub${efiarch}.efi"
     grubeficdname="gcd${efiarch}.efi"
-    package_arch=efi-${efiarch}
 
 grub_modules="all_video boot blscfg \
 		cat configfile cryptodisk echo ext2 \
