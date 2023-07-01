@@ -116,10 +116,9 @@ rhel_src_install() {
 rhel_bin_install() {
 	rm -rf "${S_BASE}" "${WORKDIR}"/usr/lib/.build-id
 
-	insinto /
-	doins -r "${WORKDIR}"/*
+	mv "${WORKDIR}"/* "${ED}"/
 
-	rm -rf "${ED}"/${P}
+	mv "${ED}"/${P} "${WORKDIR}"/
 }
 
 rhel_pkg_postinst() {
