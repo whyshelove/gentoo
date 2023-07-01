@@ -63,7 +63,7 @@ if [ -z ${MY_PF} ] ; then
 			iproute2 )  MY_P=${P/2} ;;
 			mit-krb5 )  MY_P=${P/mit-} ;;
 			ninja )  MY_P=${P/-/-build-} ;;
-			openssl ) [[ ${PV} < 3.0.0 ]] && MY_P=compat-openssl11-${PV} ;;
+			openssl-compat ) MY_P=compat-openssl11-${PV} ;;
 			openssh )  MY_P=${P/_} ;;
 			shadow )  MY_P=${P/-/-utils-} ;;
 			cups )  MY_P=${P}op2 ;;
@@ -242,10 +242,9 @@ rhel_src_install() {
 rhel_bin_install() {
 	rm -rf "${S_BASE}" "${WORKDIR}"/usr/lib/.build-id
 
-	insinto /
-	doins -r "${WORKDIR}"/*
+	mv "${WORKDIR}"/* "${ED}"/
 
-	rm -rf "${ED}"/${P}
+	mv "${ED}"/${P} "${WORKDIR}"/
 }
 
 rhel_pkg_postinst() {

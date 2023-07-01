@@ -12,7 +12,7 @@ HOMEPAGE="https://www.gnutls.org/"
 LICENSE="GPL-3 LGPL-2.1+"
 SLOT="0/30.30" # <libgnutls.so number>.<libgnutlsxx.so number>
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
-IUSE="brotli +cxx dane doc examples guile +idn nls +openssl pkcs11 seccomp sslv2 sslv3 static-libs test test-full +tls-heartbeat tools valgrind zlib zstd"
+IUSE="brotli +cxx dane doc examples guile +idn nls +openssl pkcs11 seccomp sslv2 sslv3 static-libs test test-full +tls-heartbeat tools valgrind zlib zstd +gost"
 
 REQUIRED_USE="test-full? ( cxx dane doc examples guile idn nls openssl pkcs11 seccomp tls-heartbeat tools )"
 RESTRICT="!test? ( test )"
@@ -121,13 +121,14 @@ multilib_src_configure() {
 		$(use_with pkcs11 p11-kit)
 		$(use_with zlib)
 		$(use_with zstd)
+		$(use_enable gost)
 	   	--enable-sha1-support
 		--disable-rpath
 		--disable-openssl-compatibility
 		--disable-non-suiteb-curves
 		--with-default-trust-store-file="${EPREFIX}"/etc/ssl/certs/ca-certificates.crt
 		--with-unbound-root-key-file="${EPREFIX}"/etc/dnssec/root-anchors.txt
-		--with-system-priority-file=${EPREFIX}/etc/crypto-policies/back-ends/gnutls.config
+		--with-system-priority-file="${EPREFIX}"/etc/crypto-policies/back-ends/gnutls.config
 		--with-default-priority-string="@SYSTEM"
 		--with-trousers-lib="${EPREFIX}/usr/lib64/libtspi.so.1"
 		--without-included-libtasn1
@@ -135,7 +136,16 @@ multilib_src_configure() {
 	)
 
 	use pkcs11 && myeconfargs+=( --with-default-trust-store-pkcs11="pkcs11:" )
-	use guile && myeconfargs+=( --with-guile-extension-dir=${EPREFIX}/${_libdir}/guile/2.2 )
+	use guile && myeconfargs+=( --with-guile-extension-dir="${EPREFIX}"/${_libdir}/guile/2.2 )
+
+	if use guile; then
+		These should be checked by m4/guile.m4 instead of configure.ac
+		# taking into account of _guile_suffix
+		guile_snarf=${_bindir}/guile-snarf2.2
+		export guile_snarf
+		GUILD=${_bindir}/guild2.2
+		export GUILD
+	fi
 
 	ECONF_SOURCE="${S}" econf "${libconf[@]}" "${myeconfargs[@]}"
 }

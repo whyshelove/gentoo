@@ -3,7 +3,7 @@
 
 EAPI=7
 DSUFFIX="_2"
-unused_patches=( patch983 patch700 patch1007 )
+#unused_patches=( patch983 patch700 patch1007 )
 inherit user-info flag-o-matic autotools pam systemd toolchain-funcs rhel9
 
 # Make it more portable between straight releases
@@ -72,7 +72,7 @@ LIB_DEPEND="
 				)
 				>=dev-libs/openssl-1.1.0g:0[bindist(-)=]
 			)
-			dev-libs/openssl:0=[static-libs(+)]
+			dev-libs/openssl:0=[fips(+)]
 	)
 	virtual/libcrypt:=[static-libs(+)]
 	>=sys-libs/zlib-1.2.3:=[static-libs(+)]
@@ -324,8 +324,11 @@ src_configure() {
 		--with-ipaddr-display
 		--with-systemd
 		--with-default-pkcs11-provider=yes
-		$(use_with !elibc_Cygwin hardening) #659210
 	)
+
+	# Workaround for Clang 15 miscompilation with -fzero-call-used-regs=all
+	# bug #869839 (https://github.com/llvm/llvm-project/issues/57692)
+	tc-is-clang && myconf+=( --without-hardening )
 
 	if use elibc_musl; then
 		# stackprotect is broken on musl x86 and ppc

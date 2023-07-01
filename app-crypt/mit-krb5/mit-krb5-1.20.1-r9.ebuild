@@ -4,6 +4,7 @@
 EAPI=8
 
 PYTHON_COMPAT=( python3_{9..11} )
+DSUFFIX="_2"
 inherit autotools python-any-r1 systemd toolchain-funcs multilib-minimal rhel9
 
 MY_P="${P/mit-}"
@@ -89,6 +90,7 @@ multilib_src_configure() {
 		$(use_with lmdb) \
 		$(use_with keyutils) \
 		SS_LIB="-lss" \
+		PKCS11_MODNAME="p11-kit-proxy.so" \
 		--localstatedir=${_var}/kerberos \
 		--without-krb5-config \
 		--enable-dns-for-realm \
@@ -150,8 +152,12 @@ multilib_src_install_all() {
 
 	insinto /etc
 	newins "${ED}/usr/share/doc/${PF}/examples/krb5.conf" krb5.conf.example
+	doins "${WORKDIR}"/krb5.conf
 	insinto /var/lib/krb5kdc
 	newins "${ED}/usr/share/doc/${PF}/examples/kdc.conf" kdc.conf.example
+
+	dodir /etc/krb5.conf.d
+	ln -sv /etc/crypto-policies/back-ends/krb5.config "${ED}"/etc/krb5.conf.d/crypto-policies
 
 	if use openldap ; then
 		insinto /etc/openldap/schema

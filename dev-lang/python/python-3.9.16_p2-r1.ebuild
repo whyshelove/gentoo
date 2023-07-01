@@ -4,7 +4,7 @@
 EAPI="7"
 WANT_LIBTOOL="none"
 
-unused_patches=( Patch111 Patch251 Patch329 )
+unused_patches=( Patch111 Patch251 )
 suffix_ver=$(ver_cut 5)
 [[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}.1"
 
@@ -54,7 +54,7 @@ RDEPEND="
 	ncurses? ( >=sys-libs/ncurses-5.2:= )
 	readline? ( >=sys-libs/readline-4.1:= )
 	sqlite? ( >=dev-db/sqlite-3.3.8:3= )
-	ssl? ( >=dev-libs/openssl-1.1.1:= )
+	ssl? ( >=dev-libs/openssl-1.1.1:=[fips] )
 	tk? (
 		>=dev-lang/tcl-8.0:=
 		>=dev-lang/tk-8.0:=
@@ -95,6 +95,12 @@ pkg_pretend() {
 
 pkg_setup() {
 	use test && check-reqs_pkg_setup
+
+	# The build process embeds version info extracted from the Git repository
+	# into the Py_GetBuildInfo and sys.version strings.
+	# Our Git repository is artificial, so we don't want that.
+	# Tell configure to not use git.
+	export HAS_GIT=not-found
 }
 
 src_prepare() {
@@ -104,6 +110,7 @@ src_prepare() {
 
 	rm ${WORKDIR}/${PATCHSET}/001{3,5,7}-*.patch
 	rm ${WORKDIR}/${PATCHSET}/0020-*.patch
+	rm ${WORKDIR}/${PATCHSET}/0002-*.patch
 
 	local PATCHES=(
 		"${WORKDIR}/${PATCHSET}"
@@ -135,7 +142,7 @@ src_configure() {
 	use ncurses   || disable+=" _curses _curses_panel"
 	use readline  || disable+=" readline"
 	use sqlite    || disable+=" _sqlite3"
-	use ssl       || export PYTHON_DISABLE_SSL="1"
+	#use ssl       || export PYTHON_DISABLE_SSL="1"
 	use tk        || disable+=" _tkinter"
 	use xml       || disable+=" _elementtree pyexpat" # _elementtree uses pyexpat.
 	export PYTHON_DISABLE_MODULES="${disable}"
