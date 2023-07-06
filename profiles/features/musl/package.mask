@@ -1,6 +1,10 @@
 # Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
+# Maciej Barć <xgqt@gentoo.org> (2023-07-01)
+# Binary package, which is compiled against glibc
+games-util/heroic-bin
+
 # Brahmajit Das <brahmajit.xyz@gmail.com> (2023-06-15)
 # The package uses innetgr which is not available in musl, bug 898556
 # The package is only for long-obsolete polkit policies anyway.
@@ -65,6 +69,12 @@ net-misc/grive
 net-print/pnm2ppa
 net-wireless/neard
 sys-apps/noexec
+
+# Giuseppe Foti <foti.giuseppe@gmail.com> (2023-05-19)
+# New packages that require packages masked by the previous block.
+dev-db/pg-gvm
+net-analyzer/notus-scanner
+net-analyzer/greenbone-feed-sync
 
 # Petr Vaněk <arkamar@atlas.cz> (2022-09-23)
 # Musl does not implement rresvport function, bugs #713810 and #713376.
