@@ -3,7 +3,7 @@
 
 EAPI=8
 
-MOZ_ESR=yes
+MOZ_ESR=
 
 MOZ_PV=${PV}
 MOZ_PV_SUFFIX=
@@ -37,7 +37,7 @@ DESCRIPTION="Firefox Web Browser"
 HOMEPAGE="https://www.mozilla.com/firefox"
 
 KEYWORDS="-* amd64 x86"
-SLOT="esr"
+SLOT="rapid"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
 IUSE="+alsa +ffmpeg +gmp-autoupdate +pulseaudio selinux wayland"
 
@@ -49,14 +49,18 @@ BDEPEND="app-arch/unzip
 			dev-util/patchelf
 		)
 	)"
-DEPEND="alsa? (
+
+COMMON_DEPEND="alsa? (
 		!pulseaudio? (
 			media-sound/apulse
 		)
 	)"
-RDEPEND="${DEPEND}
+
+DEPEND="${COMMON_DEPEND}"
+
+RDEPEND="${COMMON_DEPEND}
 	!www-client/firefox-bin:0
-	!www-client/firefox-bin:rapid
+	!www-client/firefox-bin:esr
 	>=app-accessibility/at-spi2-core-2.40.0:2
 	dev-libs/dbus-glib
 	>=dev-libs/glib-2.26:2

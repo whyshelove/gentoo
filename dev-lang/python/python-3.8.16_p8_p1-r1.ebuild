@@ -338,6 +338,9 @@ src_install() {
 	insinto ${rpmmacrodir}/
 	doins "${WORKDIR}"/macros.python38
 
+	dodir ${_libexecdir}
+	dosym "/usr/bin/python${PYVER}" ${_libexecdir}/platform-python
+
 	# Remove static library
 	#rm "${ED}"/usr/$(get_libdir)/libpython*.a || die
 
