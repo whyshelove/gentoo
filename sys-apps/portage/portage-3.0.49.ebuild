@@ -4,7 +4,7 @@
 EAPI=7
 
 DISTUTILS_EXT=1
-PYTHON_COMPAT=( pypy3 python3_{10..12} )
+PYTHON_COMPAT=( pypy3 python3_{9..12} )
 PYTHON_REQ_USE='bzip2(+),threads(+)'
 SETUPTOOLS_USE_DISTUTILS=local
 TMPFILES_OPTIONAL=1
@@ -22,7 +22,7 @@ if [[ ${PV} == 9999 ]] ; then
 	inherit git-r3
 else
 	SRC_URI="https://gitweb.gentoo.org/proj/portage.git/snapshot/${P}.tar.bz2"
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
+	KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc x86"
 fi
 
 LICENSE="GPL-2"
