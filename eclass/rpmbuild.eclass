@@ -1,5 +1,5 @@
 # Copyright 1999-2021 Gentoo Authors
-# Distributed under the terms of the GNU General Public License v2
+# Distributed under the terms of the GNU General Public License v2`
 
 # @ECLASS: rhel.eclass
 # @MAINTAINER:
@@ -7,17 +7,11 @@
 # @SUPPORTED_EAPIS: 5 6 7 8
 # @BLURB: convenience class for extracting Red Hat Enterprise Linux Series RPMs
 
-if [[ -z ${_RHEL_ECLASS} ]] ; then
+if [[ -z ${_RPMBUILD_ECLASS} ]] ; then
+_RPMBUILD_ECLASS=1
 _RHEL_ECLASS=1
 
 inherit macros rpm
-
-if [[ ${PV} == *8888 ]]; then
-	inherit git-r3
-	CENTOS_GIT_REPO_URI="https://gitlab.com/redhat/centos-stream/rpms"
-	EGIT_REPO_URI="${CENTOS_GIT_REPO_URI}/${PN}.git"
-	S="${WORKDIR}/${PN}"
-fi
 
 if [ -z ${MY_PF} ] ; then
 	MY_PR=${PVR##*r}
@@ -67,7 +61,7 @@ if [ -z ${MY_PF} ] ; then
 			openssh )  MY_P=${P/_} ;;
 			shadow )  MY_P=${P/-/-utils-} ;;
 			cups )  MY_P=${P}op2 ;;
-			binutils-libs )  MY_P=${P/-libs} ;;
+			binutils-libs )  MY_PN="binutils"; MY_P=${P/-libs} ;;
 			webkit-gtk )  MY_P=${P/-gtk/2gtk3} ;;
 			libnsl ) MY_P=${P/-/2-};  MY_P=${MY_P} ;;
 			libpcre* ) MY_P=${P/lib};  MY_P=${MY_P} ;;
@@ -106,24 +100,6 @@ if [ -z ${MY_PF} ] ; then
 			python ) MY_PV=${PV%_p*}; S="${WORKDIR}/${MY_P^^[p]}"; MY_P=${MY_P/-/3.$(ver_cut 2)-} ;;
 			*)  ;;
 		esac
-
-	releasever="9"
-	baseurl="https://cdn.redhat.com/content/dist/rhel${releasever}/${releasever}/x86_64/${REPO:-baseos}"
-
-	REPO_SRC="${baseurl}/source/SRPMS/Packages"
-	REPO_BIN="${baseurl}/os/Packages"
-
-	MY_PF=${MY_P}-${MY_PR} 
-
-	case ${PN} in
-		cython | modemmanager ) MY_P=${P} ;;
-		*)  ;;
-	esac
-
-	DIST_PRE_SUF_CATEGORY=${MY_P:0:1}/${MY_PF}.${DPREFIX}${DIST:=el9}${DSUFFIX}
-
-	SRC_URI="${REPO_SRC}/${DIST_PRE_SUF_CATEGORY}.src.rpm"
-	BIN_URI="${REPO_BIN}/${DIST_PRE_SUF_CATEGORY}.${WhatArch:=x86_64}.rpm"
 fi
 
 rpm_clean() {
@@ -135,11 +111,11 @@ rpm_clean() {
 	done
 }
 
-# @FUNCTION: rhel_unpack
+# @FUNCTION: rpmbuild_unpack
 # @USAGE: <rpms>
 # @DESCRIPTION:
 # Unpack the contents of the specified Red Hat Enterprise Linux Series rpms like the unpack() function.
-rhel_unpack() {
+rpmbuild_unpack() {
 	[[ $# -eq 0 ]] && set -- ${A}
 
 	for a in ${@} ; do
@@ -148,27 +124,22 @@ rhel_unpack() {
 		*)	unpack "${a}" ;;
 		esac
 	done
+}
 
+# @FUNCTION: rpmbuild_env_setup
+# @DESCRIPTION:
+# rpmbuild_env_setup
+rpmbuild_env_setup() {
 	RPMBUILD=$HOME/rpmbuild
 	mkdir -p $RPMBUILD
-	ln -s $WORKDIR $RPMBUILD/SOURCES
+	ln -s $WORKDIR/${EGIT_CHECKOUT_DIR} $RPMBUILD/SOURCES
 	ln -s $WORKDIR $RPMBUILD/BUILD
 }
 
-# @FUNCTION: srcrhel_unpack
-# @USAGE: <rpms>
+# @FUNCTION: rpmbuild_prep
 # @DESCRIPTION:
-# Unpack the contents of the specified rpms like the unpack() function as well
-# as any archives that it might contain.  Note that the secondary archive
-# unpack isn't perfect in that it simply unpacks all archives in the working
-# directory (with the assumption that there weren't any to start with).
-srcrhel_unpack() {
-	[[ $# -eq 0 ]] && set -- ${A}
-	rhel_unpack "$@"
-
-	# no .src.rpm files, then nothing to do
-	[[ "$* " != *".src.rpm " ]] && return 0
-
+# build through %prep (unpack sources and apply patches) from <specfile>
+rpmbuild_prep() {
 #	FIND_FILE="${WORKDIR}/*.spec"
 #	FIND_STR="pypi_source"
 #	if [ `grep -c "$FIND_STR" $FIND_FILE` -ne '0' ] ;then
@@ -179,8 +150,6 @@ srcrhel_unpack() {
 #		return 0
 #	fi
 
-	eshopts_push -s nullglob
-
 	#sed -i -e "/#!%{__python3}/d" \
 	#	${WORKDIR}/*.spec
 	
@@ -188,53 +157,83 @@ srcrhel_unpack() {
 		local p
 
 		for p in "${unused_patches[@]}"; do
-			sed -i "/${p}/d" ${WORKDIR}/*.spec || die
+			sed -i "/${p}/d" ${WORKDIR}/${EGIT_CHECKOUT_DIR}/*.spec || die
 		done
 	fi
 
 	if [[ ${STAGE} != "unprep" ]]; then
-		rpmbuild -bp $WORKDIR/*.spec --nodeps
+		rpmbuild -bp $WORKDIR/${EGIT_CHECKOUT_DIR}/*.spec --nodeps
 	fi
+}
+
+# @FUNCTION: srcrpmbuild_unpack
+# @USAGE: <rpms>
+# @DESCRIPTION:
+# Unpack the contents of the specified rpms like the unpack() function as well
+# as any archives that it might contain.  Note that the secondary archive
+# unpack isn't perfect in that it simply unpacks all archives in the working
+# directory (with the assumption that there weren't any to start with).
+srcrpmbuild_unpack() {
+	[[ $# -eq 0 ]] && set -- ${A}
+	rpm_unpack "$@"
+
+	# no .src.rpm files, then nothing to do
+	[[ "$* " != *".src.rpm " ]] && return 0
+
+	eshopts_push -s nullglob
+
+	rpmbuild_env_setup
+	rpmbuild_prep
 
 	eshopts_pop
 
 	return 0
 }
 
-# @FUNCTION: rhel_src_unpack
+rhel_src_unpack() {
+	rpmbuild_src_unpack
+}
+
+# @FUNCTION: rpmbuild_src_unpack
 # @DESCRIPTION:
 # Automatically unpack all archives in ${A} including rpms.  If one of the
 # archives in a source rpm, then the sub archives will be unpacked as well.
-rhel_src_unpack() {
-	if [[ ${PV} == *8888 ]]; then
+rpmbuild_src_unpack() {
+	if [[ -n ${_CS_ECLASS} ]]; then
 		git-r3_src_unpack
+		rpmbuild_env_setup
+		ln -s $DISTDIR/${MY_PN:-${PN}}* $WORKDIR/${EGIT_CHECKOUT_DIR}/ 
+		rpmdev-spectool -l -R ${WORKDIR}/${EGIT_CHECKOUT_DIR}/*.spec
+		rpmbuild_prep
 		return
 	fi
 
 	local a
 	for a in ${A} ; do
 		case ${a} in
-		*.src.rpm) [[ ${a} =~ ".src.rpm" ]] && srcrhel_unpack "${a}" ;;
+		*.src.rpm) [[ ${a} =~ ".src.rpm" ]] && srcrpmbuild_unpack "${a}" ;;
 		*.rpm) [[ ${a} =~ ".rpm" ]] && rpm_unpack "${a}" && mkdir -p $S ;;
 		*)     unpack "${a}" ;;
 		esac
 	done
 }
 
-# @FUNCTION: rhel_src_compile
+# @FUNCTION: rpmbuild_compile
 # @DESCRIPTION:
-rhel_src_compile() {
+# build through %build (%prep, then compile) from <specfile>
+rpmbuild_compile() {
 	rpmbuild  -bc $WORKDIR/*.spec --nodeps --nodebuginfo
 }
 
-# @FUNCTION: rhel_src_install
+# @FUNCTION: rpmbuild_install
 # @DESCRIPTION:
-rhel_src_install() {
+# build through %install (skip straight to specified stage %prep, %build) from <specfile>
+rpmbuild_install() {
 	sed -i  -e '/rm -rf $RPM_BUILD_ROOT/d' \
 		-e '/meson_install/d' \
 		${WORKDIR}/*.spec
 
-	rpmbuild --short-circuit -bi $WORKDIR/*.spec --nodeps --rmsource --nocheck --nodebuginfo --buildroot=$D
+	rpmbuild --short-circuit -bi $WORKDIR/*.spec --nodeps --rmsource --nocheck --nodebuginfo --buildroot="${ED}"
 }
 
 # @FUNCTION: rhel_bin_install
@@ -247,7 +246,9 @@ rhel_bin_install() {
 	mv "${ED}"/${P} "${WORKDIR}"/
 }
 
-rhel_pkg_postinst() {
+# @FUNCTION: rpmbuild_pkg_postinst
+# @DESCRIPTION:
+rpmbuild_pkg_postinst() {
 	if [[ -n ${QLIST} ]] ; then
 		einfo "\033[31mqlist ${PN}\033[0m"
 		qlist ${PN}

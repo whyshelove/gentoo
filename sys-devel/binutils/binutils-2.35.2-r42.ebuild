@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit libtool flag-o-matic gnuconfig strip-linguas toolchain-funcs autotools rhel9
+inherit libtool flag-o-matic gnuconfig strip-linguas toolchain-funcs autotools c9s
 
 DESCRIPTION="Tools necessary to build programs"
 HOMEPAGE="https://sourceware.org/binutils/"
@@ -28,10 +28,11 @@ if [[ ${PV} == 9999* ]]; then
 else
 	PATCH_BINUTILS_VER=${PATCH_BINUTILS_VER:-${PV}}
 	PATCH_DEV=${PATCH_DEV:-slyfox}
+	[[ -z ${_CS_ECLASS} ]] || SRC_URI="mirror://gnu/binutils/binutils-${PV}.tar.xz"
 	[[ -z ${PATCH_VER} ]] || SRC_URI+=" 
 		https://dev.gentoo.org/~${PATCH_DEV}/distfiles/binutils-${PATCH_BINUTILS_VER}-patches-${PATCH_VER}.tar.xz"
 	SLOT=$(ver_cut 1-2)
-	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
+	KEYWORDS="~alpha ~amd64 arm ~arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
 fi
 
 #

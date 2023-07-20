@@ -1,6 +1,6 @@
 # Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-REPO=appstream
+REPO=AppStream
 
-inherit rhel9
+inherit c9s
