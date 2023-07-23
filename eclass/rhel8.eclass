@@ -9,13 +9,7 @@
 if [[ -z ${_RHEL8_ECLASS} ]] ; then
 _RHEL8_ECLASS=1
 
-	if [[ ${PV} == *8888 ]]; then
-		inherit git-r3
-		CENTOS_GIT_REPO_SRC="https://gitlab.com/redhat/centos-stream/src"
-		EGIT_REPO_SRC="${CENTOS_GIT_REPO_SRC}/${PN}.git"
-		S="${WORKDIR}/${P}"
-	else
-		inherit rhel
+	if [ -z ${MY_PF} ] ; then
 		MY_PR=${PVR##*r}
 
 		S="${WORKDIR}/${P/_p*}"
@@ -48,6 +42,7 @@ _RHEL8_ECLASS=1
 			openssh ) MY_P=${P/_} ;;
 			procps ) MY_P=${P/-/-ng-}; MY_P=${MY_P} ;;
 			gst-plugins* ) MY_P=${P/-/reamer1-} ;;
+			modemmanager ) MY_P=${P/modemmanager/ModemManager} ;;
 			sgabios | edk2-ovmf ) MY_P=${P}git${GITCOMMIT} ;;
 			vte ) MY_P=${P/-/291-} ;;
 			rhel-kernel ) MY_P=${P/rhel-} ;;
@@ -66,17 +61,9 @@ _RHEL8_ECLASS=1
 			*)  ;;
 		esac
 
-		releasever="8"
-		baseurl="https://cdn.redhat.com/content/dist/rhel${releasever}/${releasever}/x86_64/${REPO:-baseos}"
+		DISTNUM=${BASH_SOURCE:0-8:1}
 
-		REPO_SRC="${baseurl}/source/SRPMS/Packages"
-		REPO_BIN="${baseurl}/os/Packages"
-
-		MY_PF=${MY_P}-${MY_PR}
-		DIST_PRE_SUF_CATEGORY=${MY_P:0:1}/${MY_PF}.${DPREFIX}${DIST:=el8}${DSUFFIX}
-
-		SRC_URI="${REPO_SRC}/${DIST_PRE_SUF_CATEGORY}.src.rpm"
-		BIN_URI="${REPO_BIN}/${DIST_PRE_SUF_CATEGORY}.${WhatArch:=x86_64}.rpm"
+		inherit rpmbuild
 	fi
 
 fi

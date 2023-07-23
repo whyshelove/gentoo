@@ -8,9 +8,6 @@
 
 if [[ -z ${_RHEL9_ECLASS} ]] ; then
 _RHEL9_ECLASS=1
-fi
-
-inherit rhel
 
 if [ -z ${MY_PF} ] ; then
 	MY_PR=${PVR##*r}
@@ -54,20 +51,12 @@ if [ -z ${MY_PF} ] ; then
 		esac
 	fi
 
-		MY_P=${MY_P/_p*}
+	MY_P=${MY_P/_p*}
 
-		releasever="9"
-		baseurl="https://cdn.redhat.com/content/dist/rhel${releasever}/${releasever}/x86_64/${REPO:-baseos}"
+	DISTNUM=${BASH_SOURCE:0-8:1}
 
-		REPO_SRC="${baseurl}/source/SRPMS/Packages"
-		REPO_BIN="${baseurl}/os/Packages"
+	inherit rpmbuild
 
-		MY_PF=${MY_P}-${MY_PR}
+fi
 
-		[[ ${PN} == cython ]] && MY_P=${P}
-
-		DIST_PRE_SUF_CATEGORY=${MY_P:0:1}/${MY_PF}.${DPREFIX}${DIST:=el9}${DSUFFIX}
-
-		SRC_URI="${REPO_SRC}/${DIST_PRE_SUF_CATEGORY}.src.rpm"
-		BIN_URI="${REPO_BIN}/${DIST_PRE_SUF_CATEGORY}.${WhatArch:=x86_64}.rpm"
 fi
