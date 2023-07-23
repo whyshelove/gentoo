@@ -43,7 +43,7 @@ src_install() {
 
 	sed -i 's/_efi_vendor\ redhat/_efi_vendor\ gentoo/g' "${ED}"/${_rpmmacrodir}/macros.efi-srpm
 
-	sed -i 's/usr\///g' "${ED}"/${_rpmmacrodir}/redhat/gpgverify
+	sed -i 's/usr\///g' "${ED}"/${_rpmconfigdir}/redhat/gpgverify
 
 	rm -rf "${ED}"/etc/{os-release,issue} "${ED}"/usr/lib/os-release
 }
