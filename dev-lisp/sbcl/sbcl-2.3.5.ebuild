@@ -22,7 +22,9 @@ BV_SPARC_SOLARIS=1.0.23
 
 DESCRIPTION="Steel Bank Common Lisp (SBCL) is an implementation of ANSI Common Lisp"
 HOMEPAGE="https://www.sbcl.org/ http://sbcl.sourceforge.net/"
+BSD_SOCKETS_TEST_PATCH=bsd-sockets-test-2.3.1.patch
 SRC_URI="mirror://sourceforge/sbcl/${P}-source.tar.bz2
+	https://dev.gentoo.org/~grozin/${BSD_SOCKETS_TEST_PATCH}.gz
 	!system-bootstrap? (
 		x86? ( mirror://sourceforge/sbcl/${PN}-${BV_X86}-x86-linux-binary.tar.bz2 )
 		amd64? ( mirror://sourceforge/sbcl/${PN}-${BV_AMD64}-x86-64-linux-binary.tar.bz2 )
@@ -39,7 +41,7 @@ SRC_URI="mirror://sourceforge/sbcl/${P}-source.tar.bz2
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="-* ~amd64 ~ppc ~ppc64 ~sparc ~x86 ~amd64-linux ~x86-linux ~x64-macos"
+KEYWORDS="-* amd64 ~ppc ppc64 ~sparc x86 ~amd64-linux ~x86-linux ~x64-macos"
 IUSE="system-bootstrap debug doc source +threads +unicode +zstd"
 
 CDEPEND=">=dev-lisp/asdf-3.3:= \
@@ -104,7 +106,7 @@ src_prepare() {
 	# bug #468482
 	eapply "${FILESDIR}"/concurrency-test-2.0.1.patch
 	# bugs #486552, #527666, #517004
-	eapply "${FILESDIR}"/bsd-sockets-test-2.3.1.patch
+	eapply "${WORKDIR}"/${BSD_SOCKETS_TEST_PATCH}
 	# bugs #560276, #561018
 	eapply "${FILESDIR}"/sb-posix-test-2.2.9.patch
 	# bug #767742

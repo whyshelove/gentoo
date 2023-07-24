@@ -28,7 +28,7 @@ _hardened_ldflags="${_hardening_ldflags}"
 
 _annotated_cflags="${_annobin_cflags}"
 
-__global_compiler_flags="-O2 -flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS ${_hardened_cflags} -fstack-protector-strong ${_annotated_cflags}"
+__global_compiler_flags="-flto=auto -ffat-lto-objects -fexceptions -g -grecord-gcc-switches -pipe -Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS ${_hardened_cflags} -fstack-protector-strong ${_annotated_cflags}"
 
 optflags="${__global_compiler_flags} -fasynchronous-unwind-tables -fstack-clash-protection"
 [[ $(tc-arch) == "amd64" ]] && optflags+=" -m64 -fcf-protection"

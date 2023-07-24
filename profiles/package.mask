@@ -33,6 +33,50 @@
 
 #--- END OF EXAMPLES ---
 
+# Michał Górny <mgorny@gentoo.org> (2023-07-23)
+# Package with no maintainer and tests restricted (also test deps look
+# suspicious).  It was only needed for tests
+# in dev-python/pyvirtualdisplay, and that package didn't support
+# the newest version anyway.  No revdeps left.
+# Removal on 2023-08-22.  Bug #910708.
+dev-python/vncdotool
+
+# David Seifert <soap@gentoo.org> (2023-07-22)
+# Upstream unresponsive and package is pretty much dead. dev-python/tqdm
+# is a modern and fast replacement for dev-python/progressbar.
+# Removal on 2023-08-21. Bug #909929, #910031.
+dev-python/progressbar
+sys-apps/gcp
+
+# Hans de Graaff <graaff@gentoo.org> (2023-07-22)
+# Does not compile with modern compilers. Last upstream release in
+# 2011. No activity upstream. No reverse dependencies. Masked for
+# removal on 2023-08-22.
+dev-ruby/fast_xs
+
+# Arthur Zamarin <arthurzam@gentoo.org> (2023-07-21)
+# Broken runtime with ncurses version since last 2 years (unusable at
+# all), no upstream activity of any sort since 2016.
+# Removal on 2023-08-20.  Bug #910649.
+app-cdr/cdw
+
+# Hans de Graaff <graaff@gentoo.org> (2023-07-21)
+# Obsolete slot for a package that should not have been slotted. Please
+# use the newer 1.2.3 slot instead. Masked for removal on 2023-08-21.
+dev-ruby/openssl-ccm:1.2.2
+
+# Michał Górny <mgorny@gentoo.org> (2023-07-21)
+# Fragile package requiring custom patching.  The maintainer resigned.
+# No reverse dependencies.
+# Removal on 2023-08-20.  Bug #910619.
+dev-python/cx_Freeze
+
+# Michał Górny <mgorny@gentoo.org> (2023-07-21)
+# The ebuild has not been bumped for a year now.  It doesn't have
+# working tests.  No reverse dependencies.
+# Removal on 2023-08-20.  Bug #907460.
+dev-python/ansible-runner
+
 # Michał Górny <mgorny@gentoo.org> (2023-07-19)
 # Backport package specific to Python 3.9.  No longer necessary now
 # that pypy3 is 3.10.
@@ -40,7 +84,6 @@
 dev-python/importlib-resources
 
 # Hans de Graaff <graaff@gentoo.org> (2023-07-19)
-
 # Obsolete components for older, removed, cucumber versions that have no
 # value on their own. Masked for removal on 2023-08-19.
 dev-util/cucumber-wire
@@ -190,7 +233,7 @@ dev-util/cucumber-html-formatter:17
 # Testing. An upgrade from 102 isn't recommended due to downgrading
 # most likely not being possible. Back up your profile before
 # attempting. Fresh install should be fine. Bug #910229
-~mail-client/thunderbird-115.0
+>=mail-client/thunderbird-115.0
 
 # Michał Górny <mgorny@gentoo.org> (2023-07-12)
 # Having scikit-build-core installed still breaks building setuptools
@@ -312,16 +355,6 @@ dev-ruby/multi_test:0
 games-action/descent3
 games-action/descent3-demo
 
-# Hans de Graaff <graaff@gentoo.org> (2023-06-23)
-# Deprecated upstream, who recommends to use the Open3 method instead.
-# No reverse dependencies. Masked for removal on 2023-07-23.
-dev-ruby/subexec
-
-# Hans de Graaff <graaff@gentoo.org> (2023-06-23)
-# Deprecated package. Renamed to dev-ruby/optimist by upstream. No
-# reverse dependencies. Masked for removal on 2023-07-23.
-dev-ruby/trollop
-
 # Sam James <sam@gentoo.org> (2023-06-23)
 # Segfaults with non-bison yacc.
 =app-shells/bash-5.2_p15-r4
@@ -349,11 +382,6 @@ media-sound/gmusicbrowser
 # Causes segfaults in dependent dev-util/conf2struct.
 # See bug #908989 and related bug #908982.
 =dev-perl/Conf-Libconfig-1.0.0
-
-# Fabian Groffen <grobian@gentoo.org> (2023-06-21)
-# Ancient OSX integration package, not keyworded for any current arch
-# Removal on 2023-07-21.  Bug #908938.
-x11-themes/gtk-engines-quartz
 
 # Michał Górny <mgorny@gentoo.org> (2023-06-21)
 # suitesparseconfig-7.0.0 fails to build with multilib enabled
@@ -486,7 +514,7 @@ media-gfx/curaengine
 # Quite broken, see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=109672.
 =sys-devel/gcc-14.0.0_pre20230430
 
-# Andreas Sturmlechner <asturm@gentoo.org> 2023-04-30
+# Andreas Sturmlechner <asturm@gentoo.org> (2023-04-30)
 # Breaking even latest ~arch version of KDE PIM, bug #905352.
 =dev-libs/ktextaddons-1.3*
 
