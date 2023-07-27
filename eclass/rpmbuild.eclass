@@ -199,7 +199,7 @@ rhel_src_unpack() {
 # Automatically unpack all archives in ${A} including rpms.  If one of the
 # archives in a source rpm, then the sub archives will be unpacked as well.
 rpmbuild_src_unpack() {
-	if [[ -n ${_CS_ECLASS} ]]; then
+	if [[ ${PVR} == *9999 ]] || [[ -n ${_CS_ECLASS} ]]; then
 		git-r3_src_unpack
 		rpmbuild_env_setup
 		ln -s $DISTDIR/${MY_PN:-${PN}}* $WORKDIR/${EGIT_CHECKOUT_DIR}/ 

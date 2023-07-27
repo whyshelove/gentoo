@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit libtool flag-o-matic gnuconfig strip-linguas toolchain-funcs autotools c9s
+inherit libtool flag-o-matic gnuconfig strip-linguas toolchain-funcs autotools cs9
 
 DESCRIPTION="Tools necessary to build programs"
 HOMEPAGE="https://sourceware.org/binutils/"
