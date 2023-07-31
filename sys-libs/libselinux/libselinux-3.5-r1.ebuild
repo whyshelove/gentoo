@@ -6,7 +6,7 @@ PYTHON_COMPAT=( python3_{9..11} )
 USE_RUBY="ruby30 ruby31 ruby32"
 
 # No, I am not calling ruby-ng
-inherit python-r1 toolchain-funcs multilib-minimal rhel9
+inherit python-r1 toolchain-funcs multilib-minimal cs9
 
 MY_PV="${PV//_/-}"
 MY_P="${PN}-${MY_PV}"
@@ -19,6 +19,7 @@ if [[ ${PV} == 9999 ]]; then
 	EGIT_REPO_URI="https://github.com/SELinuxProject/selinux.git"
 	S="${WORKDIR}/${P}/${PN}"
 else
+	[[ -z ${_CS_ECLASS} ]] || SRC_URI="https://github.com/SELinuxProject/selinux/releases/download/${MY_PV}/${MY_P}.tar.gz"
 	KEYWORDS="amd64 arm arm64 ~mips ~riscv x86"
 	S="${WORKDIR}/${MY_P}"
 fi
@@ -155,12 +156,12 @@ pkg_postinst() {
 	# Fix bug 473502
 	for POLTYPE in ${POLICY_TYPES};
 	do
-		mkdir -p /etc/selinux/${POLTYPE}/contexts/files || die
-		touch /etc/selinux/${POLTYPE}/contexts/files/file_contexts.local || die
+		mkdir -p "${ROOT}/etc/selinux/${POLTYPE}/contexts/files" || die
+		touch "${ROOT}/etc/selinux/${POLTYPE}/contexts/files/file_contexts.local" || die
 		# Fix bug 516608
 		for EXPRFILE in file_contexts file_contexts.homedirs file_contexts.local ; do
-			if [[ -f "/etc/selinux/${POLTYPE}/contexts/files/${EXPRFILE}" ]]; then
-				sefcontext_compile /etc/selinux/${POLTYPE}/contexts/files/${EXPRFILE} \
+			if [[ -f "${ROOT}/etc/selinux/${POLTYPE}/contexts/files/${EXPRFILE}" ]]; then
+				sefcontext_compile "${ROOT}/etc/selinux/${POLTYPE}/contexts/files/${EXPRFILE}" \
 				|| die "Failed to recompile contexts"
 			fi
 		done
