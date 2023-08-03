@@ -9,7 +9,10 @@ PATCHSET_VERSION="2.9.12-r5-patchset"
 
 PYTHON_COMPAT=( python3_{9..11} )
 PYTHON_REQ_USE="xml"
-DSUFFIX="_1"
+
+suffix_ver=$(ver_cut 5)
+[[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}.1"
+
 inherit autotools flag-o-matic prefix python-r1 multilib-minimal rhel9
 
 XSTS_HOME="http://www.w3.org/XML/2004/xml-schema-test-suite"
@@ -33,7 +36,7 @@ SRC_URI+="
 		${XSTS_HOME}/${XSTS_NAME_2}/${XSTS_TARBALL_2}
 		https://www.w3.org/XML/Test/${XMLCONF_TARBALL}
 	)"
-S="${WORKDIR}/${PN}-${PV%_rc*}"
+S="${WORKDIR}/${PN}-${PV%_p*}"
 
 LICENSE="MIT"
 SLOT="2"

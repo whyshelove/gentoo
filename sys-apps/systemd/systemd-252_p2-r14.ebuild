@@ -25,7 +25,8 @@ else
 	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
 fi
 
-DSUFFIX="_2.1"
+suffix_ver=$(ver_cut 3)
+[[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}.3"
 
 inherit bash-completion-r1 linux-info meson-multilib pam
 inherit python-any-r1 systemd toolchain-funcs udev usr-ldscript rhel9
