@@ -14,7 +14,7 @@ DESCRIPTION="Extended text editor for PIM applications"
 
 LICENSE="LGPL-2.1+"
 SLOT="5"
-KEYWORDS="~amd64 ~arm64 ~ppc64 ~riscv ~x86"
+KEYWORDS="amd64 arm64 ~ppc64 ~riscv x86"
 IUSE="speech"
 
 RESTRICT="test"
@@ -34,7 +34,7 @@ RDEPEND="
 	>=kde-frameworks/kxmlgui-${KFMIN}:5
 	>=kde-frameworks/sonnet-${KFMIN}:5
 	>=kde-frameworks/syntax-highlighting-${KFMIN}:5
-	speech? ( dev-libs/ktextaddons:5[speech] )
+	speech? ( dev-libs/ktextaddons:5[speech=] )
 "
 DEPEND="${RDEPEND}
 	test? ( >=kde-frameworks/ktextwidgets-${KFMIN}:5 )

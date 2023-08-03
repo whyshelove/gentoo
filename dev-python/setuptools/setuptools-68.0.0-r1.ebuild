@@ -7,7 +7,7 @@ EAPI=8
 # please bump dev-python/ensurepip-setuptools along with this package!
 
 DISTUTILS_USE_PEP517=standalone
-PYTHON_TESTED=( python3_{10..12} pypy3 )
+PYTHON_TESTED=( python3_{9..12} pypy3 )
 PYTHON_COMPAT=( "${PYTHON_TESTED[@]}" )
 PYTHON_REQ_USE="xml(+)"
 
@@ -34,6 +34,7 @@ RDEPEND="
 	>=dev-python/platformdirs-2.6.2-r1[${PYTHON_USEDEP}]
 	>=dev-python/tomli-2.0.1[${PYTHON_USEDEP}]
 	>=dev-python/wheel-0.37.1-r1[${PYTHON_USEDEP}]
+	>=dev-python/importlib-metadata-4.12.0[${PYTHON_USEDEP}]
 "
 BDEPEND="
 	${RDEPEND}

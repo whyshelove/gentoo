@@ -11,7 +11,7 @@ HOMEPAGE="https://kid3.kde.org/"
 
 if [[ ${KDE_BUILD_TYPE} != live ]]; then
 	SRC_URI="mirror://kde/stable/${PN}/${PV}/${P}.tar.xz"
-	KEYWORDS="~amd64 ~x86"
+	KEYWORDS="amd64 x86"
 fi
 
 LICENSE="GPL-2+"
@@ -80,6 +80,7 @@ src_prepare() {
 src_configure() {
 	local mycmakeargs=(
 		-DBUILD_WITH_QT6=OFF
+		-DWITH_QAUDIODECODER=ON # bug 855281
 		-DWITH_CHROMAPRINT=$(usex acoustid)
 		-DWITH_DBUS=$(usex mpris)
 		-DWITH_FLAC=$(usex flac)

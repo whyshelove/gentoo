@@ -14,7 +14,7 @@ HOMEPAGE="https://apps.kde.org/neochat/"
 
 LICENSE="GPL-3+ handbook? ( CC-BY-SA-4.0 )"
 SLOT="0"
-KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
+KEYWORDS="amd64 arm64 ~ppc64 x86"
 
 DEPEND="
 	app-text/cmark:=
@@ -49,3 +49,5 @@ RDEPEND="${DEPEND}
 	>=kde-frameworks/purpose-${KFMIN}:5
 "
 BDEPEND="virtual/pkgconfig"
+
+PATCHES=( "${FILESDIR}"/${P}-libquotient-0.8-{1,2}.patch )
