@@ -3,7 +3,7 @@
 
 EAPI=8
 
-FIREFOX_PATCHSET="firefox-116-patches-01.tar.xz"
+FIREFOX_PATCHSET="firefox-116-patches-02.tar.xz"
 
 LLVM_MAX_SLOT=16
 
@@ -122,7 +122,7 @@ BDEPEND="${PYTHON_DEPS}
 			x11-base/xorg-server[xvfb]
 			x11-apps/xhost
 		)
-		wayland? (
+		!X? (
 			>=gui-libs/wlroots-0.15.1-r1[tinywl]
 			x11-misc/xkeyboard-config
 		)
