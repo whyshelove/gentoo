@@ -2,7 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-PYTHON_COMPAT=( python3_{9..12} )
+
+PYTHON_COMPAT=( python3_{9..11} )
 
 inherit gnome.org meson python-any-r1 vala xdg
 
