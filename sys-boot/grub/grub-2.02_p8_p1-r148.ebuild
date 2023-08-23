@@ -18,7 +18,7 @@ if [[ -n ${GRUB_AUTORECONF} ]]; then
 	inherit autotools
 fi
 
-#DSUFFIX="_$(ver_cut 4).$(ver_cut 6)"
+DSUFFIX="_$(ver_cut 4).$(ver_cut 6)"
 _hardened_build="undefine"
 _annotated_build="undefine"
 

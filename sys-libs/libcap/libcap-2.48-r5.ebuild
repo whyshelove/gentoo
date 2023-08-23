@@ -3,6 +3,7 @@
 
 EAPI=7
 
+DSUFFIX="_8"
 inherit multilib-minimal toolchain-funcs pam usr-ldscript rhel8
 
 DESCRIPTION="POSIX 1003.1e capabilities"

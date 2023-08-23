@@ -473,8 +473,9 @@ rhel-kernel-install_pkg_postrm() {
 		local ver="${KVERREL}"
 		local image_path=$(rhel-kernel_get_image_path)
 		ebegin "Removing initramfs"
-		rm -f "${EROOT}/usr/src/kernels/${ver}/${image_path%/*}"/initrd{,.uefi} &&
-			find "${EROOT}/usr/src/kernels/${ver}" -depth -type d -empty -delete
+		rm -f "${EROOT}/boot/initramfs-${ver}.img"
+		#rm -f "${EROOT}/usr/src/kernels/${ver}/${image_path%/*}"/initrd{,.uefi} &&
+			#find "${EROOT}/usr/src/kernels/${ver}" -depth -type d -empty -delete
 		eend ${?}
 	fi
 }
