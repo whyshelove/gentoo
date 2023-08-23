@@ -6,7 +6,7 @@ EAPI=8
 PYTHON_COMPAT=( python3_{9..11} )
 PYTHON_REQ_USE="xml(+)"
 CHROMIUM_VER="108.0.5359.181"
-CHROMIUM_PATCHES_VER="112.0.5615.138"
+CHROMIUM_PATCHES_VER="114.0.5735.133"
 
 inherit check-reqs estack flag-o-matic multiprocessing python-any-r1 qt6-build
 
@@ -87,7 +87,9 @@ DEPEND="${RDEPEND}
 	media-libs/libglvnd
 "
 
-PATCHES=( "${FILESDIR}/${PN}-6.5.1-normalise-clipboard-permissions.patch" )
+PATCHES=(
+	"${FILESDIR}"/${PN}-5.15.10_p20230623-ffmpeg-binutils-2.41.patch
+)
 
 python_check_deps() {
 	python_has_version "dev-python/html5lib[${PYTHON_USEDEP}]"

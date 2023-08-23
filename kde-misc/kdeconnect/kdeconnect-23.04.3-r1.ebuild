@@ -16,12 +16,12 @@ HOMEPAGE="https://kdeconnect.kde.org/ https://apps.kde.org/kdeconnect/"
 
 LICENSE="GPL-2+"
 SLOT="5"
-KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
+KEYWORDS="amd64 arm64 ~ppc64 x86"
 IUSE="bluetooth pulseaudio telephony X"
 
 RESTRICT="test"
 
-DEPEND="
+COMMON_DEPEND="
 	>=app-crypt/qca-2.3.0:2[qt5(+),ssl]
 	>=dev-libs/wayland-1.15.0
 	>=dev-qt/qtdbus-${QTMIN}:5
@@ -61,7 +61,11 @@ DEPEND="
 		x11-libs/libXtst
 	)
 "
-RDEPEND="${DEPEND}
+DEPEND="${COMMON_DEPEND}
+	dev-libs/wayland-protocols
+"
+RDEPEND="${COMMON_DEPEND}
+	dev-libs/kirigami-addons:5
 	dev-libs/kpeoplevcard
 	>=dev-qt/qtgraphicaleffects-${QTMIN}:5
 	>=dev-qt/qtmultimedia-${QTMIN}:5[qml]
@@ -76,7 +80,6 @@ BDEPEND="
 PATCHES=(
 	"${FILESDIR}/${PN}-21.07.80-revert-disable-kpeople.patch"
 	"${FILESDIR}/${PN}-23.04.0-telephony-optional.patch" # bug 904823
-	"${FILESDIR}/${PN}-23.04.1-explicit-constructor-for-QSslCertificate.patch" # bug 841416
 )
 
 src_configure() {
