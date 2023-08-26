@@ -3,7 +3,7 @@
 
 EAPI=8
 
-inherit flag-o-matic qmake-utils udev xdg-utils
+inherit check-reqs flag-o-matic qmake-utils udev xdg-utils
 
 if [[ ${PV} == *9999* ]]; then
 	inherit git-r3
@@ -11,7 +11,7 @@ if [[ ${PV} == *9999* ]]; then
 else
 	SRC_URI="https://gitlab.com/CalcProgrammer1/OpenRGB/-/archive/release_${PV}/OpenRGB-release_${PV}.tar.bz2"
 	S="${WORKDIR}/OpenRGB-release_${PV}"
-	KEYWORDS="~amd64 ~loong ~x86"
+	KEYWORDS="amd64 ~loong ~x86"
 	PATCHES=( "${FILESDIR}"/OpenRGB-0.9-build-system.patch )
 fi
 
@@ -45,6 +45,8 @@ PATCHES+=(
 	"${FILESDIR}"/OpenRGB-0.7-r1-udev.patch
 	"${FILESDIR}"/OpenRGB-0.9-udev-check.patch
 )
+
+CHECKREQS_DISK_BUILD="2G"
 
 src_prepare() {
 	default
