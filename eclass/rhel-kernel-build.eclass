@@ -348,21 +348,24 @@ rhel-kernel-build_src_install() {
 	find "${D}" -type d -empty -exec rmdir {} + || die
 
 	save_config .config
+
+    if use signmodules; then
+  	echo "**** signmodules. ****"
+        use debug && ${modsign_cmd} certs/signing_key.pem.sign+debug certs/signing_key.x509.sign+debug "${ED}"/lib/modules/${KVERREL}+debug/
+        use up && ${modsign_cmd} certs/signing_key.pem.sign certs/signing_key.x509.sign "${ED}"/lib/modules/${KVERREL}/
+    fi
+
+    if use zipmodules; then
+   	echo "**** zipmodules. ****"
+        find "${ED}"/lib/modules/ -type f -name '*.ko' | "${WORKDIR}"/parallel_xz.sh $MAKEOPTS;
+	find "${ED}"/lib/modules/ -type f -name '*.ko' | xargs rm -f;
+    fi
 }
 
 # @FUNCTION: rhel-kernel-build_pkg_postinst
 # @DESCRIPTION:
 # Combine postinst from kernel-install and savedconfig eclasses.
 rhel-kernel-build_pkg_postinst() {
-    if use signmodules; then
-        use debug && ${modsign_cmd} certs/signing_key.pem.sign+debug certs/signing_key.x509.sign+debug "${ED}"/lib/modules/${KVERREL}+debug/
-        use up && ${modsign_cmd} certs/signing_key.pem.sign certs/signing_key.x509.sign "${ED}"/lib/modules/${KVERREL}/
-    fi
-
-    if use zipmodules; then
-        find "${ED}"/lib/modules/ -type f -name '*.ko' | "${WORKDIR}"/parallel_xz.sh;
-    fi
-
 	rhel-kernel-install_pkg_postinst
 
 	grub-mkconfig -o /boot/efi/EFI/gentoo/grub.cfg || die

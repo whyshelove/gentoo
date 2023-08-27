@@ -58,7 +58,7 @@ REQUIRED_USE="
 	grub_platforms_qemu? ( fonts )
 	grub_platforms_ieee1275? ( fonts )
 	grub_platforms_loongson? ( fonts )
-    sign? ( ^^ ( amd64 arm64 ) )
+	sign? ( ^^ ( amd64 arm64 ) )
 "
 
 BDEPEND="
@@ -252,7 +252,10 @@ grub_configure() {
 	)
 
 	# Set up font symlinks
-	ln -s "${WORKDIR}/${UNIFONT}.pcf" unifont.pcf || die
+	if use fonts; then
+		ln -rs "${WORKDIR}/${UNIFONT}.pcf" unifont.pcf || die
+	fi
+
 	if use themes; then
 		ln -s "${WORKDIR}/${DEJAVU}/ttf/DejaVuSans.ttf" DejaVuSans.ttf || die
 	fi
@@ -327,14 +330,26 @@ src_test() {
 do_common_install()
 {
 	diropts -m0700
-	dodir /${efi_esp_dir} /boot/grub /boot/loader/entries boot/$PN/themes/system ${_sysconfdir}/{default,sysconfig}
+	dodir /${efi_esp_dir} /boot/grub /boot/loader/entries /boot/$PN/themes/system ${_sysconfdir}/{default,sysconfig}
 
 	touch ${ED}${_sysconfdir}/default/grub
 	dosym ../default/grub ${_sysconfdir}/sysconfig/grub
 
+	dosym ${efi_esp_dir}/grub.cfg ${_sysconfdir}/sysconfig/${PN}-efi.cfg
+
 	exeopts -m0700
 	exeinto /${efi_esp_dir}
 	doexe ${grubefiname} ${grubeficdname}
+
+	insopts -m0700
+	insinto /${efi_esp_dir}/fonts/
+	doins ${ED}/usr/share/grub/unicode.pf2
+
+	if use ppc64; then
+		rm -f ${ED}${_sysconfdir}/grub.d/10_linux
+	else
+		rm -f ${ED}${_sysconfdir}/grub.d/10_linux_bls
+	fi
 
 	${ED}/${_bindir}/grub2-editenv ${ED}/${efi_esp_dir}/grubenv create
 	dosym ../efi/EFI/${efi_vendor}/grubenv /boot/grub/grubenv
@@ -349,7 +364,7 @@ src_install() {
 	einstalldocs
 
 	insinto /etc/default
-	newins "${FILESDIR}"/grub.default-3 grub
+	newins "${FILESDIR}"/grub.default-rhel grub
 
 	diropts -m0700
 	dodir /boot/loader/entries 
@@ -385,5 +400,5 @@ pkg_postinst() {
 	fi
 
 	ewarn "\033[33mYour separate efi partition must be mounted at /boot/efi.\033[0m"
-	ewarn "\033[33mIf use enable sign, Kernel must use sign kernel and modules.\033[0m"
+	ewarn "\033[33mIf use enable sign, Kernel best use sign kernel and modules.\033[0m"
 }
