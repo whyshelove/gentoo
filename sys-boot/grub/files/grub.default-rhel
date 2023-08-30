@@ -10,19 +10,20 @@
 # their associated values.
 
 GRUB_DISTRIBUTOR="$(sed 's, release .*$,,g' /etc/system-release)"
-GRUB_TERMINAL_OUTPUT="console"
-GRUB_ENABLE_BLSCFG=true
+#GRUB_TERMINAL_OUTPUT="console"
 GRUB_DISABLE_OS_PROBER=true
+# BLS support should disabled when it's a Xen machine or "/usr/sbin/new-kernel-pkg" path exist.
+GRUB_ENABLE_BLSCFG=true
 
 # Default menu entry
-#GRUB_DEFAULT=saved
+GRUB_DEFAULT=saved
 
 # Boot the default entry this many seconds after the menu is displayed
 #GRUB_TIMEOUT=5
 #GRUB_TIMEOUT_STYLE=menu
 
 # Append parameters to the linux kernel command line
-#GRUB_CMDLINE_LINUX=""
+#GRUB_CMDLINE_LINUX="rhgb quiet"
 #
 # Examples:
 #

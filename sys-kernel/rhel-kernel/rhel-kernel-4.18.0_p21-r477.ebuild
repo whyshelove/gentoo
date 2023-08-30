@@ -13,8 +13,8 @@ DESCRIPTION="kernel - The Linux kernel, based on version 4.18.0, heavily modifie
 HOMEPAGE="https://www.kernel.org/"
 
 LICENSE="GPL-2"
-KEYWORDS="amd64 ~arm ~arm64 ~ppc64 ~x86"
-IUSE="test debug hardened +signkernel signmodules zfcpdump +modules +up gcov realtime +zipmodules ipaclones vdso perf tools bpf"
+KEYWORDS="amd64 ~arm64 ~s390 ~ppc64"
+IUSE="test debug +signkernel signmodules zfcpdump +modules +up gcov realtime +zipmodules ipaclones vdso perf tools bpf"
 REQUIRED_USE="debug? ( !gcov !up !vdso !ipaclones !perf )
 	    signkernel? ( ^^ ( amd64 arm64 ) )
             zipmodules? ( modules )
@@ -23,12 +23,9 @@ REQUIRED_USE="debug? ( !gcov !up !vdso !ipaclones !perf )
             realtime? ( !zfcpdump !ipaclones !perf !bpf )
             s390? ( !zfcpdump )
 "
-RDEPEND="
-	!sys-kernel/gentoo-kernel-bin:${SLOT}"
+RDEPEND=""
 BDEPEND="
 	debug? ( dev-util/pahole )"
-PDEPEND="
-	>=virtual/dist-kernel-${PV}"
 
 QA_FLAGS_IGNORED="usr/src/linux-.*/scripts/gcc-plugins/.*.so"
 

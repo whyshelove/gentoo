@@ -1,0 +1,3 @@
+# UPDATEDEFAULT specifies if kernel-install should make
+# new kernels the default
+UPDATEDEFAULT=yes

@@ -323,19 +323,19 @@ multilib_src_test() {
 multilib_src_install_all() {
 	local rootprefix=$(usex split-usr '' /usr)
 
-	rm -r ${D}${_sysconfdir}/systemd/system/*.target.wants
+	rm -r "${ED}"${_sysconfdir}/systemd/system/*.target.wants
 
 	# udev links
 	dodir /sbin ${_sysconfdir}/X11/xorg.conf.d
 	dosym ../bin/udevadm /sbin/udevadm
 
-	pkgdir=${_prefix}/lib/systemd
+	pkgdir=${rootprefix}/lib/systemd
 	system_unit_dir=${pkgdir}/system
 	user_unit_dir=${pkgdir}/user
 
 	# Compatiblity and documentation files
-	touch ${D}/etc/crypttab
-	chmod 600 ${D}/etc/crypttab
+	touch "${ED}"/etc/crypttab
+	chmod 600 "${ED}"/etc/crypttab
 
 	# /etc/initab
 	insinto /etc/
@@ -348,14 +348,14 @@ multilib_src_install_all() {
 	dodir ${system_unit_dir}/{"basic.target.wants","default.target.wants","dbus.target.wants","syslog.target.wants"}
 
 	# Create new-style configuration files so that we can ghost-own them
-	touch ${D}${_sysconfdir}/hostname
-	touch ${D}${_sysconfdir}/vconsole.conf
-	touch ${D}${_sysconfdir}/locale.conf
-	touch ${D}${_sysconfdir}/machine-id
-	touch ${D}${_sysconfdir}/machine-info
-	touch ${D}${_sysconfdir}/localtime
+	touch "${ED}"${_sysconfdir}/hostname
+	touch "${ED}"${_sysconfdir}/vconsole.conf
+	touch "${ED}"${_sysconfdir}/locale.conf
+	touch "${ED}"${_sysconfdir}/machine-id
+	touch "${ED}"${_sysconfdir}/machine-info
+	touch "${ED}"${_sysconfdir}/localtime
 
-	touch ${D}${_sysconfdir}/X11/xorg.conf.d/00-keyboard.conf
+	touch "${ED}"${_sysconfdir}/X11/xorg.conf.d/00-keyboard.conf
 
 	# Make sure directories in /var exist
 	dodir ${_localstatedir}/lib/systemd/{coredump,catalog,backlight,rfkill,linger}
@@ -365,10 +365,10 @@ multilib_src_install_all() {
 
 	dosym ../private/systemd/journal-upload ${_localstatedir}/lib/systemd/journal-upload
 
-	touch ${D}${_localstatedir}/lib/systemd/catalog/database
-	touch ${D}${_sysconfdir}/udev/hwdb.bin
-	touch ${D}${_localstatedir}/lib/systemd/random-seed
-	touch ${D}${_localstatedir}/lib/private/systemd/journal-upload/state
+	touch "${ED}"${_localstatedir}/lib/systemd/catalog/database
+	touch "${ED}"${_sysconfdir}/udev/hwdb.bin
+	touch "${ED}"${_localstatedir}/lib/systemd/random-seed
+	touch "${ED}"${_localstatedir}/lib/private/systemd/journal-upload/state
 
 	# Install rc.local
 	exeinto ${_sysconfdir}/rc.d/
@@ -384,15 +384,15 @@ multilib_src_install_all() {
 	insinto ${system_unit_dir}/systemd-udev-trigger.service.d/
 	doins "${WORKDIR}"/systemd-udev-trigger-no-reload.conf
 
-	insopts -m0755
-	insinto ${_prefix}/lib/kernel/install.d/
-	doins "${WORKDIR}"/20-grubby.install
+	exeopts -m0755
+	exeinto ${_prefix}/lib/kernel/install.d/
+	doexe "${WORKDIR}"/20-grubby.install
 
-	exeinto ${_prefix}/lib/systemd/
+	exeinto ${rootprefix}/lib/systemd/
 	doexe "${WORKDIR}"/purge-nobody-user
 
 	# No tmp-on-tmpfs by default in RHEL. bz#876122 bz#1578772
-	rm -f ${ED}${_prefix}/lib/systemd/system/local-fs.target.wants/tmp.mount
+	rm -f ${ED}${rootprefix}/lib/systemd/system/local-fs.target.wants/tmp.mount
 
 	# bz#1844465
 	rm -f ${ED}/etc/systemd/system/dbus-org.freedesktop.resolve1.service
@@ -509,21 +509,6 @@ save_enabled_units() {
 }
 
 pkg_preinst() {
-	getent group cdrom &>/dev/null || groupadd -r -g 11 cdrom &>/dev/null || :
-	getent group utmp &>/dev/null || groupadd -r -g 22 utmp &>/dev/null || :
-	getent group tape &>/dev/null || groupadd -r -g 33 tape &>/dev/null || :
-	getent group dialout &>/dev/null || groupadd -r -g 18 dialout &>/dev/null || :
-	getent group input &>/dev/null || groupadd -r input &>/dev/null || :
-	getent group kvm &>/dev/null || groupadd -r -g 36 kvm &>/dev/null || :
-	getent group render &>/dev/null || groupadd -r render &>/dev/null || :
-	getent group systemd-journal &>/dev/null || groupadd -r -g 190 systemd-journal 2>&1 || :
-
-	getent group systemd-coredump &>/dev/null || groupadd -r systemd-coredump 2>&1 || :
-	getent passwd systemd-coredump &>/dev/null || useradd -r -l -g systemd-coredump -d / -s /sbin/nologin -c "systemd Core Dumper" systemd-coredump &>/dev/null || :
-
-	getent group systemd-resolve &>/dev/null || groupadd -r -g 193 systemd-resolve 2>&1 || :
-	getent passwd systemd-resolve &>/dev/null || useradd -r -u 193 -l -g systemd-resolve -d / -s /sbin/nologin -c "systemd Resolver" systemd-resolve &>/dev/null || :
-
 	save_enabled_units {machines,remote-{cryptsetup,fs}}.target getty@tty1.service
 
 	if ! use split-usr; then

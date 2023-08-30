@@ -368,8 +368,16 @@ rhel-kernel-build_src_install() {
 rhel-kernel-build_pkg_postinst() {
 	rhel-kernel-install_pkg_postinst
 
-	grub-mkconfig -o /boot/efi/EFI/gentoo/grub.cfg || die
-	grub-mkconfig -o /boot/grub/grub.cfg || die
+	if [[ -d "/boot/efi/EFI/gentoo" ]]; then
+	   if ! [[ -f /boot/efi/EFI/gentoo/grub.cfg ]]; then
+		grub-mkconfig -o /boot/efi/EFI/gentoo/grub.cfg || die
+	   fi
+	elif [[ -d "/boot/grub" ]]; then
+	   if ! [[ -f /boot/grub/grub.cfg ]]; then
+		grub-mkconfig -o /boot/grub/grub.cfg || die
+	   fi
+	fi
+
 	# savedconfig_pkg_postinst
 }
 

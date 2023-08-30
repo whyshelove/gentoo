@@ -115,6 +115,15 @@ src_install() {
 
 	# remove architecture specific modules
 	rm -fr -- ${ED}/${dracutlibdir}/modules.d/{80cms,81cio_ignore,91zipl,95dasd,95dasd_mod,95dasd_rules,95dcssblk,95qeth_rules,95zfcp,95zfcp_rules,95znet}
+
+	insinto ${dracutlibdir}/dracut.conf.d
+	newins "${FILESDIR}"/rhel.conf.example 01-dist.conf
+
+	echo 'hostonly="no"' > ${ED}/${dracutlibdir}/dracut.conf.d/02-generic-image.conf
+	echo 'dracut_rescue_image="yes"' > ${ED}/${dracutlibdir}/dracut.conf.d/02-rescue.conf
+
+	dodir ${_sysconfdir}/dracut.conf.d
+	keepdir ${_sysconfdir}/dracut.conf.d
 }
 
 pkg_postinst() {

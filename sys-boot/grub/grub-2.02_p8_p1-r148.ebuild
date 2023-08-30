@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -59,6 +59,7 @@ REQUIRED_USE="
 	grub_platforms_ieee1275? ( fonts )
 	grub_platforms_loongson? ( fonts )
 	sign? ( ^^ ( amd64 arm64 ) )
+	sign? ( || ( grub_platforms_efi-64 grub_platforms_efi-32 ) )
 "
 
 BDEPEND="
@@ -330,44 +331,16 @@ src_test() {
 do_common_install()
 {
 	diropts -m0700
-	dodir /${efi_esp_dir} /boot/grub /boot/loader/entries /boot/$PN/themes/system ${_sysconfdir}/{default,sysconfig}
-
-	touch ${ED}${_sysconfdir}/default/grub
-	dosym ../default/grub ${_sysconfdir}/sysconfig/grub
-
-	dosym ${efi_esp_dir}/grub.cfg ${_sysconfdir}/sysconfig/${PN}-efi.cfg
-
-	exeopts -m0700
-	exeinto /${efi_esp_dir}
-	doexe ${grubefiname} ${grubeficdname}
-
-	insopts -m0700
-	insinto /${efi_esp_dir}/fonts/
-	doins ${ED}/usr/share/grub/unicode.pf2
-
-	if use ppc64; then
-		rm -f ${ED}${_sysconfdir}/grub.d/10_linux
-	else
-		rm -f ${ED}${_sysconfdir}/grub.d/10_linux_bls
-	fi
-
-	${ED}/${_bindir}/grub2-editenv ${ED}/${efi_esp_dir}/grubenv create
-	dosym ../efi/EFI/${efi_vendor}/grubenv /boot/grub/grubenv
-
-	dosym ./grub2-mkconfig /usr/sbin/grub-mkconfig
-}
-
-src_install() {
-	grub_do emake install DESTDIR="${D}" bashcompletiondir="$(get_bashcompdir)"
-	use doc && grub_do_once emake -C docs install-html DESTDIR="${D}"
-
-	einstalldocs
+	dodir /boot/loader/entries /boot/$PN/themes/system
 
 	insinto /etc/default
 	newins "${FILESDIR}"/grub.default-rhel grub
 
-	diropts -m0700
-	dodir /boot/loader/entries 
+	insinto /etc/sysconfig
+	newins "${FILESDIR}"/kernel-sysconfig kernel
+
+	dosym ../default/grub ${_sysconfdir}/sysconfig/grub
+	dosym ./grub2-mkconfig /usr/sbin/grub-mkconfig
 
 	exeinto ${_prefix}/lib/kernel/install.d
 	doexe "${WORKDIR}"/{20-grub,99-grub-mkconfig}.install
@@ -376,9 +349,42 @@ src_install() {
 	newexe /dev/null 20-grubby.install
 	newexe /dev/null 90-loaderentry.install
 
+	if use grub_platforms_efi-64 || use grub_platforms_efi-32; then
+		insopts -m0700
+		insinto /${efi_esp_dir}/fonts/
+		doins ${ED}/usr/share/grub/unicode.pf2
+
+		${ED}/${_bindir}/grub2-editenv ${ED}/${efi_esp_dir}/grubenv create
+		dosym ../efi/EFI/${efi_vendor}/grubenv /boot/grub/grubenv
+
+		dosym ${efi_esp_dir}/${PN}.cfg ${_sysconfdir}/${PN}-efi.cfg
+	elif use pc; then
+		${ED}/${_bindir}/grub2-editenv ${ED}/boot/grub/grubenv create
+
+		dosym /boot/${PN}/${PN}.cfg ${_sysconfdir}/${PN}.cfg
+	fi
+
+	if use ppc64; then
+		rm -f ${ED}${_sysconfdir}/grub.d/10_linux
+	else
+		rm -f ${ED}${_sysconfdir}/grub.d/10_linux_bls
+	fi
+}
+
+src_install() {
+	grub_do emake install DESTDIR="${D}" bashcompletiondir="$(get_bashcompdir)"
+	use doc && grub_do_once emake -C docs install-html DESTDIR="${D}"
+
+	einstalldocs
+
+	do_common_install
+
 	if use sign ; then
 		cd ${GRUB_EFI64_S}
-		do_common_install
+
+		exeopts -m0700
+		exeinto /${efi_esp_dir}
+		doexe ${grubefiname} ${grubeficdname}
 	fi
 }
 
@@ -397,6 +403,17 @@ pkg_postinst() {
 		optfeature "Detect other operating systems (grub-mkconfig)" sys-boot/os-prober
 		optfeature "Create rescue media (grub-mkrescue)" dev-libs/libisoburn
 		optfeature "Enable RAID device detection" sys-fs/mdadm
+	fi
+
+	grub2-editenv - set menu_auto_hide=1 boot_success=1 || die "failed to set menu_auto_hide=1"
+
+	if use grub_platforms_efi-64 || use grub_platforms_efi-32; then
+		grub-mkconfig -o /boot/efi/EFI/gentoo/grub.cfg || die "failed to write boot loader configuration"
+
+	fi
+
+	if use grub_platforms_pc; then
+		grub-mkconfig -o /boot/grub/grub.cfg || die "failed to write boot loader configuration"
 	fi
 
 	ewarn "\033[33mYour separate efi partition must be mounted at /boot/efi.\033[0m"

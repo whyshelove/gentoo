@@ -42,7 +42,7 @@ esac
 
 inherit rhel-kernel-utils mount-boot toolchain-funcs
 
-SLOT="${PV/_p*}"
+SLOT="${PV}"
 IUSE="+initramfs test"
 RESTRICT+="
 	!test? ( test )
@@ -420,8 +420,10 @@ rhel-kernel-install_install_all() {
 		nonfatal mount-boot_check_status || break
 
 		if use initramfs; then
+			ebegin "Create kernel with initramfs and regenerating grub BLS entries via kernel-install"
 			/usr/bin/kernel-install add ${ver} \
 			/lib/modules/${ver}/vmlinuz || break
+			eend ${?} || die -n "Building initramfs failed"
 		fi
 
 		success=1
@@ -471,11 +473,8 @@ rhel-kernel-install_pkg_postrm() {
 
 	if [[ -z ${ROOT} ]] && use initramfs; then
 		local ver="${KVERREL}"
-		local image_path=$(rhel-kernel_get_image_path)
-		ebegin "Removing initramfs"
-		rm -f "${EROOT}/boot/initramfs-${ver}.img"
-		#rm -f "${EROOT}/usr/src/kernels/${ver}/${image_path%/*}"/initrd{,.uefi} &&
-			#find "${EROOT}/usr/src/kernels/${ver}" -depth -type d -empty -delete
+		ebegin "Removing kernel with initramfs and grub BLS entry via kernel-install"
+		/usr/bin/kernel-install remove ${ver}
 		eend ${?}
 	fi
 }
