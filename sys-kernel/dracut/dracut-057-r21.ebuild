@@ -117,11 +117,23 @@ src_install() {
 
 	dracutlibdir=${_prefix}/lib/dracut
 
-	insinto ${dracutlibdir}/dracut.conf.d
-	newins dracut.conf.d/gentoo.conf.example 01-dist.conf
+	# we do not support dash in the initramfs
+	rm -fr -- ${ED}/${dracutlibdir}/modules.d/00dash
 
-	echo 'hostonly="no"' > $RPM_BUILD_ROOT${dracutlibdir}/dracut.conf.d/02-generic-image.conf
-	echo 'dracut_rescue_image="yes"' > $RPM_BUILD_ROOT${dracutlibdir}/dracut.conf.d/02-rescue.conf
+	# with systemd IMA and selinux modules do not make sense
+	rm -fr -- ${ED}/${dracutlibdir}/modules.d/{96securityfs,97masterkey,98integrity}
+
+	# remove architecture specific modules
+	rm -fr -- ${ED}/${dracutlibdir}/modules.d/{80cms,81cio_ignore,91zipl,95dasd,95dasd_mod,95dasd_rules,95dcssblk,95qeth_rules,95zfcp,95zfcp_rules,95znet}
+
+	insinto ${dracutlibdir}/dracut.conf.d
+	newins "${FILESDIR}"/rhel.conf.example 01-dist.conf
+
+	echo 'hostonly="no"' > ${ED}/${dracutlibdir}/dracut.conf.d/02-generic-image.conf
+	echo 'dracut_rescue_image="yes"' > ${ED}/${dracutlibdir}/dracut.conf.d/02-rescue.conf
+
+	dodir ${_sysconfdir}/dracut.conf.d
+	keepdir ${_sysconfdir}/dracut.conf.d
 }
 
 pkg_postinst() {
