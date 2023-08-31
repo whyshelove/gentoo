@@ -142,6 +142,11 @@ pkg_setup() {
     grubefiname="grub${efiarch}.efi"
     grubeficdname="gcd${efiarch}.efi"
 
+    #if [[ -e /boot/grub/grubenv ]]; then
+    #   GRUBENV_TARGET="/boot/grub/grubenv"
+    #   BLS_ID="$(grep '^saved_entry=' "${GRUBENV_TARGET}" | sed -e 's,^saved_entry=*,,')"
+    #fi
+
 grub_modules="all_video boot blscfg \
 		cat configfile cryptodisk echo ext2 \
 		fat font gcry_rijndael gcry_rsa gcry_serpent \
@@ -353,15 +358,6 @@ do_common_install()
 		insopts -m0700
 		insinto /${efi_esp_dir}/fonts/
 		doins ${ED}/usr/share/grub/unicode.pf2
-
-		${ED}/${_bindir}/grub2-editenv ${ED}/${efi_esp_dir}/grubenv create
-		dosym ../efi/EFI/${efi_vendor}/grubenv /boot/grub/grubenv
-
-		dosym ${efi_esp_dir}/${PN}.cfg ${_sysconfdir}/${PN}-efi.cfg
-	elif use pc; then
-		${ED}/${_bindir}/grub2-editenv ${ED}/boot/grub/grubenv create
-
-		dosym /boot/${PN}/${PN}.cfg ${_sysconfdir}/${PN}.cfg
 	fi
 
 	if use ppc64; then
@@ -405,16 +401,27 @@ pkg_postinst() {
 		optfeature "Enable RAID device detection" sys-fs/mdadm
 	fi
 
-	grub2-editenv - set menu_auto_hide=1 boot_success=1 || die "failed to set menu_auto_hide=1"
-
 	if use grub_platforms_efi-64 || use grub_platforms_efi-32; then
+	   if ! [[ -f ${efi_esp_dir}/grubenv ]]; then
+		grub2-editenv ${efi_esp_dir}/grubenv create
+		ln -sf ../efi/EFI/${efi_vendor}/grubenv /boot/grub/grubenv
+	   fi
 		grub-mkconfig -o /boot/efi/EFI/gentoo/grub.cfg || die "failed to write boot loader configuration"
+		ln -sf ${efi_esp_dir}/${PN}.cfg ${_sysconfdir}/${PN}-efi.cfg
+	elif use grub_platforms_pc; then
+	   if ! [[ -f /boot/grub/grubenv ]]; then
+		grub2-editenv /boot/grub/grubenv create
+	   fi
 
-	fi
-
-	if use grub_platforms_pc; then
 		grub-mkconfig -o /boot/grub/grub.cfg || die "failed to write boot loader configuration"
+		ln -sf /boot/${PN}/${PN}.cfg ${_sysconfdir}/${PN}.cfg
 	fi
+
+ 	grub2-editenv - set menu_auto_hide=1 boot_success=1 || die "failed to set menu_auto_hide=1"
+
+	#if [ -n "$BLS_ID" ]; then
+	#	grub2-editenv - set "saved_entry=${BLS_ID}" || die "failed to set saved_entry=${BLS_ID}"
+	#fi
 
 	ewarn "\033[33mYour separate efi partition must be mounted at /boot/efi.\033[0m"
 	ewarn "\033[33mIf use enable sign, Kernel best use sign kernel and modules.\033[0m"

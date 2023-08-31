@@ -3,7 +3,7 @@
 
 EAPI=8
 
-MOZ_ESR=
+MOZ_ESR=yes
 
 MOZ_PV=${PV}
 MOZ_PV_SUFFIX=
@@ -37,7 +37,7 @@ DESCRIPTION="Firefox Web Browser"
 HOMEPAGE="https://www.mozilla.com/firefox"
 
 KEYWORDS="-* amd64 x86"
-SLOT="rapid"
+SLOT="esr"
 LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
 IUSE="+alsa +ffmpeg +gmp-autoupdate +pulseaudio selinux wayland"
 
@@ -49,18 +49,14 @@ BDEPEND="app-arch/unzip
 			dev-util/patchelf
 		)
 	)"
-
-COMMON_DEPEND="alsa? (
+DEPEND="alsa? (
 		!pulseaudio? (
 			media-sound/apulse
 		)
 	)"
-
-DEPEND="${COMMON_DEPEND}"
-
-RDEPEND="${COMMON_DEPEND}
+RDEPEND="${DEPEND}
 	!www-client/firefox-bin:0
-	!www-client/firefox-bin:esr
+	!www-client/firefox-bin:rapid
 	>=app-accessibility/at-spi2-core-2.40.0:2
 	dev-libs/dbus-glib
 	>=dev-libs/glib-2.26:2
@@ -270,7 +266,7 @@ src_install() {
 	local app_name="Mozilla ${MOZ_PN^} (bin)"
 	local desktop_file="${FILESDIR}/${PN}-r3.desktop"
 	local desktop_filename="${PN}.desktop"
-	local exec_command="${PN}"
+	local exec_command="${PN} --name=firefox"
 	local icon="${PN}"
 	local use_wayland="false"
 
@@ -375,6 +371,7 @@ pkg_postinst() {
 	fi
 
 	optfeature_header "Optional programs for extra features:"
-	optfeature "desktop notifications" x11-libs/libnotify
+	optfeature "speech syntesis (text-to-speech) support" app-accessibility/speech-dispatcher
 	optfeature "fallback mouse cursor theme e.g. on WMs" gnome-base/gsettings-desktop-schemas
+	optfeature "desktop notifications" x11-libs/libnotify
 }
