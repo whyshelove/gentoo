@@ -3,7 +3,7 @@
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{10..12} )
+PYTHON_COMPAT=( python3_{9..12} )
 inherit gnome.org gnome2-utils meson optfeature python-any-r1 toolchain-funcs virtualx xdg
 
 DESCRIPTION="GTK is a multi-platform toolkit for creating graphical user interfaces"
@@ -17,7 +17,7 @@ REQUIRED_USE="
 	test? ( introspection )
 "
 
-KEYWORDS="~alpha ~amd64 arm arm64 ~ia64 ~loong ~ppc ~ppc64 ~riscv sparc ~x86"
+KEYWORDS="~alpha amd64 arm arm64 ~ia64 ~loong ppc ppc64 ~riscv sparc x86"
 
 COMMON_DEPEND="
 	>=dev-libs/glib-2.72.0:2

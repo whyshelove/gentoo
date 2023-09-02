@@ -23,12 +23,13 @@ HOMEPAGE="http://www.freerdp.com/"
 
 LICENSE="Apache-2.0"
 SLOT="0/2"
-IUSE="alsa cpu_flags_arm_neon cups debug doc +ffmpeg gstreamer jpeg kerberos openh264 pulseaudio server smartcard systemd test usb valgrind wayland X xinerama xv"
+IUSE="aad alsa cpu_flags_arm_neon cups debug doc +ffmpeg gstreamer jpeg kerberos openh264 pulseaudio sdl server smartcard systemd test usb valgrind wayland X xinerama xv"
 RESTRICT="!test? ( test )"
 
 RDEPEND="
 	dev-libs/openssl:0=
 	sys-libs/zlib:0
+	aad? ( dev-libs/cJSON )
 	alsa? ( media-libs/alsa-lib )
 	cups? ( net-print/cups )
 	usb? (
@@ -58,6 +59,10 @@ RDEPEND="
 	kerberos? ( virtual/krb5 )
 	openh264? ( media-libs/openh264:0= )
 	pulseaudio? ( media-libs/libpulse )
+	sdl? (
+		media-libs/libsdl2
+		media-libs/sdl2-ttf
+	)
 	server? (
 		X? (
 			x11-libs/libXcursor
@@ -69,7 +74,10 @@ RDEPEND="
 			xinerama? ( x11-libs/libXinerama )
 		)
 	)
-	smartcard? ( sys-apps/pcsc-lite )
+	smartcard? (
+		dev-libs/pkcs11-helper
+		sys-apps/pcsc-lite
+	)
 	systemd? ( sys-apps/systemd:0= )
 	wayland? (
 		dev-libs/wayland
@@ -99,8 +107,10 @@ src_configure() {
 	local mycmakeargs=(
 		-DBUILD_TESTING=$(usex test ON OFF)
 		-DCHANNEL_URBDRC=$(usex usb ON OFF)
+		-DWITH_AAD=$(usex aad ON OFF)
 		-DWITH_ALSA=$(usex alsa ON OFF)
 		-DWITH_CCACHE=OFF
+		-DWITH_CLIENT_SDL=$(usex sdl ON OFF)
 		-DWITH_CUPS=$(usex cups ON OFF)
 		-DWITH_DEBUG_ALL=$(usex debug ON OFF)
 		-DWITH_MANPAGES=$(usex doc ON OFF)
@@ -113,15 +123,17 @@ src_configure() {
 		-DWITH_KRB5=$(usex kerberos ON OFF)
 		-DWITH_NEON=$(usex cpu_flags_arm_neon ON OFF)
 		-DWITH_OPENH264=$(usex openh264 ON OFF)
+		-DWITH_PCSC=$(usex smartcard ON OFF)
+		-DWITH_PKCS11=$(usex smartcard ON OFF)
 		-DWITH_PULSE=$(usex pulseaudio ON OFF)
 		-DWITH_SERVER=$(usex server ON OFF)
-		-DWITH_PCSC=$(usex smartcard ON OFF)
 		-DWITH_LIBSYSTEMD=$(usex systemd ON OFF)
 		-DWITH_VALGRIND_MEMCHECK=$(usex valgrind ON OFF)
 		-DWITH_X11=$(usex X ON OFF)
 		-DWITH_XINERAMA=$(usex xinerama ON OFF)
 		-DWITH_XV=$(usex xv ON OFF)
 		-DWITH_WAYLAND=$(usex wayland ON OFF)
+		-DWITH_WEBVIEW=OFF
 	)
 	cmake_src_configure
 }
