@@ -95,6 +95,7 @@ pkg_preinst() {
 }
 pkg_postinst() {
 	systemd_post pesign.service
+	certutil -d ${_sysconfdir}/pki/pesign/ -X -L
 }
 
 pkg_prerm() {

@@ -134,22 +134,50 @@ get_efi_arch() {
 	esac
 }
 
-_pesign() {
-	_pesign_cert='Red Hat Test Certificate'
-	_target_cpu=$(get_efi_arch)
+# @FUNCTION: get_arch
+# @DESCRIPTION:
+get_arch() {
+	debug-print-function ${FUNCNAME} "${@}"
 
-	${_libexecdir}/pesign/pesign-rpmbuild-helper \
-	${_target_cpu} \
+	case ${ARCH} in
+		amd64)
+			echo x86_64
+			;;
+		x86)
+			echo i386
+			;;
+		arm|ppc|ppc64|riscv|sparc|sparc64)
+			echo ${ARCH}
+		;;
+		arm64)
+			echo aarch64
+			;;
+		*)
+			die "${FUNCNAME}: unsupported ARCH=${ARCH}"
+			;;
+	esac
+}
+
+_pesign() {
+	_pesign_token=${pe_signing_token:-'NSS Certificate DB'}
+	_pesign_cert=${pe_signing_cert:-'Red Hat Test Certificate'}
+
+	_target_cpu=$(get_arch)
+
+	"${_libexecdir}/pesign/pesign-rpmbuild-helper" \
+	"${_target_cpu}" \
 	"/usr/bin/pesign" \
 	"/usr/bin/pesign-client" \
-	--client-token "OpenSC Card (Fedora Signer)" \
+	--client-token 'OpenSC Card (Fedora Signer)' \
+	--client-cert '/CN=Fedora Secure Boot Signer' \
+	--token "${_pesign_token}" \
 	--cert "${_pesign_cert}" \
 	--rhelver "9" \
-	--rhelcert ${5} \
-	--rhelcafile ${3} \
-	--rhelcertfile ${4} \
-	--in ${1} \
-	--out ${2} \
+	--rhelcert "${5}" \
+	--rhelcafile "${3}" \
+	--rhelcertfile "${4}" \
+	--in "${1}" \
+	--out "${2}" \
 	--sign || die
 }
 

@@ -256,7 +256,7 @@ filter-lfs-flags() {
 # Remove flags that enable LTO and those that depend on it
 filter-lto() {
 	[[ $# -ne 0 ]] && die "filter-lto takes no arguments"
-	filter-flags '-flto*' -fwhole-program-vtables '-fsanitize=cfi*'
+	filter-flags '-flto*' -fwhole-program-vtables '-fsanitize=cfi*' -ffat-lto-objects
 }
 
 # @FUNCTION: filter-ldflags

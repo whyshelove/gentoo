@@ -80,7 +80,7 @@ if [ -z ${MY_PF} ] ; then
 			edk2-ovmf )  MY_P=${P}git${GITCOMMIT} ;;
 			ipxe )  MY_P=${P}.${GIT_REV} ;;
 			vte )  MY_P=${P/-/291-} ;;
-			rhel-kernel ) MY_P=${P/rhel-};  MY_P=${MY_P}; MY_KVP=${PVR/r}.${DIST} ;;
+			rhel-kernel ) MY_PN=${PN/rhel-}; MY_P=${P/rhel-} ;;
 			modemmanager )  MY_P=${P/modemmanager/ModemManager} ;;
 			networkmanager )  MY_P=${P/networkmanager/NetworkManager} ;;
 			vte )  MY_P=${P/-/291-} ;;

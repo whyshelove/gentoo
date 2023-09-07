@@ -6,6 +6,7 @@ EAPI=7
 inherit unpacker rhel9
 
 SRC_URI="${REPO_BIN}/r/redhat-release-${PV}-0.13.${DIST}.x86_64.rpm"
+
 SRC_URI+=" ${REPO_BIN}/r/rootfiles-8.1-31.${DIST}.noarch.rpm"
 SRC_URI+=" ${REPO_BIN}/c/crypto-policies-scripts-20221215-1.git9a18988.${DIST}.noarch.rpm"
 SRC_URI+=" ${REPO_BIN}/c/crypto-policies-20221215-1.git9a18988.${DIST}.noarch.rpm"
@@ -20,6 +21,9 @@ for macro in kernel-rpm-macros-185-12 perl-srpm-macros-1-41 redhat-rpm-config-19
 do
 SRC_URI+=" ${REPO_BIN}/${macro:0:1}/${macro}.${DIST}.noarch.rpm"
 done
+
+REPO_BIN="${REPO_BIN/appstream/codeready-builder}"
+SRC_URI+=" ${REPO_BIN}/r/redhat-sb-certs-${PV}-0.13.${DIST}.noarch.rpm"
 
 LICENSE="GPL-2"
 SLOT="0"
