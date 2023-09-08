@@ -24,7 +24,7 @@ esac
 
 PYTHON_COMPAT=( python3_{6..10} )
 
-inherit python-any-r1 savedconfig toolchain-funcs rhel-kernel-install rhel8
+inherit multiprocessing python-any-r1 savedconfig toolchain-funcs rhel-kernel-install rhel8
 
 BDEPEND="
 	${PYTHON_DEPS}
@@ -39,18 +39,14 @@ BDEPEND="
 
 _target_cpu=$(rhel-kernel-install_get_qemu_arch)
 
-K_PV=${PV/_p*}-${MY_PR}.${subrelease}
-K_PVD=${K_PV}.${DIST}${DSUFFIX}
+K_PRD=${MY_PR}.${subrelease}.${DIST}
+K_PVF=${PV/_p*}-${K_PRD}
+KVERREL=${K_PVF}${DSUFFIX}.${_target_cpu}
 
-KVERREL=${K_PVD}.${_target_cpu}
-
-MY_PN=${PN/rhel-}
-
-S=${WORKDIR}/kernel-${K_PVD}/linux-${K_PV}.el8.${_target_cpu}
+S=${WORKDIR}/kernel-${K_PVF}${DSUFFIX}/linux-${K_PVF}.${_target_cpu}
 
 rhel-kernel-build_pkg_setup() {
     export make_target=bzImage
-    export all_arch_configs=${MY_P}-*.config
     export hdrarch=${_target_cpu}
     export asmarch=${_target_cpu}
     export image_install_path=boot
@@ -58,6 +54,7 @@ rhel-kernel-build_pkg_setup() {
     use gcov && export with_gcov=1
     use vdso && export with_vdso_install=1
     use ipaclones && ( use amd64 || use ppc64 ) && export kpatch_kcflags=-fdump-ipa-clones
+    use debug && export debuginfodir=/usr/lib/debug
 
     	# released_kernel
 	S10=${WORKDIR}/redhatsecurebootca3.cer
@@ -165,7 +162,7 @@ rhel-kernel-build_src_compile() {
         # perf
         # make sure check-headers.sh is executable
         chmod +x tools/perf/check-headers.sh
-        perf_make DESTDIR="${ED}" all
+        ${perf_make[@]} DESTDIR="${ED}" all
     fi
 
     if use tools; then
@@ -320,8 +317,7 @@ rhel-kernel-build_src_install() {
 
 	# install VM tools
 	pushd tools/vm/
-	insinto ${buildroot}${_bindir}/
-	doins slabinfo page_owner_sort
+	newbin slabinfo page_owner_sort
 	popd
     fi
 

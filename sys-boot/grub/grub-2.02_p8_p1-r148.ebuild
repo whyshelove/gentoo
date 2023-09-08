@@ -3,12 +3,10 @@
 
 EAPI=7
 
-if [[ ${PV} == 9999  ]]; then
-	GRUB_AUTORECONF=1
-	GRUB_BOOTSTRAP=1
-fi
+GRUB_AUTOGEN=1
+GRUB_AUTORECONF=1
 
-if [[ -n ${GRUB_AUTOGEN} || -n ${GRUB_BOOTSTRAP} ]]; then
+if [[ -n ${GRUB_AUTOGEN} ]]; then
 	PYTHON_COMPAT=( python{2_7,3_{6,8,9}} )
 	inherit python-any-r1
 fi
@@ -24,12 +22,8 @@ _annotated_build="undefine"
 
 inherit bash-completion-r1 flag-o-matic multibuild optfeature pax-utils toolchain-funcs mount-boot rhel8
 
-if [[ ${PV} != 9999 ]]; then
-	S=${WORKDIR}/${P/_p*}
-	KEYWORDS="amd64 ~arm arm64 ~ia64 ppc ppc64 sparc x86"
-else
-	EGIT_REPO_URI+="https://git.savannah.gnu.org/git/grub.git"
-fi
+S=${WORKDIR}/${P/_p*}
+KEYWORDS="amd64 ~arm arm64 ~ia64 ppc ppc64 sparc x86"
 
 PATCHES=(
 	"${FILESDIR}"/gfxpayload.patch
@@ -172,6 +166,7 @@ platform_modules=" backtrace chain usb usbserial_common usbserial_pl2303 usbseri
 
 src_prepare() {
 	default
+
 	sed -i -e /autoreconf/d autogen.sh || die
 
 	# Nothing in Gentoo packages 'american-english' in the exact path
@@ -182,16 +177,8 @@ src_prepare() {
 		tests/util/grub-fs-tester.in \
 		|| die
 
-	if [[ -n ${GRUB_AUTOGEN} || -n ${GRUB_BOOTSTRAP} ]]; then
+	if [[ -n ${GRUB_AUTOGEN} ]]; then
 		python_setup
-	else
-		export PYTHON=true
-	fi
-
-	if [[ -n ${GRUB_BOOTSTRAP} ]]; then
-		eautopoint --force
-		AUTOPOINT=: AUTORECONF=: ./bootstrap || die
-	elif [[ -n ${GRUB_AUTOGEN} ]]; then
 		./autogen.sh || die
 	fi
 
@@ -242,7 +229,7 @@ grub_configure() {
 		--with-utils=host
 		--target=${CHOST}
 		--with-grubdir=${PN}
-		--program-transform-name=s,${PN},${PN}2,
+		--program-transform-name="s,grub,grub2,"
         	--with-debug-timestamps
         	--enable-boot-time
 		$(use_enable device-mapper)
@@ -338,9 +325,6 @@ do_common_install()
 	diropts -m0700
 	dodir /boot/loader/entries /boot/$PN/themes/system
 
-	insinto /etc/default
-	newins "${FILESDIR}"/grub.default-rhel grub
-
 	insinto /etc/sysconfig
 	newins "${FILESDIR}"/kernel-sysconfig kernel
 
@@ -373,6 +357,9 @@ src_install() {
 
 	einstalldocs
 
+	insinto /etc/default
+	newins "${FILESDIR}"/grub.default-rhel grub
+
 	do_common_install
 
 	if use sign ; then
@@ -400,6 +387,8 @@ pkg_postinst() {
 		optfeature "Create rescue media (grub-mkrescue)" dev-libs/libisoburn
 		optfeature "Enable RAID device detection" sys-fs/mdadm
 	fi
+
+	mountpoint -q ${ESP_PATH} || die "no ESP mounted, nothing to do"
 
 	if use grub_platforms_efi-64 || use grub_platforms_efi-32; then
 	   if ! [[ -f ${efi_esp_dir}/grubenv ]]; then

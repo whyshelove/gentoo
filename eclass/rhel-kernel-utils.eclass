@@ -64,11 +64,11 @@ InitBuildVars() {
     Config=${MY_P}-${_target_cpu}${Flavour:+-${Flavour}}.config
     DevelDir=/usr/src/kernels/${KVERREL}${Flav}
 
-    KernelVer=${K_PVD}.${_target_cpu}${Flav}
+    KernelVer=${KVERREL}${Flav}
 
     # make sure EXTRAVERSION says what we want it to say
-    release=${MY_PR}.${DIST}
-    perl -p -i -e "s/^EXTRAVERSION.*/EXTRAVERSION = -${release}.${_target_cpu}${Flav}/" Makefile
+    pkgrelease=${K_PRD}${DSUFFIX}
+    perl -p -i -e "s/^EXTRAVERSION.*/EXTRAVERSION = -${pkgrelease}.${_target_cpu}${Flav}/" Makefile
 
     emake -s "${MAKEARGS[@]}" mrproper
 
@@ -81,7 +81,7 @@ InitBuildVars() {
 	cp ${WORKDIR}/x509.genkey certs/.
     fi
 
-    Arch=`head -1 .config | cut -b 3-`
+    Arch=`head -1 "configs/${MY_P}-${_target_cpu}.config" | cut -b 3-`
     echo USING ARCH=$Arch
 
     KCFLAGS="${kcflags}"
@@ -196,9 +196,9 @@ InstallKernel(){
     fperms 0755 /${image_install_path}/$InstallName-$KernelVer
     cp ${ED}/${image_install_path}/$InstallName-$KernelVer ${ED}/lib/modules/$KernelVer/$InstallName
 
-    # hmac sign the kernel for FIPS
+#    # hmac sign the kernel for FIPS
 #    echo "Creating hmac file: ${ED}/${image_install_path}/.vmlinuz-$KernelVer.hmac"
-    ls -l ${ED}/${image_install_path}/$InstallName-$KernelVer
+#    ls -l ${ED}/${image_install_path}/$InstallName-$KernelVer
 #    sha512hmac ${ED}/${image_install_path}/$InstallName-$KernelVer | sed -e "s,${ED},," > ${ED}/${image_install_path}/.vmlinuz-$KernelVer.hmac;
 #    cp ${ED}/${image_install_path}/.vmlinuz-$KernelVer.hmac ${ED}/lib/modules/$KernelVer/.vmlinuz.hmac
 
@@ -259,13 +259,13 @@ InstallKernel(){
       cp -a tools/objtool/objtool ${ED}/lib/modules/$KernelVer/build/tools/objtool/ || :
     fi
     if [ -d arch/$Arch/scripts ]; then
-      cp -a arch/$Arch/scripts ${ED}/lib/modules/$KernelVer/build/arch/%{_arch} || :
+      cp -a arch/$Arch/scripts ${ED}/lib/modules/$KernelVer/build/arch/$Arch || :
     fi
     if [ -f arch/$Arch/*lds ]; then
-      cp -a arch/$Arch/*lds ${ED}/lib/modules/$KernelVer/build/arch/%{_arch}/ || :
+      cp -a arch/$Arch/*lds ${ED}/lib/modules/$KernelVer/build/arch/$Arch/ || :
     fi
-    if [ -f arch/%{asmarch}/kernel/module.lds ]; then
-      cp -a --parents arch/%{asmarch}/kernel/module.lds ${ED}/lib/modules/$KernelVer/build/
+    if [ -f arch/${asmarch}/kernel/module.lds ]; then
+      cp -a --parents arch/${asmarch}/kernel/module.lds ${ED}/lib/modules/$KernelVer/build/
     fi
     rm -f ${ED}/lib/modules/$KernelVer/build/scripts/*.o
     rm -f ${ED}/lib/modules/$KernelVer/build/scripts/*/*.o
@@ -351,105 +351,23 @@ InstallKernel(){
         rm -f modules.{alias*,builtin.bin,dep*,*map,symbols*,devname,softdep}
     popd
 
-    #if use modules; then
-	#    mod-blacklist='${WORKDIR}/mod-blacklist.sh'
-	    # Identify modules in the kernel-modules-extras package
-	 #   ${mod-blacklist} ${ED} lib/modules/$KernelVer "${WORKDIR}/mod-extra.list"
-	    # Identify modules in the kernel-modules-internal package
-	  #  ${mod-blacklist} ${ED} lib/modules/$KernelVer "${WORKDIR}/mod-internal.list" internal
-
-	   # if use realtime; then
-		# Identify modules in the kernel-rt-kvm package
-		#${mod-blacklist} ${ED} lib/modules/$KernelVer "${WORKDIR}/mod-kvm.list" kvm
-	    #fi
-    #fi
-    #
-    # Generate the kernel-core and kernel-modules files lists
-    #
-
-    # Copy the System.map file for depmod to use, and create a backup of the
-    # full module tree so we can restore it after we're done filtering
-    cp System.map ${ED}/.
-    pushd ${ED}
-    mkdir restore
-    cp -r lib/modules/$KernelVer/* restore/.
-
-    if use modules; then
-	    # don't include anything going into kernel-modules-extra in the file lists
-	    xargs rm -rf < mod-extra.list
-	    # don't include anything going int kernel-modules-internal in the file lists
-	    xargs rm -rf < mod-internal.list
-
-	    if use realtime; then
-		# don't include anything going into kernel-rt-kvm in the file lists
-		xargs rm -rf < mod-kvm.list
-	    fi
-    fi
-
-    if use modules; then
-        # Find all the module files and filter them out into the core and
-        # modules lists.  This actually removes anything going into -modules
-        # from the dir.
-        find lib/modules/$KernelVer/kernel -name *.ko | sort -n > modules.list
-        cp ${WORKDIR}/filter-*.sh .
-        ${WORKDIR}/filter-modules.sh modules.list ${_target_cpu}
-        rm filter-*.sh
-
-        # Run depmod on the resulting module tree and make sure it isn't broken
-        depmod -b . -aeF ./System.map $KernelVer &> depmod.out
-        if [ -s depmod.out ]; then
-            echo "Depmod failure"
-            cat depmod.out
-            die
-        else
-            rm depmod.out
-        fi
-    else
-        # Ensure important files/directories exist to let the packaging succeed
-        echo '%%defattr(-,-,-)' > modules.list
-        echo '%%defattr(-,-,-)' > k-d.list
-        mkdir -p lib/modules/$KernelVer/kernel
-        # Add files usually created by make modules, needed to prevent errors
-        # thrown by depmod during package installation
-        touch lib/modules/$KernelVer/modules.order
-        touch lib/modules/$KernelVer/modules.builtin
-    fi
-
-    # remove files that will be auto generated by depmod at rpm -i time
-    pushd ${ED}/lib/modules/$KernelVer/
-        rm -f modules.{alias*,builtin.bin,dep*,*map,symbols*,devname,softdep}
-    popd
-
-    # Go back and find all of the various directories in the tree.  We use this
-    # for the dir lists in kernel-core
-    find lib/modules/$KernelVer/kernel -mindepth 1 -type d | sort -n > module-dirs.list
-
-    # Cleanup
-    rm System.map
-    cp -r restore/* lib/modules/$KernelVer/.
-    rm -rf restore
-    popd
-
-    # Make sure the files lists start with absolute paths or rpmbuild fails.
-    # Also add in the dir entries
-    #if use modules; then
-	#sed -e 's/^lib*/\/lib/' -${zipsed} ${ED}/k-d.list > ../${MY_PN}${Flavour:+-${Flavour}}-modules.list
-	#sed -e 's/^lib*/%dir \/lib/' ${zipsed} ${ED}/module-dirs.list > ../${MY_PN}${Flavour:+-${Flavour}}-core.list
-	#sed -e 's/^lib*/\/lib/' ${zipsed} ${ED}/modules.list >> ../${MY_PN}${Flavour:+-${Flavour}}-core.list
-	#sed -e 's/^lib*/\/lib/' ${zipsed} ${ED}/mod-extra.list >> ../${MY_PN}${Flavour:+-${Flavour}}-modules-extra.list
-	#sed -e 's/^lib*/\/lib/' ${zipsed} ${ED}/mod-internal.list >> ../${MY_PN}${Flavour:+-${Flavour}}-modules-internal.list
-    #fi
-
-    #use realtime && sed -e 's/^lib*/\/lib/' ${zipsed} ${ED}/mod-kvm.list >> ../${MY_PN}${Flavour:+-${Flavour}}-kvm.list
-
-    # Cleanup
-    rm -f ${ED}/{k-d,modules,module-dirs,mod-extra,mod-internal}.list
-    use realtime && rm -f ${ED}/mod-kvm.list
-
     if use signmodules; then
         # Save the signing keys so we can sign the modules in __modsign_install_post
         cp certs/signing_key.pem certs/signing_key.pem.sign${Flav}
         cp certs/signing_key.x509 certs/signing_key.x509.sign${Flav}
+
+	if use s390 || use ppc64; then
+		if [ -x /usr/bin/rpmsign ]; then
+		   insinto ${_datadir}/doc/kernel-keys/$KernelVer
+		   newins ${secureboot_key_0} ${signing_key_filename}
+		else
+		   insinto ${_datadir}/doc/kernel-keys/$KernelVer
+		   newins certs/signing_key.x509.sign${Flav} kernel-signing-ca.cer
+		   openssl x509 -in certs/signing_key.pem.sign${Flav} -outform der -out \
+			${ED}${_datadir}/doc/kernel-keys/$KernelVer/${signing_key_filename}
+		   fperms 0644 ${_datadir}/doc/kernel-keys/$KernelVer/${signing_key_filename}
+		fi
+	fi
     fi
 
     # Move the devel headers out of the root file system
@@ -474,7 +392,6 @@ InstallKernel(){
     ${WORKDIR}/generate_bls_conf.sh "$KernelVer" "${ED}"
 
     # Red Hat UEFI Secure Boot CA cert, which can be used to authenticate the kernel
-    dodir ${_datadir}/doc/kernel-keys/$KernelVer
     if use arm64 || use amd64; then
         insinto ${_datadir}/doc/kernel-keys/$KernelVer
         newins ${secureboot_ca_0} kernel-signing-ca-20200609.cer
@@ -486,23 +403,9 @@ InstallKernel(){
         newins ${secureboot_ca_0} kernel-signing-ca.cer
    fi
 
-	if use s390 || use ppc64; then
-	    if use modules; then
-		    if [ -x /usr/bin/rpmsign ]; then
-		        insinto ${_datadir}/doc/kernel-keys/$KernelVer
-		        newins ${secureboot_key_0} ${signing_key_filename}
-		    else
-		        insinto ${_datadir}/doc/kernel-keys/$KernelVer
-		        newins certs/signing_key.x509.sign${Flav} kernel-signing-ca.cer
-		        openssl x509 -in certs/signing_key.pem.sign${Flav} -outform der -out \
-		                {ED}${_datadir}/doc/kernel-keys/$KernelVer/${signing_key_filename}
-		        fperms 0644 ${_datadir}/doc/kernel-keys/$KernelVer/${signing_key_filename}
-		    fi
-	    fi
-	fi
-
     if use ipaclones; then
-        MAXPROCS=$(echo ${makeops} | sed -n 's/-j\s*\([0-9]\+\)/\1/p')
+        #MAXPROCS=$(echo ${MAKEOPTS} | sed -n 's/-j\s*\([0-9]\+\)/\1/p')
+        MAXPROCS=$(makeopts_jobs)
         if [ -z "$MAXPROCS" ]; then
             MAXPROCS=1
         fi
