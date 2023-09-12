@@ -35,7 +35,8 @@ DEPEND="
 	nis? ( net-libs/libnsl:=[${MULTILIB_USEDEP}]
 	>=net-libs/libtirpc-0.2.4-r2:=[${MULTILIB_USEDEP}] )"
 
-RDEPEND="${DEPEND}"
+RDEPEND="${DEPEND}
+	dev-libs/libpwquality"
 
 PDEPEND=">=sys-auth/pambase-20200616"
 

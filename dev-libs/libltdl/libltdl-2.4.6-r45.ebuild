@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit multilib-minimal rhel9-a
+inherit multilib-minimal autotools rhel9-a
 
 MY_P="libtool-${PV}"
 
@@ -21,6 +21,11 @@ RDEPEND="!<sys-devel/libtool-2.4.3-r2:2"
 BDEPEND="app-arch/xz-utils"
 
 S="${WORKDIR}/${MY_P}/libltdl"
+
+src_prepare() {
+	default
+	eautoreconf
+}
 
 multilib_src_configure() {
 	ECONF_SOURCE=${S} \

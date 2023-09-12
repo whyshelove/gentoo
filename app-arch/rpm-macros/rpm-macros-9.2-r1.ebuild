@@ -30,7 +30,9 @@ SLOT="0"
 KEYWORDS="amd64 arm64"
 IUSE=""
 
-RDEPEND="app-arch/rpm[lua,python]"
+RDEPEND="app-arch/rpm[lua,python]
+	dev-vcs/git
+	sys-libs/libselinux"
 DEPEND="${RDEPEND}"
 BDEPEND=""
 
@@ -42,6 +44,9 @@ src_install() {
 
 	insinto ${_sysconfdir}/crypto-policies
 	newins "${FILESDIR}"/default-config config
+
+	insinto ${_sysconfdir}/sandbox.d
+	newins "${FILESDIR}"/28-sandbox 28rhel
 
 	dodir /etc/pki/entitlement
 

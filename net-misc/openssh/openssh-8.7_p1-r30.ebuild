@@ -97,6 +97,7 @@ RDEPEND="${RDEPEND}
 BDEPEND="
 	virtual/pkgconfig
 	sys-devel/autoconf
+	app-crypt/p11-kit
 "
 
 pkg_pretend() {

@@ -16,7 +16,7 @@ if [[ ${NEED_BOOTSTRAP} == "yes" ]] ; then
 	inherit autotools
 
 else
-	SRC_URI+="https://dev.gentoo.org/~sam/distfiles/${CATEGORY}/${PN}/${P}-autotools.tar.xz"
+	SRC_URI+=" https://dev.gentoo.org/~sam/distfiles/${CATEGORY}/${PN}/${P}-autotools.tar.xz"
 fi
 
 LICENSE="LGPL-2.1+ public-domain BSD BSD-2"
@@ -51,6 +51,11 @@ DEPEND="system? (
 RDEPEND="${DEPEND}"
 BDEPEND="dev-lang/perl
 	test? ( $(python_gen_any_dep 'dev-python/passlib[${PYTHON_USEDEP}]') )"
+
+PATCHES=(
+	"${FILESDIR}"/0001-Make-BuildCommon.pm-compatible-with-latest-perl.patch
+	"${FILESDIR}"/0002-Remove-smartmatch-usage-from-gen-crypt-h.patch
+)
 
 python_check_deps() {
 	python_has_version "dev-python/passlib[${PYTHON_USEDEP}]"

@@ -130,7 +130,7 @@ rhel-kernel-install_update_symlink() {
 
 	if rhel-kernel-install_can_update_symlink "${target}"; then
 		ebegin "Updating ${target} symlink"
-		ln -f -n -s "kernels-${version}" "${target}"
+		ln -f -n -s "kernels/${version}" "${target}"
 		eend ${?}
 	else
 		elog "${target} points at another kernel, leaving it as-is."
@@ -463,7 +463,7 @@ rhel-kernel-install_pkg_postinst() {
 	debug-print-function ${FUNCNAME} "${@}"
 
 	local dir_ver="${KVERREL}"
-	rhel-kernel-install_update_symlink "${EROOT}/usr/src/linux" kernels/"${dir_ver}"
+	rhel-kernel-install_update_symlink "${EROOT}/usr/src/linux" "${dir_ver}"
 
 	if [[ -z ${ROOT} ]]; then
 		rhel-kernel-install_install_all "${dir_ver}"

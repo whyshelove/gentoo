@@ -5,7 +5,7 @@ EAPI=8
 
 XORG_DOC=doc
 XORG_MULTILIB=yes
-inherit xorg-3 autotools rhel9-a
+inherit xorg-3 rhel9-a
 
 DESCRIPTION="X.Org X Display Manager Control Protocol library"
 
@@ -22,10 +22,6 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	x11-base/xorg-proto"
 
-src_prepare() {
-	default
-	eautoreconf
-}
 
 src_configure() {
 	local XORG_CONFIGURE_OPTIONS=(

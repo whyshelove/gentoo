@@ -50,6 +50,7 @@ RDEPEND="${COMMON_DEPEND}
 	)
 	pam? ( >=sys-auth/pambase-20150213 )
 	su? ( !sys-apps/util-linux[su(-)] )
+	dev-util/itstool
 "
 
 src_prepare() {

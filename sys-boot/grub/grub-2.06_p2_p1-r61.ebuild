@@ -262,7 +262,7 @@ grub_configure() {
 		--with-utils=host
 		--target=${CHOST}
 		--with-grubdir=${PN}
-		--program-transform-name=s,${PN},${PN}2,
+		--program-transform-name="s,grub,grub2,"
 		$(use_enable device-mapper)
 		$(use_enable mount grub-mount)
 		$(use_enable nls)

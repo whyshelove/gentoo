@@ -10,7 +10,7 @@ XORG_TARBALL_SUFFIX="xz"
 XORG_MULTILIB=yes
 XORG_DOC=doc
 
-inherit python-any-r1 xorg-3 autotools rhel9-a
+inherit python-any-r1 xorg-3 rhel9-a
 
 DESCRIPTION="X C-language Bindings library"
 HOMEPAGE="https://xcb.freedesktop.org/ https://gitlab.freedesktop.org/xorg/lib/libxcb"
@@ -34,6 +34,8 @@ BDEPEND="${PYTHON_DEPS}
 	$(python_gen_any_dep '>=x11-base/xcb-proto-1.14[${PYTHON_USEDEP}]')
 	doc? ( app-doc/doxygen[dot] )
 	test? ( dev-libs/libxslt )
+	dev-libs/libpthread-stubs
+	x11-misc/util-macros
 "
 
 python_check_deps() {
@@ -43,11 +45,6 @@ python_check_deps() {
 pkg_setup() {
 	python-any-r1_pkg_setup
 	xorg-3_pkg_setup
-}
-
-src_prepare() {
-	default
-	eautoreconf
 }
 
 src_configure() {

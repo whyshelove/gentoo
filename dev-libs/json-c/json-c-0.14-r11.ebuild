@@ -4,6 +4,7 @@
 EAPI=7
 
 CMAKE_ECLASS=cmake
+STAGE="unprep"
 inherit cmake-multilib rhel9
 
 DESCRIPTION="A JSON implementation in C"
@@ -21,7 +22,8 @@ MULTILIB_WRAPPED_HEADERS=(
 )
 
 src_unpack() {
-	rhel_unpack ${A} && sed -i "/# Update Doxyfile./,+1d" ${WORKDIR}/*.spec
+	rpmbuild_src_unpack ${A}
+	sed -i "/# Update Doxyfile./,+1d" ${WORKDIR}/*.spec
 	rpmbuild --rmsource -bp $WORKDIR/*.spec --nodeps
 	mv ${PN}-${P}-20200419 ${P}
 }

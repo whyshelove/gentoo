@@ -16,9 +16,6 @@ CYGWINPATCHES=(
 DESCRIPTION="Standard (de)compression library"
 HOMEPAGE="https://zlib.net/"
 
-SRC_URI+="
-	elibc_Cygwin? ( ${CYGWINPATCHES[*]} )"
-
 LICENSE="ZLIB"
 SLOT="0/1" # subslot = SONAME
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris ~x86-winnt"
@@ -35,14 +32,6 @@ PATCHES=(
 
 src_prepare() {
 	default
-
-	if use elibc_Cygwin ; then
-		local p
-		for p in "${CYGWINPATCHES[@]}" ; do
-			# Strip out the "... -> " from the array
-			eapply -p2 "${DISTDIR}/${p#*> }"
-		done
-	fi
 
 	if use minizip ; then
 		cd contrib/minizip || die

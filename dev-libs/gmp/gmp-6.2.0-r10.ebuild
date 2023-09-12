@@ -103,16 +103,19 @@ multilib_src_configure() {
 multilib_src_install() {
 	emake DESTDIR="${D}" install
 
-	install -m 644 gmp-mparam.h ${ED}/usr/include
-	rm -f ${ED}/usr/share/info/dir
+	install -m 644 gmp-mparam.h "${ED}"${_includedir}
+	rm -f "${ED}"${_infodir}/dir
+
 	/sbin/ldconfig -n ${ED}/usr/$(get_libdir)
 	ln -sf libgmpxx.so.4 ${ED}/usr/$(get_libdir)/libgmpxx.so
 
+	local basearch=$(get_arch)
+
 	# Rename files and install wrappers
-	mv ${ED}/usr/include/gmp.h ${ED}/usr/include/gmp-x86_${GMPABI}.h
+	mv ${ED}/usr/include/gmp.h ${ED}/usr/include/gmp-${basearch}.h
 	doheader ${WORKDIR}/gmp.h
 
-	mv ${ED}/usr/include/gmp-mparam.h ${ED}/usr/include/gmp-mparam-x86_${GMPABI}.h
+	mv ${ED}/usr/include/gmp-mparam.h ${ED}/usr/include/gmp-mparam-${basearch}.h
 	doheader ${WORKDIR}/gmp-mparam.h
 
 	# should be a standalone lib

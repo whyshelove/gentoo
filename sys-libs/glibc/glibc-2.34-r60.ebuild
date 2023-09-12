@@ -47,7 +47,7 @@ SRC_URI+=" systemd? ( https://gitweb.gentoo.org/proj/toolchain/glibc-systemd.git
 IUSE="audit caps +cet +clone3 compile-locales +crypt custom-cflags doc gd headers-only +multiarch multilib multilib-bootstrap nscd profile selinux +ssp +static-libs static-pie suid systemd systemtap test vanilla"
 
 # Minimum kernel version that glibc requires
-MIN_KERN_VER="4.18.0"
+MIN_KERN_VER="4.14.0"
 # Minimum pax-utils version needed (which contains any new syscall changes for
 # its seccomp filter!). Please double check this!
 MIN_PAX_UTILS_VER="1.3.3"

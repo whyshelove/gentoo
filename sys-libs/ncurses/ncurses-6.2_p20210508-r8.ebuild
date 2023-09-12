@@ -123,7 +123,6 @@ do_configure() {
 		$(use_with gpm gpm libgpm.so.1)
 		# Required for building  on mingw-w64, and possibly other windows
 		# platforms, bug #639670
-		$(use_enable kernel_Winnt term-driver)
 		--disable-termcap
 		--enable-symlinks
 		--with-rcs-ids
