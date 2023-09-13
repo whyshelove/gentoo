@@ -66,7 +66,11 @@ readonly QT6_BUILD_TYPE
 
 HOMEPAGE="https://www.qt.io/"
 LICENSE="|| ( GPL-2 GPL-3 LGPL-3 ) FDL-1.3"
-SLOT=6/${PV%.*}
+if ver_test ${PV} -ge 6.5.3; then
+	SLOT=6/${PV%%_*}
+else
+	SLOT=6/${PV%.*} # TODO: remove this after <6.5.3 is gone
+fi
 
 if [[ ${PN} != qttranslations ]]; then
 	IUSE="test"
@@ -98,10 +102,15 @@ qt6-build_src_unpack() {
 qt6-build_src_prepare() {
 	cmake_src_prepare
 
+	if [[ -e CMakeLists.txt ]]; then
+		# throw an error rather than skip if *required* conditions are not met
+		sed -e '/message(NOTICE.*Skipping/s/NOTICE/FATAL_ERROR/' \
+			-i CMakeLists.txt || die
+	fi
+
 	if in_iuse test && use test && [[ -e tests/auto/CMakeLists.txt ]]; then
-		# upstream seems to install before running tests, and cmake
-		# subdir that is present in about half of the Qt6 components
-		# cause a dependency on itself and sometimes install test junk
+		# .cmake files tests causing a self-dependency in many modules,
+		# and that sometimes install additional test junk
 		sed -i '/add_subdirectory(cmake)/d' tests/auto/CMakeLists.txt || die
 	fi
 
@@ -130,13 +139,7 @@ qt6-build_src_configure() {
 		return
 	fi
 
-	if [[ ${mycmakeargs@a} == *a* ]]; then
-		local mycmakeargs=("${mycmakeargs[@]}")
-	else
-		local mycmakeargs=()
-	fi
-
-	mycmakeargs+=(
+	local defaultcmakeargs=(
 		# see _qt6-build_create_user_facing_links
 		-DINSTALL_PUBLICBINDIR="${QT6_PREFIX}"/bin
 		# note that if qtbase was built with tests, this is default ON
@@ -144,6 +147,12 @@ qt6-build_src_configure() {
 		# avoid appending -O2 after user's C(XX)FLAGS (bug #911822)
 		-DQT_USE_DEFAULT_CMAKE_OPTIMIZATION_FLAGS=ON
 	)
+
+	if [[ ${mycmakeargs@a} == *a* ]]; then
+		local mycmakeargs=("${defaultcmakeargs[@]}" "${mycmakeargs[@]}")
+	else
+		local mycmakeargs=("${defaultcmakeargs[@]}")
+	fi
 
 	cmake_src_configure
 }
@@ -245,8 +254,8 @@ _qt6-build_match_cpu_flags() {
 	local flags=() intrin intrins
 	while IFS=' ' read -ra intrins; do
 		[[ ${intrins[*]} == *=[^_]* && ${intrins[*]} == *=_* ]] &&
-			for intrin in "${intrins[@]}"; do
-				[[ ${intrin} == *?=[^_]* ]] && flags+=(-mno-${intrin%=*})
+			for intrin in "${intrins[@]%=*}"; do
+				[[ ${intrin} ]] && flags+=( -mno-${intrin} )
 			done
 	done < <(
 		# TODO: review if can drop fma= matching after QTBUG-116357
@@ -281,7 +290,7 @@ _qt6-build_prepare_env() {
 
 	readonly QT6_BINDIR=${QT6_ARCHDATADIR}/bin
 	readonly QT6_DOCDIR=${QT6_PREFIX}/share/qt6-doc
-	readonly QT6_EXAMPLESDIR=${QT6_ARCHDATADIR}/examples
+	readonly QT6_EXAMPLESDIR=${QT6_DATADIR}/examples
 	readonly QT6_HEADERDIR=${QT6_PREFIX}/include/qt6
 	readonly QT6_IMPORTDIR=${QT6_ARCHDATADIR}/imports
 	readonly QT6_LIBEXECDIR=${QT6_ARCHDATADIR}/libexec

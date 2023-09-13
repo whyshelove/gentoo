@@ -13,7 +13,7 @@ fi
 
 declare -A QT6_IUSE=(
 	[global]="+ssl +udev zstd"
-	[core]="icu systemd"
+	[core]="icu"
 	[modules]="+concurrent +dbus +gui +network +sql +xml"
 
 	[gui]="
@@ -60,7 +60,6 @@ RDEPEND="
 	dev-libs/glib:2
 	dev-libs/libpcre2:=[pcre16,unicode(+)]
 	icu? ( dev-libs/icu:= )
-	systemd? ( sys-apps/systemd:= )
 
 	dbus? ( sys-apps/dbus )
 	gui? (
@@ -141,6 +140,8 @@ src_prepare() {
 
 src_configure() {
 	local mycmakeargs=(
+		-DBUILD_WITH_PCH=OFF
+
 		-DINSTALL_ARCHDATADIR="${QT6_ARCHDATADIR}"
 		-DINSTALL_BINDIR="${QT6_BINDIR}"
 		-DINSTALL_DATADIR="${QT6_DATADIR}"
@@ -155,7 +156,6 @@ src_configure() {
 		-DINSTALL_SYSCONFDIR="${QT6_SYSCONFDIR}"
 		-DINSTALL_TRANSLATIONSDIR="${QT6_TRANSLATIONDIR}"
 
-		-DQT_FEATURE_precompile_header=OFF
 		$(qt_feature ssl openssl)
 		$(qt_feature ssl openssl_linked)
 		$(qt_feature udev libudev)
@@ -163,7 +163,6 @@ src_configure() {
 
 		# qtcore
 		$(qt_feature icu)
-		$(qt_feature systemd journald)
 
 		# tools
 		-DQT_FEATURE_androiddeployqt=OFF
@@ -292,13 +291,15 @@ src_test() {
 		tst_qglyphrun
 		tst_qvectornd
 		tst_rcc
+		# similarly, but on armv7 (bug #914028)
+		tst_qlineedit
+		tst_qpainter
 		# partially broken on llvm-musl, needs looking into but skip to have
 		# a baseline for regressions (like above, rest of dev-qt is fine)
 		$(usev elibc_musl '
 			tst_qfiledialog2
 			tst_qicoimageformat
 			tst_qimagereader
-			tst_qpainter
 			tst_qimage
 		')
 		# note: for linux, upstream only really runs+maintains tests for amd64
