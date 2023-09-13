@@ -3,20 +3,21 @@
 
 EAPI=8
 
-inherit flag-o-matic multilib toolchain-funcs multilib-minimal
+DSUFFIX="_2"
+inherit flag-o-matic multilib toolchain-funcs multilib-minimal rhel9-a
 
-NSPR_VER="4.34.1"
+NSPR_VER="4.35"
 RTM_NAME="NSS_${PV//./_}_RTM"
 
 DESCRIPTION="Mozilla's Network Security Services library that implements PKI support"
 HOMEPAGE="https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS"
-SRC_URI="https://archive.mozilla.org/pub/security/nss/releases/${RTM_NAME}/src/${P}.tar.gz
+SRC_URI+=" 
 	cacert? ( https://dev.gentoo.org/~whissi/dist/ca-certificates/nss-cacert-class1-class3-r2.patch )"
 
 LICENSE="|| ( MPL-2.0 GPL-2 LGPL-2.1 )"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~x64-solaris"
-IUSE="cacert test +utils cpu_flags_ppc_altivec cpu_flags_ppc_vsx"
+KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~x64-solaris"
+IUSE="cacert test +utils cpu_flags_ppc_altivec cpu_flags_x86_avx2 cpu_flags_x86_sse3 cpu_flags_ppc_vsx"
 RESTRICT="!test? ( test )"
 # pkg-config called by nss-config -> virtual/pkgconfig in RDEPEND
 RDEPEND="
@@ -28,20 +29,14 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 BDEPEND="dev-lang/perl"
 
-S="${WORKDIR}/${P}/${PN}"
-
 MULTILIB_CHOST_TOOLS=(
 	/usr/bin/nss-config
 )
 
 PATCHES=(
-	# Custom changes for gentoo
+	"${FILESDIR}/${PN}-3.53-gentoo-fixups.patch"
 	"${FILESDIR}/${PN}-3.21-gentoo-fixup-warnings.patch"
 	"${FILESDIR}/${PN}-3.23-hppa-byte_order.patch"
-	"${FILESDIR}/${PN}-3.53-gentoo-fixups.patch"
-	"${FILESDIR}/${PN}-3.79-fix-client-cert-crash.patch"
-	"${FILESDIR}/${PN}-3.79-gcc-13.patch"
-	"${FILESDIR}"/nss-3.87-use-clang-as-bgo892686.patch
 )
 
 src_prepare() {
@@ -52,7 +47,6 @@ src_prepare() {
 	fi
 
 	pushd coreconf >/dev/null || die
-
 	# hack nspr paths
 	echo 'INCLUDES += -I$(DIST)/include/dbm' \
 		>> headers.mk || die "failed to append include"
@@ -62,7 +56,7 @@ src_prepare() {
 		-i source.mk || die
 
 	# Respect LDFLAGS
-	sed -i -e 's/\$(MKSHLIB) -o/\$(MKSHLIB) \$(LDFLAGS) -o/g' rules.mk || die
+	sed -i -e 's/\$(MKSHLIB) -o/\$(MKSHLIB) \$(LDFLAGS) -o/g' rules.mk
 
 	# Workaround make-4.4's change to sub-make, bmo#1800237, bgo#882069
 	sed -i -e "s/^CPU_TAG = _.*/CPU_TAG = _$(nssarch)/" Linux.mk || die
@@ -150,6 +144,8 @@ multilib_src_compile() {
 		RANLIB="$(tc-getRANLIB)"
 		OPTIMIZER=
 		${mybits}
+		disable_ckbi=0
+		-j1
 	)
 
 	# Take care of nspr settings #436216
@@ -176,9 +172,26 @@ multilib_src_compile() {
 		export CC_IS_CLANG=1
 	fi
 
-	export MAKEOPTS="-j1"
-
 	export NSS_DISABLE_GTESTS=$(usex !test 1 0)
+
+	# Include exportable custom settings defined by users, #900915
+	# Two examples uses:
+	#   EXTRA_NSSCONF="MYONESWITCH=1"
+	#   EXTRA_NSSCONF="MYVALUE=0 MYOTHERVALUE=1 MYTHIRDVALUE=1"
+	# e.g.
+	#   EXTRA_NSSCONF="NSS_ALLOW_SSLKEYLOGFILE=0"
+	# or
+	#   EXTRA_NSSCONF="NSS_ALLOW_SSLKEYLOGFILE=0 NSS_ENABLE_WERROR=1"
+	# etc.
+	if [[ -n "${EXTRA_NSSCONF}" ]]; then
+		ewarn "EXTRA_NSSCONF applied, please disable custom settings before reporting bugs."
+		read -a myextranssconf <<< "${EXTRA_NSSCONF}"
+
+		for (( i=0; i<${#myextranssconf[@]}; i++ )); do
+			export "${myextranssconf[$i]}"
+			echo "exported ${myextranssconf[$i]}"
+		done
+	fi
 
 	# explicitly disable altivec/vsx if not requested
 	# https://bugs.gentoo.org/789114
@@ -189,6 +202,9 @@ multilib_src_compile() {
 			;;
 	esac
 
+	use cpu_flags_x86_avx2 || export NSS_DISABLE_AVX2=1
+	use cpu_flags_x86_sse3 || export NSS_DISABLE_SSE3=1
+
 	local d
 
 	# Build the host tools first.
@@ -197,7 +213,7 @@ multilib_src_compile() {
 	NSPR_LIB_DIR="${T}/fakedir" \
 	emake -C coreconf \
 		CC="$(tc-getBUILD_CC)" \
-		${buildbits-${mybits}}
+			${buildbits-${mybits}}
 	makeargs+=( NSINSTALL="${PWD}/$(find -type f -name nsinstall)" )
 
 	# Then build the target tools.
@@ -206,6 +222,24 @@ multilib_src_compile() {
 		XCFLAGS="${CFLAGS} ${CPPFLAGS}" \
 		NSPR_LIB_DIR="${T}/fakedir" \
 		emake "${makeargs[@]}" -C ${d} OS_TEST="$(nssarch)"
+	done
+
+	# Set up our package files
+	mkdir -p ./dist/pkgconfig
+
+	cat ${WORKDIR}/setup-nsssysinit.sh > ./dist/pkgconfig/setup-nsssysinit.sh
+	chmod 755 ./dist/pkgconfig/setup-nsssysinit.sh
+
+	cp ../nss/lib/ckfw/nssck.api ./dist/private/nss/
+
+	date +"%e %B %Y" | tr -d '\n' > date.xml
+	echo -n ${PV/_p*} > version.xml
+
+	# configuration files and setup script
+	cp  ${WORKDIR}/*.xml .
+
+	for m in nss-config.xml setup-nsssysinit.xml pkcs11.txt.xml cert9.db.xml key4.db.xml; do
+	  xmlto man ${m}
 	done
 }
 
@@ -299,7 +333,7 @@ multilib_src_install() {
 
 	# create an nss-softokn.pc from nss.pc for libfreebl and some private headers
 	# bug 517266
-	sed -e 's#Libs:#Libs: -lfreebl#' \
+	sed 	-e 's#Libs:#Libs: -lfreebl#' \
 		-e 's#Cflags:#Cflags: -I${includedir}/private#' \
 		*/lib/pkgconfig/nss.pc >"${ED}"/usr/$(get_libdir)/pkgconfig/nss-softokn.pc \
 		|| die "could not create nss-softokn.pc"
@@ -371,6 +405,30 @@ multilib_src_install() {
 		done
 		popd >/dev/null || die
 	fi
+
+	dracutlibdir=${_prefix}/lib/dracut
+	dracut_modules_dir=${dracutlibdir}/modules.d/05nss-softokn/
+	dracut_conf_dir=${dracutlibdir}/dracut.conf.d
+
+	exeinto ${dracut_modules_dir}
+	newexe "${WORKDIR}"/nss-softokn-dracut-module-setup.sh module-setup.sh
+
+	insinto ${dracut_conf_dir}
+	newins "${WORKDIR}"/nss-softokn-dracut.conf 50-nss-softokn.conf
+
+	# Shared db
+	insinto ${_sysconfdir}/pki/nssdb
+	newins "${WORKDIR}"/blank-cert9.db cert9.db
+	newins "${WORKDIR}"/blank-key4.db key4.db
+	newins "${WORKDIR}"/system-pkcs11.txt pkcs11.txt
+
+	# Copy the pkcs #11 configuration script
+	dobin ./dist/pkgconfig/setup-nsssysinit.sh
+
+	insinto ${_sysconfdir}/crypto-policies/local.d
+	doins "${WORKDIR}"/nss-p11-kit.config
+
+	doman *.1 *.5
 }
 
 pkg_postinst() {
@@ -394,4 +452,8 @@ pkg_postrm() {
 	}
 
 	multilib_foreach_abi multilib_pkg_postrm
+
+	# Reverse unwanted disabling of sysinit by faulty preun sysinit scriplet
+	# from previous versions of nss.spec
+	#/usr/bin/setup-nsssysinit.sh on
 }

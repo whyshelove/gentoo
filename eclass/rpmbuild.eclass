@@ -60,17 +60,17 @@ if [ -z ${MY_PF} ] ; then
 			openssl-compat ) MY_P=compat-openssl11-${PV} ;;
 			openssh )  MY_P=${P/_} ;;
 			shadow )  MY_P=${P/-/-utils-} ;;
-			cups )  MY_P=${P}op2 ;;
+			cups )  MY_P=${P/_p*}op2 ;;
 			binutils-libs )  MY_PN="binutils"; MY_P=${P/-libs} ;;
 			webkit-gtk )  MY_P=${P/-gtk/2gtk3} ;;
-			libnsl ) MY_P=${P/-/2-};  MY_P=${MY_P} ;;
-			libpcre* ) MY_P=${P/lib};  MY_P=${MY_P} ;;
+			libnsl ) MY_P=${P/-/2-} ;;
+			libpcre* ) MY_P=${P/lib} ;;
 			xorg-proto )  MY_P=${PN/-/-x11-}-devel-${PV} ;;
 			xtrans )  MY_P=xorg-x11-${PN}-devel-${PV} ;;
 			gtk+ ) MY_P=${P/+/$(ver_cut 1)} ;;
 			xz-utils ) MY_P="${PN/-utils}-${PV/_}" ;;
 			glib-utils ) MY_P=${P/-utils}; S=${WORKDIR}/${MY_P}; MY_P="${MY_P/-/2-}" ;;	
-			nspr ) MY_P=nss-3.79.0; S="${WORKDIR}/${MY_P/.0}";;
+			nspr ) MY_P=nss-${NSS_VER}; S="${WORKDIR}/${MY_P/.0}";;
 			qtgui | qtcore | qtwidgets | qtdbus | qtnetwork | qttest | qtxml \
 			| linguist-tools | qtsql | qtconcurrent | qdbus | qtpaths \
 			| qtprintsupport | designer ) MY_P="qt5-${QT5_MODULE}-${PV}" ;;

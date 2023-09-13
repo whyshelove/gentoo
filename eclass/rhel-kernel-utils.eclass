@@ -592,14 +592,14 @@ InstallKernel(){
 
     if use signmodules; then
         # Save the signing keys so we can sign the modules in __modsign_install_post
-        cp certs/signing_key.pem certs/signing_key.pem.signVariant
+        cp certs/signing_key.pem certs/signing_key.pem.sign${Variant:++${Variant}}
         cp certs/signing_key.x509 certs/signing_key.x509.sign${Variant:++${Variant}}
 
 	if use s390 || use ppc64; then
 		if [ -x /usr/bin/rpm-sign ]; then
 		   insinto ${_datadir}/doc/kernel-keys/$KernelVer
-		   newins certs/signing_key.x509.signVariant kernel-signing-ca.cer
-		   openssl x509 -in certs/signing_key.pem.signVariant -outform der -out \
+		   newins certs/signing_key.x509.sign${Variant:++${Variant}} kernel-signing-ca.cer
+		   openssl x509 -in certs/signing_key.pem.sign${Variant:++${Variant}} -outform der -out \
 			${ED}${_datadir}/doc/kernel-keys/$KernelVer/${signing_key_filename}
 		   fperms 0644 ${_datadir}/doc/kernel-keys/$KernelVer/${signing_key_filename}
 		fi

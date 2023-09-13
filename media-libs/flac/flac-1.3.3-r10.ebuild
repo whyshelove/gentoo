@@ -3,6 +3,7 @@
 
 EAPI=7
 
+DSUFFIX="_2.1"
 inherit multilib-minimal flag-o-matic rhel9-a
 
 DESCRIPTION="free lossless audio encoder and decoder"

@@ -8,8 +8,10 @@ inherit unpacker rhel9
 SRC_URI="${REPO_BIN}/r/redhat-release-${PV}-0.13.${DIST}.x86_64.rpm"
 
 SRC_URI+=" ${REPO_BIN}/r/rootfiles-8.1-31.${DIST}.noarch.rpm"
-SRC_URI+=" ${REPO_BIN}/c/crypto-policies-scripts-20221215-1.git9a18988.${DIST}.noarch.rpm"
-SRC_URI+=" ${REPO_BIN}/c/crypto-policies-20221215-1.git9a18988.${DIST}.noarch.rpm"
+
+crypto_policies="crypto-policies-scripts-20221215-1.git9a18988.${DIST}_2.1.noarch.rpm"
+SRC_URI+=" ${REPO_BIN}/c/${crypto_policies}"
+SRC_URI+=" ${REPO_BIN}/c/${crypto_policies/-scripts}"
 
 REPO_BIN="${REPO_BIN/baseos/appstream}"
 

@@ -3,6 +3,9 @@
 
 EAPI=7
 
+suffix_ver=$(ver_cut 5)
+[[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}.1"
+
 inherit autotools flag-o-matic linux-info xdg multilib-minimal optfeature pam systemd toolchain-funcs rhel9
 
 if [[ ${PV} == *9999 ]]; then

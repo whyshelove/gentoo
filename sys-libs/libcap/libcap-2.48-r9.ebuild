@@ -3,6 +3,7 @@
 
 EAPI=7
 
+DSUFFIX="_2"
 inherit multilib-minimal toolchain-funcs pam usr-ldscript rhel9
 
 DESCRIPTION="POSIX 1003.1e capabilities"
@@ -52,7 +53,7 @@ run_emake() {
 		CC="$(tc-getCC)"
 		AR="$(tc-getAR)"
 		RANLIB="$(tc-getRANLIB)"
-		MAKEOPTS="-j1"
+		"-j1"
 	)
 	emake "${args[@]}" "$@"
 }
