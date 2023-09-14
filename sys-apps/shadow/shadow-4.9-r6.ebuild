@@ -38,6 +38,7 @@ COMMON_DEPEND="
 "
 DEPEND="${COMMON_DEPEND}
 	>=sys-kernel/linux-headers-4.14
+	dev-util/itstool
 "
 RDEPEND="${COMMON_DEPEND}
 	!<sys-apps/man-pages-5.10-r1
@@ -50,7 +51,6 @@ RDEPEND="${COMMON_DEPEND}
 	)
 	pam? ( >=sys-auth/pambase-20150213 )
 	su? ( !sys-apps/util-linux[su(-)] )
-	dev-util/itstool
 "
 
 src_prepare() {

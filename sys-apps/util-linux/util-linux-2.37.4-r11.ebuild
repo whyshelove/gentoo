@@ -57,6 +57,7 @@ BDEPEND="
 DEPEND="
 	${RDEPEND}
 	virtual/os-headers
+	sys-libs/libutempter
 "
 RDEPEND+="
 	hardlink? ( !app-arch/hardlink )
@@ -70,7 +71,6 @@ RDEPEND+="
 		!>=sys-apps/shadow-4.7-r2[su]
 	)
 	!net-wireless/rfkill
-	sys-libs/libutempter
 "
 
 # Required for man-page generation
