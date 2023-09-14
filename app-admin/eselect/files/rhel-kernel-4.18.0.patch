@@ -1,0 +1,21 @@
+diff -uNr a/modules/kernel.eselect b/modules/kernel.eselect
+--- a/modules/kernel.eselect	2023-03-15 19:04:22.000000000 +0800
++++ b/modules/kernel.eselect	2023-09-13 15:02:06.816427180 +0800
+@@ -28,7 +28,7 @@
+ # find a list of kernel symlink targets
+ find_targets() {
+ 	local f
+-	for f in "${EROOT}"/usr/src/linux-*; do
++	for f in "${EROOT}"/usr/src/{linux,"kernels/4.18.0"}-*; do
+ 		[[ -f ${f}/Makefile && -f ${f}/Kconfig ]] && basename "${f}"
+ 	done | sort_kernel_versions
+ }
+@@ -52,6 +52,8 @@
+ 	if [[ -n ${target} ]]; then
+ 		if [[ -f ${EROOT}/usr/src/${target}/Makefile ]]; then
+ 			:
++		elif [[ -f ${EROOT}/usr/src/kernels/${target}/Makefile ]]; then
++			target="kernels/${target}"
+ 		elif [[ -f ${EROOT}/usr/src/linux-${target}/Makefile ]]; then
+ 			target=linux-${target}
+ 		else					# target not valid

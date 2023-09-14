@@ -136,6 +136,30 @@ get_efi_arch() {
 	esac
 }
 
+# @FUNCTION: get_arch
+# @DESCRIPTION:
+get_arch() {
+	debug-print-function ${FUNCNAME} "${@}"
+
+	case ${ARCH} in
+		amd64)
+			echo x86_64
+			;;
+		x86)
+			echo i386
+			;;
+		arm|ppc|ppc64|riscv|sparc|sparc64)
+			echo ${ARCH}
+		;;
+		arm64)
+			echo aarch64
+			;;
+		*)
+			die "${FUNCNAME}: unsupported ARCH=${ARCH}"
+			;;
+	esac
+}
+
 _pesign() {
 	_pesign_cert='Red Hat Test Certificate'
 	_pesign_nssdir="/etc/pki/pesign-rh-test"

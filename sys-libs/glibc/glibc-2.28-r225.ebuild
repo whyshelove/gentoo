@@ -927,6 +927,7 @@ glibc_do_configure() {
 		--without-cvs
 		--disable-werror
 		--enable-bind-now
+		--disable-crypt
 		--build=${CBUILD_OPT:-${CBUILD}}
 		--host=${CTARGET_OPT:-${CTARGET}}
 		$(use_enable profile)

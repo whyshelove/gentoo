@@ -107,7 +107,7 @@ multilib_src_configure() {
 multilib_src_install() {
 	emake DESTDIR="${D}" install
 
-	install -m 644 gmp-mparam.h ${RPM_BUILD_ROOT}${_includedir}
+	install -m 644 gmp-mparam.h "${ED}"${_includedir}
 
 	rm -f "${ED}"${_infodir}/dir
 

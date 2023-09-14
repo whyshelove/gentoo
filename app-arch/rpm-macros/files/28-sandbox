@@ -1,0 +1,2 @@
+# # Needed for rhel8                                                          
+SANDBOX_WRITE="/etc/:/var/lib/rpm/"

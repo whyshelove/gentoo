@@ -7,8 +7,10 @@ inherit unpacker rhel8
 
 SRC_URI="${REPO_BIN}/r/redhat-release-${PV}-0.8.${DIST}.x86_64.rpm"
 SRC_URI+=" ${REPO_BIN}/r/rootfiles-8.1-22.${DIST}.noarch.rpm"
-SRC_URI+=" ${REPO_BIN}/c/crypto-policies-scripts-20221215-1.gitece0092.${DIST}.noarch.rpm"
-SRC_URI+=" ${REPO_BIN}/c/crypto-policies-20221215-1.gitece0092.${DIST}.noarch.rpm"
+
+crypto_policies="crypto-policies-scripts-20221215-1.gitece0092.${DIST}.noarch.rpm"
+SRC_URI+=" ${REPO_BIN}/c/${crypto_policies}"
+SRC_URI+=" ${REPO_BIN}/c/${crypto_policies/-scripts}"
 
 REPO_BIN="${REPO_BIN/baseos/appstream}"
 
@@ -27,7 +29,9 @@ SLOT="0"
 KEYWORDS="amd64 arm64"
 IUSE=""
 
-RDEPEND="app-arch/rpm[lua,python]"
+RDEPEND="app-arch/rpm[lua,python]
+	dev-vcs/git
+	sys-libs/libselinux"
 DEPEND="${RDEPEND}"
 BDEPEND=""
 
@@ -38,6 +42,9 @@ src_install() {
 
 	insinto /etc/rhsm/ca
 	doins "${FILESDIR}/redhat-uep.pem"
+
+	insinto ${_sysconfdir}/sandbox.d
+	newins "${FILESDIR}"/28-sandbox 28rhel
 
 	dodir /etc/pki/entitlement
 

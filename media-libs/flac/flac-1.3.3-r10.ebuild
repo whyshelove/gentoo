@@ -1,8 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
+DSUFFIX="_2.1"
 inherit multilib-minimal flag-o-matic rhel9-a
 
 DESCRIPTION="free lossless audio encoder and decoder"
@@ -10,17 +11,16 @@ HOMEPAGE="https://xiph.org/flac/"
 
 LICENSE="BSD FDL-1.2 GPL-2 LGPL-2.1"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~riscv sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~sparc-solaris ~x64-solaris ~x86-solaris"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~sparc-solaris ~x64-solaris ~x86-solaris"
 IUSE="+cxx debug ogg cpu_flags_ppc_altivec cpu_flags_ppc_vsx cpu_flags_x86_sse static-libs"
 
 RDEPEND="ogg? ( >=media-libs/libogg-1.3.0[${MULTILIB_USEDEP}] )"
 DEPEND="${RDEPEND}"
 BDEPEND="
 	app-arch/xz-utils
+	sys-devel/gettext
 	virtual/pkgconfig
-	abi_x86_32? ( dev-lang/nasm )
-	!elibc_uclibc? ( sys-devel/gettext )
-"
+	abi_x86_32? ( dev-lang/nasm )"
 
 PATCHES=( "${FILESDIR}/${P}-fix-zero-first-byte-md5sum-check.patch" )
 
