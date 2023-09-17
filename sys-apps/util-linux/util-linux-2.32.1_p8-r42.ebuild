@@ -33,11 +33,11 @@ RDEPEND="caps? ( sys-libs/libcap-ng )
 	!build? ( systemd? ( sys-apps/systemd ) )
 	udev? ( virtual/libudev:= )"
 DEPEND="${RDEPEND}
-	sys-libs/libutempter
 	virtual/pkgconfig
 	nls? ( sys-devel/gettext )
 	test? ( sys-devel/bc )
-	virtual/os-headers"
+	virtual/os-headers
+	sys-libs/libutempter"
 RDEPEND+="
 	kill? (
 		!sys-apps/coreutils[kill]

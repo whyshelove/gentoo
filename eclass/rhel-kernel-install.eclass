@@ -472,9 +472,12 @@ rhel-kernel-install_pkg_postrm() {
 	debug-print-function ${FUNCNAME} "${@}"
 
 	if [[ -z ${ROOT} ]] && use initramfs; then
-		local ver="${KVERREL}"
+		local dir_ver="${KVERREL}"
+		local modules_dir=${EROOT}/lib/modules/${dir_ver}
+
 		ebegin "Removing kernel with initramfs and grub BLS entry via kernel-install"
-		/usr/bin/kernel-install remove ${ver}
+		/usr/bin/kernel-install remove ${dir_ver}
+		find "${modules_dir}" -depth -type d -empty -delete
 		eend ${?}
 	fi
 }

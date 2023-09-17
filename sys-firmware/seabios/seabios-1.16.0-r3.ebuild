@@ -80,7 +80,7 @@ pkg_pretend() {
 
 
 src_unpack() {
-	rhel_src_unpack ${A}
+	rpmbuild_src_unpack ${A}
 
 	# This simplifies the logic between binary & source builds.
 	mkdir -p "${S}"

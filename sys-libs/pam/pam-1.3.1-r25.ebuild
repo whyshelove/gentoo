@@ -71,7 +71,6 @@ multilib_src_configure() {
 		$(use_enable selinux)
 		--enable-isadir='.' #464016
 		)
-#		$(use_enable selinux)
 	ECONF_SOURCE="${S}" econf ${myconf[@]}
 }
 

@@ -155,7 +155,7 @@ rhel_bin_install() {
 
 	mv "${WORKDIR}"/* "${ED}"/
 
-	mv "${ED}"/${P} "${WORKDIR}"/
+	mv "${ED}"/${P/_p*} "${WORKDIR}"/
 }
 
 # @FUNCTION: rpmbuild_pkg_postinst

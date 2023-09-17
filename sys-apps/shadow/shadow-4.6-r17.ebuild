@@ -23,7 +23,6 @@ BDEPEND="
 	sys-devel/gettext
 "
 COMMON_DEPEND="
-	dev-util/itstool
 	virtual/libcrypt:=
 	acl? ( sys-apps/acl:0= )
 	audit? ( >=sys-process/audit-2.6:0= )
@@ -39,6 +38,7 @@ COMMON_DEPEND="
 "
 DEPEND="${COMMON_DEPEND}
 	>=sys-kernel/linux-headers-4.14
+	dev-util/itstool
 "
 RDEPEND="${COMMON_DEPEND}
 	pam? ( >=sys-auth/pambase-20150213 )
