@@ -80,6 +80,7 @@ if [ -z ${MY_PF} ] ; then
 			edk2-ovmf )  MY_P=${P}git${GITCOMMIT} ;;
 			ipxe )  MY_P=${P}.${GIT_REV} ;;
 			vte )  MY_P=${P/-/291-} ;;
+			linux-headers ) MY_P=${P/linux/kernel} ;;
 			rhel-kernel ) MY_PN=${PN/rhel-}; MY_P=${P/rhel-} ;;
 			modemmanager )  MY_P=${P/modemmanager/ModemManager} ;;
 			networkmanager )  MY_P=${P/networkmanager/NetworkManager} ;;
@@ -243,7 +244,7 @@ rhel_bin_install() {
 
 	mv "${WORKDIR}"/* "${ED}"/
 
-	mv "${ED}"/${P} "${WORKDIR}"/
+	mv "${ED}"/${P/_p*} "${WORKDIR}"/
 }
 
 # @FUNCTION: rpmbuild_pkg_postinst
