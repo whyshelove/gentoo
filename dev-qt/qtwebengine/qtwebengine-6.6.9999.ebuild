@@ -12,7 +12,7 @@ inherit prefix python-any-r1 qt6-build toolchain-funcs
 
 DESCRIPTION="Library for rendering dynamic web content in Qt6 C++ and QML applications"
 SRC_URI+="
-	https://dev.gentoo.org/~ionen/distfiles/${PN}-6.6-patchset-1.tar.xz
+	https://dev.gentoo.org/~ionen/distfiles/${PN}-6.6-patchset-2.tar.xz
 "
 
 if [[ ${QT6_BUILD_TYPE} == release ]]; then
@@ -119,10 +119,14 @@ qtwebengine_check-reqs() {
 	[[ ${MERGE_TYPE} == binary ]] && return
 
 	if is-flagq '-g?(gdb)?([1-9])'; then #307861
-		ewarn "Used CFLAGS/CXXFLAGS seem to enable debug info (-g or -ggdb),"
-		ewarn "which is non-trivial with ${PN}. May experience extended"
-		ewarn "compilation times and increased disk/memory usage. If run into"
-		ewarn "issues, please disable before reporting a bug."
+		ewarn
+		ewarn "Used CFLAGS/CXXFLAGS seem to enable debug info (-g or -ggdb), which"
+		ewarn "is non-trivial with ${PN}. May experience extended compilation"
+		ewarn "times, increased disk/memory usage, and potentially linking issues"
+		ewarn "when using more expensive debug symbols (e.g. -ggdb3 rather than -g)."
+		ewarn
+		ewarn "If run into issues, please try disabling before reporting a bug."
+		ewarn
 	fi
 
 	local CHECKREQS_DISK_BUILD=7G

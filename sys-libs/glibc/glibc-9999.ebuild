@@ -6,7 +6,7 @@ EAPI=8
 # Bumping notes: https://wiki.gentoo.org/wiki/Project:Toolchain/sys-libs/glibc
 # Please read & adapt the page as necessary if obsolete.
 
-PYTHON_COMPAT=( python3_{9..11} )
+PYTHON_COMPAT=( python3_{10..12} )
 TMPFILES_OPTIONAL=1
 
 inherit python-any-r1 prefix preserve-libs toolchain-funcs flag-o-matic gnuconfig \
@@ -1638,6 +1638,21 @@ pkg_preinst() {
 	fi
 }
 
+glibc_refresh_ldconfig() {
+	if [[ ${MERGE_TYPE} == buildonly ]]; then
+		return
+	fi
+
+	# Version check could be added to avoid unnecessary work, but ldconfig
+	# should finish quickly enough to not matter.
+	ebegin "Refreshing ld.so.cache"
+	ldconfig -i
+	if ! eend $?; then
+		ewarn "Failed to refresh the ld.so.cache for you. Some programs may be broken"
+		ewarn "before you manually do so (ldconfig -i)."
+	fi
+}
+
 pkg_postinst() {
 	# nothing to do if just installing headers
 	just_headers && return
@@ -1648,6 +1663,17 @@ pkg_postinst() {
 	fi
 
 	if ! is_crosscompile && [[ -z ${ROOT} ]] ; then
+		# glibc-2.38+ on loong has ldconfig support added, but the ELF e_flags
+		# handling has changed as well, which means stale ldconfig auxiliary
+		# cache entries and failure to lookup libgcc_s / libstdc++ (breaking
+		# every C++ application) / libgomp etc., among other breakages.
+		#
+		# To fix this, simply refresh the ld.so.cache without using the
+		# auxiliary cache if we're natively installing on loong. This should
+		# be done relatively soon because we want to minimize the breakage
+		# window for the affected programs.
+		use loong && glibc_refresh_ldconfig
+
 		use compile-locales || run_locale_gen "${EROOT}/"
 	fi
 

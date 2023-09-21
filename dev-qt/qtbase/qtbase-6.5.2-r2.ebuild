@@ -36,6 +36,7 @@ REQUIRED_USE="
 	)
 	accessibility? ( X dbus )
 	eglfs? ( opengl )
+	gles2-only? ( opengl )
 	gui? ( || ( X eglfs wayland ) )
 	libinput? ( udev )
 	sql? ( || ( ${QT6_IUSE[sql]//+/} ) )
@@ -129,6 +130,7 @@ PDEPEND="
 "
 
 PATCHES=(
+	"${FILESDIR}"/${PN}-6.5.2-hppa-forkfd-grow-stack.patch
 	"${FILESDIR}"/${PN}-6.5.2-no-symlink-check.patch
 	"${FILESDIR}"/${P}-CVE-2023-38197.patch
 	"${FILESDIR}"/${P}-tests-gcc13.patch
@@ -192,13 +194,11 @@ src_configure() {
 		$(qt_feature eglfs)
 		$(qt_feature evdev)
 		$(qt_feature evdev mtdev)
-		$(qt_feature gles2-only opengles2)
 		$(qt_feature libinput)
-		$(qt_feature opengl)
-		$(usev !opengl -DINPUT_opengl=no) #913691
 		$(qt_feature tslib)
 		$(qt_feature vulkan)
 		$(qt_feature widgets)
+		-DINPUT_opengl=$(usex opengl $(usex gles2-only es2 desktop) no)
 		-DQT_FEATURE_system_textmarkdownreader=OFF # TODO?: package md4c
 	) && use widgets && mycmakeargs+=(
 		$(qt_feature cups) # qtprintsupport is enabled w/ gui+widgets
@@ -297,16 +297,25 @@ src_test() {
 		tst_qglyphrun
 		tst_qvectornd
 		tst_rcc
-		# similarly, but on armv7 (bug #914028)
+		# similarly, but on armv7 and potentially others (bug #914028)
 		tst_qlineedit
 		tst_qpainter
+		# likewise, known failing at least on BE arches (bug #914033,914371)
+		tst_qimagereader
+		tst_qimagewriter
+		tst_qpluginloader
 		# partially broken on llvm-musl, needs looking into but skip to have
-		# a baseline for regressions (like above, rest of dev-qt is fine)
+		# a baseline for regressions (rest of dev-qt still passes with musl)
 		$(usev elibc_musl '
 			tst_qfiledialog2
 			tst_qicoimageformat
 			tst_qimagereader
 			tst_qimage
+		')
+		# fails due to hppa's NaN handling, needs looking into (bug #914371)
+		$(usev hppa '
+			tst_qcborvalue
+			tst_qnumeric
 		')
 		# note: for linux, upstream only really runs+maintains tests for amd64
 		# https://doc.qt.io/qt-6/supported-platforms.html
