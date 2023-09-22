@@ -6,7 +6,7 @@ EAPI=8
 PYTHON_COMPAT=( python3_{6,8,9} )
 
 DPREFIX="module+"
-VER_COMMIT=16781+9f4724c2
+VER_COMMIT=19627+2d14cb21
 DSUFFIX=".8.0+${VER_COMMIT}"
 WhatArch=noarch
 

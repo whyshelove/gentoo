@@ -5,6 +5,9 @@ EAPI="7"
 
 PYTHON_COMPAT=( python3_{6,8,9} )
 
+suffix_ver=$(ver_cut 5)
+[[ ${suffix_ver} ]] && DSUFFIX="_8.${suffix_ver}"
+
 inherit flag-o-matic toolchain-funcs python-any-r1 rhel8
 
 DESCRIPTION="GNU utilities for finding files"

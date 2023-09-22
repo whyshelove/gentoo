@@ -6,11 +6,14 @@ EAPI=7
 DATE=20180224
 DPREFIX="${DATE}."
 
+suffix_ver=$(ver_cut 5)
+[[ ${suffix_ver} ]] && DSUFFIX="_8.${suffix_ver}"
+
 inherit toolchain-funcs multilib multilib-minimal preserve-libs usr-ldscript rhel8
 
 DESCRIPTION="console display library"
 HOMEPAGE="https://www.gnu.org/software/ncurses/ https://invisible-island.net/ncurses/"
-S="${WORKDIR}/${P}-${DATE}"
+S="${WORKDIR}/${MY_P}-${DATE}"
 
 LICENSE="MIT"
 # The subslot reflects the SONAME.
@@ -37,13 +40,6 @@ PATCHES=(
 	"${FILESDIR}/${PN}-6.0-ticlib.patch" #557360
 	"${FILESDIR}/${PN}-6.0-cppflags-cross.patch" #601426
 )
-
-src_prepare() {
-	if [[ "${PV}" == *_p* ]] ; then
-		eapply "${WORKDIR}"/${P/_p/-}-patch.sh
-	fi
-	default
-}
 
 src_configure() {
 	unset TERMINFO #115036

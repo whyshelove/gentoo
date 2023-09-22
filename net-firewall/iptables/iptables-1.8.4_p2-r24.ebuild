@@ -4,7 +4,7 @@
 EAPI=7
 
 suffix_ver=$(ver_cut 5)
-[[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}.1"
+[[ ${suffix_ver} ]] && DSUFFIX="_8.${suffix_ver}"
 
 inherit multilib systemd toolchain-funcs autotools flag-o-matic usr-ldscript rhel8
 
