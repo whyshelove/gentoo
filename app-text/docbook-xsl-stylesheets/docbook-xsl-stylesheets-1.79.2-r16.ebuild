@@ -3,7 +3,7 @@
 
 EAPI=8
 
-USE_RUBY="ruby27 ruby30"
+USE_RUBY="ruby30 ruby31"
 _build_flags="undefine"
 inherit ruby-single rhel9-a
 
