@@ -187,6 +187,11 @@ BDEPEND="
 S="${WORKDIR}/${MY_P}"
 EGIT_CHECKOUT_DIR=${S}
 
+PATCHES=(
+	# Workaround the CMake dependency lookup returning a different LLVM to llvm-config, bug #907965
+	"${FILESDIR}/clang_config_tool.patch"
+)
+
 QA_WX_LOAD="
 x86? (
 	usr/lib/libglapi.so.0.0.0
@@ -368,7 +373,7 @@ multilib_src_configure() {
 	fi
 
 	if use llvm && use opencl; then
-		PKG_CONFIG_PATH="$(get_llvm_prefix)/$(get_libdir)/pkgconfig"
+		PKG_CONFIG_PATH="$(get_llvm_prefix "${LLVM_MAX_SLOT}")/$(get_libdir)/pkgconfig"
 		# See https://gitlab.freedesktop.org/mesa/mesa/-/blob/main/docs/rusticl.rst
 		emesonargs+=(
 			$(meson_native_true gallium-rusticl)
@@ -396,7 +401,7 @@ multilib_src_configure() {
 	emesonargs+=(-Dvulkan-layers=${vulkan_layers#,})
 
 	if use llvm && use vulkan && use video_cards_intel; then
-		PKG_CONFIG_PATH="$(get_llvm_prefix)/$(get_libdir)/pkgconfig"
+		PKG_CONFIG_PATH="$(get_llvm_prefix "${LLVM_MAX_SLOT}")/$(get_libdir)/pkgconfig"
 		emesonargs+=(-Dintel-clc=enabled)
 	else
 		emesonargs+=(-Dintel-clc=disabled)
