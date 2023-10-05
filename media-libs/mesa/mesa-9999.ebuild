@@ -3,7 +3,7 @@
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{10..12} )
+PYTHON_COMPAT=( python3_{10..11} )
 
 inherit llvm meson-multilib python-any-r1 linux-info
 
@@ -20,7 +20,7 @@ else
 	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~x64-solaris"
 fi
 
-LICENSE="MIT"
+LICENSE="MIT SGI-B-2.0"
 SLOT="0"
 RESTRICT="!test? ( test )"
 
@@ -133,7 +133,14 @@ PER_SLOT_DEPSTR="
 		!opencl? ( sys-devel/llvm:@SLOT@[${LLVM_USE_DEPS}] )
 		opencl? ( sys-devel/clang:@SLOT@[${LLVM_USE_DEPS}] )
 		opencl? ( dev-util/spirv-llvm-translator:@SLOT@ )
-		vulkan? ( video_cards_intel? ( amd64? ( dev-util/spirv-llvm-translator:@SLOT@ ) ) )
+		vulkan? (
+			video_cards_intel? (
+				amd64? (
+					dev-util/spirv-llvm-translator:@SLOT@
+					sys-devel/clang:@SLOT@[${LLVM_USE_DEPS}]
+				)
+			)
+		)
 	)
 "
 LLVM_DEPSTR="
@@ -186,11 +193,6 @@ BDEPEND="
 
 S="${WORKDIR}/${MY_P}"
 EGIT_CHECKOUT_DIR=${S}
-
-PATCHES=(
-	# Workaround the CMake dependency lookup returning a different LLVM to llvm-config, bug #907965
-	"${FILESDIR}/clang_config_tool.patch"
-)
 
 QA_WX_LOAD="
 x86? (
@@ -288,6 +290,12 @@ pkg_setup() {
 		llvm_pkg_setup
 	fi
 	python-any-r1_pkg_setup
+}
+
+src_prepare() {
+	default
+	sed -i -e "/^PLATFORM_SYMBOLS/a '__gentoo_check_ldflags__'," \
+		bin/symbols-check.py || die # bug #830728
 }
 
 multilib_src_configure() {
