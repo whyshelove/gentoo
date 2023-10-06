@@ -6,7 +6,7 @@ WANT_LIBTOOL="none"
 
 unused_patches=( Patch111 Patch251 )
 suffix_ver=$(ver_cut 5)
-[[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}.1"
+[[ ${suffix_ver} ]] && DSUFFIX="_2.${suffix_ver}"
 
 inherit autotools check-reqs flag-o-matic multiprocessing pax-utils
 inherit prefix python-utils-r1 toolchain-funcs rhel9

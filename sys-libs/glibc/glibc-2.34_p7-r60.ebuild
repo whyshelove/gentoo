@@ -8,7 +8,9 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{9..11} )
 TMPFILES_OPTIONAL=1
-#DSUFFIX="_1.1"
+
+suffix_ver=$(ver_cut 4)
+[[ ${suffix_ver} ]] && DSUFFIX="_2.${suffix_ver}"
 _build_flags="undefine"
 
 inherit python-any-r1 prefix preserve-libs toolchain-funcs flag-o-matic gnuconfig \
@@ -29,10 +31,10 @@ if [[ ${PV} == 9999* ]]; then
 	inherit git-r3
 else
 	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
-	SRC_URI+=" https://dev.gentoo.org/~${PATCH_DEV}/distfiles/${P}-patches-${PATCH_VER}.tar.xz"
+	SRC_URI+=" https://dev.gentoo.org/~${PATCH_DEV}/distfiles/${P/_p*}-patches-${PATCH_VER}.tar.xz"
 fi
 
-RELEASE_VER=${PV}
+RELEASE_VER=${PV/_p*}
 
 GCC_BOOTSTRAP_VER=20201208
 
