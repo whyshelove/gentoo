@@ -1,6 +1,11 @@
 # Copyright 2022-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
+
+# Patrick Lauer <patrick@gentoo.org> (2023-10-05)
+# JIT / llvm support needs too old llvm
+dev-db/postgresql llvm
+
 # Patrick McLean <chutzpah@gentoo.org> (2023-10-03)
 # sys-apps/s6-linux-init has not been tested on this arch
 sys-apps/openrc s6
@@ -21,13 +26,6 @@ dev-util/librnp man
 # Michał Górny <mgorny@gentoo.org> (2023-09-19)
 # dev-cpp/cpp-httplib is keyworded here.
 sys-devel/llvm -debuginfod
-
-# WANG Xuerui <xen0n@gentoo.org> (2023-09-12)
-# Vulkan is available on loong.
-dev-qt/qt3d -vulkan
-dev-qt/qtdeclarative -vulkan
-dev-qt/qtgui -vulkan
-dev-qt/qtwayland -vulkan
 
 # WANG Xuerui <xen0n@gentoo.org> (2023-09-10)
 # Revdeps of dev-python/ujson which is masked.

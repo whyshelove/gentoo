@@ -210,6 +210,7 @@ if [[ "${PV}" == *9999* ]] ; then
 else
 	SRC_URI="https://github.com/boogie-org/${PN}/archive/v${PV}.tar.gz
 		-> ${P}.tar.gz"
+
 	KEYWORDS="~amd64"
 fi
 
@@ -229,9 +230,11 @@ BDEPEND="
 	)
 "
 
+PATCHES=( "${FILESDIR}/${PN}-3.0.4-disable-analyzers.patch" )
+
 CHECKREQS_DISK_BUILD="2G"
 DOTNET_PKG_PROJECTS=( Source/BoogieDriver/BoogieDriver.csproj )
-DOTNET_PKG_BUILD_EXTRA_ARGS=( -p:WarningLevel=0 )   # Extreme amounts of warnings.
+DOTNET_PKG_BUILD_EXTRA_ARGS=( -p:RollForward=Major )
 
 pkg_setup() {
 	check-reqs_pkg_setup
@@ -241,16 +244,12 @@ pkg_setup() {
 src_unpack() {
 	dotnet-pkg_src_unpack
 
-	if [[ -n ${EGIT_REPO_URI} ]] ; then
+	if [[ -n "${EGIT_REPO_URI}" ]] ; then
 		git-r3_src_unpack
 	fi
 }
 
 src_prepare() {
-	# Bump used .NET version: 6.0 -> 7.0
-	sed -e "s|net6.0|net7.0|g" \
-		-i "${S}/Source/Directory.Build.props" || die
-
 	# Remove bad tests.
 	local -a bad_tests=(
 		civl/inductive-sequentialization/BroadcastConsensus.bpl

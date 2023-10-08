@@ -33,6 +33,39 @@
 
 #--- END OF EXAMPLES ---
 
+# David Seifert <soap@gentoo.org> (2023-10-08)
+# Unmaintained, typical broken suckless build system, no upstream
+# activity, only Fedora still carries it.
+# Removal on 2023-11-06. Bug #732422, #914638.
+x11-misc/sselp
+
+# David Seifert <soap@gentoo.org> (2023-10-08)
+# Unmaintained, last release over 5 years ago, lots of QA issues, no
+# other distro carries this.
+# Removal on 2023-11-06. Bug #742782, #742809, #771858, #811393,
+# #898314, #898322, #898324, #898326.
+dev-libs/libtubo
+x11-libs/librfm
+x11-misc/rodent
+
+# Hans de Graaff <graaff@gentoo.org> (2023-10-07)
+# Unresolved security issues since two years, bug #792336. Original
+# upstream inactive since 2019. Substitute upstream inactive since
+# 2020. No reverse dependencies. Masked for removal on 2023-11-07.
+sys-fs/dmg2img
+
+# Sam James <sam@gentoo.org> (2023-10-06)
+# Breaks building scipy: https://github.com/cython/cython/issues/5748
+=dev-python/cython-3.0.3
+
+# Volkmar W. Pogatzki <gentoo@pogatzki.net> (2023-10-04)
+# Incompatible with newer media-video/ffmpeg, bug #914499.
+# Deps appenh and loadlib not used by anything else.
+# Removal on 2023-11-04.
+media-video/jubler
+dev-java/appenh
+dev-java/loadlib
+
 # Mart Raudsepp <leio@gentoo.org> (2023-10-04)
 # GStreamer plugin removed upstream. The database used by this music fingerprint
 # plugin has been defunct for a while. Removal on 2023-11-04. Bug #915189.
@@ -497,10 +530,6 @@ sys-devel/automake:1.11
 # incompatiblity with revdep licenses.  Mask until the situation
 # is resolved.  Bug #791259.
 >=media-libs/libopenaptx-0.2.1
-
-# Ulrich Müller <ulm@gentoo.org> (2021-04-20)
-# Version 3.15 is broken with Emacs 27.2.
-=app-emacs/mic-paren-3.15-r0
 
 # Sam James <sam@gentoo.org> (2021-03-30)
 # Seems to break dev-tex/culmus-latex
