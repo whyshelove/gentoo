@@ -3,7 +3,12 @@
 
 EAPI=6
 
+inherit eapi7-ver
+suffix_ver=$(ver_cut 4)
+[[ ${suffix_ver} ]] && DSUFFIX="_8.${suffix_ver}"
+
 _build_flags="undefine"
+
 inherit prefix eutils eapi7-ver toolchain-funcs flag-o-matic gnuconfig \
 	multilib systemd multiprocessing tmpfiles rhel8
 
@@ -16,14 +21,14 @@ EMULTILIB_PKG="true"
 
 KEYWORDS="~alpha amd64 arm arm64 hppa ia64 m68k ~mips ppc ppc64 s390 sh sparc x86"
 
-RELEASE_VER=${PV}
+RELEASE_VER=${PV/_p*}
 
 GCC_BOOTSTRAP_VER=20180511
 
 # Gentoo patchset
 PATCH_VER=9
 
-SRC_URI+=" https://dev.gentoo.org/~dilfridge/distfiles/${P}-patches-${PATCH_VER}.tar.xz"
+SRC_URI+=" https://dev.gentoo.org/~dilfridge/distfiles/${P/_p*}-patches-${PATCH_VER}.tar.xz"
 SRC_URI+=" multilib? ( https://dev.gentoo.org/~dilfridge/distfiles/gcc-multilib-bootstrap-${GCC_BOOTSTRAP_VER}.tar.xz )"
 
 IUSE="audit caps compile-locales doc gd headers-only +multiarch multilib nscd profile selinux +ssp suid systemtap test vanilla"
@@ -784,7 +789,7 @@ src_unpack() {
 
 	setup_env
 
-	rhel_src_unpack ${A}
+	rpmbuild_src_unpack ${A}
 
 	cd "${S}" || die
 	touch locale/C-translit.h || die #185476 #218003
@@ -927,7 +932,6 @@ glibc_do_configure() {
 		--without-cvs
 		--disable-werror
 		--enable-bind-now
-		--disable-crypt
 		--build=${CBUILD_OPT:-${CBUILD}}
 		--host=${CTARGET_OPT:-${CTARGET}}
 		$(use_enable profile)

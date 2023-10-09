@@ -60,7 +60,7 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}
 	virtual/os-headers
-	kernel_linux? ( !prefix-guest? ( >=sys-kernel/linux-headers-5.1 ) )
+	kernel_linux? ( !prefix-guest? ( >=sys-kernel/linux-headers-4.18.0 ) )
 	static? ( ${LIB_DEPEND} )
 	net-nds/openldap
 "
