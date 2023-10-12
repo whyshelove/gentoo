@@ -8,11 +8,11 @@ inherit qt6-build
 DESCRIPTION="Serial port abstraction library for the Qt6 framework"
 
 if [[ ${QT6_BUILD_TYPE} == release ]]; then
-	KEYWORDS="~amd64"
+	KEYWORDS="amd64"
 fi
 
-DEPEND="
-	=dev-qt/qtbase-${PV}*[gui,widgets]
+RDEPEND="
+	~dev-qt/qtbase-${PV}:6
 	virtual/libudev:=
 "
-RDEPEND="${DEPEND}"
+DEPEND="${RDEPEND}"

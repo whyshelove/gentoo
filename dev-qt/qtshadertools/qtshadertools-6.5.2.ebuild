@@ -8,10 +8,10 @@ inherit qt6-build
 DESCRIPTION="Qt APIs and Tools for Graphics Pipelines"
 
 if [[ ${QT6_BUILD_TYPE} == release ]]; then
-	KEYWORDS="~amd64"
+	KEYWORDS="amd64 ~arm ~arm64 ~hppa ~loong ~x86"
 fi
 
-DEPEND="
-	=dev-qt/qtbase-${PV}*[gui]
+RDEPEND="
+	~dev-qt/qtbase-${PV}:6[gui]
 "
-RDEPEND="${DEPEND}"
+DEPEND="${RDEPEND}"
