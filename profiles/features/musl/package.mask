@@ -201,6 +201,7 @@ games-puzzle/world-of-goo-demo
 games-puzzle/world-of-goo-gog
 games-puzzle/world-of-goo-hb
 games-rpg/crosscode
+games-rpg/crosscode-a-new-home
 games-server/bedrock-server
 games-server/etqw-ded
 games-server/mtavc
@@ -361,6 +362,7 @@ sys-apps/systemd
 sys-apps/systemd-readahead
 sys-process/systemd-cron
 >=www-misc/profile-sync-daemon-6
+sys-block/wait-for-dri-devices-rules
 
 # rust-bin requires a glibc system
 dev-lang/rust-bin

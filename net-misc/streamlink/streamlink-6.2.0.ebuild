@@ -19,7 +19,7 @@ HOMEPAGE="https://streamlink.github.io/"
 
 if [[ ${PV} != 9999* ]]; then
 	SRC_URI="https://github.com/streamlink/${PN}/releases/download/${PV}/${P}.tar.gz"
-	KEYWORDS="~amd64 ~arm ~arm64 ~x86"
+	KEYWORDS="amd64 ~arm ~arm64 ~x86"
 fi
 
 LICENSE="BSD-2 Apache-2.0"
@@ -49,7 +49,6 @@ BDEPEND="
 	$(python_gen_cond_dep '
 		>=dev-python/versioningit-2.0.0[${PYTHON_USEDEP}]
 		test? (
-			dev-python/mock[${PYTHON_USEDEP}]
 			>=dev-python/freezegun-1.0.0[${PYTHON_USEDEP}]
 			dev-python/pytest-asyncio[${PYTHON_USEDEP}]
 			dev-python/pytest-trio[${PYTHON_USEDEP}]

@@ -11,7 +11,7 @@ SRC_URI="https://github.com/freeswitch/${PN}/archive/refs/tags/v${PV}.tar.gz -> 
 
 LICENSE="LGPL-2.1+ BSD public-domain" # See COPYRIGHT
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~ia64 ~ppc ~ppc64 ~sparc ~x86 ~x86-linux"
+KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~ia64 ~ppc ~ppc64 sparc ~x86 ~x86-linux"
 IUSE="ssl test"
 RESTRICT="!test? ( test )"
 
@@ -25,6 +25,10 @@ DEPEND="${RDEPEND}
 BDEPEND="virtual/pkgconfig"
 
 src_prepare() {
+	# Avoid sresolv tests since they make too many assumptions about the
+	# networking environment, bug 915904
+	sed -i -e '/TESTS/ s/run_test_sresolv//' libsofia-sip-ua/sresolv/Makefile.am
+
 	default
 	eautoreconf
 }

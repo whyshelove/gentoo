@@ -230,7 +230,13 @@ qt5-build_src_configure() {
 	if [[ ${QT5_MODULE} == qttools ]]; then
 		qt5_tools_configure
 	fi
-	filter-flags -fcf-protection
+
+	# Workaround for bug #915203
+	# Upstream: https://bugreports.qt.io/browse/QTBUG-111514
+	if [[ ${PN} != qtcore ]] && tc-ld-is-lld ; then
+		append-ldflags -Wl,--undefined-version
+	fi
+
 	qt5_foreach_target_subdir qt5_qmake
 }
 

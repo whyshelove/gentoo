@@ -4,6 +4,7 @@
 # Various packages requiring Rust.
 app-admin/ansible
 app-admin/ansible-core
+app-admin/salt
 >=app-antivirus/clamav-0.105.1
 app-backup/borgbackup
 app-backup/borgmatic
@@ -25,13 +26,19 @@ dev-python/cfn-lint
 dev-python/dirty-equals
 dev-python/hatch-jupyter-builder
 dev-python/inflect
+dev-python/ipyparallel
+dev-python/ipywidgets
 dev-python/jaraco-itertools
 dev-python/josepy
 >=dev-python/jsonschema-4.18.0
 dev-python/jsonschema-path
 dev-python/jsonschema-spec
 dev-python/jsonschema-specifications
->=dev-python/jupyter-events-0.7.0
+dev-python/jupyter-events
+dev-python/jupyter-lsp
+dev-python/jupyter-server
+dev-python/jupyter-server-mathjax
+dev-python/jupyter-server-terminals
 dev-python/jupyterlab-server
 dev-python/jupyterlab
 dev-python/keyring
@@ -44,8 +51,12 @@ dev-python/mkdocs-git-authors-plugin
 dev-python/mkdocs-i18n
 dev-python/mkdocs-material-extensions
 dev-python/mkdocs-git-revision-date-localized-plugin
+dev-python/nbclassic
+dev-python/nbdime
+dev-python/nbval
 dev-python/nh3
->=dev-python/notebook-7
+dev-python/notebook
+dev-python/notebook-shim
 dev-python/oauthlib
 dev-python/openapi-core
 dev-python/openapi-schema-validator
@@ -63,6 +74,9 @@ dev-python/pyfuse3
 dev-python/pymdown-extensions
 dev-python/pyspelling
 dev-python/pyspnego
+dev-python/pytest-jupyter
+dev-python/pytest-localftpserver
+dev-python/pytest-salt-factories
 dev-python/pytest-trio
 dev-python/python-glanceclient
 dev-python/python-ironicclient
@@ -88,6 +102,7 @@ dev-python/trio-websocket
 dev-python/twine
 dev-python/watchfiles
 dev-python/wcmatch
+dev-python/widgetsnbextension
 dev-ruby/selenium-webdriver
 dev-util/buildbot-worker
 dev-util/cargo-c

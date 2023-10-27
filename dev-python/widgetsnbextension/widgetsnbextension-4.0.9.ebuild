@@ -4,7 +4,7 @@
 EAPI=8
 
 DISTUTILS_USE_PEP517=setuptools
-PYTHON_COMPAT=( python3_{10..11} )
+PYTHON_COMPAT=( python3_{10..12} )
 PYTHON_REQ_USE="threads(+)"
 
 inherit distutils-r1 pypi
@@ -17,7 +17,7 @@ HOMEPAGE="
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 arm arm64 hppa ~ia64 ~loong ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
+KEYWORDS="amd64 arm arm64 ~loong ppc64 ~riscv x86 ~amd64-linux ~x86-linux"
 
 BDEPEND="
 	dev-python/jupyter-packaging[${PYTHON_USEDEP}]
