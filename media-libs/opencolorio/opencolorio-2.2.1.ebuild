@@ -7,7 +7,7 @@ PYTHON_COMPAT=( python3_{10..12} )
 
 inherit cmake python-single-r1 virtualx
 
-DESCRIPTION="A color management framework for visual effects and animation"
+DESCRIPTION="Color management framework for visual effects and animation"
 HOMEPAGE="https://opencolorio.org https://github.com/AcademySoftwareFoundation/OpenColorIO"
 SRC_URI="https://github.com/AcademySoftwareFoundation/OpenColorIO/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
 S="${WORKDIR}/OpenColorIO-${PV}"
@@ -17,7 +17,7 @@ SLOT="0/$(ver_cut 1-2)"
 # minizip-ng: ~arm ~arm64 ~ppc64 ~riscv
 # osl: ~riscv
 KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~riscv ~x86"
-IUSE="apps cpu_flags_x86_sse2 doc opengl python static-libs test"
+IUSE="apps cpu_flags_x86_sse2 doc opengl python test"
 # TODO: drop opengl? It does nothing without building either the apps or the testsuite
 REQUIRED_USE="
 	apps? ( opengl )
@@ -82,6 +82,7 @@ RESTRICT="!test? ( test )"
 PATCHES=(
 	"${FILESDIR}/${PN}-2.2.1-adjust-python-installation.patch"
 	"${FILESDIR}/${PN}-2.2.1-support-minizip-ng-4.patch"
+	"${FILESDIR}/${PN}-${PV}-support-doxygen-1.9.7.patch"
 )
 
 pkg_setup() {
@@ -105,7 +106,6 @@ src_configure() {
 	#	ocioconvert (USE opengl)
 	# - OpenGL, GLUT and GLEW is required for building ociodisplay (USE opengl)
 	local mycmakeargs=(
-		-DBUILD_SHARED_LIBS=$(usex !static-libs)
 		-DOCIO_BUILD_APPS=$(usex apps)
 		-DOCIO_BUILD_DOCS=$(usex doc)
 		-DOCIO_BUILD_FROZEN_DOCS=$(usex doc)
@@ -124,6 +124,16 @@ src_configure() {
 	)
 
 	cmake_src_configure
+}
+
+src_install() {
+	cmake_src_install
+
+	if use doc; then
+		# there are already files in ${ED}/usr/share/doc/${PF}
+		mv "${ED}/usr/share/doc/OpenColorIO/"* "${ED}/usr/share/doc/${PF}" || die
+		rmdir "${ED}/usr/share/doc/OpenColorIO" || die
+	fi
 }
 
 src_test() {

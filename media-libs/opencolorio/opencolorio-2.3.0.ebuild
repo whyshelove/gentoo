@@ -7,7 +7,7 @@ PYTHON_COMPAT=( python3_{10..12} )
 
 inherit cmake python-single-r1 virtualx
 
-DESCRIPTION="A color management framework for visual effects and animation"
+DESCRIPTION="Color management framework for visual effects and animation"
 HOMEPAGE="https://opencolorio.org https://github.com/AcademySoftwareFoundation/OpenColorIO"
 SRC_URI="https://github.com/AcademySoftwareFoundation/OpenColorIO/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
 S="${WORKDIR}/OpenColorIO-${PV}"
@@ -17,7 +17,12 @@ SLOT="0/$(ver_cut 1-2)"
 # minizip-ng: ~arm ~arm64 ~ppc64 ~riscv
 # osl: ~riscv
 KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~riscv ~x86"
-IUSE="apps cpu_flags_x86_sse2 doc opengl python static-libs test"
+CPU_USE=(
+	x86_{avx,avx2,avx512f,f16c,sse2,sse3,sse4_1,sse4_2,ssse3}
+	# requires https://github.com/DLTcollab/sse2neon
+	# arm_neon
+)
+IUSE="apps ${CPU_USE[@]/#/cpu_flags_} doc opengl python test"
 # TODO: drop opengl? It does nothing without building either the apps or the testsuite
 REQUIRED_USE="
 	apps? ( opengl )
@@ -82,6 +87,7 @@ RESTRICT="!test? ( test )"
 PATCHES=(
 	"${FILESDIR}/${PN}-2.2.1-adjust-python-installation.patch"
 	"${FILESDIR}/${PN}-2.3.0-support-yaml-cpp-0.8.0.patch"
+	"${FILESDIR}/${PN}-2.3.0-fix-cxxflags.patch"
 )
 
 pkg_setup() {
@@ -105,7 +111,6 @@ src_configure() {
 	#	ocioconvert (USE opengl)
 	# - OpenGL, GLUT and GLEW is required for building ociodisplay (USE opengl)
 	local mycmakeargs=(
-		"-DBUILD_SHARED_LIBS=$(usex !static-libs)"
 		"-DOCIO_BUILD_APPS=$(usex apps)"
 		"-DOCIO_BUILD_DOCS=$(usex doc)"
 		"-DOCIO_BUILD_FROZEN_DOCS=$(usex doc)"
@@ -114,9 +119,33 @@ src_configure() {
 		"-DOCIO_BUILD_PYTHON=$(usex python)"
 		"-DOCIO_BUILD_TESTS=$(usex test)"
 		"-DOCIO_INSTALL_EXT_PACKAGES=NONE"
-		"-DOCIO_USE_OIIO_CMAKE_CONFIG=ON"
-		"-DOCIO_USE_SSE=$(usex cpu_flags_x86_sse2)"
+		# allow the user to tell OCIO to display more information when searching and building the dependencies.
+		# "-DOCIO_VERBOSE=YES"
+
+		"-DOCIO_USE_SIMD=ON"
 	)
+
+	if use amd64 || use x86 ; then
+		mycmakeargs+=(
+			"-DOCIO_USE_SSE2=$(usex cpu_flags_x86_sse2)"
+			"-DOCIO_USE_SSE3=$(usex cpu_flags_x86_sse3)"
+			"-DOCIO_USE_SSSE3=$(usex cpu_flags_x86_ssse3)"
+			"-DOCIO_USE_SSE4=$(usex cpu_flags_x86_sse4_1)"
+			"-DOCIO_USE_SSE42=$(usex cpu_flags_x86_sse4_2)"
+			"-DOCIO_USE_AVX=$(usex cpu_flags_x86_avx)"
+			"-DOCIO_USE_AVX2=$(usex cpu_flags_x86_avx2)"
+			"-DOCIO_USE_AVX512=$(usex cpu_flags_x86_avx512f)"
+			"-DOCIO_USE_F16C=$(usex cpu_flags_x86_f16c)"
+		)
+	fi
+
+	# requires https://github.com/DLTcollab/sse2neon
+	# if use arm || use arm64 ; then
+	# 	mycmakeargs+=(
+	# 		"-DOCIO_USE_SSE2NEON=$(usex cpu_flags_arm_neon)"
+	# 	)
+	# fi
+
 	use python && mycmakeargs+=(
 		"-DOCIO_PYTHON_VERSION=${EPYTHON/python/}"
 		"-DPython_EXECUTABLE=${PYTHON}"
@@ -124,6 +153,16 @@ src_configure() {
 	)
 
 	cmake_src_configure
+}
+
+src_install() {
+	cmake_src_install
+
+	if use doc; then
+		# there are already files in ${ED}/usr/share/doc/${PF}
+		mv "${ED}/usr/share/doc/OpenColorIO/"* "${ED}/usr/share/doc/${PF}" || die
+		rmdir "${ED}/usr/share/doc/OpenColorIO" || die
+	fi
 }
 
 src_test() {

@@ -26,6 +26,7 @@ DEPEND="
 	>=dev-util/rocminfo-5
 	sys-devel/clang:${LLVM_MAX_SLOT}
 	dev-libs/rocm-comgr:${SLOT}
+	x11-base/xorg-proto
 	virtual/opengl
 "
 RDEPEND="${DEPEND}
@@ -59,7 +60,7 @@ src_configure() {
 		-DUSE_PROF_API=0
 		-DFILE_REORG_BACKWARD_COMPATIBILITY=OFF
 		-DCLR_BUILD_HIP=ON
-		-DHIPCC_BIN_DIR=/usr/bin
+		-DHIPCC_BIN_DIR="${EPREFIX}/usr/bin"
 		-DOpenGL_GL_PREFERENCE="GLVND"
 	)
 
