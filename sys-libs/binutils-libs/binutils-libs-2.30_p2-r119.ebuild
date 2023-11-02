@@ -3,10 +3,14 @@
 
 EAPI=6
 
+inherit eapi7-ver
+suffix_ver=$(ver_cut 4)
+[[ ${suffix_ver} ]] && DSUFFIX="_8.${suffix_ver}"
+
 inherit eutils libtool toolchain-funcs multilib-minimal rhel8
 
 MY_PN="binutils"
-MY_P="${MY_PN}-${PV}"
+MY_P="${MY_PN}-${PV/_p*}"
 
 DESCRIPTION="Core binutils libraries (libbfd, libopcodes, libiberty) for external packages"
 HOMEPAGE="https://sourceware.org/binutils/"
@@ -14,7 +18,7 @@ HOMEPAGE="https://sourceware.org/binutils/"
 LICENSE="|| ( GPL-3 LGPL-3 )"
 # The shared lib SONAMEs use the ${PV} in them.
 # -r1 is a one-off subslot bump where SONAME changed for bug #666100
-SLOT="0/${PV}"
+SLOT="0/${PV/_p*}"
 KEYWORDS="alpha amd64 arm arm64 hppa ia64 m68k ~mips ppc ppc64 s390 sh sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x86-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
 IUSE="64-bit-bfd multitarget nls static-libs"
 

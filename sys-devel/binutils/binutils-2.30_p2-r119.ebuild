@@ -3,6 +3,10 @@
 
 EAPI=6
 
+inherit eapi7-ver
+suffix_ver=$(ver_cut 4)
+[[ ${suffix_ver} ]] && DSUFFIX="_8.${suffix_ver}"
+
 inherit eutils libtool flag-o-matic gnuconfig multilib toolchain-funcs versionator rhel8
 
 DESCRIPTION="Tools necessary to build programs"
@@ -17,7 +21,7 @@ case ${PV} in
 		EGIT_CHECKOUT_DIR=${S}
 		;;
 	*)
-		BVER=${PV}
+		BVER=${PV/_p*}
 		;;
 esac
 SLOT="${BVER}"
@@ -55,7 +59,7 @@ if is_cross ; then
 	# The build assumes the host has libiberty and such when cross-compiling
 	# its build tools.  We should probably make binutils itself build a local
 	# copy to use, but until then, be lazy.
-	DEPEND+=" >=sys-libs/binutils-libs-${PV}"
+	DEPEND+=" >=sys-libs/binutils-libs-${PV/_p*}"
 fi
 
 MY_BUILDDIR=${WORKDIR}/build
@@ -70,7 +74,7 @@ src_unpack() {
 			;;
 	esac
 	mkdir -p "${MY_BUILDDIR}"
-	rhel_src_unpack ${A}
+	rpmbuild_src_unpack ${A}
 }
 
 src_prepare() {
