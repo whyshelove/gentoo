@@ -3,7 +3,7 @@
 
 EAPI=8
 
-VERIFY_SIG_OPENPGP_KEY_PATH="${BROOT}"/usr/share/openpgp-keys/crypto++.asc
+VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/crypto++.asc
 inherit flag-o-matic toolchain-funcs verify-sig
 
 DESCRIPTION="C++ class library of cryptographic schemes"
@@ -25,7 +25,7 @@ LICENSE="Boost-1.0"
 # "recompile of programs required". Even if it doesn't,
 # verify with abidiff!
 SLOT="0/${PV}"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~loong ~ppc ~ppc64 ~riscv ~sparc ~x86 ~x64-macos"
+KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~loong ppc ppc64 ~riscv sparc x86 ~x64-macos"
 IUSE="+asm static-libs"
 
 BDEPEND="
