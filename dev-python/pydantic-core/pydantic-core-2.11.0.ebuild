@@ -5,8 +5,7 @@ EAPI=8
 
 DISTUTILS_EXT=1
 DISTUTILS_USE_PEP517=maturin
-# pypy3 is waiting for new pyo3 release
-PYTHON_COMPAT=( python3_{10..12} )
+PYTHON_COMPAT=( pypy3 python3_{10..12} )
 
 CRATES="
 	ahash@0.8.3
@@ -129,6 +128,10 @@ src_prepare() {
 python_test() {
 	local EPYTEST_IGNORE=(
 		tests/benchmarks
+	)
+	local EPYTEST_DESELECT=(
+		# TODO: recursion till segfault
+		tests/serializers/test_functions.py::test_recursive_call
 	)
 
 	local -x PYTEST_DISABLE_PLUGIN_AUTOLOAD=1

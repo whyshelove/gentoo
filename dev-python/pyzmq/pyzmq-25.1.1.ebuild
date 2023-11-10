@@ -23,7 +23,7 @@ SRC_URI="
 
 LICENSE="LGPL-3"
 SLOT="0"
-KEYWORDS="amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~arm64-macos ~x64-macos"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~arm64-macos ~x64-macos"
 IUSE="drafts"
 
 # There are additional test failures if zeromq has the draft api enabled, but pyzmq has it disabled.
@@ -57,6 +57,10 @@ EPYTEST_DESELECT=(
 	zmq/tests/test_auth.py
 	zmq/tests/test_cython.py
 	zmq/tests/test_zmqstream.py
+
+	# swap thrashing on low-mem hosts, per Debian:
+	# https://salsa.debian.org/python-team/packages/pyzmq/-/blob/master/debian/patches/skip_large_send
+	zmq/tests/test_socket.py::TestSocket::test_large_send
 )
 
 EPYTEST_IGNORE=(
