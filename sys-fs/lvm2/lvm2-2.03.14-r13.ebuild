@@ -3,6 +3,7 @@
 
 EAPI=7
 TMPFILES_OPTIONAL=1
+DSUFFIX="_9"
 inherit autotools linux-info systemd toolchain-funcs tmpfiles udev flag-o-matic rhel8
 
 DESCRIPTION="User-land utilities for LVM2 (device-mapper) software"

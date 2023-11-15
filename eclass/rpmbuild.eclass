@@ -124,7 +124,7 @@ rpmbuild_src_unpack() {
 	for a in ${A} ; do
 		case ${a} in
 		*.src.rpm) [[ ${a} =~ ".src.rpm" ]] && srcrpmbuild_unpack "${a}" ;;
-		*.rpm) [[ ${a} =~ ".rpm" ]] && rpm_unpack "${a}" && mkdir -p $S ;;
+		*.rpm) rpm_unpack "${a}" && mkdir -p $S ;;
 		*)     unpack "${a}" ;;
 		esac
 	done

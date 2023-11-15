@@ -379,7 +379,7 @@ toolchain-rhel_pkg_setup() {
 #---->> src_unpack <<----
 
 toolchain-rhel_src_unpack() {
-	rhel_src_unpack
+	rpmbuild_src_unpack
 }
 
 #---->> src_prepare <<----

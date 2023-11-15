@@ -58,17 +58,15 @@ rhel-kernel-build_pkg_setup() {
 
     	# released_kernel
 	S10=${WORKDIR}/redhatsecurebootca3.cer
-	S11=${WORKDIR}/redhatsecurebootca5.cer
-	S12=${WORKDIR}/redhatsecureboot301.cer
+	S11=${WORKDIR}/redhatsecurebootca2.cer
+	S12=${WORKDIR}/redhatsecureboot201.cer
 	S13=${WORKDIR}/redhatsecureboot501.cer
 
 	secureboot_ca_0=${S10}
-	secureboot_ca_1=${S11}
+
 	if use arm64 || use amd64; then
-		secureboot_key_0=${S12}
-		pesign_name_0=redhatsecureboot301
-		secureboot_key_1=${S13}
-		pesign_name_1=redhatsecureboot501
+		secureboot_key_0=${S13}
+		pesign_name_0=redhatsecureboot501
 	fi
 
 	case ${ARCH} in
@@ -81,20 +79,6 @@ rhel-kernel-build_pkg_setup() {
 			export asmarch=arm64
 			export hdrarch=arm64
 			export make_target=Image.gz
-			;;
-		ppc64)
-			export asmarch=powerpc
-			export hdrarch=powerpc
-			export make_target=vmlinux
-			export kernel_image_elf=1
-			export kcflags=-O3
-			export signing_key_filename=kernel-signing-ppc.cer
-			;;
-		s390)
-			export asmarch=s390
-			export hdrarch=s390
-			export vmlinux_decompressor=arch/s390/boot/compressed/vmlinux
-			export signing_key_filename=kernel-signing-s390.cer
 			;;
 		*)
 			die "Unsupported arch ${ARCH}"

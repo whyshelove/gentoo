@@ -6,8 +6,8 @@ EAPI=8
 PYTHON_COMPAT=( python3_{6,8,9} )
 
 DPREFIX="module+"
-VER_COMMIT=19627+2d14cb21
-DSUFFIX=".8.0+${VER_COMMIT}"
+VER_COMMIT=19570+14a90618
+DSUFFIX=".9.0+${VER_COMMIT}"
 WhatArch=noarch
 
 inherit toolchain-funcs python-any-r1 rhel8-a
@@ -125,6 +125,8 @@ build_bios() {
 }
 
 src_compile() {
+	use binary && return
+
 	local TARGET_CHOST=$(choose_target_chost)
 
 	build_bios ${WORKDIR}/config.seabios-128k bios.bin bios.bin

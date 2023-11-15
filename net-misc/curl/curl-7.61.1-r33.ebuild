@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="7"
-DSUFFIX="_$(ver_cut 5).$(ver_cut 7)"
+#DSUFFIX="_$(ver_cut 5)"
 inherit autotools prefix multilib-minimal rhel8
 
 DESCRIPTION="A Client that groks URLs"

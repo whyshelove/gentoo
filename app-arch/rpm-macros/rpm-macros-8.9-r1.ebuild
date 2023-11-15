@@ -5,10 +5,10 @@ EAPI=7
 
 inherit unpacker rhel8
 
-SRC_URI="${REPO_BIN}/r/redhat-release-${PV}-0.8.${DIST}.x86_64.rpm"
+SRC_URI="${REPO_BIN}/r/redhat-release-${PV}-0.1.${DIST}.x86_64.rpm"
 SRC_URI+=" ${REPO_BIN}/r/rootfiles-8.1-22.${DIST}.noarch.rpm"
 
-crypto_policies="crypto-policies-scripts-20221215-1.gitece0092.${DIST}.noarch.rpm"
+crypto_policies="crypto-policies-scripts-20230731-1.git3177e06.${DIST}.noarch.rpm"
 SRC_URI+=" ${REPO_BIN}/c/${crypto_policies}"
 SRC_URI+=" ${REPO_BIN}/c/${crypto_policies/-scripts}"
 

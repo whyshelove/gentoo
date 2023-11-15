@@ -16,7 +16,7 @@ if [[ -n ${GRUB_AUTORECONF} ]]; then
 	inherit autotools
 fi
 
-DSUFFIX="_$(ver_cut 4).$(ver_cut 6)"
+#DSUFFIX="_9.$(ver_cut 6)"
 _hardened_build="undefine"
 _annotated_build="undefine"
 
@@ -132,7 +132,8 @@ pkg_setup() {
     efiarch=$(get_efi_arch)
     GRUB_EFI64_S="${WORKDIR}/${P/_p*}-efi-${efiarch/x}"
     efi_vendor=$(eval echo $(grep ^ID= /etc/os-release | sed -e 's/^ID=//'))
-    efi_esp_dir="/boot/efi/EFI/${efi_vendor}"
+    ESP_PATH="/boot/efi"
+    efi_esp_dir="${ESP_PATH}/EFI/${efi_vendor}"
     grubefiname="grub${efiarch}.efi"
     grubeficdname="gcd${efiarch}.efi"
 

@@ -176,7 +176,12 @@ src_compile() {
 }
 
 src_install() {
-	use binary && rhel_bin_install && return
+	if use binary; then
+		mv "${WORKDIR}"/* "${ED}"/
+		mv "${ED}"/${PN}-${GITCOMMIT} "${WORKDIR}"/
+
+		return
+	fi
 
 	insinto /usr/share/${PN}
 	doins ovmf/*

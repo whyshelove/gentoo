@@ -3,7 +3,7 @@
 
 EAPI=7
 
-DPREFIX="git20230119."
+DPREFIX="git20230802."
 suffix_ver=$(ver_cut 3)
 [[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}"
 

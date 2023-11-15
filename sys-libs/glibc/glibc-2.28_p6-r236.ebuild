@@ -5,7 +5,7 @@ EAPI=6
 
 inherit eapi7-ver
 suffix_ver=$(ver_cut 4)
-[[ ${suffix_ver} ]] && DSUFFIX="_8.${suffix_ver}"
+[[ ${suffix_ver} ]] && DSUFFIX=".${suffix_ver}"
 
 _build_flags="undefine"
 

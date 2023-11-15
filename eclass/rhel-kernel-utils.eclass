@@ -162,9 +162,7 @@ InstallKernel(){
 
         case ${ARCH} in
             amd64|arm64)
-                    _pesign $SignImage vmlinuz.tmp ${secureboot_ca_0} ${secureboot_key_0} ${pesign_name_0}
-                    _pesign vmlinuz.tmp vmlinuz.signed ${secureboot_ca_1} ${secureboot_key_1} ${pesign_name_1}
-                    rm vmlinuz.tmp
+                    _pesign $SignImage vmlinuz.signed ${secureboot_ca_0} ${secureboot_key_0} ${pesign_name_0}
                     ;;
             s390|ppc64)
                     if [ -x /usr/bin/rpmsign ]; then
@@ -392,16 +390,8 @@ InstallKernel(){
     ${WORKDIR}/generate_bls_conf.sh "$KernelVer" "${ED}"
 
     # Red Hat UEFI Secure Boot CA cert, which can be used to authenticate the kernel
-    if use arm64 || use amd64; then
-        insinto ${_datadir}/doc/kernel-keys/$KernelVer
-        newins ${secureboot_ca_0} kernel-signing-ca-20200609.cer
-        newins ${secureboot_ca_1} kernel-signing-ca-20140212.cer
-        dosym kernel-signing-ca-20200609.cer ${_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
-
-   else
-        insinto ${_datadir}/doc/kernel-keys/$KernelVer
-        newins ${secureboot_ca_0} kernel-signing-ca.cer
-   fi
+      insinto ${_datadir}/doc/kernel-keys/$KernelVer
+      newins ${secureboot_ca_0} kernel-signing-ca.cer
 
     if use ipaclones; then
         #MAXPROCS=$(echo ${MAKEOPTS} | sed -n 's/-j\s*\([0-9]\+\)/\1/p')

@@ -144,6 +144,13 @@ multilib_src_install_all() {
 
 	# Security
 	lockdown_perms "${ED}"
+
+	# undo the workaround
+	cur=`pwd`
+	cd "${ED}"
+	eapply "${WORKDIR}"/audit-3.0.8-undo-flex-array.patch
+	find . -name '*.orig' -delete
+	cd $cur
 }
 
 pkg_postinst() {

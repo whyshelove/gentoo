@@ -5,8 +5,8 @@ EAPI=7
 
 DPREFIX="module+"
 suffix_ver=$(ver_cut 4)
-VER_COMMIT=16781+9f4724c2
-DSUFFIX=".8.0+${VER_COMMIT}"
+VER_COMMIT=18724+20190c23
+DSUFFIX=".9.0+${VER_COMMIT}"
 WhatArch=noarch
 
 inherit toolchain-funcs rhel8-a
@@ -43,7 +43,12 @@ src_compile() {
 }
 
 src_install() {
-	use binary && rhel_bin_install && return
+	if use binary; then
+		mv "${WORKDIR}"/* "${ED}"/
+		mv "${ED}"/${PN}* "${WORKDIR}"/
+
+		return
+	fi
 
 	insinto /usr/share/sgabios
 	doins sgabios.bin

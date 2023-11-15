@@ -3,9 +3,9 @@
 
 EAPI=7
 
-subrelease="$(ver_cut 5).1"
+subrelease="$(ver_cut 7).1"
 DPREFIX="${subrelease}."
-DSUFFIX="_8"
+DSUFFIX="_$(ver_cut 5)"
 
 inherit unpacker rhel8
 
