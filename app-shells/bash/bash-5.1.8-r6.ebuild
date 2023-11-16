@@ -252,4 +252,8 @@ pkg_postinst() {
 	if [[ ! -e ${EROOT}/bin/sh ]] ; then
 		ln -sf bash "${EROOT}"/bin/sh
 	fi
+
+	if [[ ! -e ${EROOT}/usr/bin/sh ]] ; then
+		ln -sf /bin/bash "${EROOT}"/usr/bin/sh
+	fi
 }
