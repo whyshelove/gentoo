@@ -255,6 +255,9 @@ rhel-kernel-build_src_compile() {
         # make sure check-headers.sh is executable
         chmod +x tools/perf/check-headers.sh
         ${perf_make[@]} DESTDIR="${ED}" all
+
+	# libperf
+	make -C tools/lib/perf V=1
     fi
 
     if use tools; then
@@ -294,6 +297,9 @@ rhel-kernel-build_src_compile() {
         pushd tools/vm/
         tools_make slabinfo page_owner_sort
         popd
+	pushd tools/verification/rv/
+	tools_make
+	popd
 	pushd tools/tracing/rtla
 	tools_make
 	popd
@@ -365,12 +371,16 @@ rhel-kernel-build_src_install() {
 	# LIBTRACEEVENT_DYNAMIC=1 above in perf_make macro). Those files should already
 	# ship with libtraceevent package.
 	rm -rf "${ED}"${_libdir}/traceevent
+
+	# libperf
+	make -C tools/lib/perf DESTDIR="${ED}" prefix=${_prefix} libdir=${_libdir} V=1 install
+	rm -f "${ED}"${_libdir}/libperf.a
     fi
 
     if use tools; then
         if use arm64 || use amd64 || use ppc64; then
             emake -C tools/power/cpupower DESTDIR="${ED}" libdir=${_libdir} mandir=${_mandir} CPUFREQ_BENCH=false install
-	    rm -f %"${ED}"${_libdir}/*.{a,la}
+	    rm -f "${ED}"${_libdir}/*.{a,la}
             if use amd64; then
                 pushd tools/power/cpupower/debug/x86_64
                 dobin centrino-decode powernow-k8-decode
@@ -415,12 +425,17 @@ rhel-kernel-build_src_install() {
 	newbin slabinfo page_owner_sort
 	popd
 
+	pushd tools/verification/rv/
+	tools_make DESTDIR="${ED}" install
+	popd
+
 	pushd tools/tracing/rtla/
 	tools_make DESTDIR="${ED}" install
-	rm -f "${ED}"${_bindir}/osnoise
+	rm -f "${ED}"${_bindir}/{hwnoise,osnoise}
 	rm -f "${ED}"${_bindir}/timerlat
 	(cd "${ED}"
 
+		ln -sf rtla ./${_bindir}/hwnoise
 		ln -sf rtla ./${_bindir}/osnoise
 		ln -sf rtla ./${_bindir}/timerlat
 	)

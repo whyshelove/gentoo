@@ -26,7 +26,6 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}
 	>=x11-base/xcb-proto-1.14[${MULTILIB_USEDEP}]
-	elibc_Darwin? ( dev-libs/libpthread-stubs )
 	test? ( dev-libs/check[${MULTILIB_USEDEP}] )
 "
 # Note: ${PYTHON_USEDEP} needs to go verbatim
@@ -34,7 +33,6 @@ BDEPEND="${PYTHON_DEPS}
 	$(python_gen_any_dep '>=x11-base/xcb-proto-1.14[${PYTHON_USEDEP}]')
 	doc? ( app-doc/doxygen[dot] )
 	test? ( dev-libs/libxslt )
-	dev-libs/libpthread-stubs
 	x11-misc/util-macros
 "
 

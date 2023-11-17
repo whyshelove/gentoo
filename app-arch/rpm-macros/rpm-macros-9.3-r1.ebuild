@@ -25,7 +25,7 @@ SRC_URI+=" ${REPO_BIN}/${macro:0:1}/${macro}.${DIST}.noarch.rpm"
 done
 
 REPO_BIN="${REPO_BIN/appstream/codeready-builder}"
-SRC_URI+=" ${REPO_BIN}/r/redhat-sb-certs-9.1-0.13.${DIST}.noarch.rpm"
+SRC_URI+=" ${REPO_BIN}/r/redhat-sb-certs-9.3-0.5.${DIST}.noarch.rpm"
 
 LICENSE="GPL-2"
 SLOT="0"

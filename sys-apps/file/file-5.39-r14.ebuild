@@ -7,9 +7,7 @@ DISTUTILS_USE_PEP517=setuptools
 DISTUTILS_OPTIONAL=1
 PYTHON_COMPAT=( python3_{9..11} )
 
-DSUFFIX="_2"
-
-DPREFIX="1."
+#DSUFFIX="_2"
 
 inherit distutils-r1 autotools toolchain-funcs multilib-minimal rhel9
 

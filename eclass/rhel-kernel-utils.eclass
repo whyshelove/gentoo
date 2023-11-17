@@ -348,7 +348,8 @@ InstallKernel(){
     cp --parents tools/build/Build "${ED}"/lib/modules/$KernelVer/build
     cp --parents tools/build/fixdep.c "${ED}"/lib/modules/$KernelVer/build
     cp --parents tools/objtool/sync-check.sh "${ED}"/lib/modules/$KernelVer/build
-    cp -a --parents tools/bpf/resolve_btfids "${ED}"/lib/modules/$KernelVer/build
+    cp -a --parents tools/bpf/resolve_btfids/main.c "${ED}"/lib/modules/$KernelVer/build
+    cp -a --parents tools/bpf/resolve_btfids/Build "${ED}"/lib/modules/$KernelVer/build
 
     cp --parents security/selinux/include/policycap_names.h "${ED}"/lib/modules/$KernelVer/build
     cp --parents security/selinux/include/policycap.h "${ED}"/lib/modules/$KernelVer/build
