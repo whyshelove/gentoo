@@ -5,6 +5,9 @@ EAPI=7
 
 CMAKE_MAKEFILE_GENERATOR="emake" # TODO RunCMake.LinkWhatYouUse fails consistently w/ ninja
 CMAKE_REMOVE_MODULES_LIST=( none )
+
+DSUFFIX="_3"
+
 inherit bash-completion-r1 cmake elisp-common flag-o-matic multiprocessing \
 	toolchain-funcs virtualx xdg-utils rhel9-a
 

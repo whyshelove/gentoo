@@ -10,8 +10,10 @@ PATCHSET_VERSION="2.9.12-r5-patchset"
 PYTHON_COMPAT=( python3_{9..11} )
 PYTHON_REQ_USE="xml"
 
+DSUFFIX="_3"
+
 suffix_ver=$(ver_cut 5)
-[[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}.1"
+[[ ${suffix_ver} ]] && DSUFFIX="_3.${suffix_ver}"
 
 inherit autotools flag-o-matic prefix python-r1 multilib-minimal rhel9
 
