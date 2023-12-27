@@ -8,7 +8,7 @@ inherit desktop llvm optfeature qt6-build
 DESCRIPTION="Qt Tools Collection"
 
 if [[ ${QT6_BUILD_TYPE} == release ]]; then
-	KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~loong ~ppc ~ppc64 ~riscv ~sparc ~x86"
+	KEYWORDS="amd64 ~arm ~arm64 ~hppa ~loong ~ppc ~ppc64 ~riscv ~sparc ~x86"
 fi
 
 IUSE="
@@ -62,6 +62,8 @@ pkg_setup() {
 
 src_configure() {
 	local mycmakeargs=(
+		# prevent the clang test as it can abort due to bug #916098
+		$(cmake_use_find_package clang WrapLibClang)
 		$(cmake_use_find_package qml Qt6Qml)
 		$(cmake_use_find_package widgets Qt6Widgets)
 		$(qt_feature assistant)

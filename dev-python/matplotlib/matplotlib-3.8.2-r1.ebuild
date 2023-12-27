@@ -29,7 +29,7 @@ SRC_URI+="
 # Fonts: BitstreamVera, OFL-1.1
 LICENSE="BitstreamVera BSD matplotlib MIT OFL-1.1"
 SLOT="0"
-KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~loong ~ppc ~ppc64 ~riscv ~s390 sparc ~x86 ~arm64-macos ~x64-macos"
+KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~loong ppc ppc64 ~riscv ~s390 sparc ~x86 ~arm64-macos ~x64-macos"
 IUSE="cairo doc excel gtk3 latex qt5 tk webagg wxwidgets"
 
 # internal copy of pycxx highly patched
@@ -112,6 +112,12 @@ BDEPEND="
 	test? (
 		dev-python/psutil[${PYTHON_USEDEP}]
 		>=dev-python/tornado-6.0.4[${PYTHON_USEDEP}]
+		!hppa? ( !s390? (
+			|| (
+				media-video/ffmpeg[openh264]
+				media-video/ffmpeg[x264]
+			)
+		) )
 		gtk3? (
 			>=dev-python/pygobject-3.40.1-r1:3[cairo?,${PYTHON_USEDEP}]
 			x11-libs/gtk+:3[introspection]

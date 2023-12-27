@@ -86,7 +86,7 @@ COMMON_DEPEND="
 	>=kde-plasma/libkscreen-${PVCUT}:5
 	>=kde-plasma/libksysguard-${PVCUT}:5
 	>=kde-plasma/libkworkspace-${PVCUT}:5
-	>=media-libs/phonon-4.11.0
+	>=media-libs/phonon-4.11.0[qt5(+)]
 	sci-libs/libqalculate:=
 	sys-libs/zlib
 	x11-libs/libICE
@@ -99,7 +99,7 @@ COMMON_DEPEND="
 	x11-libs/libXrender
 	x11-libs/libXtst
 	x11-libs/xcb-util
-	appstream? ( dev-libs/appstream[qt5] )
+	appstream? ( dev-libs/appstream[qt5(-)] )
 	calendar? ( >=kde-frameworks/kholidays-${KFMIN}:5 )
 	fontconfig? (
 		>=dev-qt/qtprintsupport-${QTMIN}:5
@@ -110,7 +110,7 @@ COMMON_DEPEND="
 	geolocation? ( >=kde-frameworks/networkmanager-qt-${KFMIN}:5 )
 	gps? ( sci-geosciences/gpsd )
 	policykit? (
-		sys-auth/polkit-qt
+		sys-auth/polkit-qt[qt5(+)]
 		virtual/libcrypt:=
 	)
 	screencast? (

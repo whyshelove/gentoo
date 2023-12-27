@@ -36,7 +36,7 @@ inherit kde.org
 HOMEPAGE="https://develop.kde.org/products/frameworks/"
 
 SLOT=6
-if [[ ${PV} == 5.9999 ]] || ver_test ${PV} -lt 5.240; then
+if ver_test ${PV} -lt 5.240; then
 	SLOT=5
 fi
 if [[ ${PN} == extra-cmake-modules ]]; then
@@ -63,13 +63,19 @@ _KDE_SRC_URI="mirror://kde/"
 
 case ${KDE_BUILD_TYPE} in
 	live)
-		if [[ ${PV} == 5.9999 ]]; then
+		if [[ ${PV} == 5.239.9999 ]]; then
 			EGIT_BRANCH="kf5"
 		fi
 		;;
 	*)
 		if [[ -z ${KDE_ORG_COMMIT} ]]; then
-			_KDE_SRC_URI+="stable/frameworks/$(ver_cut 1-2)/"
+			case ${PV} in
+				5.2[4-9]?.? )
+					_KDE_SRC_URI+="unstable/frameworks/$(ver_cut 1-3)/"
+					RESTRICT+=" mirror"
+					;;
+				*) _KDE_SRC_URI+="stable/frameworks/$(ver_cut 1-2)/" ;;
+			esac
 			case ${KDE_ORG_NAME} in
 				kdelibs4support | \
 				kdesignerplugin | \
@@ -84,7 +90,7 @@ case ${KDE_BUILD_TYPE} in
 					;;
 			esac
 
-			SRC_URI="${_KDE_SRC_URI}${KDE_ORG_NAME}-${PV}.tar.xz"
+			SRC_URI="${_KDE_SRC_URI}${KDE_ORG_TAR_PN}-${PV}.tar.xz"
 		fi
 		;;
 esac

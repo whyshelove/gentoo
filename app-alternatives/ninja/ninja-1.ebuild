@@ -4,16 +4,16 @@
 EAPI=8
 
 ALTERNATIVES=(
-	"reference:>=dev-util/ninja-1.11.1-r3"
+	"reference:>=dev-util/ninja-1.10.2"
 	samurai:dev-util/samurai
 )
 
 inherit app-alternatives
 
 DESCRIPTION="ninja symlinks"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~arm64-macos ~ppc-macos ~x64-macos ~x64-solaris"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~arm64-macos ~ppc-macos ~x64-macos ~x64-solaris"
 
-RDEPEND="!<dev-util/ninja-1.11.1-r3"
+RDEPEND="!<dev-util/ninja-1.10.2"
 
 src_install() {
 	local alt=$(get_alternative)

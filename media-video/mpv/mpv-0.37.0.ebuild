@@ -12,7 +12,7 @@ if [[ ${PV} == 9999 ]]; then
 	EGIT_REPO_URI="https://github.com/mpv-player/mpv.git"
 else
 	SRC_URI="https://github.com/mpv-player/mpv/archive/v${PV}.tar.gz -> ${P}.tar.gz"
-	KEYWORDS="amd64 ~arm arm64 ~loong ppc64 ~riscv x86 ~amd64-linux"
+	KEYWORDS="amd64 ~arm arm64 ~loong ppc ppc64 ~riscv x86 ~amd64-linux"
 fi
 
 DESCRIPTION="Media player for the command line"
@@ -133,6 +133,10 @@ BDEPEND="
 	cli? ( dev-python/docutils )
 	wayland? ( dev-util/wayland-scanner )
 "
+
+PATCHES=(
+	"${FILESDIR}"/${PN}-0.37.0-drm-fix.patch
+)
 
 pkg_setup() {
 	use lua && lua-single_pkg_setup

@@ -11,6 +11,7 @@ app-backup/borgmatic
 app-crypt/acme
 app-crypt/certbot
 app-crypt/certbot-nginx
+app-crypt/rpm-sequoia
 app-eselect/eselect-rust
 app-misc/khal
 app-text/mdbook
@@ -25,6 +26,7 @@ dev-python/aws-sam-translator
 >=dev-python/bcrypt-4
 dev-python/cfn-lint
 >=dev-python/cryptography-36
+dev-python/apprise
 dev-python/dirty-equals
 dev-python/hatch-jupyter-builder
 dev-python/inflect
@@ -69,6 +71,7 @@ dev-python/orjson
 dev-python/os-client-config
 dev-python/osc-lib
 dev-python/paramiko
+dev-python/pendulum
 dev-python/pooch
 dev-python/pydantic
 dev-python/pydantic-core

@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-PYTHON_COMPAT=( python3_{9..11} )
+PYTHON_COMPAT=( python3_{10..12} )
 
 inherit meson python-single-r1 systemd
 
@@ -56,7 +56,7 @@ src_configure() {
 
 src_install() {
 	meson_src_install
-	python_fix_shebang "${D}"/usr/bin/switcherooctl
+	python_fix_shebang "${ED}"/usr/bin/switcherooctl
 	newinitd "${FILESDIR}"/${PN}-init.d ${PN}
 }
 

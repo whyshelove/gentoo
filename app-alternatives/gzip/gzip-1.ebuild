@@ -4,7 +4,7 @@
 EAPI=8
 
 ALTERNATIVES=(
-	"reference:>=app-arch/gzip-1.12-r3"
+	"reference:>=app-arch/gzip-1.12-r1"
 	"pigz:>=app-arch/pigz-2.8[-symlink(-)]"
 )
 
@@ -15,7 +15,7 @@ KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv 
 IUSE="split-usr"
 
 RDEPEND="
-	!<app-arch/gzip-1.12-r3
+	!<app-arch/gzip-1.12-r1
 	!app-arch/pigz[symlink(-)]
 "
 
