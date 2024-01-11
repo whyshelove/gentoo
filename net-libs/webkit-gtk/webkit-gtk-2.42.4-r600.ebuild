@@ -1,10 +1,10 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 PYTHON_REQ_USE="xml(+)"
 PYTHON_COMPAT=( python3_{10..12} )
-USE_RUBY="ruby30 ruby31 ruby32"
+USE_RUBY="ruby30 ruby31 ruby32 ruby33"
 
 inherit check-reqs flag-o-matic gnome2 optfeature python-any-r1 ruby-single toolchain-funcs cmake
 
@@ -154,11 +154,16 @@ src_prepare() {
 
 	# Fix USE=-jumbo-build compilation on arm64
 	eapply "${FILESDIR}"/2.42.1-arm64-non-jumbo-fix.patch
+	# Fix assert failure on some machines, bug #920704
+	eapply "${FILESDIR}"/2.42.4-wasm-assert-fix.patch
 }
 
 src_configure() {
 	# Respect CC, otherwise fails on prefix #395875
 	tc-export CC
+
+	# ODR violations (bug #915230, https://bugs.webkit.org/show_bug.cgi?id=233007)
+	filter-lto
 
 	# It does not compile on alpha without this in LDFLAGS
 	# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=648761

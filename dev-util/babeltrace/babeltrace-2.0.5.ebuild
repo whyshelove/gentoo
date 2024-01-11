@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -12,7 +12,7 @@ SRC_URI="https://www.efficios.com/files/${PN}/${PN}$(ver_cut 1)-${PV}.tar.bz2"
 
 LICENSE="GPL-2"
 SLOT="0/$(ver_cut 1)"
-KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~riscv ~x86"
+KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~ppc ~ppc64 ~riscv ~x86"
 IUSE="doc +elfutils +man plugins python"
 REQUIRED_USE="plugins? ( python ) python? ( ${PYTHON_REQUIRED_USE} )"
 S="${WORKDIR}/${PN}$(ver_cut 1)-${PV}"
@@ -24,7 +24,7 @@ RDEPEND=">=dev-libs/glib-2.28:2
 
 BDEPEND="${RDEPEND}
 	>=sys-devel/bison-2.5
-	>=sys-devel/flex-2.5.35
+	app-alternatives/lex
 	python? (
 		>=dev-lang/swig-3.0
 		$(python_gen_cond_dep 'dev-python/setuptools[${PYTHON_USEDEP}]' python3_12)

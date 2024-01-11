@@ -3,7 +3,7 @@
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{9..11} )
+PYTHON_COMPAT=( python3_{9..12} )
 DISTUTILS_USE_PEP517=setuptools
 DISTUTILS_SINGLE_IMPL=1
 DISTUTILS_EXT=1
@@ -14,8 +14,8 @@ if [[ ${PV} = *9999* ]]; then
 	EGIT_REPO_URI="https://github.com/metabrainz/picard"
 	inherit git-r3
 else
-	SRC_URI="https://musicbrainz.osuosl.org/pub/musicbrainz/${PN}/${P}.tar.gz"
-	KEYWORDS="amd64 ~arm64 ~x86"
+	SRC_URI="https://data.musicbrainz.org/pub/musicbrainz/${PN}/${P}.tar.gz"
+	KEYWORDS="amd64 ~arm64 x86"
 fi
 
 DESCRIPTION="Cross-platform music tagger"

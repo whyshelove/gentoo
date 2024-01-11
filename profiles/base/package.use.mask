@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # New entries go on top.
@@ -20,10 +20,6 @@ sys-devel/sparse llvm
 # libgrust build is broken for multilib
 # https://gcc.gnu.org/PR113056
 >=sys-devel/gcc-14.0.0_pre20231217 rust
-
-# John Helmert III <ajak@gentoo.org> (2023-11-25)
-# app-text/gocr has been masked for removal, bug #824290
-media-gfx/xsane ocr
 
 # Takuya Wakazono <pastalian46@gmail.com> (2023-11-21)
 # app-crypt/rpm-sequoia is not keyworded on most architectures.
@@ -65,6 +61,12 @@ dev-haskell/scientific test
 dev-haskell/splitmix test
 dev-haskell/tasty-expected-failure test
 
+# Jaco Kroon <jaco@uls.co.za> (2023-09-19)
+# Joonas Niilola <juippis@gentoo.org> (2023-09-21)
+# DAHDI is being last-rited. See bug #914477.
+net-misc/asterisk dahdi
+net-voip/yate dahdi
+
 # Matt Turner <mattst88@gentoo.org> (2023-09-14)
 # Not ported to libsoup:3.0
 app-office/abiword collab
@@ -102,6 +104,10 @@ media-video/mpv lua_single_target_lua5-1
 # later date.
 # See e.g. bugs 617518, 638522, 711302, 802435, 904987
 dev-lang/ruby jemalloc
+
+# Joonas Niilola <juippis@gentoo.org> (2023-07-14)
+# Calendar is broken with some languages on 115.0 release. Bug #910229
+>=mail-client/thunderbird-115.0 system-icu
 
 # Marek Szuba <marecki@gentoo.org> (2023-07-10)
 # dev-python/mkdocs-material is by design directly integrated with
@@ -200,7 +206,7 @@ sys-libs/libomp llvm_targets_AMDGPU
 
 # Sam James <sam@gentoo.org> (2023-01-21)
 # Fails to compile: https://github.com/libffi/libffi/issues/760
-dev-libs/libffi exec-static-trampoline
+<dev-libs/libffi-3.4.4-r4 exec-static-trampoline
 
 # Joonas Niilola <juippis@gentoo.org> (2023-01-08)
 # Doesn't compile currently, bug #853094.

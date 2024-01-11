@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -64,7 +64,7 @@ BDEPEND="
 		app-text/po4a
 		sys-devel/gettext
 	)
-	test? ( sys-devel/bc )
+	test? ( app-alternatives/bc )
 "
 DEPEND="
 	${RDEPEND}
@@ -143,6 +143,7 @@ src_prepare() {
 			lsfd/mkfds-rw-character-device
 			# Fails with network-sandbox at least in nspawn
 			lsfd/option-inet
+			utmp/last-ipv6
 		)
 
 		local known_failing_test

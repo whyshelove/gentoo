@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -17,7 +17,7 @@ HOMEPAGE="https://www.kdevelop.org/"
 
 LICENSE="GPL-2 LGPL-2"
 SLOT="5/$(ver_cut 1-2)"
-KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
+KEYWORDS="amd64 arm64 ~ppc64 ~x86"
 IUSE="+gdbui hex +plasma +qmake reviewboard subversion"
 
 # see bug 366471
@@ -88,7 +88,7 @@ RDEPEND="${COMMON_DEPEND}
 	>=dev-qt/qdbus-${QTMIN}:*
 	>=dev-qt/qtquickcontrols-${QTMIN}:5
 	>=dev-qt/qtquickcontrols2-${QTMIN}:5
-	dev-util/ninja
+	app-alternatives/ninja
 	kde-apps/kapptemplate:5
 	|| (
 		kde-apps/kio-extras-kf5:5

@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -14,7 +14,7 @@ inherit ecm frameworks.kde.org
 DESCRIPTION="Core components for KDE's Activities System"
 
 LICENSE="|| ( LGPL-2.1 LGPL-3 )"
-KEYWORDS="~amd64 ~arm ~arm64 ~loong ~ppc64 ~riscv ~x86"
+KEYWORDS="amd64 ~arm arm64 ~loong ~ppc64 ~riscv x86"
 IUSE=""
 
 RDEPEND="
@@ -27,4 +27,10 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}
 	dev-libs/boost
+	test? ( =kde-frameworks/kwindowsystem-${KFMIN}*:5 )
 "
+
+src_prepare() {
+	ecm_src_prepare
+	cmake_run_in src/cli ecm_punt_kf_module WindowSystem # bug 920164
+}

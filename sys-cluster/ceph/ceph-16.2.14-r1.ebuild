@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -70,7 +70,7 @@ DEPEND="
 	sys-process/numactl:=
 	virtual/libcrypt:=
 	x11-libs/libpciaccess:=
-	babeltrace? ( dev-util/babeltrace )
+	babeltrace? ( dev-util/babeltrace:0/1 )
 	fuse? ( sys-fs/fuse:3= )
 	jemalloc? ( dev-libs/jemalloc:= )
 	!jemalloc? ( >=dev-util/google-perftools-2.6.1:= )
@@ -101,7 +101,7 @@ DEPEND="
 BDEPEND="
 	amd64? ( dev-lang/nasm )
 	x86? ( dev-lang/yasm )
-	app-arch/cpio
+	app-alternatives/cpio
 	>=dev-util/cmake-3.5.0
 	dev-python/cython[${PYTHON_USEDEP}]
 	dev-python/setuptools[${PYTHON_USEDEP}]
@@ -113,12 +113,12 @@ BDEPEND="
 	sys-apps/grep
 	sys-apps/util-linux
 	sys-apps/which
-	sys-devel/bc
+	app-alternatives/bc
 	sys-devel/patch
 	virtual/pkgconfig
 	jaeger? (
-		sys-devel/bison
-		sys-devel/flex
+		app-alternatives/yacc
+		app-alternatives/lex
 	)
 	test? (
 		dev-util/cunit

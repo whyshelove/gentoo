@@ -63,23 +63,22 @@ RESTRICT+="
 _IDEPEND_BASE="
 	!initramfs? (
 		|| (
-			sys-kernel/installkernel-gentoo
-			sys-kernel/installkernel-systemd
+			>=sys-kernel/installkernel-gentoo-8
+			>=sys-kernel/installkernel-systemd-2-r5
 		)
 	)
 	initramfs? (
 		>=sys-kernel/dracut-059-r4
 		|| (
-			<=sys-kernel/installkernel-gentoo-7
 			>=sys-kernel/installkernel-gentoo-8[dracut(-)]
-			sys-kernel/installkernel-systemd
+			>=sys-kernel/installkernel-systemd-2-r5
 		)
 	)
 "
 
 LICENSE="GPL-2"
 if [[ ${KERNEL_IUSE_GENERIC_UKI} ]]; then
-	IUSE+=" generic-uki module-compress"
+	IUSE+=" generic-uki modules-compress"
 	# https://github.com/AndrewAmmerlaan/dist-kernel-log-to-licenses
 	# This script can help with generating the array below, keep in mind
 	# that it is not a fully automatic solution, i.e. use flags will
@@ -543,14 +542,11 @@ kernel-install_pkg_pretend() {
 		ewarn "for your hardware to work.  If in doubt, it is recommended"
 		ewarn "to pause or abort the build process and install it before"
 		ewarn "resuming."
-
-		if use initramfs; then
-			elog
-			elog "If you decide to install linux-firmware later, you can rebuild"
-			elog "the initramfs via issuing a command equivalent to:"
-			elog
-			elog "    emerge --config ${CATEGORY}/${PN}:${SLOT}"
-		fi
+		elog
+		elog "If you decide to install linux-firmware later, you can rebuild"
+		elog "the initramfs via issuing a command equivalent to:"
+		elog
+		elog "    emerge --config ${CATEGORY}/${PN}:${SLOT}"
 	fi
 
 	if ! use initramfs && ! has_version "${CATEGORY}/${PN}[-initramfs]"; then
@@ -592,6 +588,7 @@ kernel-install_pkg_preinst() {
 		die "Release file ${relfile} not installed!"
 	local release
 	release="$(<"${relfile}")" || die
+	DIST_KERNEL_RELEASE="${release}"
 
 	# perform the version check for release ebuilds only
 	if [[ ${PV} != *9999 ]]; then
@@ -632,13 +629,9 @@ kernel-install_extract_from_uki() {
 # @FUNCTION: kernel-install_install_all
 # @USAGE: <ver>
 # @DESCRIPTION:
-# Build an initramfs for the kernel if required and install the kernel.
-# This is called from pkg_postinst() and pkg_config().  <ver> is the
-# full kernel version.
-#
-# With sys-kernel/installkernel-systemd, or version 8 or greater of
-# sys-kernel/installkernel-gentoo, the generation of the initrd via dracut
-# is handled by kernel-install instead.
+# Install the kernel, initramfs/uki generation is optionally handled by
+# installkernel. This is called from pkg_postinst() and pkg_config().
+# <ver> is the full kernel version.
 kernel-install_install_all() {
 	debug-print-function ${FUNCNAME} "${@}"
 
@@ -672,13 +665,6 @@ kernel-install_install_all() {
 	while :; do
 		nonfatal mount-boot_check_status || break
 
-		if use initramfs && has_version "<=sys-kernel/installkernel-gentoo-7"; then
-			# putting it alongside kernel image as 'initrd' makes
-			# kernel-install happier
-			nonfatal dist-kernel_build_initramfs \
-				"${image_dir}/initrd" "${module_ver}" || break
-		fi
-
 		nonfatal dist-kernel_install_kernel "${module_ver}" \
 			"${image_path}" "${kernel_dir}/System.map" || break
 
@@ -706,6 +692,8 @@ kernel-install_pkg_postinst() {
 
 	local dir_ver=${PV}${KV_LOCALVERSION}
 	kernel-install_update_symlink "${EROOT}/usr/src/linux" "${dir_ver}"
+	dist-kernel_compressed_module_cleanup \
+		"${EROOT}/lib/modules/${DIST_KERNEL_RELEASE}"
 
 	if [[ -z ${ROOT} ]]; then
 		kernel-install_install_all "${dir_ver}"
@@ -740,7 +728,7 @@ kernel-install_pkg_prerm() {
 kernel-install_pkg_postrm() {
 	debug-print-function ${FUNCNAME} "${@}"
 
-	if [[ -z ${ROOT} && ! ${KERNEL_IUSE_GENERIC_UKI} ]] && use initramfs; then
+	if [[ -z ${ROOT} && ! ${KERNEL_IUSE_GENERIC_UKI} ]]; then
 		local dir_ver=${PV}${KV_LOCALVERSION}
 		local kernel_dir=${EROOT}/usr/src/linux-${dir_ver}
 		local image_path=$(dist-kernel_get_image_path)
@@ -762,11 +750,11 @@ kernel-install_pkg_config() {
 
 # @FUNCTION: kernel-install_compress_modules
 # @DESCRIPTION:
-# Compress modules installed in ED, if USE=module-compress is enabled.
+# Compress modules installed in ED, if USE=modules-compress is enabled.
 kernel-install_compress_modules() {
 	debug-print-function ${FUNCNAME} "${@}"
 
-	if use module-compress; then
+	if use modules-compress; then
 		einfo "Compressing kernel modules ..."
 		# taken from scripts/Makefile.modinst
 		find "${ED}/lib" -name '*.ko' -exec \

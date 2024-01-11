@@ -16,9 +16,10 @@ HOMEPAGE="
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~amd64 ~riscv"
+KEYWORDS="~amd64 ~arm64 ~riscv"
 
 BDEPEND="
+	dev-python/hatch-vcs[${PYTHON_USEDEP}]
 	test? (
 		dev-python/graphviz[${PYTHON_USEDEP}]
 		dev-python/pip[${PYTHON_USEDEP}]

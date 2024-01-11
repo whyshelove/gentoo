@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -258,12 +258,15 @@ RDEPEND="${COMMON_DEPEND}
 BDEPEND="
 	dev-util/intltool
 	sys-apps/which
-	sys-devel/bison
-	sys-devel/flex
+	app-alternatives/yacc
+	app-alternatives/lex
 	sys-devel/gettext
 	virtual/pkgconfig
 	clang? (
 		|| (
+			(	sys-devel/clang:18
+				sys-devel/llvm:18
+				=sys-devel/lld-18*	)
 			(	sys-devel/clang:17
 				sys-devel/llvm:17
 				=sys-devel/lld-17*	)
@@ -273,9 +276,6 @@ BDEPEND="
 			(	sys-devel/clang:15
 				sys-devel/llvm:15
 				=sys-devel/lld-15*	)
-			(	sys-devel/clang:14
-				sys-devel/llvm:14
-				=sys-devel/lld-14*	)
 		)
 	)
 	odk? ( >=app-doc/doxygen-1.8.4 )
@@ -395,6 +395,9 @@ src_configure() {
 	einfo "Preset CFLAGS:    ${CFLAGS}"
 	einfo "Preset LDFLAGS:   ${LDFLAGS}"
 
+	# Workaround for bug #915067
+	append-ldflags $(test-flags-CCLD -Wl,--undefined-version)
+
 	if use clang ; then
 		# Force clang
 		einfo "Enforcing the use of clang due to USE=clang ..."
@@ -407,9 +410,6 @@ src_configure() {
 
 		# Workaround for bug #907905
 		filter-lto
-
-		# Workaround for bug #915067
-		append-ldflags -Wl,--undefined-version
 
 		# Not implemented by Clang, bug #903889
 		filter-flags -Wlto-type-mismatch -Werror=lto-type-mismatch

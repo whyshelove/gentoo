@@ -1,4 +1,4 @@
-# Copyright 2000-2023 Gentoo Authors
+# Copyright 2000-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -20,7 +20,7 @@ else
 	else
 		SRC_URI="https://download.videolan.org/pub/videolan/testing/${MY_P}/${MY_P}.tar.xz"
 	fi
-	KEYWORDS="~amd64 ~arm ~arm64 ~loong ~ppc ~ppc64 ~riscv -sparc ~x86"
+	KEYWORDS="amd64 ~arm arm64 ~loong ppc ppc64 ~riscv -sparc x86"
 fi
 inherit autotools flag-o-matic lua-single toolchain-funcs virtualx xdg
 
@@ -169,7 +169,7 @@ RDEPEND="
 		>=media-libs/libprojectm-3.1.12:0=
 	)
 	pulseaudio? ( media-libs/libpulse )
-	rdp? ( >=net-misc/freerdp-2.0.0_rc0:=[client(+)] )
+	rdp? ( >=net-misc/freerdp-2.0.0_rc0:=[client(+)] <net-misc/freerdp-3 )
 	samba? ( >=net-fs/samba-4.0.0:0[client,-debug(-)] )
 	sdl-image? ( media-libs/sdl-image )
 	sftp? ( net-libs/libssh2 )

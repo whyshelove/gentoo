@@ -52,6 +52,8 @@ src_compile() {
 src_install() {
 	default
 	find "${ED}" -name '*.la' -delete || die
+	
+	dosym lua.pc /usr/lib64/pkgconfig/"${PN}${SLOT}".pc
 }
 
 pkg_postinst() {

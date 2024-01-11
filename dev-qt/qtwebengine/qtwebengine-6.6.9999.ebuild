@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Gentoo Authors
+# Copyright 2021-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -11,7 +11,7 @@ inherit prefix python-any-r1 qt6-build toolchain-funcs
 
 DESCRIPTION="Library for rendering dynamic web content in Qt6 C++ and QML applications"
 SRC_URI+="
-	https://dev.gentoo.org/~ionen/distfiles/${PN}-6.6-patchset-5.tar.xz
+	https://dev.gentoo.org/~ionen/distfiles/${PN}-6.6-patchset-7.tar.xz
 "
 
 if [[ ${QT6_BUILD_TYPE} == release ]]; then
@@ -111,7 +111,6 @@ PATCHES=( "${WORKDIR}"/patches/${PN} )
 
 PATCHES+=(
 	# add extras as needed here, may merge in set if carries across versions
-	"${FILESDIR}"/${PN}-6.6.1-gcc14.patch
 )
 
 python_check_deps() {
@@ -251,6 +250,13 @@ src_configure() {
 	qt6-build_src_configure
 }
 
+src_compile() {
+	# tentatively work around a possible (rare) race condition (bug #921680)
+	cmake_build WebEngineCore_sync_all_public_headers
+
+	cmake_src_compile
+}
+
 src_test() {
 	if [[ ${EUID} == 0 ]]; then
 		# almost every tests fail, so skip entirely
@@ -280,6 +286,13 @@ src_test() {
 
 	# random failures in several tests without -j1
 	qt6-build_src_test -j1
+}
+
+src_install() {
+	qt6-build_src_install
+
+	[[ -e ${D}${QT6_LIBDIR}/libQt6WebEngineCore.so ]] || #601472
+		die "${CATEGORY}/${PF} failed to build anything. Please report to https://bugs.gentoo.org/"
 }
 
 pkg_postinst() {

@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -108,7 +108,7 @@ FFMPEG_ENCODER_FLAG_MAP=(
 )
 
 IUSE="
-	alsa chromium doc +encode oss pic sndio static-libs test v4l
+	alsa chromium doc +encode oss +pic sndio static-libs test v4l
 	${FFMPEG_FLAG_MAP[@]%:*}
 	${FFMPEG_ENCODER_FLAG_MAP[@]%:*}
 "
@@ -316,7 +316,7 @@ BDEPEND+="
 	cpu_flags_x86_mmx? ( || ( >=dev-lang/nasm-2.13 >=dev-lang/yasm-1.3 ) )
 	cuda? ( >=sys-devel/clang-7[llvm_targets_NVPTX] )
 	doc? ( sys-apps/texinfo )
-	test? ( net-misc/wget sys-devel/bc )
+	test? ( net-misc/wget app-alternatives/bc )
 "
 
 # Code requiring FFmpeg to be built under gpl license

@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Gentoo Authors
+# Copyright 2021-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: qt6-build.eclass
@@ -196,20 +196,6 @@ qt_feature() {
 	echo "-DQT_FEATURE_${2:-${1}}=$(usex ${1} ON OFF)"
 }
 
-# @FUNCTION: qt6_symlink_binary_to_path
-# @USAGE: <target binary name> [suffix]
-# @DESCRIPTION:
-# Symlink a given binary from QT6_BINDIR to QT6_PREFIX/bin, with
-# optional suffix.
-#
-# Note: deprecated, will be removed when no consumers left in-tree,
-# see internal the _qt6-build_create_user_facing_links
-qt6_symlink_binary_to_path() {
-	[[ ${#} -ge 1 ]] || die "${FUNCNAME}() requires at least one argument"
-
-	dosym -r "${QT6_BINDIR}"/${1} /usr/bin/${1}${2}
-}
-
 ######  Internal functions  ######
 
 # @FUNCTION: _qt6-build_create_user_facing_links
@@ -254,9 +240,6 @@ _qt6-build_match_cpu_flags() {
 			done
 	done < <(
 		$(tc-getCXX) -E -P ${CXXFLAGS} ${CPPFLAGS} - <<-EOF | tail -n 2
-			#if defined(__GNUC__) && (defined(__x86_64__) || defined(__i386__))
-			#include <x86intrin.h>
-			#endif
 			avx2=__AVX2__ =__BMI__ =__BMI2__ =__F16C__ =__FMA__ =__LZCNT__ =__POPCNT__
 			avx512f=__AVX512F__ avx512bw=__AVX512BW__ avx512cd=__AVX512CD__ avx512dq=__AVX512DQ__ avx512vl=__AVX512VL__
 		EOF
