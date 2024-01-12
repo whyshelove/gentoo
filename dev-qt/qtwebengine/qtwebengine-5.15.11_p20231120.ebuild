@@ -105,7 +105,11 @@ BDEPEND="${PYTHON_DEPS}
 	ppc64? ( >=dev-util/gn-0.1807 )
 "
 
-PATCHES=( "${WORKDIR}/${PATCHSET}" )
+PATCHES=(
+	"${WORKDIR}/${PATCHSET}"
+	# add extras as needed here, may merge in set if carries across versions
+	"${FILESDIR}/${PN}-6.5.3-icu74.patch" # bug 917635
+)
 
 qtwebengine_check-reqs() {
 	# bug #307861
@@ -161,6 +165,10 @@ src_unpack() {
 src_prepare() {
 	# upstreamed, but not spinning new patchset just yet
 	rm "${WORKDIR}"/${PATCHSET}/018-gcc13-includes.patch || die
+
+	if has_version '>=dev-libs/libxml2-2.12.0'; then
+		PATCHES+=( "${FILESDIR}/${P}-libxml2-2.12.patch" ) # bug 917601
+	fi
 
 	if [[ ${PV} == ${QT5_PV}_p* ]]; then
 		# This is made from git, and for some reason will fail w/o .git directories.

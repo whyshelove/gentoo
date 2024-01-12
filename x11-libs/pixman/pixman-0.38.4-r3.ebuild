@@ -9,6 +9,8 @@ if [[ ${PV} = 9999* ]]; then
 	GIT_ECLASS="git-r3"
 fi
 
+DSUFFIX="_9"
+
 inherit ${GIT_ECLASS} meson-multilib multiprocessing toolchain-funcs rhel8-a
 
 DESCRIPTION="Low-level pixel manipulation routines"
