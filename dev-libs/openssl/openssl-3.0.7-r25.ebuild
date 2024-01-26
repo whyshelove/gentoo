@@ -3,7 +3,7 @@
 
 EAPI=8
 
-#DSUFFIX="_2"
+DSUFFIX="_3"
 
 inherit edo flag-o-matic linux-info toolchain-funcs
 inherit multilib multilib-minimal multiprocessing preserve-libs rhel9

@@ -6,7 +6,7 @@ WANT_LIBTOOL="none"
 
 unused_patches=( Patch111 Patch251 )
 suffix_ver=$(ver_cut 5)
-DSUFFIX="_3"
+#DSUFFIX="_3"
 [[ ${suffix_ver} ]] && DSUFFIX="_3.${suffix_ver}"
 
 inherit autotools check-reqs flag-o-matic multiprocessing pax-utils
@@ -73,7 +73,7 @@ DEPEND="
 "
 # autoconf-archive needed to eautoreconf
 BDEPEND="
-	sys-devel/autoconf-archive
+	dev-build/autoconf-archive
 	app-alternatives/awk
 	virtual/pkgconfig
 "

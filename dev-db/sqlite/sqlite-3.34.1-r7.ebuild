@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="7"
-DSUFFIX="_1"
+DSUFFIX="_3"
 inherit autotools flag-o-matic multilib-minimal toolchain-funcs rhel9
 
 SRC_PV="$(printf "%u%02u%02u%02u" $(ver_rs 1- " "))"
