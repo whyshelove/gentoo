@@ -1,4 +1,4 @@
-# Copyright 2020-2023 Gentoo Authors
+# Copyright 2020-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: kernel-install.eclass
@@ -50,7 +50,7 @@ case ${EAPI} in
 	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
-inherit dist-kernel-utils mount-boot toolchain-funcs
+inherit dist-kernel-utils mount-boot multiprocessing toolchain-funcs
 
 SLOT="${PV}"
 IUSE="+initramfs test"
@@ -62,17 +62,10 @@ RESTRICT+="
 
 _IDEPEND_BASE="
 	!initramfs? (
-		|| (
-			>=sys-kernel/installkernel-gentoo-8
-			>=sys-kernel/installkernel-systemd-2-r5
-		)
+		>=sys-kernel/installkernel-14
 	)
 	initramfs? (
-		>=sys-kernel/dracut-059-r4
-		|| (
-			>=sys-kernel/installkernel-gentoo-8[dracut(-)]
-			>=sys-kernel/installkernel-systemd-2-r5
-		)
+		>=sys-kernel/installkernel-14[dracut(-)]
 	)
 "
 
@@ -199,10 +192,7 @@ if [[ ${KERNEL_IUSE_GENERIC_UKI} ]]; then
 	"
 	IDEPEND="
 		generic-uki? (
-			|| (
-				>=sys-kernel/installkernel-systemd-3
-				>=sys-kernel/installkernel-gentoo-8[-dracut(-),-ukify(-)]
-			)
+			>=sys-kernel/installkernel-14[-dracut(-),-ukify(-)]
 		)
 		!generic-uki? (
 			${_IDEPEND_BASE}
@@ -756,9 +746,14 @@ kernel-install_compress_modules() {
 
 	if use modules-compress; then
 		einfo "Compressing kernel modules ..."
-		# taken from scripts/Makefile.modinst
-		find "${ED}/lib" -name '*.ko' -exec \
-			xz --check=crc32 --lzma2=dict=1MiB {} + || die
+		# xz options taken from scripts/Makefile.modinst
+		# we don't do 'xz -T' because it applies multithreading per file,
+		# so it works only for big files, and we have lots of small files
+		# instead
+		find "${ED}/lib" -name '*.ko' -print0 |
+			xargs -0 -P "$(makeopts_jobs)" -n 128 \
+				xz --check=crc32 --lzma2=dict=1MiB
+		assert "Compressing kernel modules failed"
 	fi
 }
 

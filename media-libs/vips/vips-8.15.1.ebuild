@@ -50,7 +50,7 @@ RDEPEND="
 	introspection? ( dev-libs/gobject-introspection )
 	jpeg? ( media-libs/libjpeg-turbo:= )
 	jpeg2k? ( media-libs/openjpeg:= )
-	jpegxl? ( media-libs/libjxl )
+	jpegxl? ( media-libs/libjxl:= )
 	lcms? ( media-libs/lcms:2 )
 	matio? ( sci-libs/matio:= )
 	openexr? ( media-libs/openexr:= )
@@ -88,7 +88,7 @@ BDEPEND="
 	dev-util/glib-utils
 	sys-devel/gettext
 	doc? (
-		app-doc/doxygen
+		app-text/doxygen
 		media-gfx/graphviz
 	)
 	gtk-doc? ( dev-util/gtk-doc )

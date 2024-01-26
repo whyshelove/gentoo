@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -106,7 +106,7 @@ RDEPEND="${PYTHON_DEPS}
 	sndfile? ( media-libs/libsndfile )
 	tbb? ( dev-cpp/tbb:= )
 	tiff? ( media-libs/tiff:= )
-	valgrind? ( dev-util/valgrind )
+	valgrind? ( dev-debug/valgrind )
 	wayland? (
 		>=dev-libs/wayland-1.12
 		>=dev-libs/wayland-protocols-1.15
@@ -129,7 +129,7 @@ DEPEND="${RDEPEND}
 BDEPEND="
 	virtual/pkgconfig
 	doc? (
-		app-doc/doxygen[dot]
+		app-text/doxygen[dot]
 		dev-python/sphinx[latex]
 		dev-texlive/texlive-bibtexextra
 		dev-texlive/texlive-fontsextra
@@ -235,6 +235,9 @@ src_prepare() {
 }
 
 src_configure() {
+	# Workaround for bug #922600
+	append-ldflags $(test-flags-CCLD -Wl,--undefined-version)
+
 	append-lfs-flags
 	blender_get_version
 

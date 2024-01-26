@@ -71,12 +71,12 @@ RDEPEND="
 DEPEND="
 	${RDEPEND}
 	bluetooth? ( net-wireless/bluez )
-	valgrind? ( dev-util/valgrind )
+	valgrind? ( dev-debug/valgrind )
 	test? ( app-arch/xz-utils )
 "
 # autoconf-archive needed to eautoreconf
 BDEPEND="
-	sys-devel/autoconf-archive
+	dev-build/autoconf-archive
 	app-alternatives/awk
 	virtual/pkgconfig
 	verify-sig? ( sec-keys/openpgp-keys-python )

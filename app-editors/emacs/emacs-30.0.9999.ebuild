@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -119,7 +119,7 @@ RDEPEND="app-emacs/emacs-common[games?,gui(-)?]
 	ssl? ( net-libs/gnutls:0= )
 	systemd? ( sys-apps/systemd )
 	tree-sitter? ( dev-libs/tree-sitter )
-	valgrind? ( dev-util/valgrind )
+	valgrind? ( dev-debug/valgrind )
 	xattr? ( sys-apps/attr )
 	zlib? ( sys-libs/zlib )
 	gui? (
@@ -427,6 +427,14 @@ src_test() {
 		# Reason: tries to access network
 		# internet-is-working
 		%src/process-tests.el
+
+		# Reason: fails with stable version of tree-sitter-json due to
+		# ast changes. Bug #922525
+		%src/treesit-tests.log
+
+		# Reason: test is not skipped if tree-sitter-tsx is not installed
+		# Bug #922525
+		%lisp/progmodes/typescript-ts-mode-tests.el
 	)
 	use threads || exclude_tests+=(
 			%lisp/server-tests.el

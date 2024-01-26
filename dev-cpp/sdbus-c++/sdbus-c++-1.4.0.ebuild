@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -12,12 +12,13 @@ LICENSE="LGPL-2.1+ Nokia-Qt-LGPL-Exception-1.1" # Nothing to do with Qt but exce
 SLOT="0/1"
 KEYWORDS="~amd64"
 IUSE="doc +elogind systemd test tools"
-REQUIRED_USE="^^ ( elogind systemd )"
+REQUIRED_USE="?? ( elogind systemd )"
 RESTRICT="!test? ( test )"
 
 RDEPEND="
 	elogind? ( >=sys-auth/elogind-236 )
 	systemd? ( >=sys-apps/systemd-236:= )
+	!elogind? ( !systemd? ( >=sys-libs/basu-0.2.1 ) )
 	tools? ( dev-libs/expat )
 "
 
@@ -28,7 +29,7 @@ DEPEND="
 
 BDEPEND="
 	virtual/pkgconfig
-	doc? ( app-doc/doxygen[dot] )
+	doc? ( app-text/doxygen[dot] )
 "
 
 S="${WORKDIR}/sdbus-cpp-${PV}"

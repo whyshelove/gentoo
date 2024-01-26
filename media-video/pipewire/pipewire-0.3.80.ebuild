@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -66,13 +66,13 @@ REQUIRED_USE="
 RESTRICT="!test? ( test )"
 
 BDEPEND="
-	>=dev-util/meson-0.59
+	>=dev-build/meson-0.59
 	virtual/pkgconfig
 	${PYTHON_DEPS}
 	$(python_gen_any_dep 'dev-python/docutils[${PYTHON_USEDEP}]')
 	dbus? ( dev-util/gdbus-codegen )
 	doc? (
-		app-doc/doxygen
+		app-text/doxygen
 		media-gfx/graphviz
 	)
 "

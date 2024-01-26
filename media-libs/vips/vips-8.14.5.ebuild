@@ -1,4 +1,4 @@
-# Copyright 2023 Gentoo Authors
+# Copyright 2023-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -12,7 +12,7 @@ SRC_URI="https://github.com/libvips/libvips/releases/download/v${PV}/${P}.tar.xz
 
 LICENSE="LGPL-2.1+ MIT"
 SLOT="0/42" # soname
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="amd64 ~x86"
 IUSE="
 	deprecated doc exif fftw fits fontconfig graphicsmagick gsf gtk-doc heif
 	imagemagick imagequant +introspection +jpeg jpeg2k jpegxl lcms matio
@@ -84,7 +84,7 @@ BDEPEND="
 	dev-util/glib-utils
 	sys-devel/gettext
 	doc? (
-		app-doc/doxygen
+		app-text/doxygen
 		media-gfx/graphviz
 	)
 	gtk-doc? ( dev-util/gtk-doc )

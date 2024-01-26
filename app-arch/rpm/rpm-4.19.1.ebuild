@@ -18,7 +18,7 @@ SRC_URI="
 
 LICENSE="GPL-2 LGPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~loong ~riscv ~x86"
+KEYWORDS="~alpha ~amd64 ~loong ~riscv ~x86"
 IUSE="acl audit caps +berkdb doc dbus nls openmp python selinux +sequoia +sqlite"
 REQUIRED_USE="
 	${LUA_REQUIRED_USE}
@@ -53,7 +53,7 @@ DEPEND="
 "
 BDEPEND="
 	virtual/pkgconfig
-	doc? ( app-doc/doxygen )
+	doc? ( app-text/doxygen )
 	nls? ( sys-devel/gettext )
 "
 RDEPEND="

@@ -49,8 +49,8 @@ RESTRICT+="
 # note: we need installkernel with initramfs support!
 IDEPEND="
 	|| (
-		sys-kernel/installkernel-gentoo
-		sys-kernel/installkernel-systemd-boot
+		sys-kernel/installkernel
+		sys-kernel/installkernel-systemd
 	)
 	initramfs? ( >=sys-kernel/dracut-049-r3 )"
 # needed by objtool that is installed along with the kernel and used

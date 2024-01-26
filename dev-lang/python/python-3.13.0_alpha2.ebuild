@@ -76,11 +76,11 @@ DEPEND="
 		dev-python/ensurepip-setuptools
 		dev-python/ensurepip-wheel
 	)
-	valgrind? ( dev-util/valgrind )
+	valgrind? ( dev-debug/valgrind )
 "
 # autoconf-archive needed to eautoreconf
 BDEPEND="
-	sys-devel/autoconf-archive
+	dev-build/autoconf-archive
 	app-alternatives/awk
 	virtual/pkgconfig
 	verify-sig? ( >=sec-keys/openpgp-keys-python-20221025 )

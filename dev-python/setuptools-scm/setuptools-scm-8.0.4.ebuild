@@ -26,7 +26,7 @@ RDEPEND="
 	dev-python/setuptools[${PYTHON_USEDEP}]
 	$(python_gen_cond_dep '
 		dev-python/tomli[${PYTHON_USEDEP}]
-	' 3.10)
+	' 3.{8..10})
 	dev-python/typing-extensions[${PYTHON_USEDEP}]
 "
 BDEPEND="

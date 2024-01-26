@@ -7,7 +7,7 @@ inherit cmake systemd
 
 if [[ ${PV} != 9999 ]]; then
 	SRC_URI="https://github.com/Icinga/icinga2/archive/v${PV}.tar.gz -> ${P}.tar.gz"
-	KEYWORDS="~amd64 ~arm64 ~x86"
+	KEYWORDS="amd64 ~arm64 x86"
 else
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/Icinga/icinga2.git"
@@ -18,7 +18,7 @@ HOMEPAGE="https://icinga.com/"
 
 LICENSE="GPL-2"
 SLOT="0"
-IUSE="console jumbo-build lto mail mariadb minimal +mysql nano-syntax +plugins postgres systemd +vim-syntax"
+IUSE="console jumbo-build mail mariadb minimal +mysql nano-syntax +plugins postgres systemd +vim-syntax"
 
 # Add accounts to DEPEND because of fowners in src_install
 DEPEND="
@@ -60,7 +60,8 @@ src_configure() {
 		-DINSTALL_SYSTEMD_SERVICE_AND_INITSCRIPT=ON
 		-DUSE_SYSTEMD=$(usex systemd)
 		-DLOGROTATE_HAS_SU=ON
-		-DICINGA2_LTO_BUILD=$(usex lto)
+		# only appends -flto
+		-DICINGA2_LTO_BUILD=OFF
 	)
 	# default to off if minimal, allow the flags to be set otherwise
 	if use minimal; then

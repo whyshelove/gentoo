@@ -43,9 +43,9 @@ _MESON_ECLASS=1
 
 inherit multiprocessing ninja-utils python-utils-r1 toolchain-funcs
 
-BDEPEND=">=dev-util/meson-0.63.3
+BDEPEND=">=dev-build/meson-0.63.3
 	${NINJA_DEPEND}
-	dev-util/meson-format-array
+	dev-build/meson-format-array
 "
 
 # @ECLASS_VARIABLE: BUILD_DIR

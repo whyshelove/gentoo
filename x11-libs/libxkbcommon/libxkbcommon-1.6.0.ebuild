@@ -8,7 +8,7 @@ if [[ ${PV} = *9999* ]]; then
 	EGIT_REPO_URI="https://github.com/xkbcommon/${PN}"
 else
 	SRC_URI="https://xkbcommon.org/download/${P}.tar.xz"
-	KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~loong ~mips ppc ppc64 ~riscv ~s390 sparc x86"
+	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~mips ppc ppc64 ~riscv ~s390 sparc x86"
 fi
 
 PYTHON_COMPAT=( python3_{10..12} )
@@ -24,7 +24,7 @@ SLOT="0"
 
 BDEPEND="
 	app-alternatives/yacc
-	doc? ( app-doc/doxygen )
+	doc? ( app-text/doxygen )
 	test? ( ${PYTHON_DEPS} )
 	tools? ( wayland? ( dev-util/wayland-scanner ) )
 "
