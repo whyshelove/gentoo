@@ -4,7 +4,7 @@
 EAPI=7
 
 PYTHON_COMPAT=( python3_{9..11} )
-inherit eutils flag-o-matic python-single-r1 toolchain-funcs rhel9-a
+inherit flag-o-matic python-single-r1 strip-linguas toolchain-funcs rhel9-a
 
 export CTARGET=${CTARGET:-${CHOST}}
 if [[ ${CTARGET} == ${CHOST} ]] ; then
