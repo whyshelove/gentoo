@@ -22,7 +22,7 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}"
 BDEPEND="
-	>=sys-devel/libtool-2.2.6b
+	>=dev-build/libtool-2.2.6b
 	nls? ( sys-devel/gettext )
 	test? ( dev-util/dejagnu )
 "

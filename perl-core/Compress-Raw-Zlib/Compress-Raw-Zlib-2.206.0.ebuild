@@ -15,7 +15,7 @@ KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv 
 
 # We use the bundled version of zlib as the minimum version for the system copy
 # Check on bumps! Look in https://github.com/pmqs/Compress-Raw-Zlib/commits/master/zlib-src.
-RDEPEND=">=sys-libs/zlib-1.2.13"
+RDEPEND=">=sys-libs/zlib-1.2.11"
 DEPEND="${RDEPEND}"
 BDEPEND="virtual/perl-ExtUtils-MakeMaker"
 

@@ -16,7 +16,7 @@ IUSE="ia32"
 REQUIRED_USE="ia32? ( ^^ ( amd64 x86 ) )"
 RDEPEND="${DEPEND}"
 DEPEND="sys-devel/gcc
-	sys-devel/make
+	dev-build/make
 	dev-libs/elfutils
 	dev-vcs/git
 	dev-libs/openssl

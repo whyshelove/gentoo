@@ -96,7 +96,7 @@ RDEPEND="${RDEPEND}
 "
 BDEPEND="
 	virtual/pkgconfig
-	sys-devel/autoconf
+	dev-build/autoconf
 	app-crypt/p11-kit
 "
 
