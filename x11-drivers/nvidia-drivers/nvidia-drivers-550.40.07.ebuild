@@ -88,6 +88,7 @@ BDEPEND="
 QA_PREBUILT="lib/firmware/* opt/bin/* usr/lib*"
 
 PATCHES=(
+	"${FILESDIR}"/nvidia-drivers-525.147.05-gcc14.patch
 	"${FILESDIR}"/nvidia-modprobe-390.141-uvm-perms.patch
 	"${FILESDIR}"/nvidia-settings-530.30.02-desktop.patch
 )
@@ -398,6 +399,7 @@ documentation that is installed alongside this README."
 	# MODULE:powerd extras
 	insinto /usr/share/dbus-1/system.d
 	doins nvidia-dbus.conf
+	newinitd "${FILESDIR}"/nvidia-powerd.initd nvidia-powerd #923117
 	systemd_dounit systemd/system/nvidia-powerd.service
 
 	# symlink non-versioned so nvidia-settings can use it even if misdetected
