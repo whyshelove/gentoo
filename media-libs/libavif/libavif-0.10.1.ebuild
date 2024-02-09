@@ -23,7 +23,7 @@ DEPEND="media-libs/libpng[${MULTILIB_USEDEP}]
 	aom? ( >=media-libs/libaom-3.3.0:=[${MULTILIB_USEDEP}] )
 	dav1d? ( >=media-libs/dav1d-1.0.0:=[${MULTILIB_USEDEP}] )
 	gdk-pixbuf? ( x11-libs/gdk-pixbuf:2[${MULTILIB_USEDEP}] )
-	rav1e? ( >=media-video/rav1e-0.5.1[capi] )
+	rav1e? ( >=media-video/rav1e-0.5.1:=[capi] )
 	svt-av1? ( >=media-libs/svt-av1-0.9.1 )"
 RDEPEND="${DEPEND}"
 BDEPEND="virtual/pkgconfig"
@@ -73,12 +73,6 @@ multilib_src_configure() {
 	fi
 
 	cmake_src_configure
-}
-
-pkg_preinst() {
-	if use gdk-pixbuf ; then
-		gnome2_gdk_pixbuf_savelist
-	fi
 }
 
 pkg_postinst() {

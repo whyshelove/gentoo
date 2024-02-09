@@ -1,16 +1,17 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-inherit toolchain-funcs linux-info multilib-minimal usr-ldscript rhel9
+inherit toolchain-funcs linux-info multilib-minimal
 
 DESCRIPTION="Linux Key Management Utilities"
 HOMEPAGE="https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/keyutils.git"
+SRC_URI="https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/keyutils.git/snapshot/${P}.tar.gz"
 
 LICENSE="GPL-2 LGPL-2.1"
 SLOT="0/1.9"
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ~ppc ppc64 ~riscv ~s390 ~sparc x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux"
 IUSE="static static-libs test"
 RESTRICT="!test? ( test )"
 
@@ -60,11 +61,6 @@ src_prepare() {
 
 	# The lsb check is useless, so avoid spurious command not found messages.
 	sed -i -e 's,lsb_release,:,' tests/prepare.inc.sh || die
-	# All the test files are bash, but try to execute via `sh`.
-	sed -i -r \
-		-e 's:([[:space:]])sh([[:space:]]):\1bash\2:' \
-		tests/{Makefile*,*.sh} || die
-	find tests/ -name '*.sh' -exec sed -i '1s:/sh$:/bash:' {} + || die
 	# Some tests call the kernel which calls userspace, but that will
 	# run the install keyutils rather than the locally compiled one,
 	# so disable round trip tests.
@@ -112,7 +108,6 @@ multilib_src_install() {
 	export NO_ARLIB=$(usex static-libs 0 1)
 
 	default
-	use static || gen_usr_ldscript -a keyutils
 }
 
 multilib_src_install_all() {
