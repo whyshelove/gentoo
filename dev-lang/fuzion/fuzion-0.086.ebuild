@@ -6,7 +6,7 @@ EAPI=8
 inherit java-pkg-2
 
 DESCRIPTION="A language with a focus on simplicity, safety and correctness"
-HOMEPAGE="https://flang.dev/
+HOMEPAGE="https://fuzion-lang.dev/
 	https://github.com/tokiwa-software/fuzion/"
 
 if [[ "${PV}" == *9999* ]] ; then
@@ -17,7 +17,7 @@ else
 	SRC_URI="https://github.com/tokiwa-software/${PN}/archive/refs/tags/v${PV}.tar.gz
 		-> ${P}.tar.gz"
 
-	KEYWORDS="~amd64 ~x86"
+	KEYWORDS="amd64 ~x86"
 fi
 
 LICENSE="GPL-3"

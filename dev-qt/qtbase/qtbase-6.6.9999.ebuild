@@ -137,6 +137,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-6.5.2-no-glx.patch
 	"${FILESDIR}"/${PN}-6.5.2-no-symlink-check.patch
 	"${FILESDIR}"/${PN}-6.6.1-forkfd-childstack-size.patch
+	"${FILESDIR}"/${PN}-6.6.2-x32abi.patch
 )
 
 src_prepare() {
@@ -313,7 +314,7 @@ src_test() {
 		tst_qimagereader
 		tst_qimagewriter
 		tst_qpluginloader
-		tst_quuid
+		tst_quuid # >=6.6.2 had related fixes, needs retesting
 		# partially broken on llvm-musl, needs looking into but skip to have
 		# a baseline for regressions (rest of dev-qt still passes with musl)
 		$(usev elibc_musl '

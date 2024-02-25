@@ -3,7 +3,7 @@
 
 EAPI=8
 
-USE_RUBY="ruby27 ruby30 ruby31 ruby32"
+USE_RUBY="ruby31 ruby32 ruby33"
 
 inherit edo ruby-fakegem
 
@@ -11,7 +11,7 @@ DESCRIPTION="A kramdown parser for the GFM dialect of Markdown"
 HOMEPAGE="https://github.com/kramdown/parser-gfm"
 LICENSE="MIT"
 
-KEYWORDS="amd64 ~arm ~arm64 ~hppa ~ppc ~ppc64 ~riscv ~x86"
+KEYWORDS="amd64 ~arm ~arm64 ~hppa ~ppc ~ppc64 ~riscv ~sparc ~x86"
 SLOT="$(ver_cut 1)"
 IUSE="doc"
 

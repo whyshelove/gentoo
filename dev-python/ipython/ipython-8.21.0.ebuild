@@ -18,7 +18,7 @@ HOMEPAGE="
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~arm64-macos ~x64-macos"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ppc ppc64 ~riscv ~s390 sparc x86 ~arm64-macos ~x64-macos"
 IUSE="doc examples notebook nbconvert qt5 +smp test"
 RESTRICT="!test? ( test )"
 
@@ -162,7 +162,6 @@ pkg_postinst() {
 	optfeature "cythonmagic" dev-python/cython
 	optfeature "%lprun magic command" dev-python/line-profiler
 	optfeature "%matplotlib magic command" dev-python/matplotlib-inline
-	optfeature "%mprun magic command" dev-python/memory-profiler
 
 	if use nbconvert; then
 		if ! has_version virtual/pandoc ; then
