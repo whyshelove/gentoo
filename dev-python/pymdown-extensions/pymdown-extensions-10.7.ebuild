@@ -4,7 +4,7 @@
 EAPI=8
 
 DISTUTILS_USE_PEP517=hatchling
-PYTHON_COMPAT=( python3_{10..12} )
+PYTHON_COMPAT=( pypy3 python3_{10..12} )
 
 inherit distutils-r1 pypi
 
@@ -30,3 +30,18 @@ BDEPEND="
 "
 
 distutils_enable_tests pytest
+
+src_prepare() {
+	# broken on pypy3; unfortunately, the parametrization is based
+	# on indexes and these are pretty random, so we need to remove it
+	# entirely
+	# TODO: restore it when pypy with a fix is in Gentoo
+	# https://github.com/pypy/pypy/issues/4920
+	rm "tests/extensions/superfences/superfences (normal).txt" || die
+	distutils-r1_src_prepare
+}
+
+python_test() {
+	local -x PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
+	epytest
+}

@@ -165,7 +165,6 @@ RDEPEND="
 
 DEPEND="
 	${CDEPEND}
-	dev-cpp/nlohmann_json
 	media-libs/amf-headers
 	=media-libs/nv-codec-headers-12*
 	wayland? ( dev-libs/wayland-protocols )
@@ -181,7 +180,6 @@ BDEPEND="
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-custom-ffmpeg.patch
-	"${FILESDIR}"/${PN}-system-json.patch
 	"${FILESDIR}"/${PN}-0.22.0-nvcodec.patch
 )
 
@@ -237,6 +235,10 @@ src_unpack() {
 }
 
 src_prepare() {
+	# Apply CBS patch.
+	cd "${WORKDIR}"/build-deps || die
+	eapply "${FILESDIR}"/${PN}-cross-cbs.patch
+
 	# Apply general ffmpeg patches.
 	cd "${WORKDIR}"/build-deps/ffmpeg_sources/ffmpeg || die
 	eapply "${WORKDIR}"/build-deps/ffmpeg_patches/ffmpeg/*.patch
@@ -329,8 +331,6 @@ src_configure() {
 	local mycmakeargs=(
 		-DBUILD_SHARED_LIBS=no
 		-DCMAKE_INSTALL_PREFIX="${S}"/third-party/ffmpeg
-		$(usex arm64 -DCROSS_COMPILE_ARM=yes "")
-		$(usex ppc64 -DCROSS_COMPILE_PPC=yes "")
 	)
 	CMAKE_USE_DIR="${WORKDIR}/build-deps" cmake_src_configure
 
@@ -346,7 +346,6 @@ src_configure() {
 		-DSUNSHINE_ENABLE_X11=$(usex X)
 		-DSUNSHINE_ENABLE_TRAY=$(usex trayicon)
 		-DSUNSHINE_REQUIRE_TRAY=$(usex trayicon)
-		-DSUNSHINE_SYSTEM_NLOHMANN_JSON=yes
 		-DSUNSHINE_SYSTEM_WAYLAND_PROTOCOLS=yes
 		-DSYSTEMD_USER_UNIT_INSTALL_DIR=$(systemd_get_userunitdir)
 		-DUDEV_RULES_INSTALL_DIR=$(get_udevdir)/rules.d
