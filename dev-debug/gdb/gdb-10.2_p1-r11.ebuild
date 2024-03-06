@@ -4,6 +4,12 @@
 EAPI=7
 
 PYTHON_COMPAT=( python3_{9..11} )
+
+prefix_ver=$(ver_cut 4)
+[[ ${prefix_ver} ]] && DPREFIX="${prefix_ver}."
+
+DSUFFIX="_3"
+
 inherit flag-o-matic python-single-r1 strip-linguas toolchain-funcs rhel9-a
 
 export CTARGET=${CTARGET:-${CHOST}}
@@ -166,11 +172,6 @@ src_configure() {
 		$(use_with xxhash)
 		$(use_with guile)
 	)
-	if use sparc-solaris || use x86-solaris ; then
-		# disable largefile support
-		# https://sourceware.org/ml/gdb-patches/2014-12/msg00058.html
-		myconf+=( --disable-largefile )
-	fi
 
 	# source-highlight is detected with pkg-config: bug #716558
 	export ac_cv_path_pkg_config_prog_path="$(tc-getPKG_CONFIG)"
