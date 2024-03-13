@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-inherit desktop linux-info qmake-utils readme.gentoo-r1 systemd toolchain-funcs rhel9
+inherit desktop linux-info qmake-utils readme.gentoo-r1 systemd toolchain-funcs
 
 DESCRIPTION="IEEE 802.1X/WPA supplicant for secure wireless transfers"
 HOMEPAGE="https://w1.fi/wpa_supplicant/"
@@ -12,12 +12,13 @@ LICENSE="|| ( GPL-2 BSD )"
 if [ "${PV}" = "9999" ]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://w1.fi/hostap.git"
-#else
-#	KEYWORDS="~alpha amd64 arm arm64 ~ia64 ~mips ppc ppc64 ~riscv ~sparc x86"
+else
+	KEYWORDS="~alpha amd64 arm arm64 ~ia64 ~loong ~mips ppc ppc64 ~riscv ~sparc x86"
+	SRC_URI="https://w1.fi/releases/${P}.tar.gz"
 fi
 
 SLOT="0"
-IUSE="ap +crda broadcom-sta dbus eap-sim eapol-test fasteap +fils +hs2-0 macsec +mbo +mesh p2p privsep ps3 qt5 readline selinux smartcard tdls tkip uncommon-eap-types wep wimax wps"
+IUSE="ap broadcom-sta dbus eap-sim eapol-test fasteap +fils +hs2-0 macsec +mbo +mesh p2p privsep ps3 qt5 readline selinux smartcard tdls tkip uncommon-eap-types wep wimax wps"
 
 # CONFIG_PRIVSEP=y does not have sufficient support for the new driver
 # interface functions used for MACsec, so this combination cannot be used
@@ -51,7 +52,6 @@ RDEPEND="${DEPEND}
 	selinux? ( sec-policy/selinux-networkmanager )
 	kernel_linux? (
 		net-wireless/wireless-regdb
-		crda? ( net-wireless/crda )
 	)
 "
 BDEPEND="virtual/pkgconfig"
@@ -76,36 +76,18 @@ Kconfig_style_config() {
 			#first remove any leading "# " if $2 is not n
 			sed -i "/^# *$CONFIG_PARAM=/s/^# *//" .config || echo "Kconfig_style_config error uncommenting $CONFIG_PARAM"
 			#set item = $setting (defaulting to y)
-			sed -i "/^$CONFIG_PARAM/s/=.*/=$setting/" .config || echo "Kconfig_style_config error setting $CONFIG_PARAM=$setting"
+			if ! sed -i "/^$CONFIG_PARAM\>/s/=.*/=$setting/" .config; then
+				echo "Kconfig_style_config error setting $CONFIG_PARAM=$setting"
+			fi
 			if [ -z "$( grep ^$CONFIG_PARAM= .config )" ] ; then
 				echo "$CONFIG_PARAM=$setting" >>.config
 			fi
 		else
 			#ensure item commented out
-			sed -i "/^$CONFIG_PARAM/s/$CONFIG_PARAM/# $CONFIG_PARAM/" .config || echo "Kconfig_style_config error commenting $CONFIG_PARAM"
+			if ! sed -i "/^$CONFIG_PARAM\>/s/$CONFIG_PARAM/# $CONFIG_PARAM/" .config; then
+				echo "Kconfig_style_config error commenting $CONFIG_PARAM"
+			fi
 		fi
-}
-
-pkg_pretend() {
-	CONFIG_CHECK=""
-
-	if use crda ; then
-		CONFIG_CHECK="${CONFIG_CHECK} ~CFG80211_CRDA_SUPPORT"
-		WARNING_CFG80211_CRDA_SUPPORT="REGULATORY DOMAIN PROBLEM: please enable CFG80211_CRDA_SUPPORT for proper regulatory domain support"
-	fi
-
-	check_extra_config
-
-	if ! use crda ; then
-		if linux_config_exists && linux_chkconfig_builtin CFG80211 &&
-			[[ $(linux_chkconfig_string EXTRA_FIRMWARE) != *regulatory.db* ]]
-		then
-			ewarn "REGULATORY DOMAIN PROBLEM:"
-			ewarn "With CONFIG_CFG80211=y (built-in), the driver won't be able to load regulatory.db from"
-			ewarn " /lib/firmware, resulting in broken regulatory domain support.  Please set CONFIG_CFG80211=m"
-			ewarn " or add regulatory.db and regulatory.db.p7s to CONFIG_EXTRA_FIRMWARE."
-		fi
-	fi
 }
 
 src_prepare() {
@@ -115,13 +97,6 @@ src_prepare() {
 	sed -i \
 		-e "s:\(#include <pcap\.h>\):#include <net/bpf.h>\n\1:" \
 		../src/l2_packet/l2_packet_freebsd.c || die
-
-	# People seem to take the example configuration file too literally (bug #102361)
-	sed -i \
-		-e "s:^\(opensc_engine_path\):#\1:" \
-		-e "s:^\(pkcs11_engine_path\):#\1:" \
-		-e "s:^\(pkcs11_module_path\):#\1:" \
-		wpa_supplicant.conf || die
 
 	# Change configuration to match Gentoo locations (bug #143750)
 	sed -i \
@@ -147,6 +122,10 @@ src_prepare() {
 	# bug (320097)
 	eapply "${FILESDIR}/${PN}-2.6-do-not-call-dbus-functions-with-NULL-path.patch"
 
+	# bug (912315)
+	eapply "${FILESDIR}/${PN}-2.10-allow-legacy-renegotiation.patch"
+	eapply "${FILESDIR}/${P}-Drop-security-level-to-0-with-OpenSSL-3.0-wh.patch"
+
 	# bug (640492)
 	sed -i 's#-Werror ##' wpa_supplicant/Makefile || die
 }
@@ -156,10 +135,6 @@ src_configure() {
 	tc-export CC PKG_CONFIG
 
 	cp defconfig .config || die
-
-	append-cflags -fPIE -DPIE
-	append-cxxflags -fPIE -DPIE
-	append-ldflags -pie
 
 	# Basic setup
 	Kconfig_style_config CTRL_IFACE
@@ -401,7 +376,7 @@ src_compile() {
 
 	if use qt5; then
 		einfo "Building wpa_gui"
-		emake -C "${S}"/wpa_gui-qt4 V=1 QTDIR=${_libdir}/qt4
+		emake -C "${S}"/wpa_gui-qt4
 	fi
 
 	if use eapol-test ; then
@@ -414,30 +389,11 @@ src_install() {
 	use privsep && dosbin wpa_priv
 	dobin wpa_cli wpa_passphrase
 
-	# baselayout-1 compat
-	if has_version "<sys-apps/baselayout-2.0.0"; then
-		dodir /sbin
-		dosym ../usr/sbin/wpa_supplicant /sbin/wpa_supplicant
-		dodir /bin
-		dosym ../usr/bin/wpa_cli /bin/wpa_cli
-	fi
-
-	if has_version ">=sys-apps/openrc-0.5.0"; then
-		newinitd "${FILESDIR}/${PN}-init.d" wpa_supplicant
-		newconfd "${FILESDIR}/${PN}-conf.d" wpa_supplicant
-	fi
+	newinitd "${FILESDIR}/${PN}-init.d" wpa_supplicant
+	newconfd "${FILESDIR}/${PN}-conf.d" wpa_supplicant
 
 	exeinto /etc/wpa_supplicant/
 	newexe "${FILESDIR}/wpa_cli.sh" wpa_cli.sh
-
-	insinto /etc/wpa_supplicant/
-	doins "${WORKDIR}"/wpa_supplicant.conf
-
-	insinto ${_sysconfdir}/sysconfig
-	newins "${WORKDIR}"/wpa_supplicant.sysconfig wpa_supplicant
-
-	insinto ${_sysconfdir}/logrotate.d
-	newins "${WORKDIR}"/wpa_supplicant.logrotate wpa_supplicant
 
 	readme.gentoo_create_doc
 	dodoc ChangeLog {eap_testing,todo}.txt README{,-WPS} \
@@ -469,7 +425,7 @@ src_install() {
 		popd > /dev/null || die
 
 		# This unit relies on dbus support, bug 538600.
-		systemd_dounit "${WORKDIR}"/wpa_supplicant.service
+		systemd_dounit systemd/wpa_supplicant.service
 	fi
 
 	if use eapol-test ; then
@@ -488,6 +444,20 @@ pkg_postinst() {
 		echo
 		ewarn "WARNING: your old configuration file ${EROOT}/etc/wpa_supplicant.conf"
 		ewarn "needs to be moved to ${EROOT}/etc/wpa_supplicant/wpa_supplicant.conf"
+	fi
+	if ! use wep; then
+		einfo "WARNING: You are building with WEP support disabled, which is recommended since"
+		einfo "this protocol is deprecated and insecure.  If you still need to connect to"
+		einfo "WEP-enabled networks, you may turn this flag back on.  With this flag off,"
+		einfo "WEP-enabled networks will not even show up as available."
+		einfo "If your network is missing you may wish to USE=wep"
+	fi
+	if ! use tkip; then
+		ewarn "WARNING: You are building with TKIP support disabled, which is recommended since"
+		ewarn "this protocol is deprecated and insecure.  If you still need to connect to"
+		ewarn "TKIP-enabled networks, you may turn this flag back on.  With this flag off,"
+		ewarn "TKIP-enabled networks, including mixed mode TKIP/AES-CCMP will not even show up"
+		ewarn "as available.  If your network is missing you may wish to USE=tkip"
 	fi
 
 	# Mea culpa, feel free to remove that after some time --mgorny.
