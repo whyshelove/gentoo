@@ -11,7 +11,7 @@ inherit unpacker rhel9-a
 
 SRC_URI="amd64? ( ${BIN_URI} )
 	arm64? (
-		https://dl.rockylinux.org/pub/rocky/9/AppStream/aarch64/os/Packages/${DIST_PRE_SUF_CATEGORY}.aarch64.rpm
+		https://dl.rockylinux.org/pub/rocky/9/AppStream/aarch64/os/Packages/${DIST_PRE_SUF_CATEGORY}.0.1.aarch64.rpm
 	)"
 
 KEYWORDS="amd64 arm64 ~ppc64 ~s390"
