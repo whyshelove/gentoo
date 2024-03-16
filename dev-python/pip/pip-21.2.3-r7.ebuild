@@ -5,7 +5,7 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_{8..10} pypy3 )
 PYTHON_REQ_USE="ssl(+),threads(+)"
-
+DSUFFIX="_3.1"
 inherit bash-completion-r1 distutils-r1 rhel9
 
 # setuptools & wheel .whl files are required for testing,

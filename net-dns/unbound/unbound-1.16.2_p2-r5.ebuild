@@ -4,9 +4,12 @@
 EAPI="8"
 PYTHON_COMPAT=( python3_{6..8} )
 
+suffix_ver=$(ver_cut 5)
+[[ ${suffix_ver} ]] && DSUFFIX="_9.${suffix_ver}"
+
 inherit autotools flag-o-matic multilib-minimal python-single-r1 systemd verify-sig rhel8-a
 
-MY_P=${PN}-${PV/_/}
+MY_P=${PN}-${PV/_p*/}
 DESCRIPTION="A validating, recursive and caching DNS resolver"
 HOMEPAGE="https://unbound.net/ https://nlnetlabs.nl/projects/unbound/about/"
 
