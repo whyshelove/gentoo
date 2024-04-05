@@ -3,7 +3,7 @@
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{10..12} )
+PYTHON_COMPAT=( python3_{9..12} )
 inherit meson python-any-r1
 
 DESCRIPTION="Library for Emulated Input, primarily aimed at the Wayland stack"
@@ -14,7 +14,7 @@ SRC_URI+=" https://github.com/nemequ/munit/archive/${MUNIT_COMMIT}.tar.gz -> mun
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
+KEYWORDS="~alpha amd64 arm ~arm64 ~hppa ~ia64 ~loong ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
 IUSE="elogind systemd test"
 RESTRICT="!test? ( test )"
 
@@ -86,6 +86,11 @@ src_configure() {
 		emesonargs+=(-Dsd-bus-provider=basu)
 	fi
 	meson_src_configure
+}
+
+src_test() {
+	# bug #916777
+	meson_src_test --no-suite sigalrm --timeout-multiplier 10
 }
 
 src_install() {

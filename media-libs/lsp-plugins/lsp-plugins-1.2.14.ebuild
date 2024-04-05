@@ -3,7 +3,7 @@
 
 EAPI=8
 
-inherit flag-o-matic xdg
+inherit flag-o-matic toolchain-funcs xdg
 
 DESCRIPTION="Linux Studio Plugins"
 HOMEPAGE="https://lsp-plug.in"
@@ -14,7 +14,7 @@ if [[ ${PV} == *9999 ]]; then
 	EGIT_BRANCH="devel"
 else
 	SRC_URI="https://github.com/lsp-plugins/${PN}/releases/download/${PV}/${PN}-src-${PV}.tar.gz -> ${P}.tar.gz"
-	KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~x86"
+	KEYWORDS="amd64 ~arm arm64 ~ppc ~ppc64 x86"
 	S="${WORKDIR}/${PN}"
 fi
 
@@ -76,6 +76,9 @@ src_configure() {
 		FEATURES="${MODULES}" \
 		PREFIX="/usr" \
 		LIBDIR="/usr/$(get_libdir)" \
+		CC="$(tc-getCC)" \
+		CXX="$(tc-getCXX)" \
+		LD="$(tc-getLD)" \
 		CFLAGS_EXT="${CFLAGS}" \
 		CXXFLAGS_EXT="${CXXFLAGS}" \
 		LDFLAGS_EXT="$(raw-ldflags)" \
@@ -88,6 +91,9 @@ src_compile() {
 		FEATURES="${MODULES}" \
 		PREFIX="/usr" \
 		LIBDIR="/usr/$(get_libdir)" \
+		CC="$(tc-getCC)" \
+		CXX="$(tc-getCXX)" \
+		LD="$(tc-getLD)" \
 		CFLAGS_EXT="${CFLAGS}" \
 		CXXFLAGS_EXT="${CXXFLAGS}" \
 		LDFLAGS_EXT="$(raw-ldflags)" \

@@ -48,7 +48,8 @@ COMMON_DEPEND="
 	>=media-libs/glm-0.9.9.1
 	media-libs/mesa[X(+)]
 	net-misc/curl
-	>=sci-libs/opencascade-7.3.0:0=
+	>=sci-libs/opencascade-7.5.0:0=
+	<sci-libs/opencascade-7.8.0:0=
 	>=x11-libs/cairo-1.8.8:=
 	>=x11-libs/pixman-0.30
 	>sci-electronics/ngspice-27[shared]
@@ -61,6 +62,9 @@ COMMON_DEPEND="
 	${PYTHON_DEPS}
 	nls? (
 		sys-devel/gettext
+	)
+	test? (
+		media-gfx/cairosvg
 	)
 "
 DEPEND="${COMMON_DEPEND}"
@@ -134,7 +138,8 @@ src_compile() {
 
 src_test() {
 	# Test cannot find library in Portage's sandbox. Let's create a link so test can run.
-	ln -s "${BUILD_DIR}/eeschema/_eeschema.kiface" "${BUILD_DIR}/qa/eeschema/_eeschema.kiface" || die
+	mkdir -p "${BUILD_DIR}/qa/eeschema/" || die
+	dosym "${BUILD_DIR}/eeschema/_eeschema.kiface" "${BUILD_DIR}/qa/eeschema/_eeschema.kiface" || die
 
 	# LD_LIBRARY_PATH is there to help it pick up the just-built libraries
 	LD_LIBRARY_PATH="${BUILD_DIR}/3d-viewer/3d_cache/sg:${LD_LIBRARY_PATH}" cmake_src_test

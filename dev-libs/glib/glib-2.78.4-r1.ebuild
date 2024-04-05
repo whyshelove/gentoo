@@ -73,6 +73,7 @@ MULTILIB_CHOST_TOOLS=(
 PATCHES=(
 	"${FILESDIR}"/${PN}-2.64.1-mark-gdbus-server-auth-test-flaky.patch
 	"${FILESDIR}"/${PN}-2.78.4-distutils.patch
+	"${FILESDIR}"/${PN}-2.78.4-libpcre2-10.43.patch
 )
 
 python_check_deps() {
@@ -187,7 +188,7 @@ multilib_src_configure() {
 	#fi
 
 	local emesonargs=(
-		-Dbuildtype=$(usex debug debug plain)
+		$(meson_feature debug glib_debug)
 		-Ddefault_library=$(usex static-libs both shared)
 		-Druntime_dir="${EPREFIX}"/run
 		$(meson_feature selinux)
