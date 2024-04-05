@@ -4,11 +4,16 @@
 EAPI=8
 AUTOTOOLS_AUTO_DEPEND=no
 AT_NOEAUTOHEADER=yes  # because expat_config.h.in would need post-processing
+
+suffix_ver=$(ver_cut 5)
+[[ ${suffix_ver} ]] && DSUFFIX="_3.${suffix_ver}"
+MY_PV=$(ver_rs 1- '_')
+
 inherit autotools multilib-minimal rhel9
 
 DESCRIPTION="Stream-oriented XML parser library"
 HOMEPAGE="https://libexpat.github.io/"
-S=${WORKDIR}/libexpat-R_$(ver_rs 1- '_')/expat
+S=${WORKDIR}/libexpat-R_${MY_PV/_p*}/expat
 LICENSE="MIT"
 SLOT="0"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~arm64-macos ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris ~x86-winnt"
