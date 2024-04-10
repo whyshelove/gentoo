@@ -4,6 +4,8 @@
 EAPI=7
 AUTOTOOLS_AUTO_DEPEND=no
 AT_NOEAUTOHEADER=yes  # because expat_config.h.in would need post-processing
+suffix_ver=$(ver_cut 5)
+[[ ${suffix_ver} ]] && DSUFFIX="_9.${suffix_ver}"
 inherit autotools multilib-minimal usr-ldscript rhel8
 
 DESCRIPTION="Stream-oriented XML parser library"

@@ -3,6 +3,9 @@
 
 EAPI="7"
 #DSUFFIX="_$(ver_cut 5)"
+suffix_ver=$(ver_cut 5)
+[[ ${suffix_ver} ]] && DSUFFIX="_9.${suffix_ver}"
+
 inherit autotools prefix multilib-minimal rhel8
 
 DESCRIPTION="A Client that groks URLs"

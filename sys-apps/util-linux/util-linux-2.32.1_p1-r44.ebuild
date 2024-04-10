@@ -6,7 +6,7 @@ EAPI=7
 PYTHON_COMPAT=( python3_{6,8,9} )
 
 suffix_ver=$(ver_cut 5)
-[[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}"
+[[ ${suffix_ver} ]] && DSUFFIX="_9.${suffix_ver}"
 
 inherit toolchain-funcs libtool flag-o-matic bash-completion-r1 usr-ldscript \
 	pam python-r1 multilib-minimal multiprocessing systemd rhel8
