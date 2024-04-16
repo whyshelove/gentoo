@@ -2,13 +2,19 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-#DSUFFIX="_7.1"
+
+suffix_ver=$(ver_cut 5)
+[[ ${suffix_ver} ]] && DSUFFIX="_9.${suffix_ver}"
+
+STAGE="unprep"
+
 inherit systemd toolchain-funcs flag-o-matic tmpfiles rhel8
 
 MY_PV="${PV//_alpha/a}"
 MY_PV="${MY_PV//_beta/b}"
 MY_PV="${MY_PV//_rc/rc}"
-MY_PV="${MY_PV//_p/-P}"
+#MY_PV="${MY_PV//_p/-P}"
+MY_PV="${MY_PV/_p*}"
 MY_P="${PN}-${MY_PV}"
 
 DESCRIPTION="ISC Dynamic Host Configuration Protocol (DHCP) client/server"
@@ -47,9 +53,10 @@ PATCHES=(
 )
 
 src_unpack() {
-	rhel_unpack ${A}
+	rpmbuild_src_unpack ${A}
 	sed -i "/bind.tar.gz/d" ${WORKDIR}/*.spec
 	sed -i '367,383d' ${WORKDIR}/*.spec
+
 	rpmbuild --rmsource -bp $WORKDIR/*.spec --nodeps
 	cd "${S}"/bind
 	unpack ./bind.tar.gz
