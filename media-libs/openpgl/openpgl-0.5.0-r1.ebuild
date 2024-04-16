@@ -11,7 +11,7 @@ SRC_URI="https://github.com/OpenPathGuidingLibrary/openpgl/archive/v${PV}.tar.gz
 
 LICENSE="Apache-2.0"
 SLOT="0/$(ver_cut 1-2)"
-KEYWORDS="-* ~amd64 ~arm64"
+KEYWORDS="-* amd64 ~arm64"
 
 X86_CPU_FLAGS=( sse4_2 avx2 avx512dq )
 CPU_FLAGS=( cpu_flags_arm_neon "${X86_CPU_FLAGS[@]/#/cpu_flags_x86_}" )
@@ -29,6 +29,13 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 src_configure() {
+	# -Werror=strict-aliasing
+	# https://bugs.gentoo.org/926890
+	#
+	# Do not trust with LTO either.
+	append-flags -fno-strict-aliasing
+	filter-lto
+
 	local mycmakeargs=(
 		-DOPENPGL_ISA_SSE4="$(usex cpu_flags_x86_sse4_2)"
 		-DOPENPGL_ISA_AVX2="$(usex cpu_flags_x86_avx2)"

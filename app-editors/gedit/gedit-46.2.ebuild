@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-PYTHON_COMPAT=( python3_{10..12} )
+PYTHON_COMPAT=( python3_{9..12} )
 
 inherit gnome.org gnome2-utils meson python-single-r1 vala xdg
 
@@ -11,7 +11,7 @@ HOMEPAGE="https://wiki.gnome.org/Apps/Gedit"
 
 LICENSE="GPL-2+ CC-BY-SA-3.0"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~ia64 ~loong ~ppc ~ppc64 ~riscv ~sparc ~x86"
+KEYWORDS="~alpha amd64 ~arm arm64 ~ia64 ~loong ~ppc ~ppc64 ~riscv ~sparc x86"
 
 IUSE="+python gtk-doc"
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"

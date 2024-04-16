@@ -3,7 +3,7 @@
 
 EAPI=8
 GNOME_ORG_MODULE="NetworkManager"
-PYTHON_COMPAT=( python3_{10..12} )
+PYTHON_COMPAT=( python3_{9..12} )
 
 inherit gnome.org linux-info meson-multilib flag-o-matic python-any-r1 readme.gentoo-r1 systemd toolchain-funcs udev vala virtualx
 
@@ -30,7 +30,7 @@ REQUIRED_USE="
 	?? ( syslog systemd )
 "
 
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~ia64 ~loong ~ppc ~ppc64 ~riscv ~sparc ~x86"
+KEYWORDS="~alpha amd64 arm arm64 ~ia64 ~loong ppc ppc64 ~riscv ~sparc x86"
 
 COMMON_DEPEND="
 	sys-apps/util-linux[${MULTILIB_USEDEP}]

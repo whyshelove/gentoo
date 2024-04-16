@@ -13,6 +13,7 @@ media-video/mpv -lua_single_target_lua5-1 lua_single_target_luajit
 # Andreas Sturmlechner <asturm@gentoo.org> (2024-03-24)
 # Requires unkeyworded dev-qt/qtwebengine (and revdeps)
 kde-apps/kleopatra pim
+net-irc/quassel urlpreview
 net-p2p/ktorrent rss
 
 # Eray Aslan <eras@gentoo.org> (2024-03-08)
@@ -272,10 +273,6 @@ sys-power/nut ups_drivers_nut-ipmipsu
 # Michał Górny <mgorny@gentoo.org> (2017-08-08)
 # Requires USE=opencl that is masked in this profile.
 net-misc/bfgminer adl lm-sensors
-
-# Michael Weber <xmw@gentoo.org> (2017-04-06)
-# mask unkeyworded dep pymongo -> mongodb
-app-portage/g-sorcery bson
 
 # Michał Górny <mgorny@gentoo.org> (2017-03-24)
 # libcxx fails to compile on ppc*, #595744.

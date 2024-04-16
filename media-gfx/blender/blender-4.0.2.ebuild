@@ -88,7 +88,7 @@ RDEPEND="${PYTHON_DEPS}
 		>=dev-libs/imath-3.1.4-r2:=
 		>=media-libs/openexr-3:0=
 	)
-	openpgl? ( media-libs/openpgl:0/0.5= )
+	openpgl? ( media-libs/openpgl:0/0.5 )
 	opensubdiv? ( >=media-libs/opensubdiv-3.5.0 )
 	openvdb? (
 		>=media-gfx/openvdb-10.0.0:=[nanovdb?]
@@ -237,6 +237,11 @@ src_prepare() {
 }
 
 src_configure() {
+	# -Werror=odr, -Werror=lto-type-mismatch
+	# https://bugs.gentoo.org/859607
+	# https://projects.blender.org/blender/blender/issues/120444
+	filter-lto
+
 	# Workaround for bug #922600
 	append-ldflags $(test-flags-CCLD -Wl,--undefined-version)
 

@@ -3,7 +3,7 @@
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{10..12} )
+PYTHON_COMPAT=( python3_{9..12} )
 inherit gnome.org meson python-any-r1 vala virtualx
 
 DESCRIPTION="Building blocks for modern GNOME applications"
@@ -14,7 +14,7 @@ SLOT="1"
 IUSE="+introspection test +vala"
 REQUIRED_USE="vala? ( introspection )"
 
-KEYWORDS="~amd64 ~arm ~arm64 ~loong ~ppc ~ppc64 ~riscv ~x86"
+KEYWORDS="amd64 ~arm arm64 ~loong ppc ppc64 ~riscv x86"
 
 RDEPEND="
 	>=dev-libs/glib-2.76:2
