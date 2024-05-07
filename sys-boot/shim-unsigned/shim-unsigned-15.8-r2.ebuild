@@ -38,17 +38,18 @@ pkg_setup() {
 }
 
 src_configure() { 
-	COMMITID=$(cat commit)
-	MAKEFLAGS="TOPDIR=.. -f ../Makefile COMMITID=${COMMITID} "
+	COMMIT_ID=$(cat commit)
+	MAKEFLAGS="TOPDIR=.. -f ../Makefile COMMIT_ID=${COMMIT_ID} "
 	MAKEFLAGS+="EFIDIR=${efidir} "
 	MAKEFLAGS+="ENABLE_SHIM_HASH=true "
+	MAKEFLAGS+="SBAT_AUTOMATIC_DATE=2023012900 "
 
 	if [ -f "${S1}" ]; then
-		MAKEFLAGS="$MAKEFLAGS VENDOR_CERT_FILE=${S1}"
+		MAKEFLAGS="$MAKEFLAGS VENDOR_CERT_FILE=${S1} "
 	fi
 
 	if [ -s "${S2}" ]; then
-		MAKEFLAGS="$MAKEFLAGS VENDOR_DBX_FILE=${S2}"
+		MAKEFLAGS="$MAKEFLAGS VENDOR_DBX_FILE=${S2} "
 	fi
 }
 

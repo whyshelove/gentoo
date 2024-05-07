@@ -3,6 +3,7 @@
 
 EAPI=8
 
+DSUFFIX="_9"
 inherit mount-boot rhel8
 
 DESCRIPTION="Initial UEFI bootloader that handles chaining to a trusted full bootloader
