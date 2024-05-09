@@ -13,11 +13,11 @@ MY_P="${PN}-${MY_PV}"
 
 DESCRIPTION="a Java port of HTML Tidy, a HTML syntax checker and pretty printer"
 HOMEPAGE="https://sourceforge.net/projects/jtidy/"
-SRC_URI="mirror://sourceforge/project/${PN}/JTidy/${MY_PV}/${PN}-${MY_PV}-sources.zip -> ${P}.zip"
+SRC_URI="https://downloads.sourceforge.net/project/${PN}/JTidy/${MY_PV}/${PN}-${MY_PV}-sources.zip -> ${P}.zip"
 
 LICENSE="HTML-Tidy W3C"
 SLOT="0"
-KEYWORDS="~amd64 ppc64 ~x86"
+KEYWORDS="amd64 ppc64 x86"
 
 BDEPEND="app-arch/unzip"
 CP_DEPEND=">=dev-java/ant-1.10.14-r3:0"

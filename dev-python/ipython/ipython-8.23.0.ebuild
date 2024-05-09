@@ -18,7 +18,7 @@ HOMEPAGE="
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~arm64-macos ~x64-macos"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ppc ppc64 ~riscv ~s390 sparc x86 ~arm64-macos ~x64-macos"
 IUSE="doc examples notebook nbconvert qt5 +smp test"
 RESTRICT="!test? ( test )"
 
@@ -51,6 +51,7 @@ BDEPEND="
 		dev-python/matplotlib-inline[${PYTHON_USEDEP}]
 		dev-python/pickleshare[${PYTHON_USEDEP}]
 		<dev-python/pytest-8[${PYTHON_USEDEP}]
+		dev-python/pytest-asyncio[${PYTHON_USEDEP}]
 		dev-python/requests[${PYTHON_USEDEP}]
 		dev-python/testpath[${PYTHON_USEDEP}]
 	)
@@ -136,7 +137,8 @@ python_test() {
 
 	# nonfatal implied by virtx
 	local -x PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
-	nonfatal epytest || die "Tests failed with ${EPYTHON}"
+	nonfatal epytest -p asyncio --asyncio-mode=auto ||
+		die "Tests failed on ${EPYTHON}"
 }
 
 python_install() {

@@ -203,7 +203,7 @@ RDEPEND="
 	png? ( media-libs/libpng:0=[${MULTILIB_USEDEP}] )
 	python? (
 		${PYTHON_DEPS}
-		dev-python/numpy[${PYTHON_USEDEP}]
+		dev-python/numpy:=[${PYTHON_USEDEP}]
 	)
 	qt5? (
 		dev-qt/qtgui:5
@@ -217,6 +217,7 @@ RDEPEND="
 			dev-qt/qtbase:6[gui,widgets,concurrent,opengl?]
 		)
 	)
+	quirc? ( media-libs/quirc )
 	tesseract? ( app-text/tesseract[opencl=,${MULTILIB_USEDEP}] )
 	tbb? ( dev-cpp/tbb:=[${MULTILIB_USEDEP}] )
 	tiff? ( media-libs/tiff:=[${MULTILIB_USEDEP}] )
@@ -340,6 +341,10 @@ src_prepare() {
 		cd "${WORKDIR}/${PN}_contrib-${PV}" || die
 		eapply "${FILESDIR}/${PN}_contrib-4.8.1-rgbd.patch"
 		eapply "${FILESDIR}/${PN}_contrib-4.8.1-NVIDIAOpticalFlowSDK-2.0.tar.gz.patch"
+		if has_version ">=dev-util/nvidia-cuda-toolkit-12.4" && use cuda; then
+			# TODO https://github.com/NVIDIA/cccl/pull/1522
+			eapply "${FILESDIR}/${PN}_contrib-4.9.0-cuda-12.4.patch"
+		fi
 		cd "${S}" || die
 
 		! use contribcvv && { rm -R "${WORKDIR}/${PN}_contrib-${PV}/modules/cvv" || die; }
@@ -591,6 +596,7 @@ multilib_src_configure() {
 	# ===================================================
 	# configure modules to be build
 	# ===================================================
+		-DBUILD_opencv_gapi="$(usex ffmpeg yes "$(usex gstreamer)")"
 		-DBUILD_opencv_features2d="$(usex features2d)"
 		-DBUILD_opencv_java_bindings_generator="$(usex java)"
 		-DBUILD_opencv_js="no"
@@ -678,6 +684,7 @@ multilib_src_configure() {
 
 	if multilib_is_native_abi && use cuda; then
 		cuda_add_sandbox -w
+		sandbox_write "/proc/self/task"
 		CUDAHOSTCXX="$(cuda_get_cuda_compiler)"
 		CUDAARCHS="$(cuda_get_host_native_arch)"
 		export CUDAHOSTCXX

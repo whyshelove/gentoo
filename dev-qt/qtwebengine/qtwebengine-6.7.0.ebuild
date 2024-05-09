@@ -108,6 +108,8 @@ PATCHES=( "${WORKDIR}"/patches/${PN} )
 PATCHES+=(
 	# add extras as needed here, may merge in set if carries across versions
 	"${FILESDIR}"/${PN}-6.7.0-clang18.patch
+	"${FILESDIR}"/${PN}-6.7.0-ninja1.12.patch
+	"${FILESDIR}"/${PN}-6.7.0-displaykey-header.patch
 )
 
 python_check_deps() {
@@ -237,6 +239,17 @@ src_configure() {
 		# for simplicity. Override with USE=custom-cflags if wanted, please
 		# report if above -march works again so can cleanup.
 		use arm64 && tc-is-gcc && filter-flags '-march=*' '-mcpu=*'
+
+		# skia and xnnpack fail with clang-18 + some(?) -march=native while
+		# can't reproduce with seemingly equivalent =skylake), needs more
+		# looking into as there may be something odd going on (clang bug?).
+		# Note that upstream Qt disallows custom *FLAGS on qtwebengine meaning
+		# we are not supposed to pass -march=native in the first place.
+		# TODO: try dropping this on major Qt and clang bumps
+		# See also: https://groups.google.com/g/skia-discuss/c/DNW4oq3W2fI
+		# (Transform_inl.h:769:21: error: AVX vector <snip> without 'evex512')
+		use amd64 && tc-is-clang && [[ $(clang-major-version) -ge 18 ]] &&
+			filter-flags -march=native
 	fi
 
 	export NINJA NINJAFLAGS=$(get_NINJAOPTS)

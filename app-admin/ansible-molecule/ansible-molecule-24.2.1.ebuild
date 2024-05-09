@@ -22,7 +22,7 @@ HOMEPAGE="https://pypi.org/project/molecule/ https://github.com/ansible/molecule
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~amd64 ~arm64 ~riscv"
+KEYWORDS="amd64 ~arm64 ~riscv"
 IUSE="selinux"
 
 # Since around the time of the switch to the yy.m.patchlevel versioning scheme
@@ -48,7 +48,7 @@ RDEPEND="$(python_gen_cond_dep '
 	selinux? ( sys-libs/libselinux[python,${PYTHON_USEDEP}] )
 ')"
 BDEPEND="$(python_gen_cond_dep '
-	<dev-python/setuptools-scm-8[${PYTHON_USEDEP}]
+	>=dev-python/setuptools-scm-7.0.5[${PYTHON_USEDEP}]
 	doc? (
 		dev-python/pillow[truetype,${PYTHON_USEDEP}]
 		media-fonts/roboto

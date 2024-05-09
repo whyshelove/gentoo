@@ -14,7 +14,7 @@ if [[ ${PV} = *9999 ]] ; then
 	EGIT_REPO_URI="https://github.com/intel/libva"
 else
 	SRC_URI="https://github.com/intel/libva/archive/${PV}.tar.gz -> ${P}.tar.gz"
-	KEYWORDS="~amd64 ~arm64 ~loong ~mips ~ppc64 ~riscv ~x86 ~amd64-linux ~x86-linux"
+	KEYWORDS="amd64 arm64 ~loong ~mips ppc64 ~riscv x86 ~amd64-linux ~x86-linux"
 fi
 
 LICENSE="MIT"
@@ -46,6 +46,10 @@ MULTILIB_WRAPPED_HEADERS=(
 	/usr/include/va/va_x11.h
 	/usr/include/va/va_dri2.h
 	/usr/include/va/va_dricommon.h
+)
+
+PATCHES=(
+	"${FILESDIR}/libva-2.21.0-no-undefined-version.patch"
 )
 
 multilib_src_configure() {

@@ -87,6 +87,7 @@ if [ -z ${MY_PF} ] ; then
 			vte )  MY_P=${P/-/291-} ;;
 			libltdl )  MY_P=libtool-${PV} ;;
 			shim-unsigned ) MY_P=${PN}-x64-${PV}; S=${WORKDIR}/${P/-unsigned} ;;
+			autoconf ) MY_P=${P}; [[ ${PV} == 2.71 ]] && MY_P="${PN}-latest-${PV}" ;;
 			*) MY_P=${P} ;;
 		esac
 	fi

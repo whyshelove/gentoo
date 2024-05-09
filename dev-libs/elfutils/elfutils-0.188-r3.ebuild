@@ -68,8 +68,6 @@ src_configure() {
 
 	append-flags -Wformat
 
-	append-cflags -fexceptions
-
 	multilib-minimal_src_configure
 }
 

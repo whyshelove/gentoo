@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-PYTHON_COMPAT=( python3_{10..12} )
+PYTHON_COMPAT=( python3_{9..12} )
 
 CRATES="
 	adler@1.0.2
@@ -291,7 +291,7 @@ LICENSE+="
 "
 
 SLOT="2"
-KEYWORDS="~amd64 arm arm64 ~loong ~ppc ppc64 ~riscv ~sparc ~x86"
+KEYWORDS="amd64 arm arm64 ~loong ppc ppc64 ~riscv sparc ~x86"
 
 IUSE="gtk-doc +introspection +vala"
 REQUIRED_USE="

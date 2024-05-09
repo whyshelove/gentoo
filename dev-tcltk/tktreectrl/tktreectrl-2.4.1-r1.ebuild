@@ -7,11 +7,11 @@ inherit virtualx
 
 DESCRIPTION="Flexible listbox widget for Tk"
 HOMEPAGE="https://tktreectrl.sourceforge.net/"
-SRC_URI="mirror://sourceforge/${PN}/${P}.tar.gz"
+SRC_URI="https://downloads.sourceforge.net/${PN}/${P}.tar.gz"
 
 LICENSE="tcltk"
 SLOT="0"
-KEYWORDS="~amd64 ~ppc ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="amd64 ~ppc x86 ~amd64-linux ~x86-linux"
 IUSE="debug shellicon threads"
 
 RDEPEND=">=dev-lang/tk-8.4:0="
