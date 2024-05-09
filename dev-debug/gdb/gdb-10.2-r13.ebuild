@@ -8,7 +8,7 @@ PYTHON_COMPAT=( python3_{9..11} )
 prefix_ver=$(ver_cut 4)
 [[ ${prefix_ver} ]] && DPREFIX="${prefix_ver}."
 
-DSUFFIX="_3"
+#DSUFFIX="_3"
 
 inherit flag-o-matic python-single-r1 strip-linguas toolchain-funcs rhel9-a
 

@@ -234,7 +234,7 @@ exportmakeopts() {
 
 src_unpack() {
 	if [[ ${PV} != *9999 ]] ; then
-		rhel_src_unpack ${A}
+		rpmbuild_src_unpack ${A}
 
 		cd "${S}" || die
 		unpack ${PN}-manpages-${DOC_VER}.tar.${SRC_URI_SUFFIX}

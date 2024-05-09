@@ -69,7 +69,7 @@ src_unpack() {
 	if [[ ${PV} == 9999 ]] ; then
 		git-r3_src_unpack
 	else
-		rhel_src_unpack ${A}
+		rpmbuild_src_unpack ${A}
 	fi
 
 	cd "${S}" || die

@@ -1,15 +1,15 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="7"
+EAPI="8"
 WANT_LIBTOOL="none"
 
 unused_patches=( Patch111 Patch251 )
-suffix_ver=$(ver_cut 5)
-[[ ${suffix_ver} ]] && DSUFFIX="_2.${suffix_ver}"
+#suffix_ver=$(ver_cut 5)
+[[ ${suffix_ver} ]] && DSUFFIX="_3.${suffix_ver}"
 
 inherit autotools check-reqs flag-o-matic multiprocessing pax-utils
-inherit prefix python-utils-r1 toolchain-funcs rhel9
+inherit prefix python-utils-r1 toolchain-funcs verify-sig rhel9
 
 MY_PV=${PV/_rc/rc}
 MY_P="Python-${MY_PV%_p*}"
@@ -23,6 +23,9 @@ HOMEPAGE="
 "
 SRC_URI+="
 	https://dev.gentoo.org/~mgorny/dist/python/${PATCHSET}.tar.xz
+	verify-sig? (
+		https://www.python.org/ftp/python/${PV%%_*}/${MY_P}.tar.xz.asc
+	)
 "
 S="${WORKDIR}/${MY_P}"
 
@@ -30,7 +33,7 @@ LICENSE="PSF-2"
 SLOT="${PYVER}"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
 IUSE="
-	bluetooth build +ensurepip examples gdbm hardened lto +ncurses pgo
+	bluetooth build debug +ensurepip examples gdbm +ncurses pgo
 	+readline +sqlite +ssl test tk valgrind +xml
 "
 RESTRICT="!test? ( test )"
@@ -43,6 +46,7 @@ RESTRICT="!test? ( test )"
 RDEPEND="
 	app-arch/bzip2:=
 	app-arch/xz-utils:=
+	>=dev-libs/expat-2.1:=
 	dev-libs/libffi:=
 	dev-python/gentoo-common
 	>=sys-libs/zlib-1.1.3:=
@@ -54,33 +58,33 @@ RDEPEND="
 	ncurses? ( >=sys-libs/ncurses-5.2:= )
 	readline? ( >=sys-libs/readline-4.1:= )
 	sqlite? ( >=dev-db/sqlite-3.3.8:3= )
-	ssl? ( >=dev-libs/openssl-1.1.1:=[fips] )
+	ssl? ( >=dev-libs/openssl-1.1.1:= )
 	tk? (
 		>=dev-lang/tcl-8.0:=
 		>=dev-lang/tk-8.0:=
 		dev-tcltk/blt:=
 		dev-tcltk/tix
 	)
-	xml? ( >=dev-libs/expat-2.1:= )
 "
 # bluetooth requires headers from bluez
 DEPEND="
 	${RDEPEND}
 	bluetooth? ( net-wireless/bluez )
-	test? ( app-arch/xz-utils[extra-filters(+)] )
-	valgrind? ( dev-util/valgrind )
+	test? ( app-arch/xz-utils )
+	valgrind? ( dev-debug/valgrind )
 "
 # autoconf-archive needed to eautoreconf
 BDEPEND="
-	sys-devel/autoconf-archive
+	dev-build/autoconf-archive
 	app-alternatives/awk
 	virtual/pkgconfig
+	verify-sig? ( sec-keys/openpgp-keys-python )
 "
 RDEPEND+="
 	!build? ( app-misc/mime-types )
 "
 
-VERIFY_SIG_OPENPGP_KEY_PATH=${BROOT}/usr/share/openpgp-keys/python.org.asc
+VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/python.org.asc
 
 # large file tests involve a 2.5G file being copied (duplicated)
 CHECKREQS_DISK_BUILD=5500M
@@ -95,12 +99,6 @@ pkg_pretend() {
 
 pkg_setup() {
 	use test && check-reqs_pkg_setup
-
-	# The build process embeds version info extracted from the Git repository
-	# into the Py_GetBuildInfo and sys.version strings.
-	# Our Git repository is artificial, so we don't want that.
-	# Tell configure to not use git.
-	export HAS_GIT=not-found
 }
 
 src_prepare() {
@@ -144,14 +142,7 @@ src_configure() {
 	use sqlite    || disable+=" _sqlite3"
 	#use ssl       || export PYTHON_DISABLE_SSL="1"
 	use tk        || disable+=" _tkinter"
-	use xml       || disable+=" _elementtree pyexpat" # _elementtree uses pyexpat.
 	export PYTHON_DISABLE_MODULES="${disable}"
-
-	if ! use xml; then
-		ewarn "You have configured Python without XML support."
-		ewarn "This is NOT a recommended configuration as you"
-		ewarn "may face problems parsing any XML documents."
-	fi
 
 	if [[ -n "${PYTHON_DISABLE_MODULES}" ]]; then
 		einfo "Disabled modules: ${PYTHON_DISABLE_MODULES}"
@@ -159,11 +150,6 @@ src_configure() {
 
 	append-flags -fwrapv -D_GNU_SOURCE -fPIC
 	filter-flags -malign-double
-
-	# https://bugs.gentoo.org/700012
-	if is-flagq -flto || is-flagq '-flto=*'; then
-		append-cflags $(test-flags-CC -ffat-lto-objects)
-	fi
 
 	# Export CXX so it ends up in /usr/lib/python3.X/config/Makefile.
 	# PKG_CONFIG needed for cross.
@@ -180,12 +166,14 @@ src_configure() {
 			"-j$(makeopts_jobs)"
 			--pgo-extended
 			-x test_gdb
+			-x test_dtrace
 			-u-network
 
 			# All of these seem to occasionally hang for PGO inconsistently
 			# They'll even hang here but be fine in src_test sometimes.
 			# bug #828535 (and related: bug #788022)
 			-x test_asyncio
+			-x test_concurrent_futures
 			-x test_httpservers
 			-x test_logging
 			-x test_multiprocessing_fork
@@ -221,13 +209,14 @@ src_configure() {
 		--with-libc=
 		--enable-loadable-sqlite-extensions
 		--without-ensurepip
+		--without-lto
 		--with-system-expat
 		--with-system-ffi
 		#--with-wheel-pkg-dir="${EPREFIX}"/usr/lib/python/ensurepip
 		--with-ssl-default-suites=openssl
 		--with-builtin-hashlib-hashes=blake2
 
-		$(use_with lto)
+		$(use_with debug assertions)
 		$(use_enable pgo optimizations)
 		$(use_with valgrind)
 	)
@@ -235,15 +224,27 @@ src_configure() {
 	# disable implicit optimization/debugging flags
 	local -x OPT=
 
+	# https://bugs.gentoo.org/700012
+	if tc-is-lto; then
+		append-cflags $(test-flags-CC -ffat-lto-objects)
+		myeconfargs+=(
+			--with-lto
+		)
+	fi
+
 	if tc-is-cross-compiler ; then
 		# Hack to workaround get_libdir not being able to handle CBUILD, bug #794181
 		local cbuild_libdir=$(unset PKG_CONFIG_PATH ; $(tc-getBUILD_PKG_CONFIG) --keep-system-libs --libs-only-L libffi)
 
 		# pass system CFLAGS & LDFLAGS as _NODIST, otherwise they'll get
 		# propagated to sysconfig for built extensions
-		local -x CFLAGS_NODIST=${CFLAGS_FOR_BUILD}
-		local -x LDFLAGS_NODIST=${LDFLAGS_FOR_BUILD}
+		#
+		# -fno-lto to avoid bug #700012 (not like it matters for mini-CBUILD Python anyway)
+		local -x CFLAGS_NODIST="${BUILD_CFLAGS} -fno-lto"
+		local -x LDFLAGS_NODIST=${BUILD_LDFLAGS}
 		local -x CFLAGS= LDFLAGS=
+		local -x BUILD_CFLAGS="${CFLAGS_NODIST}"
+		local -x BUILD_LDFLAGS=${LDFLAGS_NODIST}
 
 		# We need to build our own Python on CBUILD first, and feed it in.
 		# bug #847910 and bug #864911.
@@ -305,8 +306,6 @@ src_configure() {
 	filter-flags '-specs=*'
 	export CPPFLAGS="$(pkg-config --cflags-only-I libffi)"
 	export OPT=$CFLAGS
-
-	local -x CFLAGS="$CFLAGS $(pkg-config --cflags openssl)" LDFLAGS="$LDFLAGS -g $(pkg-config --libs-only-L openssl)"
 
 	# Fix implicit declarations on cross and prefix builds. Bug #674070.
 	if use ncurses; then
@@ -374,6 +373,7 @@ src_test() {
 		-j "$(makeopts_jobs)"
 
 		# fails
+		-x test_concurrent_futures
 		-x test_gdb
 	)
 
@@ -394,7 +394,7 @@ src_test() {
 	local -x COLUMNS=80
 	local -x PYTHONDONTWRITEBYTECODE=
 
-	nonfatal emake test EXTRATESTOPTS="${test_opts[*]}" \
+	nonfatal emake -Onone test EXTRATESTOPTS="${test_opts[*]}" \
 		CPPFLAGS= CFLAGS= LDFLAGS= < /dev/tty
 	local ret=${?}
 

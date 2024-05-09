@@ -5,8 +5,9 @@ EAPI=8
 AUTOTOOLS_AUTO_DEPEND=no
 AT_NOEAUTOHEADER=yes  # because expat_config.h.in would need post-processing
 
+DSUFFIX="_4"
 suffix_ver=$(ver_cut 5)
-[[ ${suffix_ver} ]] && DSUFFIX="_3.${suffix_ver}"
+[[ ${suffix_ver} ]] && DSUFFIX="_4.${suffix_ver}"
 MY_PV=$(ver_rs 1- '_')
 
 inherit autotools multilib-minimal rhel9

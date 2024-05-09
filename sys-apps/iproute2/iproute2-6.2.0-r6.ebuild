@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-
+DSUFFIX="_4"
 inherit edo toolchain-funcs rhel9
 
 if [[ ${PV} == 9999 ]] ; then

@@ -59,7 +59,7 @@ src_prepare() {
 		rm -v "${WORKDIR}/patch/${p}" || die
 	done
 
-	toolchain_src_prepare
+	toolchain-rhel_src_prepare
 
 	eapply_user
 }

@@ -4,7 +4,7 @@
 EAPI=8
 
 NSS_VER="3.90.0"
-DSUFFIX="_3"
+DSUFFIX="_4"
 
 inherit autotools flag-o-matic toolchain-funcs multilib-minimal rhel9-a
 
