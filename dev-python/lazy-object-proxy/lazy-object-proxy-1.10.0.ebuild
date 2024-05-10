@@ -23,7 +23,7 @@ KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv 
 IUSE="+native-extensions"
 
 BDEPEND="
-	>=dev-python/setuptools-scm[${PYTHON_USEDEP}]
+	dev-python/setuptools-scm[${PYTHON_USEDEP}]
 "
 
 distutils_enable_tests pytest

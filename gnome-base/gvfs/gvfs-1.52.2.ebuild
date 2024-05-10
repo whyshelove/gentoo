@@ -37,7 +37,7 @@ RDEPEND="
 	)
 	http? (
 		dev-libs/libxml2:2
-		>=net-libs/libsoup-3.0.0:3.0
+		>=net-libs/libsoup-2.72.0:2.4
 	)
 	zeroconf? ( >=net-dns/avahi-0.6[dbus] )
 	udev? ( >=dev-libs/libgudev-147:= )

@@ -23,7 +23,7 @@ KEYWORDS="~alpha amd64 ~arm arm64 ~ia64 ~loong ~ppc ~ppc64 ~riscv ~sparc x86 ~am
 
 RDEPEND="
 	>=dev-libs/glib-2.68.0:2
-	>=net-libs/libsoup-2.99.2:3.0
+	>=net-libs/libsoup-2.72.0:2.4
 	sci-geosciences/geocode-glib:2
 	>=dev-libs/libxml2-2.6.0:2
 	dev-libs/json-glib

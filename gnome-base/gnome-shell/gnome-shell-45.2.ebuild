@@ -88,7 +88,7 @@ RDEPEND="${DEPEND}
 	app-misc/geoclue:2.0[introspection]
 	media-libs/graphene[introspection]
 	x11-libs/pango[introspection]
-	net-libs/libsoup:3.0[introspection]
+	net-libs/libsoup:2.4[introspection]
 	>=sys-power/upower-0.99:=[introspection]
 	gnome-base/librsvg:2[introspection]
 	gui-libs/libadwaita:1[introspection]

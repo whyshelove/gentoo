@@ -23,7 +23,7 @@ RDEPEND="
 	>=dev-libs/gobject-introspection-1.54:=
 	>=dev-libs/icu-4.8.1.2:=
 	>=dev-libs/json-glib-1.4
-	>=net-libs/libsoup-2.99.2:3.0
+	>=net-libs/libsoup-2.72.0:2.4
 	>=dev-libs/libxml2-2.7
 	>=dev-db/sqlite-3.29.0:3
 	stemmer? ( dev-libs/snowball-stemmer:= )

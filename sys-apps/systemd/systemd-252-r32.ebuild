@@ -426,6 +426,8 @@ multilib_src_install_all() {
 	fi
 
 	gen_usr_ldscript -a systemd udev
+
+	python_fix_shebang "${ED}" 
 }
 
 migrate_locale() {
