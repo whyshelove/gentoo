@@ -607,7 +607,7 @@ src_configure() {
 	myconf "-${myndbm}i_ndbm" "-${mygdbm}i_gdbm" "-${mydb}i_db"
 
 	if use alpha && [[ "$(tc-getCC)" = "ccc" ]] ; then
-		ewarn "Perl will not be built with berkdb support, use gcc if you needed it..."
+		ewarn "Perl will not be built with berkdb support, use gcc if you need it..."
 		myconf -Ui_db -Ui_ndbm
 	fi
 
@@ -680,7 +680,7 @@ src_configure() {
 	if use prefix ; then
 		# Set a hook to check for each detected library whether it actually works.
 		export libscheck="
-			( echo 'main(){}' > '${T}'/conftest.c &&
+			( echo 'int main(){}' > '${T}'/conftest.c &&
 				$(tc-getCC) -o '${T}'/conftest '${T}'/conftest.c -l\$thislib >/dev/null 2>/dev/null
 			) || xxx=/dev/null"
 
@@ -713,10 +713,10 @@ src_configure() {
 	myconf \
 		-Duseshrplib \
 		-Darchname="${myarch}" \
-		-Dcc="$(tc-getCC)" \
 		-Dar="$(tc-getAR)" \
-		-Dnm="$(tc-getNM)" \
+		-Dcc="$(tc-getCC)" \
 		-Dcpp="$(tc-getCPP)" \
+		-Dnm="$(tc-getNM)" \
 		-Dranlib="$(tc-getRANLIB)" \
 		-Accflags="${CFLAGS} -DNO_PERL_RAND_SEED" \
 		-Doptimize="${CFLAGS}" \

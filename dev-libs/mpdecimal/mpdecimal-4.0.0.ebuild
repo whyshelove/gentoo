@@ -8,13 +8,13 @@ HOMEPAGE="https://www.bytereef.org/mpdecimal/"
 SRC_URI="
 	https://www.bytereef.org/software/mpdecimal/releases/${P}.tar.gz
 	test? (
-		http://speleotrove.com/decimal/dectest.zip
+		https://speleotrove.com/decimal/dectest.zip
 	)
 "
 
 LICENSE="BSD-2"
 SLOT="$(ver_cut 1)"
-KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~riscv ~sparc"
+KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
 IUSE="cxx test"
 RESTRICT="!test? ( test )"
 
@@ -47,7 +47,9 @@ src_configure() {
 		$(use_enable cxx)
 	)
 
-	local -x LDXXFLAGS="${LDFLAGS}"
+	# more sigh
+	# https://bugs.gentoo.org/931599
+	local -x LDXXFLAGS="${LDFLAGS}" LD="${CC}" LDXX="${CXX}"
 	econf "${myconf[@]}"
 }
 
@@ -57,5 +59,5 @@ src_test() {
 
 src_install() {
 	default
-	rm -r "${ED}/removeme" || die
+	rm -r "${D}/removeme" || die
 }

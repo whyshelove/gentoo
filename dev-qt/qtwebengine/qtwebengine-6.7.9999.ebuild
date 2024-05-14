@@ -3,7 +3,7 @@
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{10..12} )
+PYTHON_COMPAT=( python3_{10..13} )
 PYTHON_REQ_USE="xml(+)"
 inherit check-reqs flag-o-matic multiprocessing optfeature
 inherit prefix python-any-r1 qt6-build toolchain-funcs
@@ -236,18 +236,15 @@ src_configure() {
 		# for simplicity. Override with USE=custom-cflags if wanted, please
 		# report if above -march works again so can cleanup.
 		use arm64 && tc-is-gcc && filter-flags '-march=*' '-mcpu=*'
-
-		# skia and xnnpack fail with clang-18 + some(?) -march=native while
-		# can't reproduce with seemingly equivalent =skylake), needs more
-		# looking into as there may be something odd going on (clang bug?).
-		# Note that upstream Qt disallows custom *FLAGS on qtwebengine meaning
-		# we are not supposed to pass -march=native in the first place.
-		# TODO: try dropping this on major Qt and clang bumps
-		# See also: https://groups.google.com/g/skia-discuss/c/DNW4oq3W2fI
-		# (Transform_inl.h:769:21: error: AVX vector <snip> without 'evex512')
-		use amd64 && tc-is-clang && [[ $(clang-major-version) -ge 18 ]] &&
-			filter-flags -march=native
 	fi
+
+	# Workaround for build failure with clang-18 and -march=native without
+	# avx512. Does not affect e.g. -march=skylake, only native (bug #931623).
+	# TODO: try to drop this when <=clang-18.1.5 >=18 been gone for some time
+	use amd64 && tc-is-clang && is-flagq -march=native &&
+		[[ $(clang-major-version) -ge 18 ]] &&
+		tc-cpp-is-true "!defined(__AVX512F__)" ${CXXFLAGS} &&
+		append-flags -mevex512
 
 	export NINJA NINJAFLAGS=$(get_NINJAOPTS)
 	[[ ${NINJA_VERBOSE^^} == OFF ]] || NINJAFLAGS+=" -v"
