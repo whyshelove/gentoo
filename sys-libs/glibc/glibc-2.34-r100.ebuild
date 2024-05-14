@@ -9,8 +9,8 @@ EAPI=7
 PYTHON_COMPAT=( python3_{9..12} )
 TMPFILES_OPTIONAL=1
 
-suffix_ver=$(ver_cut 4)
-[[ ${suffix_ver} ]] && DSUFFIX="_3.${suffix_ver}"
+suffix_ver="_$(ver_cut 4).$(ver_cut 6)"
+[[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}"
 _build_flags="undefine"
 
 inherit python-any-r1 prefix preserve-libs toolchain-funcs flag-o-matic gnuconfig \
@@ -31,7 +31,7 @@ if [[ ${PV} == 9999* ]]; then
 	inherit git-r3
 else
 	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
-	SRC_URI+=" https://dev.gentoo.org/~${PATCH_DEV}/distfiles/${P/_p*}-patches-${PATCH_VER}.tar.xz"
+	SRC_URI+=" https://dev.gentoo.org/~${PATCH_DEV}/distfiles/${MY_P}-patches-${PATCH_VER}.tar.xz"
 fi
 
 RELEASE_VER=${PV/_p*}
@@ -1362,9 +1362,9 @@ glibc_do_src_install() {
 		# Move versioned .a file out of libdir to evade portage QA checks
 		# instead of using gen_usr_ldscript(). We fix ldscript as:
 		# "GROUP ( /usr/lib64/libm-<pv>.a ..." -> "GROUP ( /usr/lib64/glibc-<pv>/libm-<pv>.a ..."
-		sed -i "s@\(libm-${upstream_pv}.a\)@${P}/\1@" "${ED}"/$(alt_usrlibdir)/libm.a || die
-		dodir $(alt_usrlibdir)/${P}
-		mv "${ED}"/$(alt_usrlibdir)/libm-${upstream_pv}.a "${ED}"/$(alt_usrlibdir)/${P}/libm-${upstream_pv}.a || die
+		sed -i "s@\(libm-${upstream_pv}.a\)@${MY_P}/\1@" "${ED}"/$(alt_usrlibdir)/libm.a || die
+		dodir $(alt_usrlibdir)/${MY_P}
+		mv "${ED}"/$(alt_usrlibdir)/libm-${upstream_pv}.a "${ED}"/$(alt_usrlibdir)/${MY_P}/libm-${upstream_pv}.a || die
 	fi
 
 	# We'll take care of the cache ourselves
