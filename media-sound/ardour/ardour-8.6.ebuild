@@ -15,7 +15,7 @@ if [[ ${PV} == *9999* ]]; then
 	EGIT_REPO_URI="https://git.ardour.org/ardour/ardour.git"
 	inherit git-r3
 else
-	KEYWORDS="~amd64 ~loong ~x86"
+	KEYWORDS="amd64 ~loong ~x86"
 	SRC_URI="https://dev.gentoo.org/~fordfrog/distfiles/Ardour-${PV}.0.tar.bz2"
 	S="${WORKDIR}/Ardour-${PV}.0"
 fi
@@ -71,6 +71,7 @@ DEPEND="${RDEPEND}
 
 PATCHES=(
 	"${FILESDIR}/${PN}-6.8-metadata.patch"
+	"${FILESDIR}/${PN}-6.8-boost-1.85.patch"
 )
 
 pkg_pretend() {

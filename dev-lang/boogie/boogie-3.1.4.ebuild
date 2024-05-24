@@ -210,7 +210,7 @@ else
 	SRC_URI="https://github.com/boogie-org/${PN}/archive/v${PV}.tar.gz
 		-> ${P}.tar.gz"
 
-	KEYWORDS="~amd64"
+	KEYWORDS="amd64"
 fi
 
 SRC_URI+=" ${NUGET_URIS} "
@@ -292,7 +292,7 @@ src_test() {
 		--verbose
 		--workers="$(makeopts_jobs)"
 	)
-	edob lit "${lit_opts[@]}" "${S}/Test"
+	edo lit "${lit_opts[@]}" "${S}/Test"
 }
 
 src_install() {

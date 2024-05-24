@@ -18,7 +18,7 @@ HOMEPAGE="
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~loong ~mips ppc ppc64 ~riscv ~s390 ~sparc x86"
 
 # all these are header-only libraries
 DEPEND="
@@ -46,6 +46,8 @@ src_prepare() {
 	rm -r extern || die
 	# force recythonization
 	find src -name '*.cxx' -delete || die
+	# do not require exact taskflow version
+	sed -i -e '/Taskflow/s:3\.3\.0::' CMakeLists.txt || die
 
 	distutils-r1_src_prepare
 

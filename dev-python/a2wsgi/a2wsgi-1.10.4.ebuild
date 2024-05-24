@@ -4,7 +4,7 @@
 EAPI=8
 
 DISTUTILS_USE_PEP517=pdm-backend
-PYTHON_COMPAT=( pypy3 python3_{10..12} )
+PYTHON_COMPAT=( pypy3 python3_{10..13} )
 
 inherit distutils-r1 pypi
 
@@ -24,7 +24,13 @@ BDEPEND="
 		>=dev-python/asgiref-3.2.7[${PYTHON_USEDEP}]
 		<dev-python/httpx-1[${PYTHON_USEDEP}]
 		>=dev-python/httpx-0.22.0[${PYTHON_USEDEP}]
+		dev-python/pytest-asyncio[${PYTHON_USEDEP}]
 	)
 "
 
 distutils_enable_tests pytest
+
+python_test() {
+	local -x PYTEST_DISABLE_PLUGIN_AUTOLOAD=1
+	epytest -p asyncio
+}
