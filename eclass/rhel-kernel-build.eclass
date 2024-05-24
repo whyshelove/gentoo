@@ -110,13 +110,7 @@ if [[ ${KERNEL_IUSE_MODULES_SIGN} ]]; then
 	"
 fi
 
-_target_cpu=$(rhel-kernel-install_get_qemu_arch)
 
-K_PRD=${MY_PR}.${subrelease}.${DIST}
-K_PVF=${PV/_p*}-${K_PRD}
-KVERREL=${K_PVF}${DSUFFIX}.${_target_cpu}
-
-S=${WORKDIR}/kernel-${K_PVF}${DSUFFIX}/linux-${K_PVF}.${_target_cpu}
 
 # @FUNCTION: rhel-kernel-build_pkg_setup
 # @DESCRIPTION:
@@ -126,6 +120,14 @@ rhel-kernel-build_pkg_setup() {
 	if [[ ${KERNEL_IUSE_MODULES_SIGN} ]]; then
 		secureboot_pkg_setup
 	fi
+
+export _target_cpu=$(rhel-kernel-install_get_qemu_arch)
+
+export K_PRD=${MY_PR}.${subrelease}.${DIST}
+       K_PVF=${PV/_p*}-${K_PRD}
+export KVERREL=${K_PVF}${DSUFFIX}.${_target_cpu}
+
+S=${WORKDIR}/kernel-${K_PVF}${DSUFFIX}/linux-${K_PVF}.${_target_cpu}
 
     export make_target=bzImage
     export hdrarch=${_target_cpu}

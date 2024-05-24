@@ -9,7 +9,7 @@ EAPI=7
 PYTHON_COMPAT=( python3_{9..12} )
 TMPFILES_OPTIONAL=1
 
-#suffix_ver="_$(ver_cut 4).$(ver_cut 6)"
+suffix_ver="$(ver_cut 4).$(ver_cut 6)"
 [[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}"
 _build_flags="undefine"
 
