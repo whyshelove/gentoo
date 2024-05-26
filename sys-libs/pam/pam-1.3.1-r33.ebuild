@@ -75,6 +75,8 @@ multilib_src_configure() {
 }
 
 multilib_src_compile() {
+	MAKEOPTS="-j1"
+
 	emake -C po update-gmo
 	emake sepermitlockdir="${EPREFIX}/run/sepermit"
 }

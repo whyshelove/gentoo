@@ -1,23 +1,33 @@
-# Copyright 2003-2023 Gentoo Authors
+# Copyright 2003-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-inherit flag-o-matic multilib-minimal systemd rhel8
+VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/elfutils.gpg
+inherit flag-o-matic multilib-minimal verify-sig systemd rhel8
 
 DESCRIPTION="Libraries/utilities to handle ELF objects (drop in replacement for libelf)"
 HOMEPAGE="https://sourceware.org/elfutils/"
+#SRC_URI="https://sourceware.org/elfutils/ftp/${PV}/${P}.tar.bz2"
+SRC_URI+=" verify-sig? ( https://sourceware.org/elfutils/ftp/${PV}/${P}.tar.bz2.sig )"
 
 LICENSE="|| ( GPL-2+ LGPL-3+ ) utils? ( GPL-3+ )"
 SLOT="0"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux"
-IUSE="bzip2 lzma nls static-libs test +utils valgrind zstd"
+IUSE="bzip2 debuginfod lzma nls static-libs test +utils zstd"
 RESTRICT="!test? ( test )"
 
 RDEPEND="
 	!dev-libs/libelf
 	>=sys-libs/zlib-1.2.8-r1[static-libs?,${MULTILIB_USEDEP}]
 	bzip2? ( >=app-arch/bzip2-1.0.6-r4[static-libs?,${MULTILIB_USEDEP}] )
+	debuginfod? (
+		app-arch/libarchive:=
+		dev-db/sqlite:3=
+		net-libs/libmicrohttpd:=
+
+		net-misc/curl[static-libs?,${MULTILIB_USEDEP}]
+	)
 	lzma? ( >=app-arch/xz-utils-5.0.5-r1[static-libs?,${MULTILIB_USEDEP}] )
 	zstd? ( app-arch/zstd:=[static-libs?,${MULTILIB_USEDEP}] )
 	elibc_musl? (
@@ -29,20 +39,22 @@ RDEPEND="
 "
 DEPEND="
 	${RDEPEND}
-	valgrind? ( dev-util/valgrind )
 "
 BDEPEND="
 	>=sys-devel/flex-2.5.4a
 	sys-devel/m4
+	virtual/pkgconfig
 	nls? ( sys-devel/gettext )
+	verify-sig? ( sec-keys/openpgp-keys-elfutils )
 "
+
+PATCHES=(
+	"${FILESDIR}"/${PN}-0.189-musl-aarch64-regs.patch
+	"${FILESDIR}"/${PN}-0.189-musl-macros.patch
+)
 
 src_prepare() {
 	default
-
-	if use elibc_musl; then
-		eapply "${WORKDIR}"/${PN}-0.187-patches/musl/
-	fi
 
 	if ! use static-libs; then
 		sed -i -e '/^lib_LIBRARIES/s:=.*:=:' -e '/^%.os/s:%.o$::' lib{asm,dw,elf}/Makefile.in || die
@@ -56,17 +68,10 @@ src_configure() {
 	# bug #407135
 	use test && append-flags -g
 
-	# Remove -Wall from default flags.  The makefiles enable enough warnings
-	# themselves, and they use -Werror.  Appending -Wall defeats the cases where
-	# the makefiles disable some specific warnings for specific code.
-	# But add -Wformat explicitly for use with -Werror=format-security which
-	# doesn't work without -Wformat (enabled by -Wall).
-	filter-flags -Wall
-	append-flags -Wformat
+	# bug 660738
+	filter-flags -fno-asynchronous-unwind-tables '-flto*' -Wall 
 
-	# Symbol aliases are implemented as asm statements.
-	# Will require porting: https://gcc.gnu.org/PR48200
-	filter-flags '-flto*'
+	append-flags -Wformat
 
 	multilib-minimal_src_configure
 }
@@ -74,8 +79,8 @@ src_configure() {
 multilib_src_configure() {
 	local myeconfargs=(
 		$(use_enable nls)
-		--disable-debuginfod
-		--disable-libdebuginfod
+		$(multilib_native_use_enable debuginfod)
+		$(use_enable debuginfod libdebuginfod)
 
 		# explicitly disable thread safety, it's not recommended by upstream
 		# doesn't build either on musl.
@@ -99,9 +104,6 @@ multilib_src_configure() {
 }
 
 multilib_src_test() {
-	# Record some build root versions in build.log
-	uname -r; rpm -q binutils gcc glibc || true
-
 	env LD_LIBRARY_PATH="${BUILD_DIR}/libelf:${BUILD_DIR}/libebl:${BUILD_DIR}/libdw:${BUILD_DIR}/libasm" \
 		LC_ALL="C" \
 		emake check VERBOSE=1
@@ -118,11 +120,19 @@ multilib_src_install_all() {
 		rm -rf "${ED}"/usr/bin || die
 	fi
 
-	systemd_dounit config/debuginfod.service
+	chmod +x "${ED}"/usr/lib64/lib*.so*
 
-	insinto /etc/sysconfig
-	newins config/debuginfod.sysconfig debuginfod
+	insinto /usr/lib/sysctl.d
+	doins config/10-default-yama-scope.conf
 
-	dodir /var/cache/debuginfod
-	touch "${ED}"/var/cache/debuginfod/debuginfod.sqlite
+	if use debuginfod; then
+
+		systemd_dounit config/debuginfod.service
+
+		insinto ${_sysconfdir}/sysconfig/
+		newins config/debuginfod.sysconfig debuginfod
+
+		insinto /usr/lib/sysusers.d
+		newins "${WORKDIR}"/elfutils-debuginfod.sysusers elfutils-debuginfod.conf
+	fi
 }

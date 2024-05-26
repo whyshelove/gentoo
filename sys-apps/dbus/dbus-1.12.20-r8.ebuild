@@ -4,7 +4,7 @@
 EAPI=7
 PYTHON_COMPAT=( python3_{6,8,9} )
 TMPFILES_OPTIONAL=1
-DSUFFIX="_1"
+#DSUFFIX="_1"
 inherit autotools flag-o-matic linux-info python-any-r1 readme.gentoo-r1 systemd tmpfiles virtualx multilib-minimal rhel9
 
 DESCRIPTION="A message bus system, a simple way for applications to talk to each other"

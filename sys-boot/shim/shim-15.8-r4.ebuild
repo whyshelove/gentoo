@@ -17,7 +17,7 @@ KEYWORDS="amd64 arm64 x86"
 RDEPEND="${DEPEND}"
 DEPEND="sys-boot/mokutil
 	sys-boot/dbxtool
-	sys-boot/shim-unsigned
+	~sys-boot/shim-unsigned-${PV}
 	>=app-crypt/pesign-0.112
 "
 pkg_setup() {

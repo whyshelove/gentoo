@@ -1,8 +1,8 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-inherit linux-info mount-boot savedconfig multiprocessing
+inherit dist-kernel-utils linux-info mount-boot savedconfig multiprocessing
 
 # In case this is a real snapshot, fill in commit below.
 # For normal, tagged releases, leave blank
@@ -19,7 +19,7 @@ else
 		SRC_URI="https://mirrors.edge.kernel.org/pub/linux/kernel/firmware/${P}.tar.xz"
 	fi
 
-	KEYWORDS="~amd64"
+	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
 fi
 
 DESCRIPTION="Linux firmware files"
@@ -29,12 +29,13 @@ LICENSE="GPL-2 GPL-2+ GPL-3 BSD MIT || ( MPL-1.1 GPL-2 )
 	redistributable? ( linux-fw-redistributable BSD-2 BSD BSD-4 ISC MIT )
 	unknown-license? ( all-rights-reserved )"
 SLOT="0"
-IUSE="compress-xz compress-zstd deduplicate initramfs +redistributable savedconfig unknown-license"
+IUSE="bindist compress-xz compress-zstd deduplicate dist-kernel +initramfs +redistributable savedconfig unknown-license"
 REQUIRED_USE="initramfs? ( redistributable )
 	?? ( compress-xz compress-zstd )
 	savedconfig? ( !deduplicate )"
 
 RESTRICT="binchecks strip test
+	!bindist? ( bindist )
 	unknown-license? ( bindist )"
 
 BDEPEND="initramfs? ( app-arch/cpio )
@@ -47,12 +48,6 @@ RDEPEND="!savedconfig? (
 		redistributable? (
 			!sys-firmware/alsa-firmware[alsa_cards_ca0132]
 			!sys-block/qla-fc-firmware
-			!sys-firmware/iwl1000-ucode
-			!sys-firmware/iwl6005-ucode
-			!sys-firmware/iwl6030-ucode
-			!sys-firmware/iwl3160-ucode
-			!sys-firmware/iwl7260-ucode
-			!sys-firmware/iwl3160-7260-bt-ucode
 			!sys-firmware/raspberrypi-wifi-ucode
 		)
 		unknown-license? (
@@ -61,9 +56,21 @@ RDEPEND="!savedconfig? (
 			!sys-firmware/alsa-firmware[alsa_cards_sb16]
 			!sys-firmware/alsa-firmware[alsa_cards_ymfpci]
 		)
-	)"
+	)
+	dist-kernel? ( virtual/dist-kernel )
+"
+IDEPEND="
+	dist-kernel? (
+		initramfs? ( sys-kernel/installkernel )
+	)
+"
 
 QA_PREBUILT="*"
+PATCHES=( "${FILESDIR}"/${PN}-copy-firmware-r4.patch )
+
+pkg_pretend() {
+	use initramfs && mount-boot_pkg_pretend
+}
 
 pkg_setup() {
 	if use compress-xz || use compress-zstd ; then
@@ -78,12 +85,8 @@ pkg_setup() {
 				eerror "Kernels <5.19 do not support ZSTD-compressed firmware files"
 			fi
 		fi
-		linux-info_pkg_setup
 	fi
-}
-
-pkg_pretend() {
-	use initramfs && mount-boot_pkg_pretend
+	linux-info_pkg_setup
 }
 
 src_unpack() {
@@ -99,6 +102,7 @@ src_unpack() {
 }
 
 src_prepare() {
+
 	default
 
 	find . -type f -not -perm 0644 -print0 \
@@ -107,7 +111,7 @@ src_prepare() {
 
 	chmod +x copy-firmware.sh || die
 
-	if use initramfs; then
+	if use initramfs && ! use dist-kernel; then
 		if [[ -d "${S}/amd-ucode" ]]; then
 			local UCODETMP="${T}/ucode_tmp"
 			local UCODEDIR="${UCODETMP}/kernel/x86/microcode"
@@ -137,8 +141,9 @@ src_prepare() {
 	# whitelist of misc files
 	local misc_files=(
 		copy-firmware.sh
+		README.md
 		WHENCE
-		README
+		LICEN[CS]E.*
 	)
 
 	# whitelist of images with a free software license
@@ -277,36 +282,28 @@ src_prepare() {
 }
 
 src_install() {
-	./copy-firmware.sh $(usex deduplicate '' '--ignore-duplicates') -v "${ED}/lib/firmware" || die
+
+	local FW_OPTIONS=( "-v" )
+	local files_to_keep=
+
+	if use savedconfig; then
+		if [[ -s "${S}/${PN}.conf" ]]; then
+			files_to_keep="${T}/files_to_keep.lst"
+			grep -v '^#' "${S}/${PN}.conf" 2>/dev/null > "${files_to_keep}" || die
+			[[ -s "${files_to_keep}" ]] || die "grep failed, empty config file?"
+			FW_OPTIONS+=( "--firmware-list" "${files_to_keep}" )
+		fi
+	fi
+
+	! use deduplicate && FW_OPTIONS+=( "--ignore-duplicates" )
+	FW_OPTIONS+=( "${ED}/lib/firmware" )
+	./copy-firmware.sh "${FW_OPTIONS[@]}"
 
 	pushd "${ED}/lib/firmware" &>/dev/null || die
 
 	# especially use !redistributable will cause some broken symlinks
 	einfo "Removing broken symlinks ..."
 	find * -xtype l -print -delete || die
-
-	if use savedconfig; then
-		if [[ -s "${S}/${PN}.conf" ]]; then
-			local files_to_keep="${T}/files_to_keep.lst"
-			grep -v '^#' "${S}/${PN}.conf" 2>/dev/null > "${files_to_keep}" || die
-			[[ -s "${files_to_keep}" ]] || die "grep failed, empty config file?"
-
-			einfo "Applying USE=savedconfig; Removing all files not listed in config ..."
-			find ! -type d -printf "%P\n" \
-				| grep -Fvx -f "${files_to_keep}" \
-				| xargs -d '\n' --no-run-if-empty rm -v
-
-			if [[ ${PIPESTATUS[0]} -ne 0 ]]; then
-				die "Find failed to print installed files"
-			elif [[ ${PIPESTATUS[1]} -eq 2 ]]; then
-				# grep returns exit status 1 if no lines were selected
-				# which is the case when we want to keep all files
-				die "Grep failed to select files to keep"
-			elif [[ ${PIPESTATUS[2]} -ne 0 ]]; then
-				die "Failed to remove files not listed in config"
-			fi
-		fi
-	fi
 
 	# remove empty directories, bug #396073
 	find -type d -empty -delete || die
@@ -355,10 +352,20 @@ src_install() {
 
 	popd &>/dev/null || die
 
-	if use initramfs ; then
+	# Instruct Dracut on whether or not we want the microcode in initramfs
+	(
+		insinto /usr/lib/dracut/dracut.conf.d
+		newins - 10-${PN}.conf <<<"early_microcode=$(usex initramfs)"
+	)
+
+	if use initramfs && ! use dist-kernel; then
 		insinto /boot
 		doins "${S}"/amd-uc.img
 	fi
+
+	dodoc README.md
+	# some licenses require copyright and permission notice to be included
+	use bindist && dodoc WHENCE LICEN[CS]E.*
 }
 
 pkg_preinst() {
@@ -391,7 +398,12 @@ pkg_postinst() {
 	done
 
 	# Don't forget to umount /boot if it was previously mounted by us.
-	use initramfs && mount-boot_pkg_postinst
+	if use initramfs; then
+		if [[ -z ${ROOT} ]] && use dist-kernel; then
+			dist-kernel_reinstall_initramfs "${KV_DIR}" "${KV_FULL}"
+		fi
+		mount-boot_pkg_postinst
+	fi
 }
 
 pkg_prerm() {

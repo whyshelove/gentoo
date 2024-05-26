@@ -3,9 +3,9 @@
 
 EAPI="7"
 WANT_LIBTOOL="none"
-
+DSUFFIX="_10"
 suffix_ver=$(ver_cut 5)
-[[ ${suffix_ver} ]] && DSUFFIX="_9.${suffix_ver}"
+[[ ${suffix_ver} ]] && DSUFFIX="_10.${suffix_ver}"
 unused_patches=( "patch132 -p1" "patch251 -p1" )
 
 inherit autotools flag-o-matic multiprocessing pax-utils \

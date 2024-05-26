@@ -4,7 +4,7 @@
 EAPI=7
 
 VERIFY_SIG_OPENPGP_KEY_PATH="${BROOT}"/usr/share/openpgp-keys/chetramey.asc
-DSUFFIX="_1"
+#DSUFFIX="_1"
 inherit flag-o-matic toolchain-funcs prefix verify-sig autotools rhel9
 
 is_release() {

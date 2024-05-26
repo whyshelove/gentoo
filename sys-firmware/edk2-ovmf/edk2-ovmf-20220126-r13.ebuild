@@ -9,8 +9,10 @@ PYTHON_COMPAT=( python3_{6,8,9} )
 GITCOMMIT=bb1bba3d77
 WhatArch=noarch
 
+DSUFFIX="_10"
+
 suffix_ver=$(ver_cut 3)
-[[ ${suffix_ver} ]] && DSUFFIX="_9.${suffix_ver}"
+[[ ${suffix_ver} ]] && DSUFFIX="_10.${suffix_ver}"
 
 inherit python-any-r1 readme.gentoo-r1 rhel8-a
 

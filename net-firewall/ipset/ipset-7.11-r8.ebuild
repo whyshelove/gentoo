@@ -3,7 +3,7 @@
 
 EAPI="7"
 MODULES_OPTIONAL_USE=modules
-DSUFFIX="_1"
+#DSUFFIX="_1"
 inherit autotools linux-info linux-mod systemd rhel9
 
 DESCRIPTION="IPset tool for iptables, successor to ippool"

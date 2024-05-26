@@ -5,7 +5,7 @@ EAPI=6
 
 inherit eapi7-ver
 suffix_ver=$(ver_cut 4)
-[[ ${suffix_ver} ]] && DSUFFIX=".${suffix_ver}"
+[[ ${suffix_ver} ]] && DSUFFIX="_10.${suffix_ver}"
 
 _build_flags="undefine"
 
@@ -28,10 +28,10 @@ GCC_BOOTSTRAP_VER=20180511
 # Gentoo patchset
 PATCH_VER=9
 
-SRC_URI+=" https://dev.gentoo.org/~dilfridge/distfiles/${P/_p*}-patches-${PATCH_VER}.tar.xz"
+SRC_URI+=" https://dev.gentoo.org/~dilfridge/distfiles/${MY_P}-patches-${PATCH_VER}.tar.xz"
 SRC_URI+=" multilib? ( https://dev.gentoo.org/~dilfridge/distfiles/gcc-multilib-bootstrap-${GCC_BOOTSTRAP_VER}.tar.xz )"
 
-IUSE="audit caps compile-locales doc gd headers-only +multiarch multilib nscd profile selinux +ssp suid systemtap test vanilla"
+IUSE="audit caps compile-locales +crypt doc gd headers-only +multiarch multilib nscd profile selinux +ssp suid systemtap test vanilla"
 
 # Minimum kernel version that glibc requires
 MIN_KERN_VER="3.18.0"
@@ -662,7 +662,7 @@ sanity_prechecks() {
 		if has_version ">${CATEGORY}/${P}-r10000" ; then
 			eerror "Sanity check to keep you from breaking your system:"
 			eerror " Downgrading glibc is not supported and a sure way to destruction."
-			[[ ${I_ALLOW_TO_BREAK_MY_SYSTEM} = yes ]] || die "Aborting to save your system."
+			[[ ${I_ALLOW_TO_BREAK_MY_SYSTEM} = yes ]] #|| die "Aborting to save your system."
 		fi
 
 		if ! do_run_test '#include <unistd.h>\n#include <sys/syscall.h>\nint main(){return syscall(1000)!=-1;}\n' ; then
@@ -928,6 +928,7 @@ glibc_do_configure() {
 
 	myconf+=(
 		--with-nonshared-cflags="-Wp,-D_FORTIFY_SOURCE=2"
+		$(use_enable crypt)
 		--enable-tunables
 		--without-cvs
 		--disable-werror
@@ -1198,9 +1199,9 @@ glibc_do_src_install() {
 		# Move versioned .a file out of libdir to evade portage QA checks
 		# instead of using gen_usr_ldscript(). We fix ldscript as:
 		# "GROUP ( /usr/lib64/libm-<pv>.a ..." -> "GROUP ( /usr/lib64/glibc-<pv>/libm-<pv>.a ..."
-		sed -i "s@\(libm-${upstream_pv}.a\)@${P}/\1@" "${ED}"$(alt_usrlibdir)/libm.a || die
-		dodir $(alt_usrlibdir)/${P}
-		mv "${ED}"$(alt_usrlibdir)/libm-${upstream_pv}.a "${ED}"$(alt_usrlibdir)/${P}/libm-${upstream_pv}.a || die
+		sed -i "s@\(libm-${upstream_pv}.a\)@${MY_P}/\1@" "${ED}"$(alt_usrlibdir)/libm.a || die
+		dodir $(alt_usrlibdir)/${MY_P}
+		mv "${ED}"$(alt_usrlibdir)/libm-${upstream_pv}.a "${ED}"$(alt_usrlibdir)/${MY_P}/libm-${upstream_pv}.a || die
 	fi
 
 	# We'll take care of the cache ourselves

@@ -3,8 +3,9 @@
 
 EAPI=7
 
-subrelease="$(ver_cut 7).1"
-DPREFIX="${subrelease}."
+suffix_ver=$(ver_cut 7)
+[[ ${suffix_ver} ]] && subrelease="$(ver_cut 7).1" && DPREFIX="${subrelease}."
+
 DSUFFIX="_$(ver_cut 5)"
 
 inherit rhel-kernel-build

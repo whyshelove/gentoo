@@ -83,7 +83,13 @@ pkg_setup() {
 	python-any-r1_pkg_setup
 }
 
+src_unpack() {
+	rpm_src_unpack
+}
+
 src_prepare() {
+	eapply ${WORKDIR}
+
 	if use test; then
 		# TODO: Review the test exclusions, especially now with meson
 		# Disable tests requiring dev-util/desktop-file-utils when not installed, bug #286629, upstream bug #629163

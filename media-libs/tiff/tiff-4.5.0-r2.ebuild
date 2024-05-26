@@ -10,7 +10,7 @@ QA_PKGCONFIG_VERSION="$(ver_cut 1-3)"
 # stuff too like PROJ, GDAL. Previous release manager of TIFF was
 # GraphicsMagick maintainer Bob Friesenhahn. Please be careful when verifying
 # who made releases.
-VERIFY_SIG_OPENPGP_KEY_PATH="${BROOT}"/usr/share/openpgp-keys/rouault.asc
+VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/rouault.asc
 inherit autotools multilib-minimal verify-sig flag-o-matic
 
 MY_P="${P/_rc/rc}"
@@ -23,7 +23,7 @@ S="${WORKDIR}/${PN}-$(ver_cut 1-3)"
 LICENSE="libtiff"
 SLOT="0/6"
 if [[ ${PV} != *_rc* ]] ; then
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~arm64-macos ~ppc-macos ~x64-macos ~x64-solaris"
 fi
 IUSE="+cxx jbig jpeg lzma static-libs test webp zlib zstd"
 RESTRICT="!test? ( test )"

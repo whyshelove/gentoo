@@ -3,7 +3,7 @@
 
 EAPI=7
 
-DSUFFIX="_9"
+DSUFFIX="_10"
 
 suffix_ver=$(ver_cut 5)
 [[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}"

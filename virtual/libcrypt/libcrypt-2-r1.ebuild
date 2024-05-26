@@ -13,7 +13,7 @@ IUSE="static-libs"
 
 RDEPEND="
 	!prefix-guest? (
-		elibc_glibc? ( sys-libs/libxcrypt[static-libs(-)?,${MULTILIB_USEDEP}] )
-		elibc_musl? ( sys-libs/musl )
+		elibc_glibc? ( sys-libs/libxcrypt[system(-),static-libs(-)?,${MULTILIB_USEDEP}] )
+		elibc_musl? ( sys-libs/libxcrypt[system(-),static-libs(-)?] )
 	)
 "

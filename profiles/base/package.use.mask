@@ -309,8 +309,7 @@ dev-python/statsmodels doc
 # Upstream plans to drop libcrypt.so.1/crypt.h from glibc
 # distribution and rely on external providers like libxcrypt.
 # Here we are following that path too.
->=sys-libs/glibc-2.33-r2 crypt
-<sys-libs/libxcrypt-4.4.23-r1 split-usr system
+>=sys-libs/glibc-2.28-r7 crypt
 
 # Michał Górny <mgorny@gentoo.org> (2019-10-05)
 # net-libs/openslp is being removed.
