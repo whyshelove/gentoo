@@ -4,7 +4,15 @@
 if [[ -z ${_C9S_ECLASS} ]] ; then
 _C9S_ECLASS=1
 
+if [[ -n ${EGIT_COMMIT} ]] ; then
+	inherit cs9
+	return
+fi
+
+if [[ -z ${_RPMBUILD_ECLASS} ]] ; then
 	inherit rpmbuild
+fi
+
  	DISTNUM=${BASH_SOURCE:0-9:1}
 	releasever="${DISTNUM}-stream"
 	baseurl="http://mirror.stream.centos.org/${releasever}/${REPO:-BaseOS}"
@@ -23,4 +31,6 @@ _C9S_ECLASS=1
 
 	SRC_URI="${REPO_SRC}/${DIST_PRE_SUF}.src.rpm"
 	BIN_URI="${REPO_BIN}/${DIST_PRE_SUF}.${WhatArch:=x86_64}.rpm"
+
+	SRC_URI+=" https://kojihub.stream.centos.org/kojifiles/packages/${MY_P/-//}/${MY_PR}.el9/src/${MY_PF}.el9.src.rpm"
 fi

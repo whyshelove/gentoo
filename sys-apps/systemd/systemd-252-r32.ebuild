@@ -34,7 +34,7 @@ inherit python-any-r1 systemd toolchain-funcs udev usr-ldscript rhel9
 
 DESCRIPTION="System and service manager for Linux"
 HOMEPAGE="http://systemd.io/"
-
+[[ -n ${_CS_ECLASS} ]] && SRC_URI="https://github.com/systemd/${MY_PN}/archive/v${MY_PV}/${MY_P}.tar.gz"
 LICENSE="GPL-2 LGPL-2.1 MIT public-domain"
 SLOT="0/2"
 IUSE="

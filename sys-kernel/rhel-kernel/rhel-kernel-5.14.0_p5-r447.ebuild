@@ -8,15 +8,15 @@ patchlevel=14
 suffix_ver=$(ver_cut 7)
 [[ ${suffix_ver} ]] && subrelease="$(ver_cut 7).1" && DPREFIX="${subrelease}."
 
-DSUFFIX="_$(ver_cut 5)"
+#DSUFFIX="_$(ver_cut 5)"
 
-inherit rhel-kernel-build
+inherit rhel-kernel-build c9s
 
 DESCRIPTION="kernel - The Linux kernel, based on version 4.18.0, heavily modified with backports"
 HOMEPAGE="https://www.kernel.org/"
 
 LICENSE="GPL-2"
-KEYWORDS="amd64 ~arm64 ~s390 ~ppc64"
+KEYWORDS="~amd64 ~arm64 ~s390 ~ppc64"
 IUSE="test debug +signkernel +signmodules zfcpdump +modules +up gcov realtime +zipmodules ipaclones +vdso perf tools bpf"
 REQUIRED_USE="debug? ( !gcov !up !vdso !ipaclones !perf )
 	    signkernel? ( ^^ ( amd64 arm64 ) )

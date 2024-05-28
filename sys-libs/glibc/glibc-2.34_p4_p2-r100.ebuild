@@ -31,6 +31,7 @@ if [[ ${PV} == 9999* ]]; then
 	inherit git-r3
 else
 	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
+	[[ -z ${_CS_ECLASS} ]] || SRC_URI="mirror://gnu/glibc/${MY_P}.tar.xz"
 	SRC_URI+=" https://dev.gentoo.org/~${PATCH_DEV}/distfiles/${MY_P}-patches-${PATCH_VER}.tar.xz"
 fi
 

@@ -38,9 +38,9 @@ BDEPEND="
 	app-arch/xz-utils
 	dev-lang/perl
 	test? (
+		dev-debug/strace
 		dev-lang/perl
 		dev-perl/Expect
-		dev-util/strace
 		${PYTHON_DEPS}
 	)
 "
@@ -50,7 +50,6 @@ RDEPEND+="
 		!sys-apps/util-linux[kill]
 		!sys-process/procps[kill]
 	)
-	!app-misc/realpath
 	!<sys-apps/util-linux-2.13
 	!<sys-apps/sandbox-2.10-r4
 	!sys-apps/stat
@@ -175,7 +174,7 @@ src_test() {
 
 	addwrite /dev/full
 	#export RUN_EXPENSIVE_TESTS="yes"
-	#export FETISH_GROUPS="portage wheel"
+	#export COREUTILS_GROUPS="portage wheel"
 	env PATH="${T}/mount-wrappers:${PATH}" \
 	emake -j1 -k check
 }

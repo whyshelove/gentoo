@@ -6,12 +6,15 @@ EAPI=7
 # Bumping notes: https://wiki.gentoo.org/wiki/Project:Toolchain/sys-libs/glibc
 # Please read & adapt the page as necessary if obsolete.
 
-PYTHON_COMPAT=( python3_{9..11} )
+PYTHON_COMPAT=( python3_{9..12} )
 TMPFILES_OPTIONAL=1
+
+#suffix_ver="_$(ver_cut 4).$(ver_cut 6)"
+#[[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}"
 _build_flags="undefine"
 
 inherit python-any-r1 prefix preserve-libs toolchain-funcs flag-o-matic gnuconfig \
-	multilib systemd multiprocessing tmpfiles cs9
+	multilib systemd multiprocessing tmpfiles c9s
 
 DESCRIPTION="GNU libc C library"
 HOMEPAGE="https://www.gnu.org/software/libc/"
@@ -27,12 +30,12 @@ PATCH_DEV=dilfridge
 if [[ ${PV} == 9999* ]]; then
 	inherit git-r3
 else
-	KEYWORDS="~alpha ~amd64 arm ~arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
-	[[ -z ${_CS_ECLASS} ]] || SRC_URI="mirror://gnu/glibc/${P}.tar.xz"
-	SRC_URI+=" https://dev.gentoo.org/~${PATCH_DEV}/distfiles/${P}-patches-${PATCH_VER}.tar.xz"
+	#KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
+	[[ -z ${_CS_ECLASS} ]] || SRC_URI="mirror://gnu/glibc/${MY_P}.tar.xz"
+	SRC_URI+=" https://dev.gentoo.org/~${PATCH_DEV}/distfiles/${MY_P}-patches-${PATCH_VER}.tar.xz"
 fi
 
-RELEASE_VER=${PV}
+RELEASE_VER=${PV/_p*}
 
 GCC_BOOTSTRAP_VER=20201208
 
@@ -47,7 +50,7 @@ SRC_URI+=" systemd? ( https://gitweb.gentoo.org/proj/toolchain/glibc-systemd.git
 IUSE="audit caps +cet +clone3 compile-locales +crypt custom-cflags doc gd headers-only +multiarch multilib multilib-bootstrap nscd profile selinux +ssp +static-libs static-pie suid systemd systemtap test vanilla"
 
 # Minimum kernel version that glibc requires
-MIN_KERN_VER="4.18.0"
+MIN_KERN_VER="4.14.0"
 # Minimum pax-utils version needed (which contains any new syscall changes for
 # its seccomp filter!). Please double check this!
 MIN_PAX_UTILS_VER="1.3.3"
@@ -1360,9 +1363,9 @@ glibc_do_src_install() {
 		# Move versioned .a file out of libdir to evade portage QA checks
 		# instead of using gen_usr_ldscript(). We fix ldscript as:
 		# "GROUP ( /usr/lib64/libm-<pv>.a ..." -> "GROUP ( /usr/lib64/glibc-<pv>/libm-<pv>.a ..."
-		sed -i "s@\(libm-${upstream_pv}.a\)@${P}/\1@" "${ED}"/$(alt_usrlibdir)/libm.a || die
-		dodir $(alt_usrlibdir)/${P}
-		mv "${ED}"/$(alt_usrlibdir)/libm-${upstream_pv}.a "${ED}"/$(alt_usrlibdir)/${P}/libm-${upstream_pv}.a || die
+		sed -i "s@\(libm-${upstream_pv}.a\)@${MY_P}/\1@" "${ED}"/$(alt_usrlibdir)/libm.a || die
+		dodir $(alt_usrlibdir)/${MY_P}
+		mv "${ED}"/$(alt_usrlibdir)/libm-${upstream_pv}.a "${ED}"/$(alt_usrlibdir)/${MY_P}/libm-${upstream_pv}.a || die
 	fi
 
 	# We'll take care of the cache ourselves

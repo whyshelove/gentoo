@@ -123,11 +123,25 @@ rhel-kernel-build_pkg_setup() {
 
 export _target_cpu=$(rhel-kernel-install_get_qemu_arch)
 
-export K_PRD=${MY_PR}.${subrelease}.${DIST}
-       K_PVF=${PV/_p*}-${K_PRD}
-export KVERREL=${K_PVF}${DSUFFIX}.${_target_cpu}
+if [[ ${subrelease} ]]; then
+	K_PRD=${MY_PR}.${subrelease}.${DIST}
+else
+	K_PRD=${MY_PR}.${DIST}
+fi
 
-S=${WORKDIR}/kernel-${K_PVF}${DSUFFIX}/linux-${K_PVF}.${_target_cpu}
+K_PVF=${PV/_p*}-${K_PRD}
+
+if [[ ${subrelease} ]]; then
+	KVERREL=${K_PVF}${DSUFFIX}.${_target_cpu}
+else
+	KVERREL=${K_PVF}.${_target_cpu}
+fi
+
+if [[ ${subrelease} ]]; then
+	S=${WORKDIR}/kernel-${K_PVF}${DSUFFIX}/linux-${K_PVF}.${_target_cpu}
+else
+	S=${WORKDIR}/kernel-${K_PVF}/linux-${K_PVF}.${_target_cpu}
+fi
 
     export make_target=bzImage
     export hdrarch=${_target_cpu}
