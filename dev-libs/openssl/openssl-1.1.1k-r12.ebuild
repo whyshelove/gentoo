@@ -351,4 +351,8 @@ pkg_postinst() {
 	ebegin "Running 'c_rehash ${EROOT}${SSL_CNF_DIR}/certs/' to rebuild hashes #333069"
 	c_rehash "${EROOT}${SSL_CNF_DIR}/certs" >/dev/null
 	eend $?
+
+	if [[ -n ${EROOT}/etc/pki/tls/certs/ca-bundle.crt ]]; then
+		cp ${EROOT}${SSL_CNF_DIR}/certs/ca-certificates.crt ${EROOT}/etc/pki/tls/certs/ca-bundle.crt
+	fi
 }

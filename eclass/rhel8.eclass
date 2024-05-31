@@ -43,7 +43,7 @@ _RHEL8_ECLASS=1
 			procps ) MY_P=${P/-/-ng-}; MY_P=${MY_P} ;;
 			gst-plugins* ) MY_P=${P/-/reamer1-} ;;
 			modemmanager ) MY_P=${P/modemmanager/ModemManager} ;;
-			sgabios | edk2-ovmf ) MY_P=${P/_p*}git${GITCOMMIT} ;;
+			sgabios | edk2-ovmf ) MY_P=${P/_p*}git${GIT_COMMIT} ;;
 			vte ) MY_P=${P/-/291-} ;;
 			linux-headers ) MY_P=${P/linux/kernel} ;;
 			rhel-kernel ) MY_PN=${PN/rhel-}; MY_P=${P/rhel-} ;;

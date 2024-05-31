@@ -120,6 +120,16 @@ srcrpmbuild_unpack() {
 # Automatically unpack all archives in ${A} including rpms.  If one of the
 # archives in a source rpm, then the sub archives will be unpacked as well.
 rpmbuild_src_unpack() {
+	if [[ ${PVR} == *9999 ]] || [[ -n ${_CS_ECLASS} ]]; then
+		git-r3_src_unpack
+		rpmbuild_env_setup
+		mv $WORKDIR/${EGIT_CHECKOUT_DIR}/*  ${WORKDIR}/
+		[[ -n ${SRC_URI} ]] && ln -s $DISTDIR/${MY_PN:-${PN}}* $WORKDIR/  || get_files='-g'
+		rpmdev-spectool -l ${get_files} -R ${WORKDIR}/*.spec
+		rpmbuild_prep
+		return
+	fi
+
 	local a
 	for a in ${A} ; do
 		case ${a} in

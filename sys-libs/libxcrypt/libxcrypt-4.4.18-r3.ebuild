@@ -14,14 +14,14 @@ DESCRIPTION="Extended crypt library for descrypt, md5crypt, bcrypt, and others"
 HOMEPAGE="https://github.com/besser82/libxcrypt"
 if [[ ${NEED_BOOTSTRAP} == "yes" ]] ; then
 	inherit autotools
-
+	#SRC_URI="https://github.com/besser82/${PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 else
 	SRC_URI+=" https://dev.gentoo.org/~sam/distfiles/${CATEGORY}/${PN}/${P}-autotools.tar.xz"
 fi
 
 LICENSE="LGPL-2.1+ public-domain BSD BSD-2"
 SLOT="0/1"
-KEYWORDS="~alpha ~amd64 arm ~arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
+KEYWORDS="~alpha amd64 arm ~arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
 IUSE="+compat split-usr static-libs +system test headers-only"
 REQUIRED_USE="split-usr? ( system )"
 RESTRICT="!test? ( test )"
@@ -126,10 +126,9 @@ src_configure() {
 	# bug #821496
 	tc-ld-disable-gold
 
-	filter-flags -m64
-	append-cflags -flto=auto
-
-	strip-unsupported-flags
+	# Doesn't work with LTO: bug #852917.
+	# https://github.com/besser82/libxcrypt/issues/24
+	filter-lto
 
 	# ideally we want !tc-ld-is-bfd for best future-proofing, but it needs
 	# https://github.com/gentoo/gentoo/pull/28355
@@ -211,13 +210,13 @@ multilib_src_configure() {
 				--disable-static
 				--disable-xcrypt-compat-files
 				--enable-obsolete-api=glibc
-				--enable-obsolete-api-enosys=no
+				--enable-obsolete-api-enosys=yes
 			)
 			;;
 		xcrypt_nocompat-*)
 			myconf+=(
 				--enable-obsolete-api=no
-				--enable-obsolete-api-enosys=yes
+				--enable-obsolete-api-enosys=no
 				$(use_enable static-libs static)
 			)
 		;;

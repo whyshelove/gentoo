@@ -6,7 +6,7 @@ EAPI=7
 PYTHON_REQ_USE="sqlite"
 PYTHON_COMPAT=( python3_{6,8,9} )
 
-GITCOMMIT=bb1bba3d77
+GIT_COMMIT=bb1bba3d77
 WhatArch=noarch
 
 DSUFFIX="_10"

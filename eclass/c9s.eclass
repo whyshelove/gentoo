@@ -6,16 +6,21 @@
 # @SUPPORTED_EAPIS: 5 6 7 8
 # @BLURB: backports packages Red Hat Enterprise Linux 9 Series RPMs
 
+if [[ -z ${_C9S_ECLASS} ]] ; then
+_C9S_ECLASS=1
+
 if [[ -z ${_RHEL9_ECLASS} ]] ; then
-_RHEL9_ECLASS=1
+	inherit rhel9
+fi
 
-inherit rhel
+	DISTNUM=${BASH_SOURCE:0-9:1}
+	releasever="${DISTNUM}"
+	baseurl="http://mirror.stream.centos.org/${releasever}-stream/${REPO:-BaseOS}"
 
-MIRROR="http://mirror.stream.centos.org"
-RELEASE="9-stream"
-REPO_URI="${MIRROR}/${RELEASE}/${REPO:-BaseOS}/source/tree/Packages"
+	REPO_SRC="${baseurl}/source/tree/Packages"
+	REPO_BIN="${baseurl}/os/Packages"
 
-if [ -z ${MY_PF} ] ; then
+
 	MY_PR=${PVR##*r}
 
 	if [ ${CATEGORY} == "dev-python" ] && [ ${PN} != lxml ] ; then
@@ -54,7 +59,13 @@ if [ -z ${MY_PF} ] ; then
 		esac
 
 	fi
-fi
-SRC_URI="${REPO_URI}/${MY_PF}.${DIST:=el9}.src.rpm"
+
+
+	DIST_PRE_SUF=${MY_PF}.${DPREFIX}${DIST:=el${DISTNUM}}${DSUFFIX}
+
+	SRC_URI="${REPO_SRC}/${DIST_PRE_SUF}.src.rpm"
+	BIN_URI="${REPO_BIN}/${DIST_PRE_SUF}.${WhatArch:=x86_64}.rpm"
+
+	SRC_URI+=" https://kojihub.stream.centos.org/kojifiles/packages/${MY_P/-//}/${MY_PR}.el9/src/${MY_PF}.el9.src.rpm"
 
 fi

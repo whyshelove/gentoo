@@ -46,16 +46,13 @@ else
 fi
 
 K_PVF=${PV/_p*}-${K_PRD}
+KDSUFFIX="_$(ver_cut 5)"
 
 if [[ ${subrelease} ]]; then
-	KVERREL=${K_PVF}${DSUFFIX}.${_target_cpu}
+	KVERREL=${K_PVF}${KDSUFFIX}.${_target_cpu}
+	S=${WORKDIR}/kernel-${K_PVF}${KDSUFFIX}/linux-${K_PVF}.${_target_cpu}
 else
 	KVERREL=${K_PVF}.${_target_cpu}
-fi
-
-if [[ ${subrelease} ]]; then
-	S=${WORKDIR}/kernel-${K_PVF}${DSUFFIX}/linux-${K_PVF}.${_target_cpu}
-else
 	S=${WORKDIR}/kernel-${K_PVF}/linux-${K_PVF}.${_target_cpu}
 fi
 
