@@ -14,8 +14,8 @@ if [[ -z ${_RPMBUILD_ECLASS} ]] ; then
 fi
 
  	DISTNUM=${BASH_SOURCE:0-9:1}
-	releasever="${DISTNUM}-stream"
-	baseurl="http://mirror.stream.centos.org/${releasever}/${REPO:-BaseOS}"
+	releasever="${DISTNUM}"
+	baseurl="http://mirror.stream.centos.org/${releasever}-stream/${REPO:-BaseOS}"
 
 	REPO_SRC="${baseurl}/source/tree/Packages"
 	REPO_BIN="${baseurl}/os/Packages"

@@ -134,8 +134,6 @@ src_configure() {
 	filter-flags -m64
 	append-cflags -flto=auto
 
-	strip-unsupported-flags
-
 	# ideally we want !tc-ld-is-bfd for best future-proofing, but it needs
 	# https://github.com/gentoo/gentoo/pull/28355
 	# mold needs this too but right now tc-ld-is-mold is also not available
@@ -216,13 +214,13 @@ multilib_src_configure() {
 				--disable-static
 				--disable-xcrypt-compat-files
 				--enable-obsolete-api=glibc
-				--enable-obsolete-api-enosys=no
+				--enable-obsolete-api-enosys=yes
 			)
 			;;
 		xcrypt_nocompat-*)
 			myconf+=(
 				--enable-obsolete-api=no
-				--enable-obsolete-api-enosys=yes
+				--enable-obsolete-api-enosys=no
 				$(use_enable static-libs static)
 			)
 		;;

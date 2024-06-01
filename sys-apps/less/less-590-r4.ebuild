@@ -3,7 +3,7 @@
 
 EAPI=7
 
-DSUFFIX="_2"
+DSUFFIX="_4"
 inherit autotools rhel9
 
 DESCRIPTION="Excellent text file viewer"
