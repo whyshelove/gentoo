@@ -6,10 +6,8 @@ EAPI=7
 PYTHON_COMPAT=( python3_{6,8,9} )
 PYTHON_REQ_USE="xml"
 
-DSUFFIX="_9"
-
 suffix_ver=$(ver_cut 5)
-[[ ${suffix_ver} ]] && DSUFFIX="_9.${suffix_ver}"
+[[ ${suffix_ver} ]] && DSUFFIX="_10.${suffix_ver}"
 
 inherit autotools flag-o-matic prefix python-r1 multilib-minimal rhel8
 
