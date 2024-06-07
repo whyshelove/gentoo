@@ -111,7 +111,7 @@ set_build_flags(){
 		shadow) build_cflags -fpie; build_ldflags -pie  '-Wl,-z,now' ;;
 		lmdb | zlib ) build_ldflags ;;
 		gdb ) build_cxxflags ;;
-		squashfs-tools ) build_cflags ;;
+		squashfs-tools | numactl ) build_cflags ;;
 		liburing | libcap | dos2unix | pesign )  ;;
 		*) set_build_flags ;;
 	esac

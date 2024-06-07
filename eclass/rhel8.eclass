@@ -29,10 +29,11 @@ _RHEL8_ECLASS=1
 			libnsl ) MY_P=${P/-/2-} ;;
 			xorg-proto ) MY_P=${PN/-/-x11-}-devel-${PV} ;;
 			xorg-server ) MY_P=${P/-/-x11-} ;;
+			xwayland ) MY_P=xorg-x11-server-${P^^[x]} ;;
 			gtk+ ) MY_P=${P/+/$(ver_cut 1)} ;;
 			xz-utils ) MY_P="${P/-utils}"; S="${WORKDIR}/${MY_P/_p*}" ;;
 			udisks | gnupg | grub | lcms | glib | enchant | gstreamer \
-			| gtksourceview ) MY_P=${P/-/$(ver_cut 1)-} ;;
+			| gtksourceview | librsvg ) MY_P=${P/-/$(ver_cut 1)-} ;;
 			mpc | talloc | tdb | tevent | ldb ) MY_P=lib${P} ;;
 			go ) MY_P=${P/-/lang-} ;;
 			cunit ) MY_P=${P^^[cu]} ;;
