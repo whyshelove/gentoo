@@ -4,7 +4,7 @@
 EAPI=8
 
 PATCHSET="${PN}-5.15.13_p20240322-patchset"
-PYTHON_COMPAT=( python3_{10..11} )
+PYTHON_COMPAT=( python3_{8..11} )
 PYTHON_REQ_USE="xml(+)"
 inherit check-reqs estack flag-o-matic multiprocessing python-any-r1 qt5-build toolchain-funcs
 
@@ -80,7 +80,7 @@ RDEPEND="
 	kerberos? ( virtual/krb5 )
 	pulseaudio? ( media-libs/libpulse )
 	screencast? ( media-video/pipewire:= )
-	system-icu? ( >=dev-libs/icu-69.1:= )
+	system-icu? ( >=dev-libs/icu-67.1:= )
 	widgets? (
 		=dev-qt/qtdeclarative-${QT5_PV}*[widgets]
 		=dev-qt/qtwidgets-${QT5_PV}*
