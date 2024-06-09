@@ -30,7 +30,7 @@ BDEPEND="
 	dev-libs/libxslt
 	sys-devel/flex
 	virtual/pkgconfig
-	app-alternatives/yacc
+	virtual/yacc
 "
 
 src_configure() {

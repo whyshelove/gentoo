@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -31,7 +31,7 @@ DEPEND="${RDEPEND}
 "
 BDEPEND="
 	doc? (
-		app-doc/doxygen[dot]
+		app-text/doxygen[dot]
 		dev-qt/qthelp:5
 	)
 "
@@ -69,4 +69,12 @@ src_configure() {
 
 src_install() {
 	emake INSTALL_ROOT="${D}" install
+}
+
+pkg_postinst() {
+	if [[ -z "${REPLACING_VERSIONS}" ]] && \
+		! has_version "kde-apps/signon-kwallet-extension:*"; then
+		ewarn "Without kde-apps/signon-kwallet-extension installed, passwords"
+		ewarn "will be saved in plaintext!"
+	fi
 }
