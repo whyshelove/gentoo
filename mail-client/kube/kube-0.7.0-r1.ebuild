@@ -28,7 +28,7 @@ RDEPEND="
 	dev-qt/qtwidgets:5
 	kde-apps/kmime:5
 	kde-frameworks/breeze-icons:5
-	kde-frameworks/extra-cmake-modules:5
+	kde-frameworks/extra-cmake-modules:0
 	kde-frameworks/kcodecs:5
 	kde-frameworks/kcontacts:5
 "

@@ -28,7 +28,7 @@ REQUIRED_USE="gtk? ( X )
 BDEPEND="
 	virtual/pkgconfig
 	nls? ( sys-devel/gettext )
-	plasma? ( >=kde-frameworks/extra-cmake-modules-${KFMIN}:5 )
+	plasma? ( >=kde-frameworks/extra-cmake-modules-${KFMIN}:0 )
 "
 DEPEND="
 	gtk? ( x11-libs/gtk+:2 )

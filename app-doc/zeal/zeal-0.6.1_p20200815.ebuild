@@ -27,7 +27,7 @@ DEPEND="
 	dev-qt/qtwebengine:5[widgets]
 	dev-qt/qtwidgets:5
 	dev-qt/qtx11extras:5
-	kde-frameworks/extra-cmake-modules:5
+	kde-frameworks/extra-cmake-modules:0
 	x11-libs/libX11
 	x11-libs/libxcb:=
 	>=x11-libs/xcb-util-keysyms-0.3.9

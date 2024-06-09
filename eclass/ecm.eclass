@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: ecm.eclass
@@ -29,6 +29,9 @@ esac
 if [[ -z ${_ECM_ECLASS} ]]; then
 _ECM_ECLASS=1
 
+inherit cmake flag-o-matic toolchain-funcs
+
+if [[ ${EAPI} == 8 ]]; then
 # @ECLASS_VARIABLE: VIRTUALX_REQUIRED
 # @DESCRIPTION:
 # For proper description see virtualx.eclass manpage.
@@ -36,7 +39,8 @@ _ECM_ECLASS=1
 # for tests you should proceed with setting VIRTUALX_REQUIRED=test.
 : "${VIRTUALX_REQUIRED:=manual}"
 
-inherit cmake flag-o-matic toolchain-funcs virtualx
+inherit virtualx
+fi
 
 # @ECLASS_VARIABLE: ECM_NONGUI
 # @DEFAULT_UNSET
@@ -83,26 +87,27 @@ fi
 # Will accept "true", "false", "optional", "forceoptional". If set to "false",
 # do nothing.
 # Otherwise, add "+handbook" to IUSE, add the appropriate dependency, and let
-# KF5DocTools generate and install the handbook from docbook file(s) found in
-# ECM_HANDBOOK_DIR. However if !handbook, disable build of ECM_HANDBOOK_DIR
-# in CMakeLists.txt.
-# If set to "optional", build with -DCMAKE_DISABLE_FIND_PACKAGE_KF5DocTools=ON
-# when !handbook. In case package requires KF5KDELibs4Support, see next:
-# If set to "forceoptional", remove a KF5DocTools dependency from the root
-# CMakeLists.txt in addition to the above.
+# KF${_KFSLOT}DocTools generate and install the handbook from docbook file(s)
+# found in ECM_HANDBOOK_DIR. However if !handbook, disable build of
+# ECM_HANDBOOK_DIR in CMakeLists.txt.
+# If set to "optional", build with
+# -DCMAKE_DISABLE_FIND_PACKAGE_KF${_KFSLOT}DocTools=ON when !handbook. In case
+# package requires KF5KDELibs4Support, see next:
+# If set to "forceoptional", remove a KF${_KFSLOT}DocTools dependency from the
+# root CMakeLists.txt in addition to the above.
 : "${ECM_HANDBOOK:=false}"
 
 # @ECLASS_VARIABLE: ECM_HANDBOOK_DIR
 # @DESCRIPTION:
 # Specifies the directory containing the docbook file(s) relative to ${S} to
-# be processed by KF5DocTools (kdoctools_install).
+# be processed by KF${_KFSLOT}DocTools (kdoctools_install).
 : "${ECM_HANDBOOK_DIR:=doc}"
 
 # @ECLASS_VARIABLE: ECM_PO_DIRS
 # @DESCRIPTION:
 # Specifies directories of l10n files relative to ${S} to be processed by
-# KF5I18n (ki18n_install). If IUSE nls exists and is disabled then disable
-# build of these directories in CMakeLists.txt.
+# KF${_KFSLOT}I18n (ki18n_install). If IUSE nls exists and is disabled then
+# disable build of these directories in CMakeLists.txt.
 : "${ECM_PO_DIRS:="po poqm"}"
 
 # @ECLASS_VARIABLE: ECM_QTHELP
@@ -120,20 +125,21 @@ fi
 # @ECLASS_VARIABLE: ECM_TEST
 # @DEFAULT_UNSET
 # @DESCRIPTION:
-# Will accept "true", "false", "optional", "forceoptional",
-# "forceoptional-recursive".
+# Will accept "true", "false", "forceoptional", and "forceoptional-recursive".
+# For KF5-based ebuilds, additionally accepts "optional".
 # Default value is "false", except for CATEGORY=kde-frameworks where it is
 # set to "true". If set to "false", do nothing.
-# For any other value, add "test" to IUSE and DEPEND on dev-qt/qttest:5.
+# For any other value, add "test" to IUSE. If set to "forceoptional", ignore
+# "autotests", "test", "tests" subdirs from top-level CMakeLists.txt when
+# USE=!test. If set to "forceoptional-recursive", make autotest(s), unittest(s)
+# and test(s) subdirs from *any* CMakeLists.txt in ${S} and below conditional
+# on BUILD_TESTING when USE=!test. This is always meant as a short-term fix and
+# creates ${T}/${P}-tests-optional.patch to refine and submit upstream.
+# For KF5-based ebuilds:
+# Additionally DEPEND on dev-qt/qttest:5 if USE=test, but punt Qt5Test
+# dependency if set to "forceoptional*" with USE=!test.
 # If set to "optional", build with -DCMAKE_DISABLE_FIND_PACKAGE_Qt5Test=ON
 # when USE=!test.
-# If set to "forceoptional", punt Qt5Test dependency and ignore "autotests",
-# "test", "tests" subdirs from top-level CMakeLists.txt when USE=!test.
-# If set to "forceoptional-recursive", punt Qt5Test dependencies and make
-# autotest(s), unittest(s) and test(s) subdirs from *any* CMakeLists.txt in
-# ${S} and below conditional on BUILD_TESTING when USE=!test. This is always
-# meant as a short-term fix and creates ${T}/${P}-tests-optional.patch to
-# refine and submit upstream.
 if [[ ${CATEGORY} = kde-frameworks ]]; then
 	: "${ECM_TEST:=true}"
 fi
@@ -143,19 +149,31 @@ fi
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # Minimum version of Frameworks to require. Default value for kde-frameworks
-# is ${PV} and 5.82.0 baseline for everything else. This is not going to be
-# changed unless we also bump EAPI, which usually implies (rev-)bumping.
-# Version will also be used to differentiate between KF5/Qt5 and KF6/Qt6.
+# is ${PV} and 5.106.0 baseline for everything else.
+# If set to >=5.240, KF6/Qt6 is assumed thus SLOT=6 dependencies added and
+# -DQT_MAJOR_VERSION=6 added to cmake args.
 if [[ ${CATEGORY} = kde-frameworks ]]; then
 	: "${KFMIN:=$(ver_cut 1-2)}"
 fi
-: "${KFMIN:=5.82.0}"
+: "${KFMIN:=5.106.0}"
 
-# @ECLASS_VARIABLE: KFSLOT
+# @ECLASS_VARIABLE: _KFSLOT
 # @INTERNAL
 # @DESCRIPTION:
-# KDE Frameworks and Qt slot dependency, implied by KFMIN version.
-: "${KFSLOT:=5}"
+# KDE Frameworks and Qt main slot dependency, implied by KFMIN version, *not*
+# necessarily the package's SLOT. This is being used throughout the eclass to
+# depend on either :5 or :6 Qt/KF packages as well as setting correctly
+# prefixed cmake args.
+: "${_KFSLOT:=5}"
+if [[ ${CATEGORY} == kde-frameworks ]]; then
+	if [[ ${PV} != 5.9999 ]] && $(ver_test ${KFMIN} -ge 5.240); then
+		_KFSLOT=6
+	fi
+else
+	if [[ ${KFMIN/.*} == 6 ]] || $(ver_test ${KFMIN} -ge 5.240); then
+		_KFSLOT=6
+	fi
+fi
 
 case ${ECM_NONGUI} in
 	true) ;;
@@ -186,7 +204,11 @@ esac
 case ${ECM_DESIGNERPLUGIN} in
 	true)
 		IUSE+=" designer"
-		BDEPEND+=" designer? ( dev-qt/designer:${KFSLOT} )"
+		if [[ ${_KFSLOT} == 6 ]]; then
+			BDEPEND+=" designer? ( dev-qt/qttools:${_KFSLOT}[designer] )"
+		else
+			BDEPEND+=" designer? ( dev-qt/designer:${_KFSLOT} )"
+		fi
 		;;
 	false) ;;
 	*)
@@ -209,7 +231,7 @@ esac
 case ${ECM_HANDBOOK} in
 	true|optional|forceoptional)
 		IUSE+=" +handbook"
-		BDEPEND+=" handbook? ( >=kde-frameworks/kdoctools-${KFMIN}:${KFSLOT} )"
+		BDEPEND+=" handbook? ( >=kde-frameworks/kdoctools-${KFMIN}:${_KFSLOT} )"
 		;;
 	false) ;;
 	*)
@@ -218,33 +240,16 @@ case ${ECM_HANDBOOK} in
 		;;
 esac
 
-# Unfortunately, Portage has no concept of BDEPEND=dev-qt/qthelp being broken
-# by having only partially updated Qt dependencies, which means it will order
-# dev-qt/qthelp revdeps in build queue before its own Qt dependencies, leaving
-# qhelpgenerator broken. This is an attempt to help with that. Bug #836726
 case ${ECM_QTHELP} in
 	true)
 		IUSE+=" doc"
-		COMMONDEPEND+=" doc? ( dev-qt/qt-docs:${KFSLOT} )"
-		BDEPEND+=" doc? (
-			>=app-doc/doxygen-1.8.13-r1
-			|| (
-				(
-					=dev-qt/qtcore-5.15.9*:5
-					=dev-qt/qtgui-5.15.9*:5
-					=dev-qt/qthelp-5.15.9*:5
-					=dev-qt/qtsql-5.15.9*:5
-					=dev-qt/qtwidgets-5.15.9*:5
-				)
-				(
-					=dev-qt/qtcore-5.15.8*:5
-					=dev-qt/qtgui-5.15.8*:5
-					=dev-qt/qthelp-5.15.8*:5
-					=dev-qt/qtsql-5.15.8*:5
-					=dev-qt/qtwidgets-5.15.8*:5
-				)
-			)
-		)"
+		COMMONDEPEND+=" doc? ( dev-qt/qt-docs:${_KFSLOT} )"
+		BDEPEND+=" doc? ( >=app-text/doxygen-1.8.13-r1 )"
+		if [[ ${_KFSLOT} == 6 ]]; then
+			BDEPEND+=" dev-qt/qttools:${_KFSLOT}[assistant]"
+		else
+			BDEPEND+=" doc? ( dev-qt/qthelp:${_KFSLOT} )"
+		fi
 		;;
 	false) ;;
 	*)
@@ -254,11 +259,13 @@ case ${ECM_QTHELP} in
 esac
 
 case ${ECM_TEST} in
-	true|optional|forceoptional|forceoptional-recursive)
-		IUSE+=" test"
-		DEPEND+=" test? ( dev-qt/qttest:${KFSLOT} )"
-		RESTRICT+=" !test? ( test )"
+	optional)
+		if [[ ${_KFSLOT} != 5 ]]; then
+			eerror "Banned value for \${ECM_TEST}"
+			die "Value ${ECM_TEST} is only supported in KF5"
+		fi
 		;;
+	true|forceoptional|forceoptional-recursive) ;;
 	false) ;;
 	*)
 		eerror "Unknown value for \${ECM_TEST}"
@@ -268,10 +275,21 @@ esac
 
 BDEPEND+="
 	dev-libs/libpcre2:*
-	>=kde-frameworks/extra-cmake-modules-${KFMIN}:${KFSLOT}
+	>=kde-frameworks/extra-cmake-modules-${KFMIN}:*
 "
 RDEPEND+=" >=kde-frameworks/kf-env-4"
-COMMONDEPEND+=" dev-qt/qtcore:${KFSLOT}"
+if [[ ${ECM_TEST} != false ]]; then
+	IUSE+=" test"
+	RESTRICT+=" !test? ( test )"
+fi
+if [[ ${_KFSLOT} == 6 ]]; then
+	COMMONDEPEND+=" dev-qt/qtbase:${_KFSLOT}"
+else
+	COMMONDEPEND+=" dev-qt/qtcore:${_KFSLOT}"
+	if [[ ${ECM_TEST} != false ]]; then
+		DEPEND+=" test? ( dev-qt/qttest:5 )"
+	fi
+fi
 
 DEPEND+=" ${COMMONDEPEND}"
 RDEPEND+=" ${COMMONDEPEND}"
@@ -481,18 +499,18 @@ ecm_src_prepare() {
 		# always install unconditionally for kconfigwidgets - if you use
 		# language X as system language, and there is a combobox with language
 		# names, the translated language name for language Y is taken from
-		# /usr/share/locale/Y/kf5_entry.desktop
+		# /usr/share/locale/Y/kf${_KFSLOT}_entry.desktop
 		[[ ${PN} != kconfigwidgets ]] && _ecm_strip_handbook_translations
 	fi
 
 	# only build unit tests when required
 	if ! { in_iuse test && use test; } ; then
 		if [[ ${ECM_TEST} = forceoptional ]] ; then
-			ecm_punt_qt_module Test
+			[[ ${_KFSLOT} = 5 ]] && ecm_punt_qt_module Test
 			# if forceoptional, also cover non-kde categories
 			cmake_comment_add_subdirectory autotests test tests
 		elif [[ ${ECM_TEST} = forceoptional-recursive ]] ; then
-			ecm_punt_qt_module Test
+			[[ ${_KFSLOT} = 5 ]] && ecm_punt_qt_module Test
 			local f pf="${T}/${P}"-tests-optional.patch
 			touch ${pf} || die "Failed to touch patch file"
 			for f in $(find . -type f -name "CMakeLists.txt" -exec \
@@ -535,16 +553,20 @@ ecm_src_configure() {
 
 	local cmakeargs
 
+	if [[ ${_KFSLOT} == 6 ]]; then
+		cmakeargs+=( -DQT_MAJOR_VERSION=6 )
+	fi
+
 	if in_iuse test && ! use test ; then
 		cmakeargs+=( -DBUILD_TESTING=OFF )
 
-		if [[ ${ECM_TEST} = optional ]] ; then
+		if [[ ${_KFSLOT} = 5 && ${ECM_TEST} = optional ]] ; then
 			cmakeargs+=( -DCMAKE_DISABLE_FIND_PACKAGE_Qt5Test=ON )
 		fi
 	fi
 
 	if [[ ${ECM_HANDBOOK} = optional ]] ; then
-		cmakeargs+=( -DCMAKE_DISABLE_FIND_PACKAGE_KF5DocTools=$(usex !handbook) )
+		cmakeargs+=( -DCMAKE_DISABLE_FIND_PACKAGE_KF${_KFSLOT}DocTools=$(usex !handbook) )
 	fi
 
 	if in_iuse designer && [[ ${ECM_DESIGNERPLUGIN} = true ]]; then
@@ -596,13 +618,15 @@ ecm_src_test() {
 		KDE_DEBUG=1 cmake_src_test
 	}
 
+	local -x QT_QPA_PLATFORM=offscreen
+
 	# When run as normal user during ebuild development with the ebuild command,
 	# tests tend to access the session DBUS. This however is not possible in a
 	# real emerge or on the tinderbox.
 	# make sure it does not happen, so bad tests can be recognized and disabled
 	unset DBUS_SESSION_BUS_ADDRESS DBUS_SESSION_BUS_PID
 
-	if [[ ${VIRTUALX_REQUIRED} = always || ${VIRTUALX_REQUIRED} = test ]]; then
+	if [[ ${EAPI} == 8 ]] && [[ ${VIRTUALX_REQUIRED} = always || ${VIRTUALX_REQUIRED} = test ]]; then
 		virtx _test_runner
 	else
 		_test_runner

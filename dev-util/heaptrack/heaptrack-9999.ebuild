@@ -15,7 +15,7 @@ KEYWORDS=""
 IUSE="+gui test zstd"
 
 BDEPEND="
-	gui? ( kde-frameworks/extra-cmake-modules:5 )
+	gui? ( kde-frameworks/extra-cmake-modules:0 )
 "
 DEPEND="
 	dev-libs/boost:=

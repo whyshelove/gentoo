@@ -1,8 +1,8 @@
-# Copyright 2003-2021 Gentoo Authors
+# Copyright 2003-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="7"
-LUA_COMPAT=(lua{5-1,5-2,5-3,5-4})
+LUA_COMPAT=( lua5-{1..4} )
 
 inherit cmake gnome2-utils lua-single xdg-utils
 
@@ -27,7 +27,7 @@ fi
 # LICENSE="BSD-1 GPL-2+ LGPL-2+ MIT qt4? ( BSD )"
 LICENSE="BSD-1 GPL-2+ LGPL-2+ MIT"
 SLOT="4"
-KEYWORDS="amd64 ~arm64 ~hppa ppc ppc64 ~riscv x86"
+KEYWORDS="amd64 ~arm64 ~hppa ~loong ppc ppc64 ~riscv x86"
 IUSE="+X +autostart +cairo debug +enchant gtk2 +gtk3 +introspection lua nls opencc +pango +table test +xkb"
 REQUIRED_USE="cairo? ( X )
 	lua? ( ${LUA_REQUIRED_USE} )
@@ -35,11 +35,12 @@ REQUIRED_USE="cairo? ( X )
 RESTRICT="!test? ( test )"
 
 BDEPEND="dev-util/glib-utils
-	kde-frameworks/extra-cmake-modules:5
+	kde-frameworks/extra-cmake-modules:0
 	virtual/pkgconfig
 	introspection? ( dev-libs/gobject-introspection )
 	nls? ( sys-devel/gettext )"
-DEPEND="dev-libs/glib:2
+DEPEND="!app-i18n/fcitx:5
+	dev-libs/glib:2
 	sys-apps/dbus
 	sys-apps/util-linux
 	virtual/libiconv

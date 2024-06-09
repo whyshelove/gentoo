@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: plasma.kde.org.eclass
@@ -31,6 +31,16 @@ _PLASMA_KDE_ORG_ECLASS=1
 # For proper description see kde.org.eclass manpage.
 KDE_PV_UNRELEASED=( )
 
+# @ECLASS_VARIABLE: _PSLOT
+# @INTERNAL
+# @DESCRIPTION:
+# KDE Plasma major version mapping, implied by package version. This is being
+# used throughout the eclass as a switch between Plasma 5 and 6 packages.
+_PSLOT=6
+if $(ver_test -lt 5.27.50); then
+	_PSLOT=5
+fi
+
 inherit kde.org
 
 HOMEPAGE="https://kde.org/plasma-desktop"
@@ -39,7 +49,7 @@ HOMEPAGE="https://kde.org/plasma-desktop"
 # @INTERNAL
 # @DESCRIPTION:
 # For proper description see kde.org.eclass manpage.
-KDE_ORG_SCHEDULE_URI+="/Plasma_5"
+KDE_ORG_SCHEDULE_URI+="/Plasma_${_PSLOT}"
 
 # @ECLASS_VARIABLE: _KDE_SRC_URI
 # @INTERNAL
@@ -53,14 +63,29 @@ if [[ ${KDE_BUILD_TYPE} == live ]]; then
 	fi
 elif [[ -z ${KDE_ORG_COMMIT} ]]; then
 	case ${PV} in
-		5.??.[6-9]?* )
+		5.??.[6-9][05]* | 6.?.[6-9][05]* )
 			_KDE_SRC_URI+="unstable/plasma/$(ver_cut 1-3)/"
 			RESTRICT+=" mirror"
 			;;
 		*) _KDE_SRC_URI+="stable/plasma/$(ver_cut 1-3)/" ;;
 	esac
 
-	SRC_URI="${_KDE_SRC_URI}${KDE_ORG_NAME}-${PV}.tar.xz"
+	SRC_URI="${_KDE_SRC_URI}${KDE_ORG_TAR_PN}-${PV}.tar.xz"
+fi
+
+if [[ ${_PSLOT} == 6 ]]; then
+	case ${PN} in
+		kglobalacceld | \
+		kwayland | \
+		kwayland-integration | \
+		libplasma | \
+		ocean-sound-theme | \
+		plasma-activities | \
+		plasma-activities-stats | \
+		plasma5support | \
+		print-manager) ;;
+		*) RDEPEND+=" !kde-plasma/${PN}:5" ;;
+	esac
 fi
 
 fi

@@ -16,7 +16,7 @@ KEYWORDS="~amd64"
 # qtgui is bogus but is required because something else in the deptree
 # uses it as a public dependency but doesn't search for it properly
 BDEPEND="
-	kde-frameworks/extra-cmake-modules:5
+	kde-frameworks/extra-cmake-modules:0
 "
 RDEPEND="
 	dev-db/lmdb:=

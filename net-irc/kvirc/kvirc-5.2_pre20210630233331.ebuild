@@ -37,7 +37,7 @@ BDEPEND="dev-lang/perl:0
 	>=dev-util/cmake-3.16
 	virtual/pkgconfig
 	doc? ( app-doc/doxygen )
-	kde? ( kde-frameworks/extra-cmake-modules:5 )
+	kde? ( kde-frameworks/extra-cmake-modules:0 )
 	nls? ( sys-devel/gettext )"
 DEPEND="dev-qt/qtcore:5
 	dev-qt/qtgui:5
