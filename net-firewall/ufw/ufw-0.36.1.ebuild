@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{7..10} )
+PYTHON_COMPAT=( python3_{8..11} )
 DISTUTILS_IN_SOURCE_BUILD=1
 DISTUTILS_USE_SETUPTOOLS=no
 
@@ -11,21 +11,20 @@ inherit bash-completion-r1 distutils-r1 linux-info systemd
 
 DESCRIPTION="A program used to manage a netfilter firewall"
 HOMEPAGE="https://launchpad.net/ufw"
-SRC_URI="https://launchpad.net/ufw/${PV}/${PV}/+download/${P}.tar.gz"
+SRC_URI="https://launchpad.net/ufw/${PV%.*}/${PV}/+download/${P}.tar.gz"
 
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="amd64 ~arm ~arm64 ~ia64 ppc ppc64 sparc x86"
+KEYWORDS="amd64 ~arm arm64 ~ia64 ~loong ppc ppc64 ~riscv sparc x86"
 IUSE="examples ipv6"
 
-RDEPEND=">=net-firewall/iptables-1.4[ipv6?]
-	!<kde-misc/kcm-ufw-0.4.2
-	!<net-firewall/ufw-frontends-0.3.2"
-
-BDEPEND="sys-devel/gettext"
-
-# tests fail; upstream bug: https://bugs.launchpad.net/ufw/+bug/815982
-RESTRICT="test"
+RDEPEND="net-firewall/iptables[ipv6(+)?]"
+BDEPEND="
+	sys-devel/gettext
+	$(python_gen_cond_dep '
+		dev-python/setuptools[${PYTHON_USEDEP}]
+	' python3_12)
+"
 
 PATCHES=(
 	# Move files away from /lib/ufw.
@@ -35,7 +34,7 @@ PATCHES=(
 	# Remove shebang modification.
 	"${FILESDIR}/${P}-shebang.patch"
 	# Fix bash completions, bug #526300
-	"${FILESDIR}/${P}-bash-completion.patch"
+	"${FILESDIR}/${PN}-0.36-bash-completion.patch"
 )
 
 pkg_pretend() {
@@ -139,6 +138,10 @@ python_install_all() {
 	newinitd "${FILESDIR}"/ufw-2.initd ufw
 	systemd_dounit "${FILESDIR}/ufw.service"
 
+	pushd "${ED}" || die
+	chmod -R 0644 etc/ufw/*.rules || die
+	popd || die
+
 	exeinto /usr/share/${PN}
 	doexe tests/check-requirements
 
@@ -166,8 +169,29 @@ pkg_postinst() {
 	local print_check_req_warn
 	print_check_req_warn=false
 
+	local found=()
+	local apps=( "net-firewall/arno-iptables-firewall"
+		"net-firewall/ferm"
+		"net-firewall/firehol"
+		"net-firewall/firewalld"
+		"net-firewall/ipkungfu" )
+
+	for exe in "${apps[@]}"
+	do
+		if has_version "${exe}"; then
+			found+=( "${exe}" )
+		fi
+	done
+
+	if [[ -n ${found} ]]; then
+		echo ""
+		ewarn "WARNING: Detected other firewall applications:"
+		ewarn "${found[@]}"
+		ewarn "If enabled, these applications may interfere with ufw!"
+	fi
+
 	if [[ -z "${REPLACING_VERSIONS}" ]]; then
-		echo
+		echo ""
 		elog "To enable ufw, add it to boot sequence and activate it:"
 		elog "-- # rc-update add ufw boot"
 		elog "-- # /etc/init.d/ufw start"
@@ -177,7 +201,7 @@ pkg_postinst() {
 		print_check_req_warn=true
 	else
 		local rv
-		for rv in "${REPLACING_VERSIONS}"; do
+		for rv in ${REPLACING_VERSIONS}; do
 			local major=${rv%%.*}
 			local minor=${rv#${major}.}
 			if [[ "${major}" -eq 0 && "${minor}" -lt 34 ]]; then

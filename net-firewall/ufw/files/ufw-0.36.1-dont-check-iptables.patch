@@ -1,14 +1,18 @@
---- a/setup.py	2019-03-21 01:32:28.500245586 +0300
-+++ b/setup.py	2019-03-21 01:39:17.166095026 +0300
-@@ -257,41 +257,7 @@
+--- a/setup.py    2022-06-27 17:33:18.043794598 +0300
++++ b/setup.py    2022-06-27 18:15:18.384463926 +0300
+@@ -256,46 +256,7 @@
  os.unlink(os.path.join('staging', 'ufw-init'))
  os.unlink(os.path.join('staging', 'ufw-init-functions'))
- 
+
 -iptables_exe = ''
 -iptables_dir = ''
 -
 -for e in ['iptables']:
--    for dir in ['/sbin', '/bin', '/usr/sbin', '/usr/bin', '/usr/local/sbin', \
+-    # Historically iptables was in /sbin, then later also symlinked from
+-    # /usr/sbin/iptables to /sbin/iptables. Debian bullseye moves iptables
+-    # to /usr/sbin with no symlink in /sbin except on upgrades. To accomodate
+-    # buildds that may still have the old iptables, search /usr/sbin first
+-    for dir in ['/usr/sbin', '/sbin', '/usr/bin', '/bin', '/usr/local/sbin', \
 -                '/usr/local/bin']:
 -        if e == "iptables":
 -            if os.path.exists(os.path.join(dir, e)):
@@ -39,7 +43,8 @@
 -print("Found '%s' version '%s'" % (iptables_exe, version))
 -if version < "1.4":
 -    print("WARN: version '%s' has limited IPv6 support. See README for details." % (version), file=sys.stderr)
+-
 +iptables_dir = '/sbin'
- 
  setup (name='ufw',
        version=ufw_version,
+       description='front-end for Linux firewalling',
