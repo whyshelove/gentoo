@@ -14,7 +14,7 @@ DESCRIPTION="kernel - The Linux kernel, based on version 4.18.0, heavily modifie
 HOMEPAGE="https://www.kernel.org/"
 
 LICENSE="GPL-2"
-KEYWORDS="~amd64 ~arm64 ~s390 ~ppc64"
+KEYWORDS="amd64 ~arm64 ~s390 ~ppc64"
 IUSE="test debug +signkernel +signmodules zfcpdump +modules +up gcov realtime +zipmodules ipaclones +vdso perf tools bpf"
 REQUIRED_USE="debug? ( !gcov !up !vdso !ipaclones !perf )
 	    signkernel? ( ^^ ( amd64 arm64 ) )

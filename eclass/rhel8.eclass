@@ -16,7 +16,8 @@ _RHEL8_ECLASS=1
 
 		case ${PN} in
 			tiff | db | appstream-glib ) MY_P=lib${P} ;;
-			docbook-xsl*) MY_P=docbook-style-xsl-${PV} ;;
+			docbook-xsl-stylesheets )  MY_P=docbook5-style-xsl-${PV} ;;
+			docbook-xsl-ns-stylesheets ) MY_P=docbook-style-xsl-${PV} ;;
 			thin-provisioning-tools ) MY_P=device-mapper-persistent-data-${PV} ;;
 			multipath-tools ) MY_P=device-mapper-multipath-${PV} ;;
 			iproute2 ) MY_P=${P/2} ;;

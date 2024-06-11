@@ -12,7 +12,7 @@ MY_P="${MY_PN}-${PV}"
 
 DESCRIPTION="XSL Stylesheets for Docbook"
 HOMEPAGE="https://github.com/docbook/wiki/wiki"
-
+SRC_URI="https://dl.rockylinux.org/pub/rocky/8/Devel/source/tree/Packages/${DIST_PRE_SUF_CATEGORY}.src.rpm"
 S="${WORKDIR}/${MY_P}"
 
 LICENSE="BSD"
