@@ -20,7 +20,7 @@ KEYWORDS="~alpha amd64 arm arm64 ~ia64 ~loong ppc ppc64 ~riscv sparc x86"
 
 COMMON_DEPEND="
 	>=dev-libs/glib-2.76.0:2
-	>=x11-libs/cairo-1.17.6[aqua?,glib,svg(+),X?]
+	>=x11-libs/cairo-1.17.4[aqua?,glib,svg(+),X?]
 	>=x11-libs/pango-1.50.0[introspection?]
 	>=dev-libs/fribidi-1.0.6
 	>=media-libs/harfbuzz-2.6.0:=

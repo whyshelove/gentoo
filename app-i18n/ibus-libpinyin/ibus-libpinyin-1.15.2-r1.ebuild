@@ -3,7 +3,7 @@
 
 EAPI=8
 LUA_COMPAT=( lua5-{1..3} )
-PYTHON_COMPAT=( python3_{10..12} )
+PYTHON_COMPAT=( python3_{9..12} )
 
 inherit autotools gnome2-utils lua-single python-single-r1
 
@@ -13,7 +13,7 @@ SRC_URI="https://github.com/libpinyin/${PN}/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="GPL-3+"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="amd64 x86"
 IUSE="boost lua opencc"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	lua? ( ${LUA_REQUIRED_USE} )"
