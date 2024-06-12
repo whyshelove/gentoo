@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-
+DSUFFIX="_4"
 inherit xdg meson rhel9-a
 
 DESCRIPTION="Provides GObjects and helper methods to read and write AppStream metadata"

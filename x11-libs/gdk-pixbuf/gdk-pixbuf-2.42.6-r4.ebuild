@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-
+DSUFFIX="_4"
 inherit gnome.org gnome2-utils meson-multilib multilib xdg rhel9-a
 
 DESCRIPTION="Image loading library for GTK+"

@@ -492,6 +492,7 @@ rhel-kernel-install_pkg_postrm() {
 		ebegin "Removing kernel with initramfs and grub BLS entry via kernel-install"
 		/usr/bin/kernel-install remove ${dir_ver}
 		find "${modules_dir}" -depth -type d -empty -delete
+		[[ -z ${dir_ver} ]] && rm -rf "${modules_dir}"
 		eend ${?}
 	fi
 }
