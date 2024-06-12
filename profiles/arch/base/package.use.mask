@@ -59,11 +59,6 @@ sys-kernel/gentoo-kernel-bin generic-uki
 # Needs dev-qt/qtwebengine:6 which has very few keywords.
 dev-python/PyQt6 pdfium
 
-# Leonardo Hernández Hernández <leohdz172@proton.me> (2023-11-25)
-# media-libs/libdisplay-info (drm) and dev-libs/libliftoff (liftoff)
-# are only available for amd64, arm64 and riscv
->=gui-libs/wlroots-0.17.0 drm liftoff
-
 # Jimi Huotari <chiitoo@gentoo.org> (2023-11-22)
 # media-libs/libvpl is only keyworded for amd64 at this time.
 media-video/obs-studio qsv
@@ -388,19 +383,12 @@ dev-db/mariadb jdbc
 # This flag only has meaning on amd64
 sys-boot/grub:2 grub_platforms_xen-32
 
-# Ian Delaney <idella4@gentoo.org> (2016-04-06)
-# on behalf of Ilya Tumaykin <itumaykin+gentoo@gmail.com>
-# Raspberry Pi support is only available on arm.
-# Mask raspberry-pi USE globally, unmask on arm.
-media-video/mpv raspberry-pi
-
 # Alexis Ballier <aballier@gentoo.org> (2015-11-14)
 # MMAL is only available on the Raspberry Pi:
 # Mask it globally, unmask it on arm.
 media-video/motion mmal
 media-video/ffmpeg mmal
 media-video/ffmpeg-chromium mmal
-media-video/mpv mmal
 
 # Brian Evans <grknight@gentoo.org> (2015-09-14)
 # Mask new USE flags for mariadb which all arches do not yet have dependencies

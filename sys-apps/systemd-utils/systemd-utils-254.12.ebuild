@@ -292,7 +292,7 @@ multilib_src_compile() {
 		if use kernel-install; then
 			targets+=(
 				kernel-install
-				90-loaderentry.install
+				src/kernel-install/90-loaderentry.install
 				man/kernel-install.8
 			)
 		fi
@@ -368,14 +368,14 @@ multilib_src_compile() {
 		if use ukify; then
 			targets+=(
 				ukify
-				60-ukify.install
+				src/kernel-install/60-ukify.install
 				man/ukify.1
 			)
 		fi
 	fi
 	if use udev; then
 		targets+=(
-			udev:shared_library
+			libudev
 			src/libudev/libudev.pc
 		)
 		if use test; then

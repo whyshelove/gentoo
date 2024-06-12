@@ -7,7 +7,7 @@ EAPI=8
 # please bump dev-python/ensurepip-setuptools along with this package!
 
 DISTUTILS_USE_PEP517=standalone
-PYTHON_TESTED=( python3_{10..13} pypy3 )
+PYTHON_TESTED=( python3_{9..13} pypy3 )
 PYTHON_COMPAT=( "${PYTHON_TESTED[@]}" )
 PYTHON_REQ_USE="xml(+)"
 
@@ -21,7 +21,7 @@ HOMEPAGE="
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~m68k ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
+KEYWORDS="amd64 arm arm64 ~hppa ~ia64 ~loong ~m68k ppc ppc64 ~riscv ~s390 sparc x86"
 IUSE="test"
 RESTRICT="!test? ( test )"
 

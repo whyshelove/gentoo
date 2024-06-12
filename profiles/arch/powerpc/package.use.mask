@@ -76,6 +76,7 @@ dev-db/spatialite rttopo
 # Andrew Ammerlaan <andrewammerlaan@gentoo.org> (2023-08-30)
 # Avoid keywordming more Qt stuff
 dev-python/pyside2 3d datavis scxml
+dev-python/pyside6 3d scxml
 
 # Andrew Ammerlaan <andrewammerlaan@gentoo.org> (2023-03-07)
 # nbval/nbclassic docs require pandoc which is not keyworded here yet
@@ -269,10 +270,6 @@ app-i18n/fcitx-libpinyin dictionary-manager
 # Göktürk Yüksek <gokturk@gentoo.org> (2017-08-15)
 # Requires java
 app-forensics/sleuthkit java
-
-# Michał Górny <mgorny@gentoo.org> (2017-08-10)
-# Requires USE=ipmi which is masked in this profile.
-sys-power/nut ups_drivers_nut-ipmipsu
 
 # Michał Górny <mgorny@gentoo.org> (2017-08-08)
 # Requires USE=opencl that is masked in this profile.

@@ -14,7 +14,7 @@ SRC_URI+="
 "
 
 if [[ ${QT6_BUILD_TYPE} == release ]]; then
-	KEYWORDS="~amd64 ~arm64"
+	KEYWORDS="amd64 arm64"
 fi
 
 IUSE="
@@ -83,7 +83,10 @@ DEPEND="
 	${RDEPEND}
 	media-libs/libglvnd
 	x11-base/xorg-proto
+	x11-libs/libXcursor
+	x11-libs/libXi
 	x11-libs/libxshmfence
+	opengl? ( media-libs/libglvnd[X] )
 	screencast? ( media-libs/libepoxy[egl(+)] )
 	pdfium? ( net-print/cups )
 	test? (
@@ -221,6 +224,8 @@ src_configure() {
 		# prefer no dlopen where possible
 		link_pulseaudio=true
 		rtc_link_pipewire=true
+		# reduce default disk space usage
+		symbol_level=0
 	)
 
 	if use !custom-cflags; then

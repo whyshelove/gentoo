@@ -170,7 +170,6 @@ net-analyzer/openvas-scanner
 net-analyzer/ospd-openvas
 net-misc/grive
 net-print/pnm2ppa
-net-wireless/neard
 sys-apps/noexec
 
 # Giuseppe Foti <foti.giuseppe@gmail.com> (2023-05-19)
@@ -357,11 +356,7 @@ sys-block/hpssacli
 sys-block/megacli
 www-apps/chromedriver-bin
 www-apps/grafana-bin
-www-apps/jellyfin
 www-apps/kibana-bin
-www-apps/prowlarr
-www-apps/radarr
-www-apps/readarr
 www-client/firefox-bin
 www-client/google-chrome
 www-client/google-chrome-beta

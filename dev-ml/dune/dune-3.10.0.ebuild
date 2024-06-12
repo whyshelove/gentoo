@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -11,7 +11,7 @@ SRC_URI="https://github.com/ocaml/dune/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~riscv ~x86"
+KEYWORDS="amd64 arm arm64 ~ppc ppc64 ~riscv x86"
 IUSE="emacs"
 RESTRICT="strip test"
 
@@ -55,6 +55,10 @@ src_compile() {
 }
 
 src_install() {
+	# OCaml generates textrels on 32-bit arches
+	if use arm || use ppc || use x86 ; then
+		export QA_TEXTRELS='.*'
+	fi
 	default
 
 	dodir /usr/share/doc

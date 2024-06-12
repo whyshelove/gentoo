@@ -3,7 +3,7 @@
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{9..11} )
+PYTHON_COMPAT=( python3_{10..12} )
 
 inherit gnome.org vala meson python-any-r1 xdg
 
@@ -26,7 +26,7 @@ RDEPEND="
 	>=x11-libs/gtk+-3.22.0:3[introspection?]
 	>=x11-libs/cairo-1.15.0
 	>=x11-libs/libX11-1.6.5
-	pulseaudio? ( >=media-sound/pulseaudio-11.0 )
+	pulseaudio? ( media-libs/libpulse )
 	introspection? ( >=dev-libs/gobject-introspection-1.56.0:= )
 "
 # Keymap databases code is generated with python3; configure picks up $PYTHON exported from python-any-r1_pkg_setup
