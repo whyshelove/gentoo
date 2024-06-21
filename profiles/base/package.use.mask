@@ -10,10 +10,6 @@
 # Not working, bug #931046
 >=sci-libs/caffe2-2.3.0 rocm
 
-# Michał Górny <mgorny@gentoo.org> (2024-05-18)
-# dev-python/aesara is being removed.
-dev-python/sympy aesara
-
 # Sam James <sam@gentoo.org> (2024-05-09)
 # Experimental option upstream which seems undertested and underdocumented.
 # Fails to build with stricter C compilers too (bug #919685).
@@ -45,17 +41,9 @@ dev-util/kdevelop reviewboard
 # sys-auth/pam_ssh is being last rited, bug #892031.
 sys-auth/pambase pam_ssh
 
-# Andrew Ammerlaan <andrewammerlaan@gentoo.org> (2024-03-22)
-# Building with qt6 requires (masked) kde-frameworks:6
-app-admin/calamares qt6
-
 # Viorel Munteanu <ceamac@gentoo.org> (2024-03-19)
 # The live version needs a new BDEPEND for doc
 =app-emulation/virtualbox-9999 doc
-
-# Sam James <sam@gentoo.org> (2024-03-18)
-# Needs masked KF6 for Wayland at least.
-app-crypt/pinentry qt6
 
 # Guilherme Amadio <amadio@gentoo.org> (2024-03-09)
 # Requires manually installing dependencies, see bug #791802
@@ -199,7 +187,7 @@ app-admin/ansible-molecule doc
 # William Hubbs <williamh@gentoo.org> (2023-06-30)
 # multiple repeated issues: Bug: #909394
 # Joonas Niilola <juippis@gentoo.org> (2024-04-22)
-# Can break reverse dependencies (Chromium, Firefox), debugging not always 
+# Can break reverse dependencies (Chromium, Firefox), debugging not always
 # obvious.
 net-libs/nodejs lto
 

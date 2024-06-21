@@ -181,6 +181,9 @@ XFAIL_TEST_LIST=(
 
 	# Fails regularly, unreliable
 	tst-valgrind-smoke
+
+	# https://sourceware.org/bugzilla/show_bug.cgi?id=31877 (bug #927973)
+	tst-shstk-legacy-1g
 )
 
 XFAIL_NSPAWN_TEST_LIST=(
@@ -366,16 +369,6 @@ setup_target_flags() {
 				fi
 				# For compatibility with older binaries at slight performance cost.
 				use stack-realign && export CFLAGS_x86+=" -mstackrealign"
-
-				# Workaround for bug #823780.
-				# Need to save/restore CC because earlier on, we stuff it full of CFLAGS, and tc-getCPP doesn't like that.
-				CC_mangled=${CC}
-				CC=${glibc__GLIBC_CC}
-				if tc-is-gcc && (($(gcc-major-version) == 11)) && (($(gcc-minor-version) <= 2)) && (($(gcc-micro-version) == 0)) ; then
-					export CFLAGS_x86="${CFLAGS_x86} -mno-avx512f"
-					einfo "Auto adding -mno-avx512f to CFLAGS_x86 for buggy GCC version (bug #823780) (ABI=${ABI})"
-				fi
-				CC=${CC_mangled}
 			fi
 		;;
 		mips)
@@ -1001,7 +994,7 @@ glibc_do_configure() {
 	# worth protecting from stack smashes.
 	myconf+=( --enable-stack-protector=$(usex ssp strong no) )
 
-	# Keep a whitelist of targets supporing IFUNC. glibc's ./configure
+	# Keep a whitelist of targets supporting IFUNC. glibc's ./configure
 	# is not robust enough to detect proper support:
 	#    https://bugs.gentoo.org/641216
 	#    https://sourceware.org/PR22634#c0

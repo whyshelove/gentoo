@@ -9,7 +9,7 @@ inherit mate
 
 MINOR=$(($(ver_cut 2) % 2))
 if [[ ${MINOR} -eq 0 ]]; then
-	KEYWORDS="~amd64 ~arm ~arm64 ~loong ~riscv ~x86"
+	KEYWORDS="amd64 ~arm ~arm64 ~loong ~riscv x86"
 fi
 
 DESCRIPTION="The MATE Desktop configuration tool"
@@ -25,10 +25,10 @@ COMMON_DEPEND="
 	dev-libs/libayatana-appindicator
 	>=gnome-base/dconf-0.13.4
 	>=gnome-base/librsvg-2.0:2
-	>=mate-base/libmatekbd-1.17.0
-	>=mate-base/mate-desktop-1.25.0
-	>=mate-base/caja-1.20.0
-	>=mate-base/mate-menus-1.21.0
+	>=mate-base/libmatekbd-1.28.0
+	>=mate-base/mate-desktop-1.28.0
+	>=mate-base/caja-1.28.0
+	>=mate-base/mate-menus-1.28.0
 	>=media-libs/fontconfig-1:1.0
 	media-libs/freetype:2
 	media-libs/libcanberra:0[gtk3]
@@ -69,7 +69,6 @@ PATCHES=(
 src_configure() {
 	mate_src_configure \
 		--disable-update-mimedb \
-		--with-appindicator \
 		$(use_enable nls) \
 		$(use_enable debug)
 }

@@ -461,7 +461,7 @@ LICENSE="MIT"
 # - openssl for ring crate
 LICENSE+=" Apache-2.0 BSD Boost-1.0 ISC MIT MPL-2.0 Unicode-DFS-2016 openssl"
 SLOT="0"
-KEYWORDS="~amd64 ~arm64"
+KEYWORDS="amd64 ~arm64"
 IUSE="+client server test +sync"
 RESTRICT="!test? ( test )"
 REQUIRED_USE="
@@ -493,7 +493,7 @@ src_configure() {
 src_compile() {
 	cargo_src_compile
 
-	ATUIN_BIN="target/$(usex debug debug release)/${PN}"
+	ATUIN_BIN="$(cargo_target_dir)/${PN}"
 
 	# Prepare shell completion generation
 	mkdir completions || die

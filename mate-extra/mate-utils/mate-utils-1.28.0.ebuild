@@ -9,7 +9,7 @@ inherit mate
 
 MINOR=$(($(ver_cut 2) % 2))
 if [[ ${MINOR} -eq 0 ]]; then
-	KEYWORDS="~amd64 ~arm ~arm64 ~loong ~riscv ~x86"
+	KEYWORDS="amd64 ~arm ~arm64 ~loong ~riscv x86"
 fi
 
 DESCRIPTION="Utilities for the MATE desktop"
@@ -33,7 +33,7 @@ COMMON_DEPEND="
 	x11-libs/libX11
 	x11-libs/libXext
 	x11-libs/pango
-	applet? ( >=mate-base/mate-panel-1.17.0 )
+	applet? ( >=mate-base/mate-panel-1.28.0 )
 	udisks? ( >=sys-fs/udisks-1.90.0:2 )
 "
 

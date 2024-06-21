@@ -277,14 +277,15 @@ BDEPEND+="
 	dev-libs/libpcre2:*
 	>=kde-frameworks/extra-cmake-modules-${KFMIN}:*
 "
-RDEPEND+=" >=kde-frameworks/kf-env-4"
 if [[ ${ECM_TEST} != false ]]; then
 	IUSE+=" test"
 	RESTRICT+=" !test? ( test )"
 fi
 if [[ ${_KFSLOT} == 6 ]]; then
+	RDEPEND+=" >=kde-frameworks/kf-env-6"
 	COMMONDEPEND+=" dev-qt/qtbase:${_KFSLOT}"
 else
+	RDEPEND+=" >=kde-frameworks/kf-env-4"
 	COMMONDEPEND+=" dev-qt/qtcore:${_KFSLOT}"
 	if [[ ${ECM_TEST} != false ]]; then
 		DEPEND+=" test? ( dev-qt/qttest:5 )"
@@ -306,7 +307,7 @@ unset COMMONDEPEND
 # @DESCRIPTION:
 # Determine if the current GCC version is acceptable, otherwise die.
 _ecm_check_gcc_version() {
-	if [[ ${MERGE_TYPE} != binary && -v ${KDE_GCC_MINIMAL} ]] && tc-is-gcc; then
+	if [[ ${MERGE_TYPE} != binary && -v KDE_GCC_MINIMAL ]] && tc-is-gcc; then
 
 		local version=$(gcc-version)
 
@@ -584,6 +585,12 @@ ecm_src_configure() {
 			# move handbook outside of doc dir, bug 667138
 			-DKDE_INSTALL_DOCBUNDLEDIR="${EPREFIX}/usr/share/help"
 		)
+
+		# bug 928345
+		# TODO: Eventually it should be put to upstream as to why LIBEXECDIR
+		# in KDEInstallDirsCommon.cmake is set to EXECROOTDIR/LIBDIR/libexec
+		[[ ${_KFSLOT} == 6 ]] && \
+			cmakeargs+=( -DKDE_INSTALL_LIBEXECDIR="${EPREFIX}/usr/libexec" )
 	fi
 
 	# allow the ebuild to override what we set here

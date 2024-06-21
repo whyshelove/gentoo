@@ -7,7 +7,7 @@ inherit mate
 
 MINOR=$(($(ver_cut 2) % 2))
 if [[ ${MINOR} -eq 0 ]]; then
-	KEYWORDS="~amd64 ~arm ~arm64 ~loong ~riscv ~x86"
+	KEYWORDS="amd64 ~arm ~arm64 ~loong ~riscv x86"
 fi
 
 DESCRIPTION="Session daemon for MATE that makes it easy to manage your laptop or desktop"
@@ -15,8 +15,6 @@ DESCRIPTION="Session daemon for MATE that makes it easy to manage your laptop or
 LICENSE="FDL-1.1+ GPL-2+ LGPL-2+"
 SLOT="0"
 IUSE="+applet +elogind keyring policykit systemd test"
-
-REQUIRED_USE="^^ ( elogind systemd )"
 
 # Interactive testsuite.
 RESTRICT="test"
@@ -36,13 +34,13 @@ COMMON_DEPEND="
 	x11-libs/libXrandr
 	>=x11-libs/libnotify-0.7:0
 	x11-libs/pango
-	applet? ( >=mate-base/mate-panel-1.17.0 )
+	applet? ( >=mate-base/mate-panel-1.28.0 )
 	keyring? ( >=app-crypt/libsecret-0.11 )
 "
 
 RDEPEND="${COMMON_DEPEND}
 	virtual/libintl
-	policykit? ( >=mate-extra/mate-polkit-1.6 )
+	policykit? ( >=mate-extra/mate-polkit-1.28.0 )
 	systemd? ( sys-apps/systemd )
 	elogind? ( sys-auth/elogind )
 "

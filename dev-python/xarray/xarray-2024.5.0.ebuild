@@ -17,7 +17,7 @@ HOMEPAGE="
 
 LICENSE="Apache-2.0"
 SLOT="0"
-KEYWORDS="amd64 arm64 ~loong ~riscv ~x86"
+KEYWORDS="amd64 arm64 ~loong ~riscv x86"
 IUSE="big-endian"
 
 RDEPEND="
@@ -66,6 +66,17 @@ python_test() {
 			'xarray/tests/test_coding_times.py::test_roundtrip_datetime64_nanosecond_precision[1677-09-21T00:12:43.145225-us-int64-None-False]'
 			'xarray/tests/test_coding_times.py::test_roundtrip_datetime64_nanosecond_precision[1970-01-01T00:00:01.000001-us-int64-None-False]'
 			'xarray/tests/test_coding_times.py::test_roundtrip_datetime64_nanosecond_precision[1677-09-21T00:21:52.901038080-ns-float32-20.0-True]'
+		)
+	fi
+
+	if [[ ${ABI} != *64* ]]; then
+		EPYTEST_DESELECT+=(
+			# these tests hardcode object sizes for 64-bit arches
+			# https://github.com/pydata/xarray/issues/9127
+			xarray/tests/test_dataarray.py::TestDataArray::test_repr_multiindex
+			xarray/tests/test_dataarray.py::TestDataArray::test_repr_multiindex_long
+			xarray/tests/test_dataset.py::TestDataset::test_repr_multiindex
+			xarray/tests/test_formatting.py::test_array_repr_dtypes_unix
 		)
 	fi
 
