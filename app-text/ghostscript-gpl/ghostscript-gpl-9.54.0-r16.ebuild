@@ -3,7 +3,7 @@
 
 EAPI=8
 
-DSUFFIX="_3"
+DSUFFIX="_4"
 inherit autotools flag-o-matic toolchain-funcs rhel9-a
 
 DESCRIPTION="Interpreter for the PostScript language and PDF"
