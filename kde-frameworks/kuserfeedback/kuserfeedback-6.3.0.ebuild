@@ -12,7 +12,7 @@ inherit ecm frameworks.kde.org
 DESCRIPTION="Framework to collect user feedback for applications via telemetry and surveys"
 
 LICENSE="MIT"
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~arm64"
 IUSE="doc"
 
 # FIXME: Qt_6_PRIVATE_API matches UserFeedbackConsole, but where is it coming from?
@@ -42,3 +42,8 @@ src_configure() {
 
 	ecm_src_configure
 }
+
+CMAKE_SKIP_TESTS=(
+	# bugs: 921359, requires virtualx
+	openglinfosourcetest
+)

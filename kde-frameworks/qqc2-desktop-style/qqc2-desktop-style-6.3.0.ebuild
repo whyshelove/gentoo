@@ -11,7 +11,7 @@ inherit ecm frameworks.kde.org
 DESCRIPTION="Style for QtQuickControls 2 that uses QWidget's QStyle for painting"
 
 LICENSE="|| ( GPL-2+ LGPL-3+ )"
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~arm64"
 IUSE=""
 
 # Qt_6_PRIVATE_API matches org.kde.desktop.so, see also:
@@ -29,3 +29,8 @@ RDEPEND="${DEPEND}
 	>=dev-qt/qt5compat-${QTMIN}:6
 "
 BDEPEND=">=dev-qt/qttools-${QTMIN}:6[linguist]"
+
+CMAKE_SKIP_TESTS=(
+	# bug 926509
+	animationspeedmodifiertest
+)

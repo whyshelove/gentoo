@@ -9,7 +9,7 @@ inherit ecm frameworks.kde.org
 DESCRIPTION="Framework for reading and writing configuration"
 
 LICENSE="LGPL-2+"
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~arm64"
 IUSE="dbus qml"
 
 # bug 560086
@@ -25,6 +25,17 @@ DEPEND="${RDEPEND}
 BDEPEND=">=dev-qt/qttools-${QTMIN}:6[linguist]"
 
 DOCS=( DESIGN docs/{DESIGN.kconfig,options.md} )
+
+src_prepare() {
+	ecm_src_prepare
+
+	# bug 934805
+	# TODO: https://invent.kde.org/frameworks/kconfig/-/merge_requests/315
+	if ! use qml; then
+		sed -e "s/^include(ECMQmlModule)/#& # disabled by USE=-qml/" \
+			-i CMakeLists.txt || die
+	fi
+}
 
 src_configure() {
 	local mycmakeargs=(

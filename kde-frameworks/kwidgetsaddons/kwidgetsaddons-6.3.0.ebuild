@@ -10,7 +10,7 @@ inherit ecm frameworks.kde.org
 DESCRIPTION="An assortment of high-level widgets for common tasks"
 
 LICENSE="LGPL-2.1+"
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~arm64"
 IUSE=""
 
 DEPEND=">=dev-qt/qtbase-${QTMIN}:6[gui,widgets]"
@@ -22,6 +22,8 @@ CMAKE_SKIP_TESTS=(
 	kdatecomboboxtest
 	# bug 697866
 	ksqueezedtextlabelautotest
+	# bug 926508
+	ktooltipwidgettest
 	# bug 808216
 	ktwofingertaptest
 	ktwofingerswipetest

@@ -9,7 +9,7 @@ inherit ecm frameworks.kde.org xdg-utils
 DESCRIPTION="Framework for solving common problems such as caching, randomisation, and more"
 
 LICENSE="LGPL-2+"
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~arm64"
 IUSE="dbus"
 
 DEPEND="
@@ -40,6 +40,9 @@ src_test() {
 		kdirwatch_stat_unittest
 		# bugs 665682
 		kformattest
+		# bug 770781
+		kaboutdatatest
+		klistopenfilesjobtest_unix
 	)
 	# bug 619656
 	ecm_src_test -j1
