@@ -33,6 +33,21 @@
 
 #--- END OF EXAMPLES ---
 
+# James Le Cuirot <chewi@gentoo.org> (2024-07-01)
+# Ancient, dead upstream, generally awful.
+# Removal on 2024-08-01.  Bugs #935307, #935308, #935309.
+games-arcade/spacerider
+games-arcade/tuxdash
+games-arcade/xsfcave
+
+# NHOrus <jy6x2b32pie9@yahoo.com> (2024-06-28)
+# games-puzzle/seatris: last rites
+# Twenty-year-old tetris clone with upstream that wasn't touched since,
+# broken code and broken autoconf.
+# Removed after 2024-08-01
+# Bug: https://bugs.gentoo.org/935057
+games-puzzle/seatris
+
 # Sam James <sam@gentoo.org> (2024-06-25)
 # Subvolume printing is broken: https://github.com/kdave/btrfs-progs/issues/829
 =sys-fs/btrfs-progs-6.9.1
@@ -48,11 +63,6 @@
 #
 # Bugs #871387, #907261, #712480, #931765.
 media-libs/libmpeg3
-
-# Arthur Zamarin <arthurzam@gentoo.org> (2024-06-23)
-# EAPI=6, waiting for a version bump, no reverse-dependencies.
-# Removal on 2024-07-23.  Bugs #934756, #924303.
-sci-astronomy/scamp
 
 # Arthur Zamarin <arthurzam@gentoo.org> (2024-06-22)
 # EAPI=6, no reverse-dependencies, various issues with modern C,
@@ -432,6 +442,8 @@ dev-ml/async_log:0/0.17
 dev-ml/textutils:0/0.17
 dev-ml/async:0/0.17
 >=dev-ml/labltk-8.06.14
+dev-ml/patience_diff:0/0.17
+>=dev-ml/ppx_deriving-6.0.2
 
 # Arthur Zamarin <arthurzam@gentoo.org> (2024-06-08)
 # EAPI=6, waiting for a version bump, not maintained for many years.
@@ -469,6 +481,7 @@ sci-libs/coinhsl
 # Michał Górny <mgorny@gentoo.org> (2024-06-08)
 # Prereleases of Xfce 4.20.  Masking upon popular request, due to
 # a large number of regressions in every new release.
+>=dev-build/xfce4-dev-tools-4.19
 >=xfce-base/exo-4.19
 >=xfce-base/garcon-4.19
 >=xfce-base/libxfce4ui-4.19
@@ -542,13 +555,6 @@ net-mail/gnubiff
 # Removal on 2024-06-30.  Bugs #933239, #828068.
 app-emulation/phpvirtualbox
 
-# Sam James <sam@gentoo.org> (2024-05-29)
-# OpenPGP key of malicious upstream xz co-maintainer. This key is no longer
-# used by any ebuilds in tree. Removal on 2024-06-29. This package was already
-# masked a while ago but is now being removed. See the bug for details
-# on the gap. Bug #928134 (GLSA-202403-04).
-sec-keys/openpgp-keys-jiatan
-
 # Sam James <sam@gentoo.org> (2024-05-28)
 # Breaks reverse dependencies like protobuf-c (bug #932857) and protobuf-26.1
 # itself isn't compatible with this abseil-cpp version (bug #932848).
@@ -556,12 +562,6 @@ sec-keys/openpgp-keys-jiatan
 # for protobuf because of its abseil dependency - see the discussion in bug #912819.
 ~dev-libs/protobuf-26.1
 ~dev-cpp/abseil-cpp-20240116.2
-
-# Hans de Graaff <graaff@gentoo.org> (2024-05-26)
-# Upstream is gone. No longer compiles with modern C compilers. Last
-# release in 2011. No reverse dependencies. Masked for removal on
-# 20240-06-26.
-dev-ruby/uconv
 
 # Sam James <sam@gentoo.org> (2024-04-28)
 # Masked for testing. Tracker bug: bug #930805.
@@ -666,7 +666,7 @@ sec-keys/openpgp-keys-jiatan
 # Sam James <sam@gentoo.org> (2023-05-10)
 # Lots of package breakage as usual for new versions. Masked until most/all
 # reverse dependencies are fixed. Tracker bug is bug #906077.
-=dev-libs/libfmt-10*
+>=dev-libs/libfmt-10
 
 # Ionen Wolkens <ionen@gentoo.org> (2023-03-30)
 # NVIDIA dropped support for the 390.xx branch in December 2022[1].
