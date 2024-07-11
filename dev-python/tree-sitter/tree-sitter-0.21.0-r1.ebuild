@@ -48,6 +48,7 @@ RDEPEND="${DEPEND}
 	$(python_gen_cond_dep '
 		dev-python/setuptools[${PYTHON_USEDEP}]
 	' 3.12)
+	dev-python/backports-tarfile
 "
 
 distutils_enable_tests pytest

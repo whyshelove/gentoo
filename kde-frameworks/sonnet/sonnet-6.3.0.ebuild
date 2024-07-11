@@ -10,7 +10,7 @@ inherit ecm frameworks.kde.org
 DESCRIPTION="Framework for providing spell-checking through abstraction of popular backends"
 
 LICENSE="LGPL-2+ LGPL-2.1+"
-KEYWORDS="~amd64 ~arm64"
+KEYWORDS="~amd64 ~arm64 ~riscv"
 IUSE="aspell +hunspell qml"
 
 DEPEND="
@@ -21,6 +21,9 @@ DEPEND="
 "
 RDEPEND="${DEPEND}"
 BDEPEND=">=dev-qt/qttools-${QTMIN}:6[linguist]"
+
+# Pending: https://invent.kde.org/frameworks/sonnet/-/merge_requests/108
+PATCHES=( "${FILESDIR}/${P}-cmake.patch" ) # bug 935488
 
 CMAKE_SKIP_TESTS=(
 	# bug 779994
