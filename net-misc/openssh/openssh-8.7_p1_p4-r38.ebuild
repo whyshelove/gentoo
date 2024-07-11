@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-#suffix_ver=$(ver_cut 6)
+suffix_ver=$(ver_cut 6)
 [[ ${suffix_ver} ]] && DSUFFIX="_4.${suffix_ver}"
 #unused_patches=( patch983 patch700 patch1007 )
 inherit user-info flag-o-matic autotools pam systemd toolchain-funcs rhel9
@@ -139,7 +139,6 @@ src_prepare() {
 	eapply "${FILESDIR}"/${PN}-7.5_p1-disable-conch-interop-tests.patch
 	eapply "${FILESDIR}"/${PN}-8.0_p1-fix-putty-tests.patch
 	eapply "${FILESDIR}"/${PN}-8.0_p1-deny-shmget-shmat-shmdt-in-preauth-privsep-child.patch
-	eapply "${FILESDIR}"/${PN}-8.7p1-CVE-2024-6387.patch
 
 	[[ -d ${WORKDIR}/patches ]] && eapply "${WORKDIR}"/patches
 
