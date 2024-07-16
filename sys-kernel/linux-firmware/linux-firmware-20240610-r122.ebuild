@@ -3,11 +3,12 @@
 
 EAPI=8
 
-GIT_COMMIT=b3132c18
+GIT_COMMIT=90df68d2
 DPREFIX="git${GIT_COMMIT}."
 WhatArch=noarch
+DSUFFIX="_10"
 
-inherit linux-info mount-boot savedconfig multiprocessing rhel8
+inherit dist-kernel-utils linux-info mount-boot savedconfig multiprocessing rhel8
 
 # In case this is a real snapshot, fill in commit below.
 # For normal, tagged releases, leave blank
@@ -22,7 +23,7 @@ else
 		S="${WORKDIR}/${MY_COMMIT}"
 	fi
 
-	KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
+	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
 fi
 
 DESCRIPTION="Linux firmware files"
@@ -32,12 +33,13 @@ LICENSE="GPL-2 GPL-2+ GPL-3 BSD MIT || ( MPL-1.1 GPL-2 )
 	redistributable? ( linux-fw-redistributable BSD-2 BSD BSD-4 ISC MIT )
 	unknown-license? ( all-rights-reserved )"
 SLOT="0"
-IUSE="compress-xz compress-zstd deduplicate initramfs +redistributable savedconfig unknown-license"
+IUSE="bindist compress-xz compress-zstd deduplicate dist-kernel +initramfs +redistributable savedconfig unknown-license"
 REQUIRED_USE="initramfs? ( redistributable )
 	?? ( compress-xz compress-zstd )
 	savedconfig? ( !deduplicate )"
 
 RESTRICT="binchecks strip test
+	!bindist? ( bindist )
 	unknown-license? ( bindist )"
 
 BDEPEND="initramfs? ( app-arch/cpio )
@@ -50,12 +52,6 @@ RDEPEND="!savedconfig? (
 		redistributable? (
 			!sys-firmware/alsa-firmware[alsa_cards_ca0132]
 			!sys-block/qla-fc-firmware
-			!sys-firmware/iwl1000-ucode
-			!sys-firmware/iwl6005-ucode
-			!sys-firmware/iwl6030-ucode
-			!sys-firmware/iwl3160-ucode
-			!sys-firmware/iwl7260-ucode
-			!sys-firmware/iwl3160-7260-bt-ucode
 			!sys-firmware/raspberrypi-wifi-ucode
 		)
 		unknown-license? (
@@ -64,13 +60,28 @@ RDEPEND="!savedconfig? (
 			!sys-firmware/alsa-firmware[alsa_cards_sb16]
 			!sys-firmware/alsa-firmware[alsa_cards_ymfpci]
 		)
-	)"
+	)
+	dist-kernel? ( virtual/dist-kernel )
+"
+IDEPEND="
+	dist-kernel? (
+		initramfs? ( sys-kernel/installkernel )
+	)
+"
 
 QA_PREBUILT="*"
-PATCHES=( "${FILESDIR}"/${PN}-copy-firmware.patch )
+PATCHES=( "${FILESDIR}"/${PN}-copy-firmware-r4.patch )
 
 pkg_pretend() {
-	use initramfs && mount-boot_pkg_pretend
+	if use initramfs; then
+		if [[ -z ${ROOT} ]] && use dist-kernel; then
+			# Check, but don't die because we can fix the problem and then
+			# emerge --config ... to re-run installation.
+			nonfatal mount-boot_check_status
+		else
+			mount-boot_pkg_pretend
+		fi
+	fi
 }
 
 pkg_setup() {
@@ -86,8 +97,8 @@ pkg_setup() {
 				eerror "Kernels <5.19 do not support ZSTD-compressed firmware files"
 			fi
 		fi
-		linux-info_pkg_setup
 	fi
+	linux-info_pkg_setup
 }
 
 src_unpack() {
@@ -103,7 +114,6 @@ src_unpack() {
 }
 
 src_prepare() {
-
 	default
 
 	find . -type f -not -perm 0644 -print0 \
@@ -111,27 +121,12 @@ src_prepare() {
 		|| die
 
 	chmod +x copy-firmware.sh || die
+	cp "${FILESDIR}/${PN}-make-amd-ucode-img.bash" "${T}/make-amd-ucode-img" || die
+	chmod +x "${T}/make-amd-ucode-img" || die
 
-	if use initramfs; then
+	if use initramfs && ! use dist-kernel; then
 		if [[ -d "${S}/amd-ucode" ]]; then
-			local UCODETMP="${T}/ucode_tmp"
-			local UCODEDIR="${UCODETMP}/kernel/x86/microcode"
-			mkdir -p "${UCODEDIR}" || die
-			echo 1 > "${UCODETMP}/early_cpio"
-
-			local amd_ucode_file="${UCODEDIR}/AuthenticAMD.bin"
-			cat "${S}"/amd-ucode/*.bin > "${amd_ucode_file}" || die "Failed to concat amd cpu ucode"
-
-			if [[ ! -s "${amd_ucode_file}" ]]; then
-				die "Sanity check failed: '${amd_ucode_file}' is empty!"
-			fi
-
-			pushd "${UCODETMP}" &>/dev/null || die
-			find . -print0 | cpio --quiet --null -o -H newc -R 0:0 > "${S}"/amd-uc.img
-			popd &>/dev/null || die
-			if [[ ! -s "${S}/amd-uc.img" ]]; then
-				die "Failed to create '${S}/amd-uc.img'!"
-			fi
+			"${T}/make-amd-ucode-img" "${S}" "${S}/amd-ucode" || die
 		else
 			# If this will ever happen something has changed which
 			# must be reviewed
@@ -142,8 +137,9 @@ src_prepare() {
 	# whitelist of misc files
 	local misc_files=(
 		copy-firmware.sh
+		README.md
 		WHENCE
-		README
+		LICEN[CS]E.*
 	)
 
 	# whitelist of images with a free software license
@@ -283,25 +279,21 @@ src_prepare() {
 
 src_install() {
 
-	local LINUX_FIRMWARE_SAVED_CONFIG_FILES=
 	local FW_OPTIONS=( "-v" )
+	local files_to_keep=
 
 	if use savedconfig; then
 		if [[ -s "${S}/${PN}.conf" ]]; then
 			files_to_keep="${T}/files_to_keep.lst"
 			grep -v '^#' "${S}/${PN}.conf" 2>/dev/null > "${files_to_keep}" || die
 			[[ -s "${files_to_keep}" ]] || die "grep failed, empty config file?"
-			LINUX_FIRMWARE_SAVED_CONFIG_FILES=$(<${files_to_keep})
-			LINUX_FIRMWARE_SAVED_CONFIG_FILES="${LINUX_FIRMWARE_SAVED_CONFIG_FILES//$'\n'/ }"
-			FW_OPTIONS+=( "--firmware-list" "${LINUX_FIRMWARE_SAVED_CONFIG_FILES[@]}" )
+			FW_OPTIONS+=( "--firmware-list" "${files_to_keep}" )
 		fi
 	fi
 
 	! use deduplicate && FW_OPTIONS+=( "--ignore-duplicates" )
 	FW_OPTIONS+=( "${ED}/lib/firmware" )
 	./copy-firmware.sh "${FW_OPTIONS[@]}"
-
-	echo "calling copy-firmwaare.sh ${FW_OPTIONS[@]}"
 
 	pushd "${ED}/lib/firmware" &>/dev/null || die
 
@@ -381,10 +373,31 @@ src_install() {
 
 	popd &>/dev/null || die
 
-	if use initramfs ; then
+	# Instruct Dracut on whether or not we want the microcode in initramfs
+	(
+		insinto /usr/lib/dracut/dracut.conf.d
+		newins - 10-${PN}.conf <<<"early_microcode=$(usex initramfs)"
+	)
+	if use initramfs; then
+		# Install installkernel/kernel-install hooks for non-dracut initramfs
+		# generators that don't bundled the microcode
+		dobin "${T}/make-amd-ucode-img"
+		(
+			exeinto /usr/lib/kernel/preinst.d
+			doexe "${FILESDIR}/35-amd-microcode.install"
+			exeinto /usr/lib/kernel/install.d
+			doexe "${FILESDIR}/35-amd-microcode-systemd.install"
+		)
+	fi
+
+	if use initramfs && ! use dist-kernel; then
 		insinto /boot
 		doins "${S}"/amd-uc.img
 	fi
+
+	dodoc README.md
+	# some licenses require copyright and permission notice to be included
+	use bindist && dodoc WHENCE LICEN[CS]E.*
 }
 
 pkg_preinst() {
@@ -398,7 +411,7 @@ pkg_preinst() {
 	fi
 
 	# Make sure /boot is available if needed.
-	use initramfs && mount-boot_pkg_preinst
+	use initramfs && ! use dist-kernel && mount-boot_pkg_preinst
 }
 
 pkg_postinst() {
@@ -416,16 +429,22 @@ pkg_postinst() {
 		fi
 	done
 
-	# Don't forget to umount /boot if it was previously mounted by us.
-	use initramfs && mount-boot_pkg_postinst
+	if use initramfs; then
+		if [[ -z ${ROOT} ]] && use dist-kernel; then
+			dist-kernel_reinstall_initramfs "${KV_DIR}" "${KV_FULL}"
+		else
+			# Don't forget to umount /boot if it was previously mounted by us.
+			mount-boot_pkg_postinst
+		fi
+	fi
 }
 
 pkg_prerm() {
 	# Make sure /boot is mounted so that we can remove /boot/amd-uc.img!
-	use initramfs && mount-boot_pkg_prerm
+	use initramfs && ! use dist-kernel && mount-boot_pkg_prerm
 }
 
 pkg_postrm() {
 	# Don't forget to umount /boot if it was previously mounted by us.
-	use initramfs && mount-boot_pkg_postrm
+	use initramfs && ! use dist-kernel && mount-boot_pkg_postrm
 }

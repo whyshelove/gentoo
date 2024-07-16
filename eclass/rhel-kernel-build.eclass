@@ -35,6 +35,7 @@ BDEPEND="
 	virtual/yacc
         signkernel? ( app-crypt/pesign dev-libs/nss[utils] )
 	signmodules? ( app-crypt/pesign dev-libs/nss[utils] )
+	arm64? ( sys-apps/dtc dev-util/pahole )
 "
 
 _target_cpu=$(rhel-kernel-install_get_qemu_arch)

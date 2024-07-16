@@ -3,7 +3,7 @@
 
 EAPI=8
 
-DSUFFIX="_9"
+DSUFFIX="_8"
 
 inherit autotools flag-o-matic toolchain-funcs multilib-minimal rhel8-a
 

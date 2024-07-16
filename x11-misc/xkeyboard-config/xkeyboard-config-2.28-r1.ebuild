@@ -35,11 +35,6 @@ pkg_setup() {
 	python-any-r1_pkg_setup
 }
 
-src_prepare() {
-	default
-	eautoreconf
-}
-
 src_configure() {
 	local econfargs=(
 		--with-xkb-base="${EPREFIX}/usr/share/X11/xkb"

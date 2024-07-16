@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-
+DSUFFIX="_10"
 inherit multilib-minimal usr-ldscript autotools rhel8
 
 DESCRIPTION="Transport Independent RPC library (SunRPC replacement)"
