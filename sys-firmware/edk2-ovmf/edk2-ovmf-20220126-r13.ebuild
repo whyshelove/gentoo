@@ -9,7 +9,7 @@ PYTHON_COMPAT=( python3_{6,8,9} )
 GIT_COMMIT=bb1bba3d77
 WhatArch=noarch
 
-DSUFFIX="_10"
+DSUFFIX="_10.2"
 
 suffix_ver=$(ver_cut 3)
 [[ ${suffix_ver} ]] && DSUFFIX="_10.${suffix_ver}"

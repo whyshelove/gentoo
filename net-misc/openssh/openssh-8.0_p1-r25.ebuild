@@ -2,9 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-
+DSUFFIX="_10"
 suffix_ver=$(ver_cut 6)
-[[ ${suffix_ver} ]] && DSUFFIX="_9.${suffix_ver}"
+[[ ${suffix_ver} ]] && DSUFFIX="_10.${suffix_ver}"
 
 inherit user-info flag-o-matic autotools pam systemd toolchain-funcs rhel8
 

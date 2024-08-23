@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-
+DSUFFIX="_10"
 inherit cmake toolchain-funcs xdg-utils rhel8-a
 
 if [[ ${PV} == *9999* ]] ; then

@@ -4,7 +4,7 @@
 EAPI=7
 
 PYTHON_COMPAT=( python3_{6,8,9} )
-
+DSUFFIX="_10"
 inherit flag-o-matic python-any-r1 toolchain-funcs rhel8-a
 
 DESCRIPTION="Network utility to retrieve files from the WWW"

@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-
+DSUFFIX="_10.1"
 inherit toolchain-autoconf rhel8-a
 
 DESCRIPTION="Used to create autoconfiguration files"

@@ -2,6 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
+DSUFFIX="_10"
 inherit gnome2 multilib-minimal rhel8
 
 DESCRIPTION="Library for Neighbor Discovery Protocol"

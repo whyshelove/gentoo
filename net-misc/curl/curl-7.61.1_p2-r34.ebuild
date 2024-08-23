@@ -4,7 +4,7 @@
 EAPI="7"
 #DSUFFIX="_$(ver_cut 5)"
 suffix_ver=$(ver_cut 5)
-[[ ${suffix_ver} ]] && DSUFFIX="_9.${suffix_ver}"
+[[ ${suffix_ver} ]] && DSUFFIX="_10.${suffix_ver}"
 
 inherit autotools prefix multilib-minimal rhel8
 

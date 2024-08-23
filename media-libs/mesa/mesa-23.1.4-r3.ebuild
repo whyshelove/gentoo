@@ -4,7 +4,7 @@
 EAPI=8
 
 PYTHON_COMPAT=( python3_{8..11} )
-
+DSUFFIX="_10"
 unused_patches=( "Patch1: fix-py-ver.patch" )
 inherit llvm meson-multilib python-any-r1 linux-info rhel8-a
 
