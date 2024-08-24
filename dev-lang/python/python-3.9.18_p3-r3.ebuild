@@ -5,8 +5,8 @@ EAPI="8"
 WANT_LIBTOOL="none"
 
 unused_patches=( Patch111 Patch251 )
-#suffix_ver=$(ver_cut 5)
-[[ ${suffix_ver} ]] && DSUFFIX="_3.${suffix_ver}"
+suffix_ver=$(ver_cut 5)
+[[ ${suffix_ver} ]] && DSUFFIX="_4.${suffix_ver}"
 
 inherit autotools check-reqs flag-o-matic multiprocessing pax-utils
 inherit prefix python-utils-r1 toolchain-funcs verify-sig rhel9
@@ -14,7 +14,7 @@ inherit prefix python-utils-r1 toolchain-funcs verify-sig rhel9
 MY_PV=${PV/_rc/rc}
 MY_P="Python-${MY_PV%_p*}"
 PYVER=$(ver_cut 1-2)
-PATCHSET="python-gentoo-patches-${MY_PV}"
+PATCHSET="python-gentoo-patches-${MY_PV%_p*}"
 
 DESCRIPTION="An interpreted, interactive, object-oriented programming language"
 HOMEPAGE="

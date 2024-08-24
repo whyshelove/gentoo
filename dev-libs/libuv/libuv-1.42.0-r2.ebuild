@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-
+DSUFFIX="_4"
 inherit autotools multilib-minimal rhel9-a
 
 DESCRIPTION="Cross-platform asychronous I/O"

@@ -3,9 +3,8 @@
 
 EAPI="8"
 
-DSUFFIX="_4"
 suffix_ver=$(ver_cut 5)
-[[ ${suffix_ver} ]] && DSUFFIX="_3.${suffix_ver}"
+[[ ${suffix_ver} ]] && DSUFFIX="_4.${suffix_ver}"
 unused_patches=( patch101 )
 inherit autotools prefix multilib-minimal rhel9
 

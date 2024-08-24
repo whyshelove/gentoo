@@ -3,8 +3,9 @@
 
 EAPI=7
 
+DSUFFIX="_4"
 suffix_ver=$(ver_cut 5)
-[[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}.1"
+[[ ${suffix_ver} ]] && DSUFFIX="_4.${suffix_ver}"
 
 inherit autotools flag-o-matic linux-info xdg multilib-minimal optfeature pam systemd toolchain-funcs rhel9
 

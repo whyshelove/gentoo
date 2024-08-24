@@ -38,8 +38,7 @@ if [ -z ${MY_PF} ] ; then
 		case ${PN} in
 			tiff | db | appstream-glib | mpc \
 			| talloc | tdb | tevent | ldb )  MY_P=lib${P} ;;
-			docbook-xsl-stylesheets )  MY_P=docbook5-style-xsl-${PV} ;;
-			docbook-xsl-ns-stylesheets )  MY_P=docbook-style-xsl-${PV} ;;
+			docbook-xsl-* )  MY_P=docbook-style-xsl-${PV} ;;
 			ghostscript-gpl )  MY_P=${P/-gpl} ;;
 			wayland-scanner )  MY_P=${P/-scanner} ;;
 			lm-sensors )  MY_P=${P/-/_} ;;
