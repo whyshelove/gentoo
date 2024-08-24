@@ -267,7 +267,7 @@ LICENSE+="
 	|| ( GPL-2 GPL-3 LGPL-3 )
 "
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~arm64 ~loong ~ppc ~ppc64 ~sparc ~x86"
+KEYWORDS="amd64 ~arm arm64 ~loong ~ppc ~ppc64 ~sparc ~x86"
 IUSE="nettle +openssl"
 REQUIRED_USE="^^ ( nettle openssl )"
 
@@ -306,5 +306,6 @@ src_install() {
 	dosym librpm_sequoia.so.1 /usr/$(get_libdir)/librpm_sequoia.so
 
 	insinto /usr/$(get_libdir)/pkgconfig
-	doins "$(cargo_target_dir)"/rpm-sequoia.pc
+	# build.rs sets the output dir to be target/<PROFILE>, so don't use helper.
+	doins target/$(usex debug debug release)/rpm-sequoia.pc
 }
