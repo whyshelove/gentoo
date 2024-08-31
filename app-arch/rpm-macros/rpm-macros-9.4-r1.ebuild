@@ -5,7 +5,7 @@ EAPI=7
 
 inherit unpacker rhel9
 
-SRC_URI="${REPO_BIN}/r/redhat-release-${PV}-0.4.${DIST}.x86_64.rpm"
+SRC_URI="${REPO_BIN}/r/redhat-release-${PV}-0.5.${DIST}.x86_64.rpm"
 
 SRC_URI+=" ${REPO_BIN}/r/rootfiles-8.1-31.${DIST}.noarch.rpm"
 

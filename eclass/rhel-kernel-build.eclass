@@ -51,6 +51,7 @@ BDEPEND="
         signkernel? ( app-crypt/pesign dev-libs/nss[utils] )
 	signmodules? ( app-crypt/pesign dev-libs/nss[utils] )
 	dev-util/pahole
+	!sys-kernel/linux-firmware[initramfs]
 "
 
 IUSE="+strip"

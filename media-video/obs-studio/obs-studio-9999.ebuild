@@ -177,14 +177,16 @@ src_unpack() {
 src_prepare() {
 	default
 
-	sed -i '/-Werror$/d' "${WORKDIR}"/${P}/cmake/Modules/CompilerConfig.cmake || die
-
 	# -Werror=lto-type-mismatch
 	# https://bugs.gentoo.org/867250
 	# https://github.com/obsproject/obs-studio/issues/8988
 	use wayland && filter-lto
 
 	cmake_src_prepare
+
+	pushd deps/json11 &> /dev/null || die
+		eapply "${FILESDIR}/json11-1.0.0-include-cstdint.patch"
+	popd &> /dev/null || die
 }
 
 src_configure() {
@@ -215,7 +217,6 @@ src_configure() {
 		-DENABLE_WAYLAND=$(usex wayland)
 		-DENABLE_WEBRTC=OFF # Requires libdatachannel.
 		-DENABLE_WEBSOCKET=$(usex websocket)
-		-DOBS_CMAKE_VERSION=3
 	)
 
 	if [[ ${PV} != 9999 ]]; then
