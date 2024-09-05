@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-
+DSUFFIX="_4"
 inherit usr-ldscript rhel9
 
 DESCRIPTION="Minimalistic netlink library"

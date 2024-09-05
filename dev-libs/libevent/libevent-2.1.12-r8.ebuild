@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-DSUFFIX="_4"
+
 inherit libtool multilib-minimal rhel9
 
 DESCRIPTION="Library to execute a function when a specific event occurs on a file descriptor"
