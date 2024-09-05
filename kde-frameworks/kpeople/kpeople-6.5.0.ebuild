@@ -12,7 +12,7 @@ DESCRIPTION="KDE contact person abstraction library"
 HOMEPAGE="https://invent.kde.org/frameworks/kpeople"
 
 LICENSE="LGPL-2.1"
-KEYWORDS="~amd64 ~arm64 ~ppc64 ~riscv ~x86"
+KEYWORDS="amd64 arm64 ~ppc64 ~riscv ~x86"
 IUSE=""
 
 DEPEND="
@@ -29,8 +29,8 @@ RDEPEND="${DEPEND}"
 
 src_test() {
 	local CMAKE_SKIP_TESTS=(
-		# bug 668192, segfaults
-		persondatatest
+		# bugs 668192, 816588: segfaults w/o virtx
+		personsmodeltest
 	)
 
 	ecm_src_test -j1

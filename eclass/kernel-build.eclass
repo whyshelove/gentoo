@@ -47,6 +47,7 @@ BDEPEND="
 	${PYTHON_DEPS}
 	app-alternatives/cpio
 	app-alternatives/bc
+	dev-lang/perl
 	sys-devel/bison
 	sys-devel/flex
 	virtual/libelf
@@ -243,7 +244,7 @@ kernel-build_src_configure() {
 		MAKEARGS+=( KBZIP2="lbzip2" )
 	fi
 
-	[[ -f .config ]] || die "Ebuild error: please copy default config into .config"
+	[[ -f .config ]] || die "Ebuild error: No .config, kernel-build_merge_configs was not called."
 
 	if [[ -z "${KV_LOCALVERSION}" ]]; then
 		KV_LOCALVERSION=$(sed -n -e 's#^CONFIG_LOCALVERSION="\(.*\)"$#\1#p' \
@@ -295,7 +296,13 @@ kernel-build_src_configure() {
 kernel-build_src_compile() {
 	debug-print-function ${FUNCNAME} "${@}"
 
-	emake O="${WORKDIR}"/build "${MAKEARGS[@]}" all
+	local targets=( all )
+
+	if grep -q "CONFIG_CTF=y" "${WORKDIR}/modprep/.config"; then
+		targets+=( ctf )
+	fi
+
+	emake O="${WORKDIR}"/build "${MAKEARGS[@]}" "${targets[@]}"
 }
 
 # @FUNCTION: kernel-build_src_test
@@ -304,6 +311,12 @@ kernel-build_src_compile() {
 # from kernel-install.eclass with the correct paths.
 kernel-build_src_test() {
 	debug-print-function ${FUNCNAME} "${@}"
+
+	local targets=( modules_install )
+
+	if grep -q "CONFIG_CTF=y" "${WORKDIR}/modprep/.config"; then
+		targets+=( ctf_install )
+	fi
 
 	# Use the kernel build system to strip, this ensures the modules
 	# are stripped *before* they are signed or compressed.
@@ -314,7 +327,7 @@ kernel-build_src_test() {
 
 	emake O="${WORKDIR}"/build "${MAKEARGS[@]}" \
 		INSTALL_MOD_PATH="${T}" INSTALL_MOD_STRIP="${strip_args}" \
-		modules_install
+		"${targets[@]}"
 
 	kernel-install_test "${KV_FULL}" \
 		"${WORKDIR}/build/$(dist-kernel_get_image_path)" \
@@ -334,6 +347,10 @@ kernel-build_src_install() {
 	# on arm or arm64 you also need dtb
 	if use arm || use arm64 || use riscv; then
 		targets+=( dtbs_install )
+	fi
+
+	if grep -q "CONFIG_CTF=y" "${WORKDIR}/modprep/.config"; then
+		targets+=( ctf_install )
 	fi
 
 	# Use the kernel build system to strip, this ensures the modules
@@ -429,6 +446,7 @@ kernel-build_src_install() {
 			mv "build/vmlinux" "${ED}${kernel_dir}/vmlinux" || die
 		fi
 		dostrip -x "${kernel_dir}/vmlinux"
+		dostrip -x "${kernel_dir}/vmlinux.ctfa"
 	fi
 
 	# strip empty directories
@@ -602,10 +620,13 @@ kernel-build_pkg_postinst() {
 # 3. Config saved via USE=savedconfig (if applicable).
 # 4. Module signing key specified via MODULES_SIGN_KEY* variables.
 # 5. User-supplied configs from ${BROOT}/etc/kernel/config.d/*.config.
+#
+# This function must be called by the ebuild in the src_prepare phase.
 kernel-build_merge_configs() {
 	debug-print-function ${FUNCNAME} "${@}"
 
-	[[ -f .config ]] || die "${FUNCNAME}: .config does not exist"
+	[[ -f .config ]] ||
+		die "${FUNCNAME}: No .config, please copy default config into .config"
 	has .config "${@}" &&
 		die "${FUNCNAME}: do not specify .config as parameter"
 
