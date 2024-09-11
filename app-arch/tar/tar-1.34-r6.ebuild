@@ -3,7 +3,7 @@
 
 EAPI=7
 
-DSUFFIX="_1"
+DSUFFIX="_4.1"
 inherit rhel9
 
 DESCRIPTION="Use this to make tarballs :)"
