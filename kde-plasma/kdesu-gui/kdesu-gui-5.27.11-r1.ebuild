@@ -15,7 +15,7 @@ HOMEPAGE="https://invent.kde.org/plasma/kde-cli-tools"
 
 LICENSE="GPL-2" # TODO: CHECK
 SLOT="0"
-KEYWORDS="~loong ~x86"
+KEYWORDS="~arm ~loong x86"
 
 DEPEND="
 	>=dev-qt/qtgui-${QTMIN}:5
@@ -33,7 +33,10 @@ RDEPEND="${DEPEND}
 	sys-apps/dbus[X]
 "
 
-PATCHES=( "${FILESDIR}/${P}-build-only-kdesu.patch" )
+PATCHES=(
+	"${FILESDIR}/${P}-build-only-kdesu.patch" # downstream split
+	"${FILESDIR}/${P}-cmake.patch" # bug 939081, pending upstream MR
+)
 
 src_prepare() {
 	ecm_src_prepare
