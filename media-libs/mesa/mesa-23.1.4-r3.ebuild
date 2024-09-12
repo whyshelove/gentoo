@@ -160,7 +160,6 @@ DEPEND="${RDEPEND}
 	)
 "
 BDEPEND="
-	>=dev-util/meson-0.60.0
 	${PYTHON_DEPS}
 	opencl? (
 		>=virtual/rust-1.62.0
@@ -180,7 +179,7 @@ BDEPEND="
 	)
 	wayland? ( dev-util/wayland-scanner )
 "
-
+#	>=dev-util/meson-0.60.0
 S="${WORKDIR}/${MY_P}"
 EGIT_CHECKOUT_DIR=${S}
 
