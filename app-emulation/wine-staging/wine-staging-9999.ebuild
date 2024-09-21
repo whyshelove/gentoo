@@ -36,11 +36,11 @@ LICENSE="LGPL-2.1+ BSD-2 IJG MIT OPENLDAP ZLIB gsm libpng2 libtiff"
 SLOT="${PV}"
 IUSE="
 	+X +abi_x86_32 +abi_x86_64 +alsa capi crossdev-mingw cups dos
-	llvm-libunwind custom-cflags +fontconfig +gecko gphoto2 +gstreamer
-	kerberos +mingw +mono netapi nls odbc opencl +opengl osmesa pcap
-	perl pulseaudio samba scanner +sdl selinux smartcard +ssl +strip
-	+truetype udev udisks +unwind usb v4l +vulkan wayland wow64
-	+xcomposite xinerama
+	llvm-libunwind custom-cflags ffmpeg +fontconfig +gecko gphoto2
+	+gstreamer kerberos +mingw +mono netapi nls odbc opencl +opengl
+	osmesa pcap perl pulseaudio samba scanner +sdl selinux smartcard
+	+ssl +strip +truetype udev udisks +unwind usb v4l +vulkan wayland
+	wow64 +xcomposite xinerama
 "
 # bug #551124 for truetype
 # TODO: wow64 can be done without mingw if using clang (needs bug #912237)
@@ -90,6 +90,7 @@ WINE_COMMON_DEPEND="
 	)
 	alsa? ( media-libs/alsa-lib[${MULTILIB_USEDEP}] )
 	capi? ( net-libs/libcapi:=[${MULTILIB_USEDEP}] )
+	ffmpeg? ( media-video/ffmpeg:=[${MULTILIB_USEDEP}] )
 	gphoto2? ( media-libs/libgphoto2:=[${MULTILIB_USEDEP}] )
 	gstreamer? (
 		dev-libs/glib:2[${MULTILIB_USEDEP}]
@@ -140,21 +141,16 @@ DEPEND="
 	sys-kernel/linux-headers
 	X? ( x11-base/xorg-proto )
 "
-# gitapply.sh prefers git but can fallback to patch+extras
+# gitapply.sh "can" work without git but that is hardly tested
+# and known failing with some versions, so force real git
 BDEPEND="
 	${PYTHON_DEPS}
-	|| (
-		dev-vcs/git
-		(
-			sys-apps/gawk
-			sys-apps/util-linux
-		)
-	)
 	|| (
 		sys-devel/binutils
 		sys-devel/lld
 	)
 	dev-lang/perl
+	dev-vcs/git
 	sys-devel/bison
 	sys-devel/flex
 	virtual/pkgconfig
@@ -289,6 +285,7 @@ src_configure() {
 		$(use_with alsa)
 		$(use_with capi)
 		$(use_with cups)
+		$(use_with ffmpeg)
 		$(use_with fontconfig)
 		$(use_with gphoto2 gphoto)
 		$(use_with gstreamer)
