@@ -10,7 +10,7 @@ inherit prefix python-any-r1 qt6-build toolchain-funcs
 
 DESCRIPTION="Library for rendering dynamic web content in Qt6 C++ and QML applications"
 SRC_URI+="
-	https://dev.gentoo.org/~ionen/distfiles/${PN}-6.8-patchset-3.tar.xz
+	https://dev.gentoo.org/~ionen/distfiles/${PN}-6.8-patchset-4.tar.xz
 "
 
 if [[ ${QT6_BUILD_TYPE} == release ]]; then
@@ -77,7 +77,6 @@ RDEPEND="
 	)
 	system-icu? ( dev-libs/icu:= )
 	vaapi? ( media-libs/libva:=[X] )
-	!vaapi? ( media-libs/libvpx:= )
 "
 DEPEND="
 	${RDEPEND}
@@ -109,7 +108,6 @@ PATCHES=( "${WORKDIR}"/patches/${PN} )
 
 PATCHES+=(
 	# add extras as needed here, may merge in set if carries across versions
-	"${FILESDIR}"/${PN}-6.7.2-musl-cstdint.patch
 )
 
 python_check_deps() {
@@ -208,8 +206,10 @@ src_configure() {
 		# this by default in 6.7.3+ (bug #913923)
 		-DQT_FEATURE_webengine_system_re2=OFF
 
-		# bundled is currently required when using vaapi (forced regardless)
-		$(qt_feature !vaapi webengine_system_libvpx)
+		# system_libvpx=ON is intentionally ignored with USE=vaapi which leads
+		# to using system's being less tested, prefer disabling for now until
+		# vaapi can use it as well
+		-DQT_FEATURE_webengine_system_libvpx=OFF
 
 		# not necessary to pass these (default), but in case detection fails
 		$(printf -- '-DQT_FEATURE_webengine_system_%s=ON ' \

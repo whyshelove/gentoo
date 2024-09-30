@@ -24,7 +24,7 @@ RESTRICT="!test? ( test )"
 
 BDEPEND="
 	test? (
-		dev-cpp/catch
+		<dev-cpp/catch-3
 		dev-lang/go
 	)
 "
@@ -54,6 +54,8 @@ src_prepare() {
 		rm tests/catch.hpp || die
 		ln -s "${ESYSROOT}"/usr/include/catch2/catch.hpp tests/catch.hpp || die
 	fi
+
+	sed -e '/Werror/d' -i CMakeLists.txt || die # bug 936466
 
 	cmake_src_prepare
 
