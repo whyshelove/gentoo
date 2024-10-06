@@ -4,7 +4,7 @@
 EAPI=8
 
 #GIT_COMMIT=0e048b06
-DPREFIX="2."
+DPREFIX="3."
 WhatArch=noarch
 DSUFFIX="_4"
 
