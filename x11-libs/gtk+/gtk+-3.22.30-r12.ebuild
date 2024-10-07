@@ -3,7 +3,7 @@
 
 EAPI=6
 GNOME2_LA_PUNT="yes"
-
+DSUFFIX="_10"
 inherit autotools flag-o-matic gnome2 multilib virtualx multilib-minimal rhel8-a
 
 DESCRIPTION="Gimp ToolKit +"

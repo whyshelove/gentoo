@@ -3,7 +3,7 @@
 
 EAPI=8
 
-GIT_COMMIT=90df68d2
+GIT_COMMIT=3cff7109
 DPREFIX="git${GIT_COMMIT}."
 WhatArch=noarch
 DSUFFIX="_10"

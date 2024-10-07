@@ -3,8 +3,7 @@
 
 EAPI=8
 
-suffix_ver=$(ver_cut 5)
-[[ ${suffix_ver} ]] && DSUFFIX="_${suffix_ver}"
+DSUFFIX="_7"
 
 inherit flag-o-matic multilib toolchain-funcs multilib-minimal rhel8-a
 
