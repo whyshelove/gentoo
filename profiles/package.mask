@@ -33,6 +33,125 @@
 
 #--- END OF EXAMPLES ---
 
+# Ulrich Müller <ulm@gentoo.org> (2024-10-15)
+# No longer provided as a separate package; the Emacs mode is now
+# installed by dev-util/quilt with USE=emacs.
+# Removal on 2024-11-14. Bug #247500.
+app-emacs/quilt-el
+
+# Alfredo Tupone <tupone@gentoo.org> (2024-10-14)
+# These packages are no more needed.
+# Use dev-ml/opam, dev-ml/opam-file-format, 
+# dev-ml/opam-installer
+# that include these
+# remove on 2024-11-14.
+dev-ml/opam-client
+dev-ml/opam-repository
+dev-ml/opam-state
+dev-ml/opam-format
+dev-ml/opam-core
+dev-ml/opam-solver
+
+# Hans de Graaff <graaff@gentoo.org> (2024-10-13)
+# Obsolete slots without reverse dependencies. Use a newer slot
+# instead. Removal on 2024-11-13.
+dev-ruby/io-event:1.2
+dev-ruby/io-event:1.3
+
+# Holger Hoffstätte <holger@applied-asynchrony.com> (2024-10-11)
+# Vendors an unreleased libbpf version and generates ABI-breaking code.
+# Bug #941185.
+=dev-util/bpftool-7.5.0-r2
+
+# Michał Górny <mgorny@gentoo.org> (2024-10-10)
+# Gentoo package not updated for 4 years now.  No tests upstream.
+# No revdeps.
+# Removal on 2024-11-09.  Bug #941245.
+dev-python/beagle
+
+# Yongxiang Liang <tanekliang@gmail.org> (2024-10-10)
+# Fcitx 4 has been archived. Users can upgrade to Fcitx 5
+app-i18n/fcitx-anthy:4
+app-i18n/fcitx-chewing:4
+app-i18n/fcitx-cloudpinyin:4
+app-i18n/fcitx-configtool:4
+app-i18n/fcitx-hangul:4
+app-i18n/fcitx-libpinyin:4
+app-i18n/fcitx-m17n:4
+app-i18n/fcitx-qt5:4
+app-i18n/fcitx-rime:4
+app-i18n/fcitx-sayura:4
+app-i18n/fcitx-table-extra:4
+app-i18n/fcitx-unikey:4
+app-i18n/fcitx:4
+app-i18n/kcm-fcitx
+
+# Matt Jolly <kangie@gentoo.org> (2024-10-10)
+# Despite passing tests this version of GN has proven
+# to be unable to build Chromium. Masked pending investigation.
+=dev-build/gn-0.2200
+
+# Michael Orlitzky <mjo@gentoo.org> (2024-10-09)
+# This is the new stable series of webkit-gtk, but it has a new
+# less-portable rendering engine, and doesn't yet build on ~riscv for
+# reasons unrelated to that. It's easier to play around with it in
+# the tree, but it's not ready for end users yet.
+>=net-libs/webkit-gtk-2.46.0
+
+# Ionen Wolkens <ionen@gentoo.org> (2024-10-08)
+# Masked for testing and (mostly) to avoid upgrade noise given
+# PyQt6-6.7.x is known broken with it and depends on <6.8. Feel
+# free to unmask early if not using PyQt6.
+=dev-python/pyside6-6.8.0*
+=dev-python/pyside6-tools-6.8.0*
+=dev-python/shiboken6-6.8.0*
+=dev-qt/qt-docs-6.8.0*
+=dev-qt/qt3d-6.8.0*
+=dev-qt/qt5compat-6.8.0*
+=dev-qt/qtbase-6.8.0*
+=dev-qt/qtcharts-6.8.0*
+=dev-qt/qtconnectivity-6.8.0*
+=dev-qt/qtdeclarative-6.8.0*
+=dev-qt/qthttpserver-6.8.0*
+=dev-qt/qtimageformats-6.8.0*
+=dev-qt/qtlanguageserver-6.8.0*
+=dev-qt/qtlocation-6.8.0*
+=dev-qt/qtmultimedia-6.8.0*
+=dev-qt/qtnetworkauth-6.8.0*
+=dev-qt/qtpositioning-6.8.0*
+=dev-qt/qtquick3d-6.8.0*
+=dev-qt/qtquicktimeline-6.8.0*
+=dev-qt/qtremoteobjects-6.8.0*
+=dev-qt/qtscxml-6.8.0*
+=dev-qt/qtsensors-6.8.0*
+=dev-qt/qtserialbus-6.8.0*
+=dev-qt/qtserialport-6.8.0*
+=dev-qt/qtshadertools-6.8.0*
+=dev-qt/qtspeech-6.8.0*
+=dev-qt/qtsvg-6.8.0*
+=dev-qt/qttools-6.8.0*
+=dev-qt/qttranslations-6.8.0*
+=dev-qt/qtvirtualkeyboard-6.8.0*
+=dev-qt/qtwayland-6.8.0*
+=dev-qt/qtwebchannel-6.8.0*
+=dev-qt/qtwebengine-6.8.0*
+=dev-qt/qtwebsockets-6.8.0*
+=dev-qt/qtwebview-6.8.0*
+
+# Andreas Sturmlechner <asturm@gentoo.org> (2024-10-07)
+# No more revdeps, merged into kde-frameworks/kpeople upstream.
+# Removal on 2024-11-06.
+dev-libs/kpeoplevcard
+
+# Andreas Sturmlechner <asturm@gentoo.org> (2024-10-07)
+# Unmaintained and archived upstream, removal on 2024-11-06.
+net-im/choqok
+
+# Hans de Graaff <graaff@gentoo.org> (2024-10-06)
+# Obsolete slot without reverse dependencies. Use the newer slot
+# instead. Removal on 2024-11-08.
+dev-ruby/base64:0.1
+
 # Andrew Ammerlaan <andrewammerlaan@gentoo.org>
 # This version is known to break on certain systems. At the
 # same time it fixes several reported issues. Masked until
@@ -151,29 +270,10 @@ sci-chemistry/mopac7
 # Breaks libstdc++ with a casing issue: https://gcc.gnu.org/PR116657
 =sys-libs/timezone-data-2024b
 
-# Andreas Sturmlechner <asturm@gentoo.org> (2024-09-09)
-# No revdeps for years, KF5-based. Removal on 2024-10-09.
-net-libs/libmediawiki
-
-# Alfredo Tupone <tupone@gentoo.org> (2024-06-09)
-# These packages are no more needed. Use dev-ml/dune-private-libs
-# that include these
-# remove on 2024-10-08. Bug #939339
-dev-ml/stdune
-dev-ml/ordering
-dev-ml/dyn
-
 # Michał Górny <mgorny@gentoo.org> (2024-09-08)
 # Does not build anymore.  No upstream activity since 2021.
 # Removal on 2024-10-08.  Bug #932532.
 sci-physics/qmeq
-
-# Andreas Sturmlechner <asturm@gentoo.org> (2024-09-07)
-# These packages are EOL in Plasma 6.
-# Removal on 2024-10-07.
-<kde-plasma/khotkeys-5.27.50:5
-<kde-plasma/libkworkspace-5.27.50:5
-<kde-plasma/xembed-sni-proxy-5.27.50:5
 
 # Fabian Groffen <grobian@gentoo.org> (2024-09-02)
 # exim_tinydb utility crashes due to invalid free() (used in startup script)
@@ -329,6 +429,7 @@ dev-ml/async:0/0.17
 dev-ml/patience_diff:0/0.17
 >=dev-ml/ppx_deriving-6.0.2
 dev-ml/ppx_js_style:0/0.17
+>=dev-ml/camlp4-5
 
 # Michał Górny <mgorny@gentoo.org> (2024-06-08)
 # Prereleases of Xfce 4.20.  Masking upon popular request, due to

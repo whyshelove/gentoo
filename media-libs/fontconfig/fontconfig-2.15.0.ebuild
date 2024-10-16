@@ -3,7 +3,7 @@
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{9..12} )
+PYTHON_COMPAT=( python3_{9..13} )
 inherit multilib meson-multilib python-any-r1 readme.gentoo-r1
 
 DESCRIPTION="A library for configuring and customizing font access"

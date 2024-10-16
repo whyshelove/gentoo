@@ -13,12 +13,12 @@ SRC_URI="https://github.com/desultory/${PN}/archive/refs/tags/${PV}.tar.gz -> ${
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~arm64"
+KEYWORDS="amd64 arm64"
 
 RDEPEND=">=dev-python/zenlib-2.1.2[${PYTHON_USEDEP}]"
 
 distutils_enable_tests unittest
 
 python_test() {
-	eunittest tests/
+	eunittest tests
 }

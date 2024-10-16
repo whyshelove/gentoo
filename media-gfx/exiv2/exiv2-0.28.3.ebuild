@@ -3,7 +3,7 @@
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{10..13} )
+PYTHON_COMPAT=( python3_{9..13} )
 inherit cmake-multilib python-any-r1
 
 DESCRIPTION="EXIF, IPTC and XMP metadata C++ library and command line utility"
