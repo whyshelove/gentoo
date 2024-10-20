@@ -3,7 +3,7 @@
 
 EAPI="7"
 
-DSUFFIX="_9"
+DSUFFIX="_6"
 
 inherit flag-o-matic toolchain-funcs multilib-minimal rhel8
 
