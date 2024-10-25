@@ -120,13 +120,6 @@ src_unpack() {
 src_prepare() {
 	default
 
-	find . -type f -not -perm 0644 -print0 \
-		| xargs --null --no-run-if-empty chmod 0644 \
-		|| die
-
-	chmod +x copy-firmware.sh || die
-	chmod +x dedup-firmware.sh || die
-	chmod +x check_whence.py || die
 	cp "${FILESDIR}/${PN}-make-amd-ucode-img.bash" "${T}/make-amd-ucode-img" || die
 	chmod +x "${T}/make-amd-ucode-img" || die
 
@@ -214,6 +207,40 @@ src_prepare() {
 		mellanox/mlxsw_spectrum-13.2000.1122.mfa2
 	)
 
+	if use !redistributable; then
+		# remove files _not_ in the free_software or unknown_license lists
+		# everything else is confirmed (or assumed) to be redistributable
+		# based on upstream acceptance policy
+		einfo "Removing non-redistributable files ..."
+		local OLDIFS="${IFS}"
+		local IFS=$'\n'
+		set -o pipefail
+		find ! -type d -printf "%P\n" \
+			| grep -Fvx -e "${misc_files[*]}" -e "${free_software[*]}" -e "${unknown_license[*]}" \
+			| xargs -d '\n' --no-run-if-empty rm -v
+
+		[[ ${?} -ne 0 ]] && die "Failed to remove non-redistributable files"
+
+		IFS="${OLDIFS}"
+	fi
+
+	restore_config ${PN}.conf
+}
+
+src_install() {
+
+	local FW_OPTIONS=( "-v" )
+	git config --global --add safe.directory "${S}" || die
+
+	if use compress-xz; then
+		FW_OPTIONS+=( "--xz" )
+	elif use compress-zstd; then
+		FW_OPTIONS+=( "--zstd" )
+	fi
+	FW_OPTIONS+=( "${ED}/lib/firmware" )
+	./copy-firmware.sh "${FW_OPTIONS[@]}" || die
+	use deduplicate && { ./dedup-firmware.sh "${ED}/lib/firmware" || die; }
+
 	# blacklist of images with unknown license
 	local unknown_license=(
 		korg/k1212.dsp
@@ -263,41 +290,6 @@ src_prepare() {
 		einfo "Removing files with unknown license ..."
 		rm -v "${unknown_license[@]}" || die
 	fi
-
-	if use !redistributable; then
-		# remove files _not_ in the free_software or unknown_license lists
-		# everything else is confirmed (or assumed) to be redistributable
-		# based on upstream acceptance policy
-		einfo "Removing non-redistributable files ..."
-		local OLDIFS="${IFS}"
-		local IFS=$'\n'
-		set -o pipefail
-		find ! -type d -printf "%P\n" \
-			| grep -Fvx -e "${misc_files[*]}" -e "${free_software[*]}" -e "${unknown_license[*]}" \
-			| xargs -d '\n' --no-run-if-empty rm -v
-
-		[[ ${?} -ne 0 ]] && die "Failed to remove non-redistributable files"
-
-		IFS="${OLDIFS}"
-	fi
-
-	restore_config ${PN}.conf
-}
-
-src_install() {
-
-	local FW_OPTIONS=( "-v" )
-	git config --global --add safe.directory "${S}" || die
-
-	if use compress-xz; then
-		FW_OPTIONS+=( "--xz" )
-	elif use compress-zstd; then
-		FW_OPTIONS+=( "--zstd" )
-	fi
-	FW_OPTIONS+=( "${ED}/lib/firmware" )
-	./copy-firmware.sh "${FW_OPTIONS[@]}" || die
-	use deduplicate && ./dedup-firmware.sh "${ED}/lib/firmware" || die
-
 	pushd "${ED}/lib/firmware" &>/dev/null || die
 
 	# especially use !redistributable will cause some broken symlinks
@@ -379,6 +371,7 @@ pkg_preinst() {
 
 	# Make sure /boot is available if needed.
 	use initramfs && ! use dist-kernel && mount-boot_pkg_preinst
+
 }
 
 pkg_postinst() {
