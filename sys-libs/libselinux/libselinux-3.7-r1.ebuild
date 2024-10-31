@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="8"
-PYTHON_COMPAT=( python3_{10..13} )
+PYTHON_COMPAT=( python3_{9..13} )
 USE_RUBY="ruby31 ruby32 ruby33"
 
 # No, I am not calling ruby-ng
@@ -20,7 +20,7 @@ if [[ ${PV} == 9999 ]]; then
 	S="${WORKDIR}/${P}/${PN}"
 else
 	SRC_URI="https://github.com/SELinuxProject/selinux/releases/download/${MY_PV}/${MY_P}.tar.gz"
-	KEYWORDS="~amd64 ~arm ~arm64 ~mips ~riscv ~x86"
+	KEYWORDS="amd64 ~arm arm64 ~mips ~riscv x86"
 	S="${WORKDIR}/${MY_P}"
 fi
 
