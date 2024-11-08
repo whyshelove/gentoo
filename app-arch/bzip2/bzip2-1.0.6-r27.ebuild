@@ -5,7 +5,7 @@
 #      (since we're building shared libs) ...
 
 EAPI=6
-
+DSUFFIX="_10"
 inherit toolchain-funcs multilib-minimal usr-ldscript flag-o-matic rhel8
 
 DESCRIPTION="A high-quality data compressor used extensively by Gentoo Linux"

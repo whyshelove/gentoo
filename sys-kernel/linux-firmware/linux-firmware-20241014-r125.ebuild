@@ -3,7 +3,7 @@
 
 EAPI=8
 
-GIT_COMMIT=90df68d2
+GIT_COMMIT=06bad2f1
 DPREFIX="git${GIT_COMMIT}."
 WhatArch=noarch
 DSUFFIX="_10"
@@ -23,7 +23,7 @@ else
 		S="${WORKDIR}/${MY_COMMIT}"
 	fi
 
-	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
+	KEYWORDS="~alpha ~amd64 arm ~arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
 fi
 
 DESCRIPTION="Linux firmware files"

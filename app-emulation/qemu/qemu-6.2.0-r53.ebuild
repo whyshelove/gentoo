@@ -8,7 +8,7 @@ PYTHON_REQ_USE="ncurses,readline"
 
 FIRMWARE_ABI_VERSION="6.2.0"
 DPREFIX="module+"
-VER_COMMIT=21533+3df3c4b6
+VER_COMMIT=22375+ea5e8167.2
 DSUFFIX=".10.0+${VER_COMMIT}"
 inherit linux-info toolchain-funcs python-r1 udev fcaps readme.gentoo-r1 \
 		pax-utils xdg-utils rhel8-a

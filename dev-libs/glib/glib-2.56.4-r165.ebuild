@@ -4,7 +4,7 @@
 EAPI=6
 PYTHON_COMPAT=( python3_{6..9} )
 GNOME2_EAUTORECONF=yes
-
+DSUFFIX="_10"
 inherit autotools flag-o-matic gnome2 gnome.org gnome2-utils linux-info \
 	multilib-minimal pax-utils python-any-r1 toolchain-funcs virtualx xdg rhel8
 

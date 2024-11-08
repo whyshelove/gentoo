@@ -15,7 +15,7 @@ if [[ -n ${GRUB_AUTORECONF} ]]; then
 	WANT_LIBTOOL=none
 	inherit autotools
 fi
-
+DSUFFIX="_10"
 #DSUFFIX="_9.$(ver_cut 6)"
 _hardened_build="undefine"
 _annotated_build="undefine"
