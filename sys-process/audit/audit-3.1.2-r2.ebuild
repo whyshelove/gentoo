@@ -39,10 +39,6 @@ BDEPEND="python? ( dev-lang/swig )"
 
 CONFIG_CHECK="~AUDIT"
 
-PATCHES=(
-	"${FILESDIR}"/${PN}-3.0.8-musl-malloc.patch
-)
-
 src_prepare() {
 	# audisp-remote moved in multilib_src_install_all
 	sed -i \
