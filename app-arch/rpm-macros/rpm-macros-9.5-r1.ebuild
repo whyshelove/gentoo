@@ -5,11 +5,11 @@ EAPI=7
 
 inherit unpacker rhel9
 
-SRC_URI="${REPO_BIN}/r/redhat-release-${PV}-0.5.${DIST}.x86_64.rpm"
+SRC_URI="${REPO_BIN}/r/redhat-release-${PV}-0.6.${DIST}.x86_64.rpm"
 
 SRC_URI+=" ${REPO_BIN}/r/rootfiles-8.1-31.${DIST}.noarch.rpm"
 
-crypto_policies="crypto-policies-scripts-20240202-1.git283706d.${DIST}.noarch.rpm"
+crypto_policies="crypto-policies-scripts-20240828-2.git626aa59.el9_5.noarch.rpm"
 SRC_URI+=" ${REPO_BIN}/c/${crypto_policies}"
 SRC_URI+=" ${REPO_BIN}/c/${crypto_policies/-scripts}"
 
@@ -17,9 +17,9 @@ REPO_BIN="${REPO_BIN/baseos/appstream}"
 
 SRC_URI+=" ${REPO_BIN}/e/efi-srpm-macros-6-2.el9_0.noarch.rpm"
 
-for macro in kernel-rpm-macros-185-12 perl-srpm-macros-1-41 redhat-rpm-config-207-1 \
-	python-qt5-rpm-macros-5.15.6-1 python-rpm-macros-3.9-53 python-srpm-macros-3.9-53 python3-rpm-macros-3.9-53 \
-	go-srpm-macros-3.2.0-3 qt5-rpm-macros-5.15.3-1 rust-srpm-macros-17-4 ;
+for macro in kernel-rpm-macros-185-12 perl-srpm-macros-1-41 redhat-rpm-config-208-1 \
+	python-qt5-rpm-macros-5.15.6-1 python-rpm-macros-3.9-54 python-srpm-macros-3.9-54 python3-rpm-macros-3.9-54 \
+	go-srpm-macros-3.6.0-3 qt5-rpm-macros-5.15.3-1 rust-srpm-macros-17-4 ;
 do
 SRC_URI+=" ${REPO_BIN}/${macro:0:1}/${macro}.${DIST}.noarch.rpm"
 done

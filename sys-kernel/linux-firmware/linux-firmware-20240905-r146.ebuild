@@ -4,9 +4,9 @@
 EAPI=8
 
 #GIT_COMMIT=0e048b06
-DPREFIX="3."
+#DPREFIX="3."
 WhatArch=noarch
-DSUFFIX="_4"
+#DSUFFIX="_4"
 
 inherit dist-kernel-utils linux-info mount-boot savedconfig rhel9
 

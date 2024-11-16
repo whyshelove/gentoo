@@ -3,7 +3,7 @@
 
 EAPI=7
 VALA_USE_DEPEND="vapigen"
-
+DSUFFIX="_5.2"
 inherit gnome.org meson-multilib vala xdg rhel9-a
 
 DESCRIPTION="HTTP client/server library for GNOME"

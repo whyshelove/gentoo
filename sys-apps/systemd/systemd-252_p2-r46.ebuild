@@ -26,7 +26,7 @@ else
 fi
 
 suffix_ver=$(ver_cut 3)
-[[ ${suffix_ver} ]] && DSUFFIX="_4.${suffix_ver}"
+[[ ${suffix_ver} ]] && DSUFFIX="_5.${suffix_ver}"
 
 inherit bash-completion-r1 linux-info meson-multilib pam
 inherit python-any-r1 systemd toolchain-funcs udev usr-ldscript rhel9

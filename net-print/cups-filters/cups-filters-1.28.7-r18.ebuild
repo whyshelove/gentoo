@@ -4,7 +4,7 @@
 EAPI=7
 
 GENTOO_DEPEND_ON_PERL=no
-DSUFFIX="_4"
+DSUFFIX="_5"
 suffix_ver=$(ver_cut 5)
 [[ ${suffix_ver} ]] && DSUFFIX="_4.${suffix_ver}"
 

@@ -3,7 +3,7 @@
 
 EAPI=7
 suffix_ver=$(ver_cut 6)
-[[ ${suffix_ver} ]] && DSUFFIX="_4.${suffix_ver}"
+[[ ${suffix_ver} ]] && DSUFFIX="_5.${suffix_ver}"
 #unused_patches=( patch983 patch700 patch1007 )
 inherit user-info flag-o-matic autotools pam systemd toolchain-funcs rhel9
 

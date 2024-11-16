@@ -1,4 +1,4 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -14,11 +14,13 @@ SLOT="0"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~mips ppc ppc64 ~riscv ~s390 sparc x86"
 IUSE="icu libedit nls selinux"
 
-RDEPEND="dev-libs/inih
+RDEPEND="
+	dev-libs/inih
 	dev-libs/userspace-rcu:=
 	>=sys-apps/util-linux-2.17.2
 	icu? ( dev-libs/icu:= )
-	libedit? ( dev-libs/libedit )"
+	libedit? ( dev-libs/libedit )
+"
 DEPEND="${RDEPEND}"
 BDEPEND="nls? ( sys-devel/gettext )"
 RDEPEND+=" selinux? ( sec-policy/selinux-xfs )"
@@ -26,7 +28,6 @@ RDEPEND+=" selinux? ( sec-policy/selinux-xfs )"
 PATCHES=(
 	"${FILESDIR}"/${PN}-5.3.0-libdir.patch
 	"${FILESDIR}"/${PN}-5.18.0-docdir.patch
-	"${FILESDIR}"/${PN}-6.3.0-gettext-0.22.patch
 )
 
 src_prepare() {
@@ -59,6 +60,9 @@ src_configure() {
 	# Avoid automagic on libdevmapper (bug #709694)
 	export ac_cv_search_dm_task_create=no
 
+	# bug 903611
+	use elibc_musl && append-flags -D_LARGEFILE64_SOURCE
+
 	# Build fails with -O3 (bug #712698)
 	replace-flags -O3 -O2
 
@@ -68,18 +72,14 @@ src_configure() {
 	local myconf=(
 		--enable-static
 		--enable-blkid
+		# Doesn't do anything beyond adding -flto (bug #930947).
+		--disable-lto
 		--with-crond-dir="${EPREFIX}/etc/cron.d"
 		--with-systemd-unit-dir="$(systemd_get_systemunitdir)"
 		$(use_enable icu libicu)
 		$(use_enable nls gettext)
 		$(use_enable libedit editline)
 	)
-
-	if is-flagq -flto ; then
-		myconf+=( --enable-lto )
-	else
-		myconf+=( --disable-lto )
-	fi
 
 	econf "${myconf[@]}"
 }

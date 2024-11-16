@@ -1,14 +1,15 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-DIST=1.el9
 TOOLCHAIN_PATCH_DEV="sam"
+TOOLCHAIN_HAS_TESTS=1
 PATCH_GCC_VER="11.4.0"
-PATCH_VER="10"
+PATCH_VER="12"
 MUSL_VER="2"
 MUSL_GCC_VER="11.4.0"
+PYTHON_COMPAT=( python3_{9..12} )
 
 if [[ ${PV} == *.9999 ]] ; then
 	MY_PV_2=$(ver_cut 2)
@@ -38,7 +39,7 @@ if tc_is_live ; then
 	EGIT_BRANCH=releases/gcc-$(ver_cut 1)
 elif [[ -z ${TOOLCHAIN_USE_GIT_PATCHES} ]] ; then
 	# Don't keyword live ebuilds
-	KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
+	KEYWORDS="~alpha amd64 arm arm64 hppa ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
 	:;
 fi
 
@@ -48,12 +49,14 @@ if [[ ${CATEGORY} != cross-* ]] ; then
 	# bug #830454
 	RDEPEND="elibc_glibc? ( sys-libs/glibc[cet(-)?] )"
 	DEPEND="${RDEPEND}"
-	BDEPEND=">=${CATEGORY}/binutils-2.30[cet(-)?]"
 fi
 
 src_prepare() {
 	local p upstreamed_patches=(
 		# add them here
+		06_all_ia64_note.GNU-stack.patch
+		09_all_nopie-all-flags.patch
+		23_all_EXTRA_OPTIONS-fstack-clash-protection.patch
 	)
 	for p in "${upstreamed_patches[@]}"; do
 		rm -v "${WORKDIR}/patch/${p}" || die

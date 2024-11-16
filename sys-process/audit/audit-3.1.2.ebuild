@@ -1,33 +1,58 @@
-# Copyright 1999-2023 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{9..11} )
+# As with sys-libs/libcap-ng, same maintainer in Fedora as upstream, so
+# check Fedora's packaging (https://src.fedoraproject.org/rpms/audit/tree/rawhide)
+# on bumps (or if hitting a bug) to see what they've done there.
 
-inherit autotools multilib-minimal toolchain-funcs python-r1 linux-info systemd usr-ldscript rhel9
+PYTHON_COMPAT=( python3_{10..12} )
+
+inherit autotools multilib-minimal toolchain-funcs python-r1 linux-info systemd usr-ldscript
 
 DESCRIPTION="Userspace utilities for storing and processing auditing records"
 HOMEPAGE="https://people.redhat.com/sgrubb/audit/"
+SRC_URI="https://people.redhat.com/sgrubb/audit/${P}.tar.gz"
 
 LICENSE="GPL-2+ LGPL-2.1+"
 SLOT="0"
-KEYWORDS="amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86"
-IUSE="gssapi ldap python static-libs test"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~loong ~mips ppc ppc64 ~riscv ~s390 sparc x86"
+IUSE="gssapi io-uring ldap python static-libs test"
 
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 RESTRICT="!test? ( test )"
 
-RDEPEND="gssapi? ( virtual/krb5 )
+RDEPEND="
+	sys-libs/libcap-ng
+	gssapi? ( virtual/krb5 )
 	ldap? ( net-nds/openldap:= )
 	python? ( ${PYTHON_DEPS} )
-	sys-libs/libcap-ng"
-DEPEND="${RDEPEND}
+"
+DEPEND="
+	${RDEPEND}
 	>=sys-kernel/linux-headers-2.6.34
-	test? ( dev-libs/check )"
-BDEPEND="python? ( dev-lang/swig )"
+	test? ( dev-libs/check )
+"
+BDEPEND="python? (
+			dev-lang/swig
+			$(python_gen_cond_dep '
+				dev-python/setuptools[${PYTHON_USEDEP}]
+			' python3_12)
+		)
+"
 
 CONFIG_CHECK="~AUDIT"
+
+PATCHES=(
+	"${FILESDIR}"/${PN}-3.0.8-musl-malloc.patch
+)
+
+QA_CONFIG_IMPL_DECL_SKIP=(
+	# missing on musl. Uses handrolled AC_LINK_IFELSE but fails at link time
+	# for older compilers regardless. bug #898828
+	strndupa
+)
 
 src_prepare() {
 	# audisp-remote moved in multilib_src_install_all
@@ -43,14 +68,17 @@ src_prepare() {
 }
 
 multilib_src_configure() {
-	local -a myeconfargs=(
-		--sbindir="${EPREFIX}/sbin"
-		--with-libcap-ng=yes
+	local myeconfargs=(
+		--sbindir="${EPREFIX}"/sbin
 		$(use_enable gssapi gssapi-krb5)
 		$(use_enable ldap zos-remote)
 		$(use_enable static-libs static)
+		$(use_with io-uring io_uring)
+		$(use_with arm)
+		$(use_with arm64 aarch64)
 		--enable-systemd
 		--without-golang
+		--without-libwrap
 		--without-python
 		--without-python3
 	)
@@ -62,7 +90,8 @@ multilib_src_configure() {
 			mkdir -p "${BUILD_DIR}" || die
 			pushd "${BUILD_DIR}" &>/dev/null || die
 
-			ECONF_SOURCE=${S} econf "${myeconfargs[@]}" --with-python3
+			ECONF_SOURCE="${S}" econf "${myeconfargs[@]}" --with-python3
+			find . -type f -name 'Makefile' -exec sed -i "s;-I/usr/include/python;-I${SYSROOT}/usr/include/python;g" {} +
 
 			popd &>/dev/null || die
 		}
@@ -85,18 +114,18 @@ multilib_src_compile() {
 		default
 
 		local native_build="${BUILD_DIR}"
+
 		python_compile() {
 			emake -C "${BUILD_DIR}"/bindings/swig top_builddir="${native_build}"
 			emake -C "${BUILD_DIR}"/bindings/python/python3 top_builddir="${native_build}"
 		}
+
 		use python && python_foreach_impl python_compile
 	else
 		emake -C common
 		emake -C lib
 		emake -C auparse
 	fi
-
-	cd $S && eapply "${FILESDIR}"/libaudit.patch
 }
 
 multilib_src_install() {
@@ -104,6 +133,7 @@ multilib_src_install() {
 		emake DESTDIR="${D}" initdir="$(systemd_get_systemunitdir)" install
 
 		local native_build="${BUILD_DIR}"
+
 		python_install() {
 			emake -C "${BUILD_DIR}"/bindings/swig DESTDIR="${D}" top_builddir="${native_build}" install
 			emake -C "${BUILD_DIR}"/bindings/python/python3 DESTDIR="${D}" top_builddir="${native_build}" install
@@ -132,9 +162,10 @@ multilib_src_install_all() {
 	newinitd "${FILESDIR}"/auditd-init.d-2.4.3 auditd
 	newconfd "${FILESDIR}"/auditd-conf.d-2.1.3 auditd
 
-	[ -f "${ED}"/sbin/audisp-remote ] && \
-	dodir /usr/sbin && \
-	mv "${ED}"/{sbin,usr/sbin}/audisp-remote || die
+	if [[ -f "${ED}"/sbin/audisp-remote ]] ; then
+		dodir /usr/sbin
+		mv "${ED}"/{sbin,usr/sbin}/audisp-remote || die
+	fi
 
 	# Gentoo rules
 	insinto /etc/audit
@@ -160,6 +191,6 @@ lockdown_perms() {
 	# Should not || die as not all paths may exist.
 	local basedir="${1}"
 	chmod 0750 "${basedir}"/sbin/au{ditctl,ditd,report,search,trace} 2>/dev/null
-	chmod 0700 "${basedir}"/var/log/audit 2>/dev/null
+	chmod 0750 "${basedir}"/var/log/audit 2>/dev/null
 	chmod 0640 "${basedir}"/etc/audit/{auditd.conf,audit*.rules*} 2>/dev/null
 }

@@ -42,9 +42,7 @@ BDEPEND="doc? ( virtual/texi2dvi )"
 PATCHES=(
 	"${FILESDIR}"/${PN}-multilib-syspath.patch
 	"${FILESDIR}"/${PN}-powerpc-darwin.patch
-	"${FILESDIR}"/${PN}-1.10.1-fix-no-asm-hppa.patch
 	"${FILESDIR}"/${PN}-1.9.4-no-fgrep-libgcrypt-config.patch
-	"${FILESDIR}"/${PN}-1.10.1-configure-clang16.patch
 )
 
 MULTILIB_CHOST_TOOLS=(

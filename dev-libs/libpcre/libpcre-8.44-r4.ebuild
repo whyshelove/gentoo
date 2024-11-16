@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-DSUFFIX=".3"
+#DSUFFIX=".3"
 inherit libtool multilib-minimal preserve-libs usr-ldscript rhel9
 
 DESCRIPTION="Perl-compatible regular expression library"

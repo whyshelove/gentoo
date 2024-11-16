@@ -3,7 +3,7 @@
 
 EAPI=8
 
-GIT_COMMIT=git20240104
+GIT_COMMIT=git20240819
 DPREFIX="${GIT_COMMIT}."
 inherit bash-completion-r1 linux-info optfeature systemd toolchain-funcs rhel9
 
