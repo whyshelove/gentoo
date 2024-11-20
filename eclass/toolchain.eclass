@@ -333,6 +333,7 @@ if [[ ${PN} != kgcc64 && ${PN} != gcc-* ]] ; then
 	# it was disabled in 13.
 	tc_version_is_at_least 14.0.0_pre20230423 ${PV} && IUSE+=" rust" TC_FEATURES+=( rust )
 	tc_version_is_at_least 14.2.1_p20241026 ${PV} && IUSE+=" time64"
+	tc_version_is_at_least 15.0.0_pre20241124 ${PV} && IUSE+=" libdiagnostics"
 fi
 
 if tc_version_is_at_least 10; then
@@ -1065,7 +1066,7 @@ toolchain_src_configure() {
 
 	downgrade_arch_flags
 	gcc_do_filter_flags
-	if tc_version_is_at_least 14.2.1_p20241026 ${PV}; then
+	if [[ ${PN} != kgcc64 && ${PN} != gcc-* ]] && tc_version_is_at_least 14.2.1_p20241026 ${PV}; then
 		append-cppflags "-D_GENTOO_TIME64_FORCE=$(usex time64 1 0)"
 	fi
 
@@ -1185,11 +1186,13 @@ toolchain_src_configure() {
 		if grep -q "experimental" gcc/DEV-PHASE ; then
 			# Tell users about the non-obvious behavior here so they don't think
 			# e.g. the next GCC release is super slow to compile things.
-			ewarn "Unreleased GCCs default to extra runtime checks even with USE=-debug,"
-			ewarn "matching upstream default behavior. We recommend keeping these enabled."
-			ewarn "The checks (sometimes substantially) increase build time but provide important protection"
-			ewarn "from potential miscompilations (wrong code) by turning them into build-time errors."
-			ewarn "To override (not recommended), set: GCC_CHECKS_LIST=\"release\"."
+			if ! use debug ; then
+				ewarn "Unreleased GCCs default to extra runtime checks even with USE=-debug,"
+				ewarn "matching upstream default behavior. We recommend keeping these enabled."
+				ewarn "The checks (sometimes substantially) increase build time but provide important protection"
+				ewarn "from potential miscompilations (wrong code) by turning them into build-time errors."
+				ewarn "To override (not recommended), set: GCC_CHECKS_LIST=\"release\"."
+			fi
 
 			# - USE=debug for pre-releases: yes,extra,rtl (stornger than USE=debug for releases)
 			# - USE=-debug for pre-releases: yes,extra (following upstream default)
@@ -1252,7 +1255,10 @@ toolchain_src_configure() {
 	# 	;;
 	# esac
 
-	### Cross-compiler options
+	### Cross-compiler option
+	#
+	# Note that 'newlib' here doesn't have to mean genuine newlib.
+	# See https://gcc.gnu.org/pipermail/gcc/2014-January/211653.html.
 	if is_crosscompile ; then
 		# Enable build warnings by default with cross-compilers when system
 		# paths are included (e.g. via -I flags).
@@ -1583,9 +1589,9 @@ toolchain_src_configure() {
 			fi
 		}
 
-		enable_cet_for 'i[34567]86' 'gnu' 'cet'
 		enable_cet_for 'x86_64' 'gnu' 'cet'
 		enable_cet_for 'aarch64' 'gnu' 'standard-branch-protection'
+		[[ ${CTARGET} == i[34567]86-* ]] && confgcc+=( --disable-cet )
 	fi
 
 	if in_iuse systemtap ; then
@@ -1727,8 +1733,8 @@ toolchain_src_configure() {
 		gcc_shell="${BROOT}"/bin/sh
 	fi
 
-	if is_jit ; then
-		einfo "Configuring JIT gcc"
+	if is_jit || _tc_use_if_iuse libdiagnostics ; then
+		einfo "Configuring shared gcc for JIT/libdiagnostics"
 
 		local confgcc_jit=(
 			"${confgcc[@]}"
@@ -1752,8 +1758,10 @@ toolchain_src_configure() {
 			--disable-nls
 			--disable-objc-gc
 			--disable-systemtap
+
 			--enable-host-shared
 			--enable-languages=jit
+
 			# Might be used for the just-built GCC. Easier to just
 			# respect USE=graphite here in case the user passes some
 			# graphite flags rather than try strip them out.
@@ -1761,6 +1769,10 @@ toolchain_src_configure() {
 			$(use_with zstd)
 			--with-system-zlib
 		)
+
+		if tc_version_is_at_least 15.0.0_pre20241124 ${PV} ; then
+			confgcc_jit+=( $(use_enable libdiagnostics) )
+		fi
 
 		if tc_version_is_at_least 13.1 ; then
 			confgcc_jit+=( --disable-fixincludes )
@@ -2264,10 +2276,6 @@ toolchain_src_test() {
 		# and we want to be sure it works.
 		GCC_TESTS_CFLAGS+=" -fno-stack-clash-protection"
 		GCC_TESTS_CXXFLAGS+=" -fno-stack-clash-protection"
-
-		# configure defaults to '-O2 -g' and some tests expect it
-		# accordingly.
-		GCC_TESTS_CFLAGS+=" -g"
 
 		# TODO: Does this handle s390 (-m31) correctly?
 		# TODO: What if there are multiple ABIs like x32 too?
