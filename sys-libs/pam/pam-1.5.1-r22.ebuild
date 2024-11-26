@@ -6,7 +6,7 @@ EAPI=7
 # Avoid QA warnings
 # Can reconsider w/ EAPI 8 and IDEPEND, bug #810979
 TMPFILES_OPTIONAL=1
-
+DSUFFIX="_5"
 inherit autotools db-use fcaps flag-o-matic toolchain-funcs usr-ldscript multilib-minimal rhel9
 
 MY_P="Linux-${PN^^}-${PV}"
