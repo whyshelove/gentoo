@@ -13,7 +13,7 @@ SRC_URI="https://github.com/firewalld/firewalld/releases/download/v${PV}/${P}.ta
 
 LICENSE="GPL-2+"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~riscv ~x86"
+KEYWORDS="~amd64 arm arm64 ~ppc64 ~riscv x86"
 IUSE="gui selinux test"
 # Tests are too unreliable in sandbox environment
 RESTRICT="!test? ( test ) test"
@@ -28,7 +28,7 @@ RDEPEND="
 		>=net-firewall/nftables-0.9.4[python,json,${PYTHON_USEDEP}]
 		gui? (
 			x11-libs/gtk+:3
-			dev-python/PyQt6[gui,widgets,${PYTHON_USEDEP}]
+			dev-python/pyqt6[gui,widgets,${PYTHON_USEDEP}]
 		)
 	')
 	net-firewall/nftables[xtables(+)]

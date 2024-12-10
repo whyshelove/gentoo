@@ -19,7 +19,7 @@ else
 	SRC_URI="https://github.com/${PN}/${PN}/archive/v${PV}.tar.gz
 		-> ${P}.tar.gz"
 
-	KEYWORDS="~amd64"
+	KEYWORDS="amd64"
 fi
 
 LICENSE="GPL-3+"
@@ -30,8 +30,8 @@ RDEPEND="
 	${PYTHON_DEPS}
 	>=x11-libs/gtk+-3.20:3[introspection]
 	$(python_gen_cond_dep '
-		dev-python/PyQt6-WebEngine[${PYTHON_USEDEP}]
-		dev-python/PyQt6[svg,${PYTHON_USEDEP}]
+		dev-python/pyqt6-webengine[${PYTHON_USEDEP}]
+		dev-python/pyqt6[svg,${PYTHON_USEDEP}]
 		dev-python/colorama[${PYTHON_USEDEP}]
 		dev-python/colour[${PYTHON_USEDEP}]
 		dev-python/distro[${PYTHON_USEDEP}]

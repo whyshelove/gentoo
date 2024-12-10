@@ -129,7 +129,7 @@ SRC_URI+=" )"
 S="${WORKDIR}/${MY_P}"
 LICENSE="BSD GPL-1+ GPL-2 GPL-2+ GPL-3+ MIT TeX-other-free"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ~loong ~mips ppc ppc64 ~riscv ~s390 sparc x86"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~loong ~mips ppc ppc64 ~riscv ~s390 sparc x86"
 IUSE="cjk X doc source tk +luajittex xetex xindy"
 
 TEXMF_PATH=/usr/share/texmf-dist
@@ -244,6 +244,13 @@ src_configure() {
 	# bug #915223
 	append-flags -fno-strict-aliasing
 	filter-lto
+
+	# Needed for 32bit architectures, bug 928096
+	# This is upstream recommendation for the moment, see also
+	# https://www.tug.org/texlive/build.html
+	# I'm fairly sure it just hides a real bug in pdftex, keeping 928096
+	# thus open, but hey, at least it's not a regression...
+	append-cflags -Wno-incompatible-pointer-types
 
 	# It fails on alpha without this
 	use alpha && append-ldflags "-Wl,--no-relax"

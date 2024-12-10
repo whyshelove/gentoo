@@ -3,7 +3,7 @@
 
 EAPI=8
 
-inherit autotools
+inherit autotools flag-o-matic
 
 DESCRIPTION="GNU Ubiquitous Intelligent Language for Extensions"
 HOMEPAGE="https://www.gnu.org/software/guile/"
@@ -45,6 +45,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-2.2.3-gentoo-sandbox.patch
 	"${FILESDIR}/${PN}-3.0-fix-32bit-BE.patch"
 	"${FILESDIR}/${PN}-3.0.10-backport-issue72913.patch"
+	"${FILESDIR}/${PN}-3.0.10-c23.patch"
 )
 
 # Where to install data files.
@@ -62,6 +63,9 @@ src_prepare() {
 src_configure() {
 	# See bug #676468 (may be able to drop this if we adapt fix-32bit-BE.patch)?
 	mv prebuilt/32-bit-big-endian{,.broken} || die
+
+	# bug #944029
+	append-cflags -std=gnu17
 
 	local -a myconf=(
 		--program-suffix="-${SLOT}"

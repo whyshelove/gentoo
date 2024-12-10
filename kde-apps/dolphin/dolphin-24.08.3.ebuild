@@ -15,7 +15,7 @@ HOMEPAGE="https://apps.kde.org/dolphin/ https://userbase.kde.org/Dolphin"
 
 LICENSE="GPL-2" # TODO: CHECK
 SLOT="6"
-KEYWORDS="~amd64 ~arm64 ~ppc64 ~riscv ~x86"
+KEYWORDS="amd64 arm64 ~ppc64 ~riscv ~x86"
 IUSE="semantic-desktop telemetry"
 
 # slot op: Uses Qt::GuiPrivate for qtx11extras_p.h
@@ -60,11 +60,13 @@ RDEPEND="${DEPEND}
 src_configure() {
 	local mycmakeargs=(
 		-DCMAKE_DISABLE_FIND_PACKAGE_PackageKitQt6=ON
-		-DCMAKE_DISABLE_FIND_PACKAGE_SeleniumWebDriverATSPI=ON # not packaged
 		$(cmake_use_find_package semantic-desktop KF6Baloo)
 		$(cmake_use_find_package semantic-desktop KF6BalooWidgets)
 		$(cmake_use_find_package semantic-desktop KF6FileMetaData)
 		$(cmake_use_find_package telemetry KF6UserFeedback)
+	)
+	use test && mycmakeargs+=(
+		-DCMAKE_DISABLE_FIND_PACKAGE_SeleniumWebDriverATSPI=ON # not packaged
 	)
 	ecm_src_configure
 }

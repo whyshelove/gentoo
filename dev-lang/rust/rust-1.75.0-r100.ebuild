@@ -9,8 +9,8 @@ PYTHON_COMPAT=( python3_{10..12} )
 RUST_MAX_VER=${PV}
 RUST_MIN_VER="$(ver_cut 1).$(($(ver_cut 2) - 1)).0"
 
-inherit check-reqs estack flag-o-matic llvm-r1 multiprocessing \
-	multilib multilib-build python-any-r1 rust rust-toolchain toolchain-funcs verify-sig
+inherit check-reqs estack flag-o-matic llvm-r1 multiprocessing multilib multilib-build \
+	optfeature python-any-r1 rust rust-toolchain toolchain-funcs verify-sig
 
 if [[ ${PV} = *beta* ]]; then
 	betaver=${PV//*beta}
@@ -202,11 +202,6 @@ pkg_setup() {
 
 	export LIBGIT2_NO_PKG_CONFIG=1 #749381
 	if tc-is-cross-compiler; then
-		export PKG_CONFIG_ALLOW_CROSS=1
-		export PKG_CONFIG_PATH="${ROOT}/usr/$(get_libdir)/pkgconfig"
-		export OPENSSL_INCLUDE_DIR="${ROOT}/usr/include"
-		export OPENSSL_LIB_DIR="${ROOT}/usr/$(get_libdir)"
-
 		use system-llvm && die "USE=system-llvm not allowed when cross-compiling"
 		local cross_llvm_target="$(llvm_tuple_to_target "${CBUILD}")"
 		use "llvm_targets_${cross_llvm_target}" || \
@@ -225,6 +220,13 @@ pkg_setup() {
 }
 
 src_configure() {
+	if tc-is-cross-compiler; then
+		export PKG_CONFIG_ALLOW_CROSS=1
+		export PKG_CONFIG_PATH="${ESYSROOT}/usr/$(get_libdir)/pkgconfig"
+		export OPENSSL_INCLUDE_DIR="${ESYSROOT}/usr/include"
+		export OPENSSL_LIB_DIR="${ESYSROOT}/usr/$(get_libdir)"
+	fi
+
 	filter-lto # https://bugs.gentoo.org/862109 https://bugs.gentoo.org/866231
 
 	local rust_target="" rust_targets="" arch_cflags
@@ -654,7 +656,67 @@ src_install() {
 	fi
 }
 
+pkg_preinst() {
+	# 943308 and friends; basically --keep-going can forget to unmerge old rust
+	# but the soft blocker allows us to install conflicting files.
+	# This results in duplicated .{rlib,so} files which confuses rustc and results in
+	# the need for manual intervention.
+	if has_version -b "dev-lang/rust:stable/$(ver_cut 1-2)"; then
+		# we need to find all .{rlib,so} files in the old rust lib directory
+		# and store them in an array for later use
+		readarray -d '' old_rust_libs < <(
+			find "${EROOT}/usr/lib/rust/${PV}/lib/rustlib" \
+			-type f \( -name '*.rlib' -o -name '*.so' \) -print0)
+		export old_rust_libs
+		if [[ ${#old_rust_libs[@]} -gt 0 ]]; then
+			einfo "Found old .rlib and .so files in the old rust lib directory"
+		else
+			die "Found no old .rlib and .so files but old rust version is installed. Bailing!"
+		fi
+	fi
+}
+
 pkg_postinst() {
+
+	local old_rust="dev-lang/rust:stable/$(ver_cut 1-2)"
+	if has_version -b ${old_rust}; then
+		# Be _extra_ careful here as we're removing files from the live filesystem
+		local f
+		local only_one_file=()
+		einfo "Tidying up libraries files from non-slotted \`${old_rust}\`."
+		for f in "${old_rust_libs[@]}"; do
+			[[ -f ${f} ]] || die "old_rust_libs array contains non-existent file"
+			local base_name="${f%-*}"
+			local ext="${f##*.}"
+			local matching_files=("${base_name}"-*.${ext})
+			case ${#matching_files[@]} in
+				2)
+					einfo "Removing old .${ext}: ${f}"
+					rm "${f}" || die
+					;;
+				1)
+					# Turns out fingerprints are not as unique as we'd thought, _sometimes_ they collide,
+					# so we may have already installed over the old file.
+					# We'll warn about this just in case, but it's probably fine.
+					only_one_file+=( "${matching_files[0]}" )
+					;;
+				*)
+					die "Expected one or two files matching ${base_name}-\*.rlib, but found ${#matching_files[@]}"
+					;;
+			esac
+		done
+		if [[ ${#only_one_file} -gt 0 ]]; then
+			einfo "While tidying up non-slotted rust libraries for \`${old_rust}\`,"
+			einfo "the following file(s) did not have a duplicate where one was expected:"
+			for f in "${only_one_file[@]}"; do
+				einfo "	* ${f}"
+			done
+			einfo ""
+			einfo "This is unlikely to cause problems; the fingerprint for the library ended up being the same."
+			einfo "However, if you encounter any issues please report them to the Gentoo Rust Team."
+		fi
+	fi
+
 	eselect rust update
 
 	if has_version dev-debug/gdb || has_version dev-debug/lldb; then
@@ -662,13 +724,8 @@ pkg_postinst() {
 		elog "for convenience they are installed under /usr/bin/rust-{gdb,lldb}-${PV}."
 	fi
 
-	if has_version app-editors/emacs; then
-		elog "install app-emacs/rust-mode to get emacs support for rust."
-	fi
-
-	if has_version app-editors/gvim || has_version app-editors/vim; then
-		elog "install app-vim/rust-vim to get vim support for rust."
-	fi
+	optfeature "Emacs support" "app-emacs/rust-mode"
+	optfeature "Vim support" "app-vim/rust-vim"
 }
 
 pkg_postrm() {

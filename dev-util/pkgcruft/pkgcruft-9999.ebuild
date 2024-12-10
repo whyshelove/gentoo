@@ -4,9 +4,9 @@
 EAPI=8
 
 CRATES=" "
-RUST_MIN_VER="1.76.0"
+RUST_MIN_VER="1.82.0"
 
-inherit cargo edo toolchain-funcs
+inherit cargo edo flag-o-matic toolchain-funcs
 
 DESCRIPTION="QA library and tools based on pkgcraft"
 HOMEPAGE="https://pkgcraft.github.io/"
@@ -51,6 +51,9 @@ src_unpack() {
 src_compile() {
 	# For scallop building bash
 	tc-export AR CC
+
+	# scallop uses modified bash-5.2 which relies on unprotoyped functions
+	append-cflags -std=gnu17
 
 	cargo_src_compile
 }

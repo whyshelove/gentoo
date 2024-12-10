@@ -13,7 +13,7 @@ if [[ "${PV}" = "9999" ]] ; then
 	EGIT_REPO_URI="https://github.com/calf-studio-gear/calf.git"
 else
 	SRC_URI="https://github.com/calf-studio-gear/calf/archive/${PV}.tar.gz -> ${P}.tar.gz"
-	KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~x86"
+	KEYWORDS="amd64 ~arm ~arm64 ~ppc ~ppc64 x86"
 fi
 
 LICENSE="LGPL-2.1"
@@ -43,8 +43,8 @@ DEPEND="
 RDEPEND="${DEPEND}"
 
 PATCHES=(
-	"${FILESDIR}/${PN}-0.9.4-no-automagic.patch"
-	"${FILESDIR}/${PN}-0.9.4-htmldir.patch"
+	"${FILESDIR}/${PN}-0.90.4-no-automagic.patch"
+	"${FILESDIR}/${PN}-0.90.4-htmldir.patch"
 	"${FILESDIR}/${PN}-0.90.4-desktop.patch"
 )
 

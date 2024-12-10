@@ -9,7 +9,7 @@ if [[ ${PV} = 8888* ]]; then
 	GIT_ECLASS="git-r3"
 fi
 
-inherit ${GIT_ECLASS} meson-multilib multiprocessing toolchain-funcs rhel-a
+inherit ${GIT_ECLASS} meson-multilib multiprocessing toolchain-funcs rhel9-a
 
 DESCRIPTION="Low-level pixel manipulation routines"
 HOMEPAGE="http://www.pixman.org/ https://gitlab.freedesktop.org/pixman/pixman/"

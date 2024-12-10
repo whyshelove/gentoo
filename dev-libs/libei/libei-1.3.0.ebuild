@@ -3,7 +3,7 @@
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{10..13} )
+PYTHON_COMPAT=( python3_{9..13} )
 inherit meson python-any-r1
 
 DESCRIPTION="Library for Emulated Input, primarily aimed at the Wayland stack"
@@ -14,7 +14,7 @@ SRC_URI+=" https://github.com/nemequ/munit/archive/${MUNIT_COMMIT}.tar.gz -> mun
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 arm arm64 ~hppa ~loong ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~loong ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
 IUSE="elogind systemd test"
 RESTRICT="!test? ( test )"
 

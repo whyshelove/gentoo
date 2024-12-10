@@ -3,7 +3,7 @@
 
 EAPI="8"
 
-FIREFOX_PATCHSET="firefox-128esr-patches-04.tar.xz"
+FIREFOX_PATCHSET="firefox-128esr-patches-07.tar.xz"
 SPIDERMONKEY_PATCHSET="spidermonkey-128-patches-02.tar.xz"
 
 LLVM_COMPAT=( 17 18 19 )
@@ -58,7 +58,7 @@ DESCRIPTION="Mozilla's JavaScript engine written in C and C++"
 HOMEPAGE="https://spidermonkey.dev https://firefox-source-docs.mozilla.org/js/index.html"
 SRC_URI="${MOZ_SRC_BASE_URI}/source/${MOZ_P}.source.tar.xz -> ${MOZ_P_DISTFILES}.source.tar.xz
 	${PATCH_URIS[@]}"
-KEYWORDS="~amd64 ~arm ~arm64 ~riscv ~x86"
+KEYWORDS="amd64 arm arm64 ~riscv x86"
 
 LICENSE="MPL-2.0"
 SLOT="$(ver_cut 1)"

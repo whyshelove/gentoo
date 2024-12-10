@@ -4,7 +4,7 @@
 EAPI=8
 
 LLVM_COMPAT=( {17..18} )
-PYTHON_COMPAT=( python3_{10..13} )
+PYTHON_COMPAT=( python3_{9..13} )
 inherit cmake llvm.org llvm-r1 python-any-r1
 
 DESCRIPTION="OpenCL C library"
@@ -12,7 +12,7 @@ HOMEPAGE="https://libclc.llvm.org/"
 
 LICENSE="Apache-2.0-with-LLVM-exceptions || ( MIT BSD )"
 SLOT="0"
-KEYWORDS="~amd64 ~arm64 ~riscv ~x86"
+KEYWORDS="amd64 arm64 ~riscv x86"
 IUSE="+spirv video_cards_nvidia video_cards_r600 video_cards_radeonsi"
 
 BDEPEND="
