@@ -7,7 +7,7 @@ GENTOO_DEPEND_ON_PERL=no
 
 # bug #329479: git-remote-testgit is not multiple-version aware
 PYTHON_COMPAT=( python3_{9..12} )
-DSUFFIX="_4"
+DSUFFIX="_5"
 inherit toolchain-funcs perl-module bash-completion-r1 optfeature plocale python-single-r1 systemd rhel9-a
 
 PLOCALES="bg ca de es fr is it ko pt_PT ru sv vi zh_CN"

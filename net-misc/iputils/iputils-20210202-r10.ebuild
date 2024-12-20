@@ -12,7 +12,7 @@ EAPI=8
 
 PLOCALES="de fr ja pt_BR tr uk zh_CN"
 
-#DSUFFIX="_1.1"
+DSUFFIX="_5"
 inherit fcaps meson plocale systemd toolchain-funcs rhel9
 
 if [[ ${PV} == *9999 ]] ; then
