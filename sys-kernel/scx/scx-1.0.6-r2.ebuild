@@ -314,7 +314,7 @@ LICENSE="GPL-2"
 LICENSE+=" Apache-2.0 BSD-2 BSD ISC MIT MPL-2.0 Unicode-DFS-2016 ZLIB"
 
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="amd64"
 IUSE="openrc systemd"
 
 DEPEND="
@@ -333,7 +333,7 @@ BDEPEND="
 	app-misc/jq
 	dev-util/bpftool
 	$(llvm_gen_dep '
-		sys-devel/clang:${LLVM_SLOT}=[llvm_targets_BPF(-)]
+		llvm-core/clang:${LLVM_SLOT}=[llvm_targets_BPF(-)]
 	')
 "
 

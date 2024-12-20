@@ -72,6 +72,9 @@ if [[ -z ${_LLVM_SOURCE_TYPE+1} ]]; then
 			_LLVM_SOURCE_TYPE=snapshot
 
 			case ${PV} in
+				20.0.0_pre20241215)
+					EGIT_COMMIT=49a5ad8e5714fd404210279303acc97b495d66d0
+					;;
 				20.0.0_pre20241207)
 					EGIT_COMMIT=32f7f0010bca99ee4bd917f57272733fb2bf3bd9
 					;;
@@ -140,7 +143,7 @@ fi
 #   and REQUIRED_USE will be added but no dependencies.
 #
 # - llvm - this package uses targets from LLVM.  RDEPEND+DEPEND
-#   on matching sys-devel/llvm versions with requested flags will
+#   on matching llvm-core/llvm versions with requested flags will
 #   be added.
 #
 # Note that you still need to pass enabled targets to the build system,
@@ -330,7 +333,7 @@ llvm.org_set_globals() {
 			local dep=
 			for x in "${ALL_LLVM_TARGET_FLAGS[@]}"; do
 				dep+="
-					${x}? ( ~sys-devel/llvm-${PV}[${x}] )"
+					${x}? ( ~llvm-core/llvm-${PV}[${x}] )"
 			done
 			RDEPEND+=" ${dep}"
 			DEPEND+=" ${dep}"

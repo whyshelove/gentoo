@@ -84,8 +84,8 @@ BDEPEND="
 	dev-build/cmake
 	dev-vcs/git
 	$(llvm_gen_dep '
-		sys-devel/clang:${LLVM_SLOT}
-		sys-devel/llvm:${LLVM_SLOT}
+		llvm-core/clang:${LLVM_SLOT}
+		llvm-core/llvm:${LLVM_SLOT}
 	')
 "
 IDEPEND="
@@ -173,6 +173,8 @@ pkg_setup() {
 src_prepare() {
 	default
 
+	filter-flags -Werror=lto-type-mismatch  # Not implemented by Clang, bug 946334
+	filter-flags -Wlto-type-mismatch
 	filter-lto
 
 	unset DOTNET_ROOT

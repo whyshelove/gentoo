@@ -35,8 +35,8 @@ SRC_URI+=" sparc? ( ${GENTOO_BIN_BASEURI}/${MY_P}-sparc64-unknown-linux-gnu.tar.
 #)"
 SRC_URI+=" ppc64? ( elibc_musl? (
 	big-endian?  ( ${GENTOO_BIN_BASEURI}/${MY_P}-powerpc64-unknown-linux-musl.tar.xz )
+	!big-endian? ( ${GENTOO_BIN_BASEURI}/${MY_P}-powerpc64le-unknown-linux-musl.tar.xz )
 ) )"
-#	!big-endian? ( ${GENTOO_BIN_BASEURI}/${MY_P}-powerpc64le-unknown-linux-musl.tar.xz )
 
 LICENSE="|| ( MIT Apache-2.0 ) BSD BSD-1 BSD-2 BSD-4"
 SLOT="${PV}"
@@ -234,7 +234,7 @@ multilib_src_install() {
 pkg_postinst() {
 	eselect rust update
 
-	if has_version dev-debug/gdb || has_version dev-debug/lldb; then
+	if has_version dev-debug/gdb || has_version llvm-core/lldb; then
 		elog "Rust installs helper scripts for calling GDB and LLDB,"
 		elog "for convenience they are installed under /usr/bin/rust-{gdb,lldb}-${PV}."
 	fi

@@ -33,20 +33,19 @@ SRC_URI+=" mips? (
 
 LICENSE="|| ( MIT Apache-2.0 ) BSD BSD-1 BSD-2 BSD-4"
 SLOT="${PV}"
-KEYWORDS="~amd64 ~arm ~arm64 ~loong ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
-IUSE="big-endian clippy cpu_flags_x86_sse2 doc prefix llvm-libunwind rust-analyzer rust-src rustfmt"
+KEYWORDS="amd64 arm arm64 ~loong ~mips ppc ppc64 ~riscv ~s390 sparc x86"
+IUSE="big-endian clippy cpu_flags_x86_sse2 doc prefix rust-analyzer rust-src rustfmt"
 
 RDEPEND="
 	>=app-eselect/eselect-rust-20190311
 	dev-libs/openssl
 	sys-apps/lsb-release
-	!llvm-libunwind? ( sys-devel/gcc:* )
+	sys-devel/gcc:*
 	!dev-lang/rust:stable
 	!dev-lang/rust-bin:stable
 "
 BDEPEND="
 	prefix? ( dev-util/patchelf )
-	llvm-libunwind? ( dev-util/patchelf )
 	verify-sig? ( sec-keys/openpgp-keys-rust )
 "
 
@@ -141,16 +140,6 @@ multilib_src_install() {
 		eend ${PIPESTATUS[0]}
 	fi
 
-	if use llvm-libunwind; then
-		ebegin "Replacing libgcc_s with libunwind"
-		find "${ED}/opt/${P}"/{bin,lib,libexec} -type f -print0 | \
-			while IFS=  read -r -d '' filename; do
-				# just ignore wrong filetype error, instead of checking redundantly
-				patchelf --replace-needed libgcc_s.so.1 libunwind.so.1 ${filename} 2>/dev/null
-			done
-		eend ${PIPESTATUS[0]}
-	fi
-
 	local symlinks=(
 		cargo
 		rustc
@@ -238,7 +227,7 @@ multilib_src_install() {
 pkg_postinst() {
 	eselect rust update
 
-	if has_version dev-debug/gdb || has_version dev-debug/lldb; then
+	if has_version dev-debug/gdb || has_version llvm-core/lldb; then
 		elog "Rust installs helper scripts for calling GDB and LLDB,"
 		elog "for convenience they are installed under /usr/bin/rust-{gdb,lldb}-${PV}."
 	fi

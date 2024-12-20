@@ -37,8 +37,15 @@ REQUIRED_USE="jdbc? ( extraengine server !static )
 
 # Be warned, *DEPEND are version-dependant
 # These are used for both runtime and compiletime
+#
+# libfmt-10 contains a bug which was fixed in libfmt-11, see
+# https://jira.mariadb.org/browse/MDEV-32815, bug 946074
 COMMON_DEPEND="
 	dev-libs/libfmt:=
+	|| (
+		<dev-libs/libfmt-10
+		>=dev-libs/libfmt-11
+	)
 	>=dev-libs/libpcre2-10.34:=
 	>=sys-apps/texinfo-4.7-r1
 	sys-libs/ncurses:0=
@@ -287,6 +294,9 @@ src_configure() {
 
 	# It fails on alpha without this
 	use alpha && append-ldflags "-Wl,--no-relax"
+
+	# bug #945352
+	append-cflags -std=gnu17
 
 	append-cxxflags -felide-constructors
 
@@ -853,7 +863,7 @@ pkg_config() {
 		local n_X
 		let n_X=${#template}-${#template_wo_X}
 		if [[ ${n_X} -lt 3 ]] ; then
-			echo "${FUNCNAME[0]}: too few X's in template ‘${template}’" >&2
+			echo "${FUNCNAME[0]}: too few X's in template '${template}'" >&2
 			return
 		fi
 

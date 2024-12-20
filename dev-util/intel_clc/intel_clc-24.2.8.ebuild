@@ -4,7 +4,7 @@
 EAPI=8
 
 LLVM_COMPAT=( {16..18} )
-PYTHON_COMPAT=( python3_{10..13} )
+PYTHON_COMPAT=( python3_{9..13} )
 
 inherit llvm-r1 meson python-any-r1
 
@@ -20,7 +20,7 @@ if [[ ${PV} == 9999 ]]; then
 else
 	S="${WORKDIR}/mesa-${MY_PV}"
 	SRC_URI="https://archive.mesa3d.org/mesa-${MY_PV}.tar.xz"
-	KEYWORDS="~amd64 ~x86"
+	KEYWORDS="amd64 x86"
 fi
 
 LICENSE="MIT SGI-B-2.0"
@@ -28,14 +28,14 @@ SLOT="0"
 IUSE="debug"
 
 RDEPEND="
-	dev-libs/libclc
+	llvm-core/libclc
 	dev-util/spirv-tools
 	>=sys-libs/zlib-1.2.8:=
 	x11-libs/libdrm
 	$(llvm_gen_dep '
 		dev-util/spirv-llvm-translator:${LLVM_SLOT}
-		sys-devel/clang:${LLVM_SLOT}=
-		sys-devel/llvm:${LLVM_SLOT}=
+		llvm-core/clang:${LLVM_SLOT}=
+		llvm-core/llvm:${LLVM_SLOT}=
 	')
 "
 DEPEND="${RDEPEND}

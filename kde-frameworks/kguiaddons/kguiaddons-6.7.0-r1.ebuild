@@ -3,14 +3,13 @@
 
 EAPI=8
 
-ECM_NONGUI="false"
 QTMIN=6.6.2
-inherit ecm frameworks.kde.org
+inherit ecm frameworks.kde.org xdg
 
 DESCRIPTION="Framework providing assorted high-level user interface components"
 
 LICENSE="LGPL-2+"
-KEYWORDS="amd64 ~arm64 ~ppc64 ~riscv ~x86"
+KEYWORDS="amd64 arm64 ppc64 ~riscv ~x86"
 IUSE="dbus wayland X"
 
 # slot op: includes qpa/qplatformnativeinterface.h

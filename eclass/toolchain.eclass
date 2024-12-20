@@ -204,7 +204,7 @@ GCCMICRO=$(ver_cut 3 ${GCC_PV})
 # @INTERNAL
 # @DESCRIPTION:
 # Controls whether fixincludes should be used.
-GCC_RUN_FIXINCLUDES=0
+: "${GCC_RUN_FIXINCLUDES:=0}"
 
 tc_use_major_version_only() {
 	local use_major_version_only=0
@@ -411,16 +411,29 @@ if tc_has_feature valgrind ; then
 fi
 
 if [[ ${PN} != gnat-gpl ]] && tc_has_feature ada ; then
-	BDEPEND+="
-		ada? (
-			|| (
-				sys-devel/gcc:${SLOT}[ada]
-				<sys-devel/gcc-${SLOT}[ada]
-				<dev-lang/ada-bootstrap-${SLOT}
-				dev-lang/gnat-gpl[ada]
+	if tc_use_major_version_only ; then
+		BDEPEND+="
+			ada? (
+				|| (
+					sys-devel/gcc:${SLOT}[ada]
+					<sys-devel/gcc-${SLOT}[ada]
+					<dev-lang/ada-bootstrap-$((${SLOT} + 1))
+					dev-lang/gnat-gpl[ada]
+				)
 			)
-		)
-	"
+		"
+	else
+                BDEPEND+="
+                        ada? (
+                                || (
+                                        sys-devel/gcc:${SLOT}[ada]
+                                        <sys-devel/gcc-${SLOT}[ada]
+                                        <dev-lang/ada-bootstrap-${SLOT}
+                                        dev-lang/gnat-gpl[ada]
+                                )
+                        )
+                "
+	fi
 fi
 
 # TODO: Add a pkg_setup & pkg_pretend check for whether the active compiler
@@ -970,13 +983,22 @@ toolchain_setup_ada() {
 	# As a penultimate resort, try dev-lang/ada-bootstrap.
 	if ver_test ${ada_bootstrap} -gt ${PV} || [[ -z ${ada_bootstrap} ]] ; then
 		ebegin "Testing fallback dev-lang/ada-bootstrap for Ada"
-		if has_version -b "<dev-lang/ada-bootstrap-${SLOT}" ; then
-			# TODO: Figure out ada-bootstrap versioning/slots
+		# XXX: This can be cleaned up like BDEPEND for tc_use_major_version_only
+		# once we only support such versions.
+		if has_version -b "=dev-lang/ada-bootstrap-${SLOT}*" || has_version -b "<dev-lang/ada-bootstrap-${SLOT}" ; then
+			# Workaround the old scheme
+			if has_version -b "=dev-lang/ada-bootstrap-0_p2021*" ; then
+				ada_bootstrap=10
+			else
+				local latest_ada_bootstrap=$(best_version -b "<dev-lang/ada-bootstrap-${SLOT}")
+				latest_ada_bootstrap="${latest_ada_bootstrap#dev-lang/ada-bootstrap-}"
+				latest_ada_bootstrap=$(ver_cut 1 ${latest_ada_bootstrap})
+				ada_bootstrap="${latest_ada_bootstrap}"
 
-			#local latest_ada_bootstrap=$(best_version -b "<dev-lang/ada-bootstrap-${SLOT}")
-			#latest_ada_bootstrap="${latest_ada_bootstrap#dev-lang/ada-bootstrap-}"
-			#latest_ada_bootstrap=$(ver_cut 1 ${latest_ada_bootstrap})
-			ada_bootstrap="10"
+				export ADA_INCLUDE_PATH="${BROOT}/usr/lib/ada-bootstrap/usr/lib/gcc/${CHOST}/${ada_bootstrap}/adainclude::${ADA_INCLUDE_PATH}"
+				export ADA_OBJECTS_PATH="${BROOT}/usr/lib/ada-bootstrap/usr/lib/gcc/${CHOST}/${ada_bootstrap}/adalib:${ADA_OBJECTS_PATH}"
+			fi
+
 			ada_bootstrap_type=ada-bootstrap
 			ada_bootstrap_bin_dir="${BROOT}/usr/lib/ada-bootstrap/bin"
 
@@ -1085,19 +1107,26 @@ toolchain_setup_ada() {
 
 	# Create bin wrappers because not all of the build system respects
 	# GNATBIND or GNATMAKE.
-	mkdir "${T}"/ada-wrappers || die
-	local tool
-	for tool in gnat{,bind,chop,clean,kr,link,ls,make,name,prep} ; do
-		cat <<-EOF > "${T}"/ada-wrappers/${tool} || die
-		#!/bin/sh
-		exec "${ada_bootstrap_bin_dir}"/${CHOST}-${tool} "\$@"
-		EOF
+	_toolchain_make_gnat_wrappers() {
+		mkdir "${T}"/ada-wrappers || die
+		local tool
+		for tool in gnat{,bind,chop,clean,kr,link,ls,make,name,prep} ; do
+			cat <<-EOF > "${T}"/ada-wrappers/${tool} || die
+			#!/bin/sh
+			exec "${ada_bootstrap_bin_dir}"/${CHOST}-${tool} "\$@"
+			EOF
 
-		export "${tool^^}"="${T}"/ada-wrappers/${tool}
-	done
-	chmod +x "${T}"/ada-wrappers/gnat{,bind,chop,clean,kr,link,ls,make,name,prep} || die
+			export "${tool^^}"="${T}"/ada-wrappers/${tool}
+		done
+		chmod +x "${T}"/ada-wrappers/gnat{,bind,chop,clean,kr,link,ls,make,name,prep} || die
 
-	export PATH="${T}/ada-wrappers:${old_path}"
+		export PATH="${T}/ada-wrappers:${old_path}"
+	}
+
+	# Only make the wrappers for native builds. For cross, we can't
+	# do it as CBUILD vs CHOST will get mixed up then.
+	! tc-is-cross-compiler && _toolchain_make_gnat_wrappers
+
 	export CC="$(tc-getCC) -specs=${T}/ada.spec"
 }
 
@@ -1309,8 +1338,13 @@ toolchain_src_configure() {
 	confgcc+=( --enable-lto )
 
 	# Build compiler itself using LTO
-	if tc_version_is_at_least 9.1 && _tc_use_if_iuse lto ; then
-		BUILD_CONFIG_TARGETS+=( bootstrap-lto )
+	if _tc_use_if_iuse lto ; then
+		# GCC 11 at least has a -Wlto-type-mismatch issue with Ada
+		if ! tc_version_is_at_least 12.1 && is_ada ; then
+			:;
+		elif tc_version_is_at_least 9.1 ; then
+			BUILD_CONFIG_TARGETS+=( bootstrap-lto )
+		fi
 	fi
 
 	if tc_version_is_at_least 12 && _tc_use_if_iuse cet && [[ -z ${CLANG_DISABLE_CET_HACK} && ${CTARGET} == x86_64-*-gnu* ]] ; then
@@ -1635,8 +1669,9 @@ toolchain_src_configure() {
 	[[ ${CTARGET} == *-darwin* ]] && \
 		confgcc+=( --enable-version-specific-runtime-libs )
 
+	# Linux specifically here for bug #946397.
 	# TODO: amdgcn-amdhsa?
-	[[ ${CTARGET} == x86_64* ]] && confgcc+=(
+	[[ ${CTARGET} == x86_64*-*-linux-* ]] && confgcc+=(
 		--enable-offload-defaulted
 		--enable-offload-targets=nvptx-none
 	)
@@ -2494,11 +2529,7 @@ toolchain_src_install() {
 
 	if [[ ${GCC_RUN_FIXINCLUDES} == 0 ]] ; then
 		# We remove the generated fixincludes, as they can cause things to break
-		# (ncurses, openssl, etc).  We do not prevent them from being built, as
-		# in the following commit which we revert:
-		# https://sources.gentoo.org/cgi-bin/viewvc.cgi/gentoo-x86/eclass/toolchain.eclass?r1=1.647&r2=1.648
-		# This is because bsd userland needs fixedincludes to build gcc, while
-		# linux does not.  Both can dispose of them afterwards.
+		# (ncurses, openssl, etc).
 		while read x ; do
 			grep -q 'It has been auto-edited by fixincludes from' "${x}" \
 				&& rm -f "${x}"
@@ -2518,8 +2549,6 @@ toolchain_src_install() {
 		pushd "${WORKDIR}"/build-jit > /dev/null || die
 		S="${WORKDIR}"/build-jit emake DESTDIR="${D}" -j1 install
 
-		# Punt some tools which are really only useful while building gcc
-		find "${ED}" -name install-tools -prune -type d -exec rm -rf "{}" \; || die
 		# This one comes with binutils
 		find "${ED}" -name libiberty.a -delete || die
 
@@ -2542,8 +2571,6 @@ toolchain_src_install() {
 	# - https://gcc.gnu.org/PR109898
 	S="${WORKDIR}"/build emake DESTDIR="${D}" -j1 install
 
-	# Punt some tools which are really only useful while building gcc
-	find "${ED}" -name install-tools -prune -type d -exec rm -rf "{}" \; || die
 	# This one comes with binutils
 	find "${ED}" -name libiberty.a -delete || die
 
@@ -2778,8 +2805,10 @@ gcc_movelibs() {
 		mv "${ED}"/usr/nvptx-none/lib/mgomp/mptx-3.1/*.{a,spec} "${ED}"/usr/lib/gcc/${CHOST}/${GCCMAJOR}/accel/nvptx-none/mgomp/mptx-3.1/
 		mv "${ED}"/usr/lib/gcc/nvptx-none/${GCCMAJOR}/*.{a,spec} "${ED}"/usr/lib/gcc/${CHOST}/${GCCMAJOR}/accel/nvptx-none/ || die
 		mv "${ED}"/usr/lib/gcc/nvptx-none/${GCCMAJOR}/mgomp/*.{a,spec} "${ED}"/usr/lib/gcc/${CHOST}/${GCCMAJOR}/accel/nvptx-none/mgomp/ || die
-		mv "${ED}"/usr/lib/gcc/nvptx-none/${GCCMAJOR}/mptx-3.1/*.{a,spec} "${ED}"/usr/lib/gcc/${CHOST}/${GCCMAJOR}/accel/nvptx-none/mptx-3.1/ || die
-		mv "${ED}"/usr/lib/gcc/nvptx-none/${GCCMAJOR}/mgomp/mptx-3.1/*.{a,spec} "${ED}"/usr/lib/gcc/${CHOST}/${GCCMAJOR}/accel/nvptx-none/mgomp/mptx-3.1/ || die
+		# Nonfatal because the multilib variants change: see r15-5975-g86b3a7532d56f7 and r15-6029-gd4e1f7cfdb8375
+		# TODO: Should we enable all of them unconditionally? Expose it somehow (USE_EXPAND?)?
+		mv "${ED}"/usr/lib/gcc/nvptx-none/${GCCMAJOR}/mptx-3.1/*.{a,spec} "${ED}"/usr/lib/gcc/${CHOST}/${GCCMAJOR}/accel/nvptx-none/mptx-3.1/
+		mv "${ED}"/usr/lib/gcc/nvptx-none/${GCCMAJOR}/mgomp/mptx-3.1/*.{a,spec} "${ED}"/usr/lib/gcc/${CHOST}/${GCCMAJOR}/accel/nvptx-none/mgomp/mptx-3.1/
 	fi
 
 	# We remove directories separately to avoid this case:
