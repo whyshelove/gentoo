@@ -4,6 +4,9 @@
 EAPI=7
 
 GENTOO_DEPEND_ON_PERL=no
+DSUFFIX="_5"
+suffix_ver=$(ver_cut 5)
+[[ ${suffix_ver} ]] && DSUFFIX="_4.${suffix_ver}"
 
 inherit autotools perl-module systemd flag-o-matic rhel9-a
 
@@ -77,10 +80,13 @@ src_configure() {
 		--with-browseremoteprotocols=DNSSD,CUPS
 		--with-cups-rundir="${EPREFIX}"/run/cups
 		--with-fontdir="fonts/conf.avail"
-		--with-pdftops=pdftops
+		--with-pdftops=hybrid
 		--with-rcdir=no
 		--without-php
 		--disable-static
+		--enable-driverless
+		--with-apple-raster-filter=rastertopdf
+		--with-remote-cups-local-queue-naming=RemoteName
 		$(use_enable dbus)
 		$(use_enable foomatic)
 		$(use_enable ldap)
@@ -128,7 +134,7 @@ src_install() {
 
 	find "${ED}" \( -name "*.a" -o -name "*.la" \) -delete || die
 
-	cp "${FILESDIR}"/cups-browsed.init.d-r1 "${T}"/cups-browsed || die
+	cp "${FILESDIR}"/cups-browsed.init.d-r2 "${T}"/cups-browsed || die
 
 	if ! use zeroconf ; then
 		sed -i -e 's:need cupsd avahi-daemon:need cupsd:g' "${T}"/cups-browsed || die

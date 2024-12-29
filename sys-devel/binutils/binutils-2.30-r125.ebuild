@@ -5,8 +5,8 @@ EAPI=6
 
 inherit eapi7-ver
 suffix_ver=$(ver_cut 4)
-[[ ${suffix_ver} ]] && DSUFFIX="_8.${suffix_ver}"
-
+[[ ${suffix_ver} ]] && DSUFFIX="_10.${suffix_ver}"
+DSUFFIX="_10"
 inherit eutils libtool flag-o-matic gnuconfig multilib toolchain-funcs versionator rhel8
 
 DESCRIPTION="Tools necessary to build programs"

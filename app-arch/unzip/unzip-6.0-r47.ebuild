@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-
+DSUFFIX="_10"
 inherit flag-o-matic multilib toolchain-funcs rhel8
 
 MY_PV="${PV//.}"

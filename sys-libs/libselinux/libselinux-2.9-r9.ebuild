@@ -4,7 +4,7 @@
 EAPI="7"
 PYTHON_COMPAT=( python3_{6..9} )
 USE_RUBY="ruby25 ruby26 ruby27"
-
+DSUFFIX="_10"
 # No, I am not calling ruby-ng
 inherit python-r1 toolchain-funcs multilib-minimal rhel8
 

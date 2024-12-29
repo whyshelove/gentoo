@@ -6,7 +6,7 @@ EAPI=7
 LUA_COMPAT=( lua5-{2..4} )
 PYTHON_COMPAT=( python2_7 python3_{6,8,9} )
 
-#DSUFFIX="_9"
+DSUFFIX="_10"
 
 inherit autotools flag-o-matic lua-single perl-module python-single-r1 toolchain-funcs rhel8
 
