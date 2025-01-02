@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-PYTHON_COMPAT=( python3_{10..13} )
+PYTHON_COMPAT=( python3_{9..13} )
 inherit flag-o-matic gnome.org gnome2-utils meson python-any-r1 readme.gentoo-r1 xdg
 
 DESCRIPTION="A terminal emulator for GNOME"
@@ -16,7 +16,7 @@ LICENSE="GPL-3+ GPL-3 CC-BY-SA-3.0 FDL-1.3"
 
 SLOT="0"
 
-KEYWORDS="~amd64 ~arm ~arm64 ~loong ~ppc ~ppc64 ~riscv ~x86"
+KEYWORDS="amd64 ~arm arm64 ~loong ~ppc ~ppc64 ~riscv x86"
 
 IUSE="debug gnome-shell nautilus vanilla"
 

@@ -48,7 +48,7 @@ BDEPEND="
 "
 
 PATCHES=(
-	"${FILESDIR}"/netpbm-10.86.21-build.patch
+	"${FILESDIR}"/netpbm-11.9.0-build.patch
 	"${FILESDIR}"/netpbm-11.0.0-misc-deps.patch
 	"${FILESDIR}"/netpbm-11.1.0-fix-clang-O2.patch
 	"${FILESDIR}"/netpbm-11.6.1-incompatible-pointer-types.patch

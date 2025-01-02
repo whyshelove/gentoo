@@ -3,6 +3,23 @@
 
 # New entries go on top.
 
+# Michał Górny <mgorny@gentoo.org> (2024-12-31)
+# None of the sci-libs/symengine versions work with the modern versions
+# of dev-libs/boost in Gentoo.
+sci-libs/symengine boost
+
+# Conrad Kostecki <conikost@gentoo.org> (2024-12-30)
+# Currently experimental features do not compile.
+app-emulation/pcem experimental
+
+# Andreas Sturmlechner <asturm@gentoo.org> (2024-12-28)
+# Prepare virtual/bitcoin-leveldb last-rites, bug #945359
+net-p2p/bitcoin-core system-leveldb
+
+# Volkmar W. Pogatzki <gentoo@pogatzki.net> (2024-12-20)
+# openjfx for OpenJDK 24 is not yet available.
+dev-java/openjdk:24 javafx
+
 # Paul Zander <negril.nx+gentoo@gmail.com> (2024-12-16)
 # sci-libs/atlas requires you to disable frequency scaling to build.
 # This barely works on older Intel CPUs on good days.
@@ -69,10 +86,6 @@ app-i18n/mozc fcitx4
 # over two years. Fedora has disabled webservices support already, and
 # that makes it OK if we do it too, right? Bug 893700.
 media-gfx/gthumb webkit
-
-# Volkmar W. Pogatzki <gentoo@pogatzki.net> (2024-09-21)
-# openjfx for OpenJDK 23 is not yet available.
-dev-java/openjdk:23 javafx
 
 # This file is only for generic masks. For arch-specific masks (i.e.
 # mask everywhere, unmask on arch/*) use arch/base.

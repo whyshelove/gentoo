@@ -1,4 +1,4 @@
-# Copyright 1999-2024 Gentoo Authors
+# Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -19,7 +19,7 @@ else
 	SRC_URI="
 		https://github.com/gpsbabel/gpsbabel/archive/gpsbabel_${MY_PV}.tar.gz
 		doc? ( https://www.gpsbabel.org/style3.css -> gpsbabel.org-style3.css )"
-	KEYWORDS="~amd64 ~arm64"
+	KEYWORDS="amd64 ~arm64"
 	S="${WORKDIR}/gpsbabel-gpsbabel_${MY_PV}"
 fi
 
@@ -58,7 +58,7 @@ DOCS=( AUTHORS NEWS README.{contrib,igc,md} gui/README.gui )
 
 PATCHES=(
 	"${FILESDIR}/${PN}-1.8.0-no-automagic-qt5-qt6.patch"
-	"${FILESDIR}"/${P}-qmake-xmldoc.patch
+	"${FILESDIR}"/${P}-xmldoc.patch
 	"${FILESDIR}"/${P}-xmllint.patch
 )
 
@@ -69,6 +69,7 @@ src_prepare() {
 	rm -r shapelib zlib || die
 
 	use doc && cp "${DISTDIR}/gpsbabel.org-style3.css" "${S}"
+	use gui || sed -i -e '/add_subdirectory(gui)/d' CMakeLists.txt || die
 }
 
 src_configure() {
@@ -76,9 +77,6 @@ src_configure() {
 		-DGPSBABEL_WITH_LIBUSB=pkgconfig
 		-DGPSBABEL_WITH_SHAPELIB=pkgconfig
 		-DGPSBABEL_WITH_ZLIB=pkgconfig
-		-DGPSBABEL_MAPPREVIEW=$(usex gui)
-		-DGPSBABEL_EMBED_MAP=$(usex gui)
-		-DGPSBABEL_EMBED_TRANSLATIONS=$(usex gui)
 		-DUSE_QT6=ON
 	)
 

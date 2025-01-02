@@ -1,4 +1,4 @@
-# Copyright 1999-2024 Gentoo Authors
+# Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 ####################################################################
@@ -32,6 +32,48 @@
 ## app-misc/some-package
 
 #--- END OF EXAMPLES ---
+
+# Andreas Sturmlechner <asturm@gentoo.org> (2025-01-01)
+# Transitional package without any revdeps left.
+# Removal on 2025-01-31
+kde-apps/konsolepart
+
+# Nowa Ammerlaan <nowa@gentoo.org> (2025-01-01)
+# Broken with Qt6 and in wayland sessions. Archived upstream. Has been on life
+# support for several years already.
+# Removal on 2025-02-01
+media-video/vidify
+media-video/vidify-audiosync
+net-misc/lyricwikia
+
+# Sam James <sam@gentoo.org> (2024-12-31)
+# Many open bugs and requires a large amount of patching to build correctly
+# as a shared library. Breaks reverse dependencies in a few ways.
+# Removal on 2025-01-30. bug #924174 and friends.
+dev-libs/dmalloc
+
+# Michał Górny <mgorny@gentoo.org> (2024-12-29)
+# As of 3.1.0, upstream has removed all mocking and made it impossible
+# to test the package locally.  As such, we cannot maintain it going
+# forward.  Removal on 2025-01-28.  Bug #947144.
+dev-python/pslab
+
+# Andreas Sturmlechner <asturm@gentoo.org> (2024-12-28)
+# Cleanup transitional Bitcoin Core meta packages, as well as
+# unmaintainable net-p2p/bitcoin-core[system-leveldb] and
+# virtual/bitcoin-leveldb. Removal on 2025-01-27. Bug #945359
+dev-util/bitcoin-tx
+net-libs/libbitcoinconsensus
+net-p2p/bitcoin-cli
+net-p2p/bitcoin-qt
+net-p2p/bitcoind
+virtual/bitcoin-leveldb
+
+# Mats Lidell <matsl@gentoo.org> (2024-12-25)
+# Packages used by XEmacs 21.4, now removed from tree.  Not needed with
+# XEmacs 21.5.  Removal on 2025-01-24.
+app-xemacs/latin-unity
+app-xemacs/mule-ucs
 
 # Andreas Sturmlechner <asturm@gentoo.org> (2024-12-14)
 # Last "release" seems to have been an AUR special, and even that is now
@@ -69,7 +111,6 @@ kde-apps/knotes
 # Removal on 2025-01-09
 media-sound/soundkonverter
 kde-frameworks/countryflags
-kde-frameworks/kapidox
 kde-frameworks/kdelibs4support
 kde-frameworks/kemoticons
 
@@ -90,16 +131,6 @@ kde-frameworks/kemoticons
 dev-util/android-sdk-update-manager
 dev-java/swt:3.7
 
-# Pacho Ramos <pacho@gentoo.org> (2024-12-02)
-# Dead for ages, not ported to wxGTK 3.2
-# Removal on 2024-12-31.  Bug #929140.
-games-board/blokish
-
-# Michał Górny <mgorny@gentoo.org> (2024-12-01)
-# Superseded by dev-lang/pypy:2.7.
-# Removal on 2024-12-15.
-dev-python/pypy
-
 # Patrick Lauer <patrick@gentoo.org> (2024-12-01)
 # ROCm 6.2 builds but doesn't work at all for me
 >=dev-libs/roct-thunk-interface-6.2
@@ -114,25 +145,6 @@ dev-python/pypy
 # Grave data loss bug. See also:
 # https://github.com/nicotine-plus/nicotine-plus/issues/3152
 =net-p2p/nicotine+-3.3.5
-
-# Takuya Wakazono <pastalian46@gmail.com> (2024-11-27)
-# Replaced by sys-boot/woeusb-ng, which has more recent upstream
-# activity and optional GUI support.
-# Removal on 2024-12-24.
-sys-boot/woeusb
-
-# Michał Górny <mgorny@gentoo.org> (2024-11-23)
-# Implementation detail of dev-python/pyproject-fmt.  New versions
-# integrate the Rust code into the main package.
-# Removal on 2024-12-07.  Bug #944782.
-dev-python/pyproject-fmt-rust
-
-# Andreas Sturmlechner <asturm@gentoo.org> (2024-11-23)
-# dev-python/pyside2 last-rites, no more revdeps
-# Removal on 2024-12-23
-dev-python/pyside2
-dev-python/pyside2-tools
-dev-python/shiboken2
 
 # Ionen Wolkens <ionen@gentoo.org> (2024-11-19)
 # NVIDIA dropped support for the 470.xx branch in September 2024[1].
@@ -159,64 +171,6 @@ dev-python/shiboken2
 # [3] https://wiki.gentoo.org/wiki/Nouveau
 x11-drivers/nvidia-drivers:0/470
 
-# Andreas Sturmlechner <asturm@gentoo.org> (2024-11-18)
-# All classes were moved to >=x11-libs/qwt-6.2.0. No revdeps.
-# Removal on 2024-12-18.
-x11-libs/qwtpolar
-
-# Robin H. Johnson <robbat2@gentoo.org> (2024-11-17)
-# bug 943698
-# Poor upstream code quality, unmaintained upstream;
-# no hardware for testing # anymore.
-# https://public-inbox.gentoo.org/gentoo-dev/robbat2-20240529T185323-477923075Z@orbis-terrarum.net/
-app-misc/g15composer
-app-misc/g15daemon
-app-misc/g15macro
-app-misc/g15message
-app-misc/g15mpd
-app-misc/g15stats
-dev-libs/libg15
-dev-libs/libg15render
-
-# Alfredo Tupone <tupone@gentoo.org> (2024-11-17)
-# Included in dev-ml/odoc, the only rdep
-# Removal on 2024-12-17.
-dev-ml/odoc-parser
-
-# Matt Turner <mattst88@gentoo.org> (2024-11-16)
-# Masked for testing
-=dev-util/intel_clc-24.3*
-=media-libs/mesa-24.3*
-
-# Andreas K. Hüttel <dilfridge@gentoo.org> (2024-11-17)
-# Needs a header from libusb that doesnt exist anymore. Will never build.
-# Furthermore, modern C problems. Bug 874645. No maintainer.
-# Removal in 30 days.
-dev-util/usb-robot
-
-# Andreas K. Hüttel <dilfridge@gentoo.org> (2024-11-17)
-# Fails to build on modern compilers, bug 874291. Various open bugs.
-# No maintainer. Removal in 30 days.
-app-emulation/spim
-
-# Hans de Graaff <graaff@gentoo.org> (2024-11-16)
-# Mask obsolete shoulda-related slots. Use the newer slots instead.
-# Removal on 2024-12-16.
-dev-ruby/shoulda:3
-dev-ruby/shoulda-context:0
-dev-ruby/shoulda-matchers:3
-
-# Hans de Graaff <graaff@gentoo.org> (2024-11-16)
-# Mask obsolete Rails 6.1-only slot. Please use the newer slot instead.
-# Removal on 2024-12-16.
-dev-ruby/database_cleaner-active_record:2.1
-
-# Jaco Kroon <jaco@uls.co.za> (2024-11-15)
-# clippy exists purely for frr (even comes from the same sources).  This
-# package split is no longer implemented from frr-9.1.2 onwards, so this
-# package is no longer required.
-dev-util/clippy
-
 # Michael Orlitzky <mjo@gentoo.org> (2024-11-13)
 # PHP 8.1.x no longer receives bug fixes unless they address security
 # issues. That means no build fixes, no updates for modern compilers,
@@ -242,12 +196,6 @@ dev-php/snuffleupagus
 dev-php/swoole
 =virtual/httpd-php-8.1
 <www-apps/icingaweb2-2.12.1-r1
-
-# Andreas K. Hüttel <dilfridge@gentoo.org> (2024-11-10)
-# Fails to build with gcc-14. Horrible code. Not touched by a
-# maintainer since 2010. Bugs 729134, 870541, 909625, 933773
-# Removal in 30 days.
-app-accessibility/powiedz
 
 # Matt Jolly <kangie@gentoo.org> (2024-11-09)
 # The legacy Rust ebuilds are no longer maintained and have been
@@ -285,36 +233,10 @@ app-accessibility/powiedz
 # Does not build with any rust version in the tree. Removal in 30 days.
 =dev-util/wasmer-0.11.0
 
-# Hans de Graaff <graaff@gentoo.org> (2024-11-08)
-# Obsolete slot. Use a newer slot instead. Removal on 2024-12-08.
-dev-ruby/faker:2
-
-# Hans de Graaff <graaff@gentoo.org> (2024-11-08)
-# Obsolete slot. Use a newer slot instead. The included jquery-ui
-# version is no longer supported upstream. Removal on 2024-12-08.
-dev-ruby/jquery-ui-rails:6
-
 # Viorel Munteanu <ceamac@gentoo.org> (2024-10-18)
 # Experimental version, for testing purposes only.
 # Bug #941566.
 app-emulation/virtualbox-kvm
-
-# Yongxiang Liang <tanekliang@gmail.org> (2024-10-10)
-# Fcitx 4 has been archived. Users can upgrade to Fcitx 5
-app-i18n/fcitx-anthy:4
-app-i18n/fcitx-chewing:4
-app-i18n/fcitx-cloudpinyin:4
-app-i18n/fcitx-configtool:4
-app-i18n/fcitx-hangul:4
-app-i18n/fcitx-libpinyin:4
-app-i18n/fcitx-m17n:4
-app-i18n/fcitx-qt5:4
-app-i18n/fcitx-rime:4
-app-i18n/fcitx-sayura:4
-app-i18n/fcitx-table-extra:4
-app-i18n/fcitx-unikey:4
-app-i18n/fcitx:4
-app-i18n/kcm-fcitx
 
 # Nowa Ammerlaan <nowa@gentoo.org> (2024-10-05)
 # This version is known to break on certain systems. At the

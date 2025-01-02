@@ -1,4 +1,4 @@
-# Copyright 1999-2024 Gentoo Authors
+# Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -7,6 +7,9 @@ MODULES_OPTIONAL_IUSE=+modules
 inherit desktop eapi9-pipestatus flag-o-matic linux-mod-r1 readme.gentoo-r1
 inherit systemd toolchain-funcs unpacker user-info
 
+# note: currently builds with 6.13, but (at least) fbdev=1 is known
+# broken and not planning to patch
+# https://github.com/NVIDIA/open-gpu-kernel-modules/issues/749
 MODULES_KERNEL_MAX=6.12
 NV_URI="https://download.nvidia.com/XFree86/"
 
@@ -24,7 +27,7 @@ S=${WORKDIR}
 
 LICENSE="NVIDIA-r2 Apache-2.0 BSD BSD-2 GPL-2 MIT ZLIB curl openssl"
 SLOT="0/${PV%%.*}"
-KEYWORDS="-* ~amd64 ~arm64"
+KEYWORDS="-* amd64 ~arm64"
 IUSE="+X abi_x86_32 abi_x86_64 kernel-open persistenced powerd +static-libs +tools wayland"
 REQUIRED_USE="kernel-open? ( modules )"
 

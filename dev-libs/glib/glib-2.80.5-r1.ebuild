@@ -3,7 +3,7 @@
 
 EAPI=8
 PYTHON_REQ_USE="xml(+)"
-PYTHON_COMPAT=( python3_{10..13} )
+PYTHON_COMPAT=( python3_{9..13} )
 
 inherit gnome.org gnome2-utils linux-info meson-multilib multilib python-any-r1 toolchain-funcs xdg
 
@@ -22,7 +22,7 @@ INTROSPECTION_BUILD_DIR="${WORKDIR}/${INTROSPECTION_P}-build"
 
 LICENSE="LGPL-2.1+"
 SLOT="2"
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~arm64-macos ~ppc-macos ~x64-macos ~x64-solaris"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~arm64-macos ~ppc-macos ~x64-macos ~x64-solaris"
 IUSE="dbus debug +elf doc +introspection +mime selinux static-libs sysprof systemtap test utils xattr"
 RESTRICT="!test? ( test )"
 
@@ -61,6 +61,9 @@ BDEPEND="
 	doc? ( >=dev-util/gi-docgen-2023.1 )
 	dev-python/docutils
 	systemtap? ( >=dev-debug/systemtap-1.3 )
+	$(python_gen_any_dep '
+		dev-python/packaging[${PYTHON_USEDEP}]
+	')
 	${PYTHON_DEPS}
 	test? ( >=sys-apps/dbus-1.2.14 )
 	virtual/pkgconfig
@@ -90,11 +93,15 @@ MULTILIB_CHOST_TOOLS=(
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-2.64.1-mark-gdbus-server-auth-test-flaky.patch
+	"${FILESDIR}"/${P}-tests-autoptr-ffi.patch
 )
 
 python_check_deps() {
 	if use introspection ; then
+		python_has_version "dev-python/packaging[${PYTHON_USEDEP}]" &&
 		python_has_version "dev-python/setuptools[${PYTHON_USEDEP}]"
+	else
+		python_has_version "dev-python/packaging[${PYTHON_USEDEP}]"
 	fi
 }
 
@@ -191,12 +198,12 @@ src_prepare() {
 	# Link the glib source to the introspection subproject directory so it can be built there first
 	if use introspection ; then
 		ln -s "${S}" "${INTROSPECTION_SOURCE_DIR}/subprojects/glib"
-	fi
 
-	# bug #946578
-	cd "${INTROSPECTION_SOURCE_DIR}" || die
-	eapply "${FILESDIR}"/glib-2.80.5-gobject-introspection-1.80.patch
-	cd "${S}" || die
+		# bug #946578
+		cd "${INTROSPECTION_SOURCE_DIR}" || die
+		eapply "${FILESDIR}"/glib-2.80.5-gobject-introspection-1.80.patch
+		cd "${S}" || die
+	fi
 
 	default
 	gnome2_environment_reset
@@ -216,18 +223,21 @@ multilib_src_configure() {
 		#esac
 	#fi
 
-	# Build internal copy of gobject-introspection to avoid circular dependency (Built for native abi only)
+	# Build internal copy of gobject-introspection to avoid circular dependency (built for native abi only)
 	if multilib_native_use introspection && ! has_version ">=dev-libs/${INTROSPECTION_P}" ; then
 		einfo "Bootstrapping gobject-introspection..."
-		INTROSPECTION_BIN_DIR="${T}/${EPREFIX}/usr/bin"
-		INTROSPECTION_LIB_DIR="${T}/${EPREFIX}/usr/$(get_libdir)"
+		INTROSPECTION_BIN_DIR="${T}/bootstrap-gi-prefix/usr/bin"
+		INTROSPECTION_LIB_DIR="${T}/bootstrap-gi-prefix/usr/$(get_libdir)"
 
 		local emesonargs=(
+			--prefix="${T}/bootstrap-gi-prefix/usr"
 			-Dpython="${EPYTHON}"
 			-Dbuild_introspection_data=true
 			# Build an internal copy of glib for the internal copy of gobject-introspection
 			--force-fallback-for=glib
-			# Tell meson to make paths in pkgconfig files relative, because we arent doing an actual install
+			# Make the paths in pkgconfig files relative as we used to not
+			# do a proper install here and it seems less risky to keep it
+			# this way.
 			-Dpkgconfig.relocatable=true
 
 			# We want as minimal a build as possible here to speed things up
@@ -263,8 +273,10 @@ multilib_src_configure() {
 
 		meson_src_configure
 		meson_src_compile
-		# Install to the portage temp directory so that pkgconfig relative paths resolve correctly
-		meson_src_install --destdir "${T}" --skip-subprojects glib
+		# We already provide a prefix in ${T} above. Blank DESTDIR
+		# as it may be set in the environment by Portage (though not
+		# guaranteed in src_configure).
+		meson_src_install --destdir ""
 
 		popd || die
 
@@ -287,6 +299,9 @@ multilib_src_configure() {
 		for gliblib in glib gobject gthread gmodule gio girepository; do
 			export LD_LIBRARY_PATH="${BUILD_DIR}/${gliblib}:${LD_LIBRARY_PATH}"
 		done
+
+		# Add the path to introspection libraries so that glib can call gir utilities
+		export LD_LIBRARY_PATH="${INTROSPECTION_LIB_DIR}:${LD_LIBRARY_PATH}"
 
 		# Add the paths to the gobject-introspection python modules to python path so they can be imported
 		export PYTHONPATH="${INTROSPECTION_LIB_DIR}/gobject-introspection:${PYTHONPATH}"
