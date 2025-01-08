@@ -1,4 +1,4 @@
-# Copyright 2023-2024 Gentoo Authors
+# Copyright 2023-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: linux-mod-r1.eclass
@@ -333,7 +333,7 @@ linux-mod-r1_pkg_setup() {
 	_MODULES_GLOBAL[ran:pkg_setup]=1
 	_modules_check_function ${#} 0 0 || return 0
 
-	if [[ -z ${ROOT} && ${MODULES_INITRAMFS_IUSE} ]] &&
+	if [[ ${MODULES_INITRAMFS_IUSE} ]] &&
 		use dist-kernel && use ${MODULES_INITRAMFS_IUSE#+}
 	then
 		# Check, but don't die because we can fix the problem and then
@@ -508,7 +508,7 @@ linux-mod-r1_pkg_postinst() {
 	dist-kernel_compressed_module_cleanup "${EROOT}/lib/modules/${KV_FULL}"
 	_modules_update_depmod
 
-	if [[ -z ${ROOT} && ${MODULES_INITRAMFS_IUSE} ]] &&
+	if [[ ${MODULES_INITRAMFS_IUSE} ]] &&
 		use dist-kernel && use ${MODULES_INITRAMFS_IUSE#+}
 	then
 		dist-kernel_reinstall_initramfs "${KV_DIR}" "${KV_FULL}"
