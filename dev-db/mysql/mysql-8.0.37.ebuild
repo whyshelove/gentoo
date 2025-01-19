@@ -1,4 +1,4 @@
-# Copyright 1999-2024 Gentoo Authors
+# Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -24,7 +24,7 @@ S="${WORKDIR}/mysql"
 LICENSE="GPL-2"
 SLOT="8.0"
 # -ppc for bug #761715
-KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~mips -ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~x64-macos ~x64-solaris"
+KEYWORDS="amd64 arm arm64 ~hppa ~mips -ppc ppc64 ~riscv ~s390 ~sparc x86 ~amd64-linux ~x86-linux ~x64-macos ~x64-solaris"
 IUSE="cjk cracklib debug jemalloc latin1 numa +perl profiling router selinux +server tcmalloc test"
 RESTRICT="!test? ( test )"
 
@@ -94,6 +94,10 @@ PATCHES=(
 	"${WORKDIR}"/mysql-patches
 	# Needed due to bundled boost-1.77, this fix is included in boost-1.81
 	"${FILESDIR}"/mysql-8.0.36-boost-clang-fix.patch
+	# Needed due to bundled boost-1.77, this fix is included in boost-1.79
+	"${FILESDIR}"/mysql-8.0.37-fix-bundled-boost.patch
+	# Needed due to bundled abseil-cpp-20230802, this fix is included in abseil-cpp-20240722
+	"${FILESDIR}"/mysql-8.0.37-fix-bundled-abseil.patch
 )
 
 mysql_init_vars() {
@@ -728,7 +732,7 @@ pkg_config() {
 		local n_X
 		let n_X=${#template}-${#template_wo_X}
 		if [[ ${n_X} -lt 3 ]] ; then
-			echo "${FUNCNAME[0]}: too few X's in template ‘${template}’" >&2
+			echo "${FUNCNAME[0]}: too few X's in template '${template}'" >&2
 			return
 		fi
 

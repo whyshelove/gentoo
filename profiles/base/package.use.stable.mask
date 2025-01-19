@@ -1,8 +1,8 @@
 # Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-# This file requires eapi 5 or later. New entries go on top.
-# Please use the same syntax as in package.use.mask
+# New entries go on top.
+# Please use the same syntax as in package.use.mask.
 
 # Volkmar W. Pogatzki <gentoo@pogatzki.net> (2025-01-04)
 # dev-libs/protobuf-28.3 is not yet marked stable.
@@ -140,11 +140,6 @@ dev-lang/rust nightly system-bootstrap
 # Andreas Sturmlechner <asturm@gentoo.org> (2019-12-09)
 # Declared experimental, and dev-cpp/websocketpp not stable yet
 sci-libs/indilib websocket
-
-# Kent Fredric <kentnl@gentoo.org> (2019-08-29)
-# Support for DBD-mysql to use mariadb is sketchy. Use DBD-MariaDB
-# instead if you can.
-dev-perl/DBD-mysql mariadb
 
 # Kent Fredric <kentnl@gentoo.org> (2019-07-30)
 # These features require dev-perl/GD, which currently can't be

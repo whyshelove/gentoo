@@ -1,4 +1,4 @@
-# Copyright 1999-2024 Gentoo Authors
+# Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="8"
@@ -54,7 +54,7 @@ SRC_URI="https://downloads.powerdns.com/releases/${P/_/-}.tar.bz2 ${CARGO_CRATE_
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~x86"
+KEYWORDS="amd64 ~arm x86"
 IUSE="debug dnstap snmp sodium systemd test valgrind"
 REQUIRED_USE="${LUA_REQUIRED_USE}"
 RESTRICT="!test? ( test )"
@@ -69,7 +69,7 @@ DEPEND="${LUA_DEPS}
 		x86? ( >=sys-libs/glibc-2.34 )
 	)
 	dev-libs/openssl:=
-	dev-libs/boost:=[context]"
+	>=dev-libs/boost-1.42:=[context]"
 RDEPEND="${DEPEND}
 	!<net-dns/pdns-2.9.20-r1
 	acct-user/pdns
@@ -83,6 +83,7 @@ S="${WORKDIR}"/${P/_/-}
 pkg_setup() {
 	lua-single_pkg_setup
 	filter-flags -ftree-vectorize
+	filter-lto
 	append-lfs-flags
 	append-cppflags -D_TIME_BITS=64
 	rust_pkg_setup
