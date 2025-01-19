@@ -9,7 +9,7 @@ if [[ ${PV} != 3.2.3 ]]; then
 fi
 
 WANT_LIBTOOL=none
-
+DSUFFIX="_5.1"
 PYTHON_COMPAT=( python3_{9..10} )
 inherit autotools flag-o-matic prefix python-single-r1 systemd rhel9
 
