@@ -1,10 +1,10 @@
-# Copyright 1999-2024 Gentoo Authors
+# Copyright 1999-2025 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 PYTHON_REQ_USE="xml(+)"
 PYTHON_COMPAT=( python3_{10..13} )
-USE_RUBY="ruby31 ruby32 ruby33"
+USE_RUBY="ruby31 ruby32 ruby33 ruby34"
 
 inherit check-reqs flag-o-matic gnome2 optfeature python-any-r1 ruby-single toolchain-funcs cmake
 
@@ -17,7 +17,7 @@ S="${WORKDIR}/${MY_P}"
 
 LICENSE="LGPL-2+ BSD"
 SLOT="6/0" # soname version of libwebkit2gtk-6.0
-KEYWORDS="amd64 arm64 ppc ppc64"
+KEYWORDS="amd64 ~arm arm64 ppc ppc64 ~sparc ~x86"
 
 IUSE="aqua avif examples gamepad keyring +gstreamer +introspection pdf jpegxl +jumbo-build lcms seccomp spell systemd wayland X"
 REQUIRED_USE="|| ( aqua wayland X )"
@@ -159,6 +159,9 @@ src_prepare() {
 
 	# https://bugs.gentoo.org/943213
 	eapply "${FILESDIR}"/2.44.4-fix-icu76.1.patch
+
+	# We don't want -Werror for gobject-introspection (bug #947761)
+	sed -i -e "s:--warn-error::" Source/cmake/FindGI.cmake || die
 }
 
 src_configure() {
@@ -167,6 +170,11 @@ src_configure() {
 
 	# ODR violations (bug #915230, https://bugs.webkit.org/show_bug.cgi?id=233007)
 	filter-lto
+
+	# bug #948072 (gcc PR118464)
+	if tc-is-gcc && [[ $(gcc-major-version) -eq 15 ]]; then
+		append-cxxflags "-fno-tree-loop-optimize"
+	fi
 
 	# It does not compile on alpha without this in LDFLAGS
 	# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=648761

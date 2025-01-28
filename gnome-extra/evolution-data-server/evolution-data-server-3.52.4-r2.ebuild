@@ -31,7 +31,7 @@ RDEPEND="
 	>=dev-libs/libxml2-2
 	>=dev-libs/nspr-4.4
 	>=dev-libs/nss-3.9
-	>=net-libs/libsoup-3.1.1:3.0
+	>=net-libs/libsoup-2.72.0:2.4
 	>=dev-libs/json-glib-1.0.4
 
 	dev-libs/icu:=
